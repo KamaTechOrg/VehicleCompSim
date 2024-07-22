@@ -32,8 +32,8 @@ class Socket
   bool connect ( const std::string host, const int port );
 
   // Data Transimission
-  bool send ( const std::string ) const;
-  int recv ( std::string& ) const;
+  bool send ( void * data ,size_t size) const;
+  int recv ( void *data ) const;
 
 
   void set_non_blocking ( const bool );

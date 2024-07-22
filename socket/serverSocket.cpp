@@ -28,9 +28,10 @@ ServerSocket::~ServerSocket()
 }
 
 
-const ServerSocket& ServerSocket::operator << ( const std::string& s ) const
+const ServerSocket& ServerSocket::send(void * data , size_t size) const
 {
-  if ( ! Socket::send ( s ) )
+  
+  if ( ! Socket::send ( data , size ) )
     {
       throw SocketException ( "Could not write to socket." );
     }
@@ -40,9 +41,9 @@ const ServerSocket& ServerSocket::operator << ( const std::string& s ) const
 }
 
 
-const ServerSocket& ServerSocket::operator >> ( std::string& s ) const
+const ServerSocket& ServerSocket::recv(void * data) const
 {
-  if ( ! Socket::recv ( s ) )
+  if ( ! Socket::recv ( data ) )
     {
       throw SocketException ( "Could not read from socket." );
     }

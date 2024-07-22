@@ -12,22 +12,23 @@ int main ( int argc, int argv[] )
   try
     {
       // Create the socket
-      ServerSocket server ( 30000 );
+      ServerSocket server ( 3000 );
 
       while ( true )
 	{
 
 	  ServerSocket new_sock;
 	  server.accept ( new_sock );
-		std::cout << "ffffffff" << std::endl;
+		
 	  try
 	    {
 	      while ( true )
 		{
-		  std::string data;
-		  new_sock >> data;
-		  std::reverse(data.begin(), data.end());
-		  new_sock << data;
+		  void * data;
+		  size_t size = 1024;
+		  new_sock.recv(data);
+		
+		  new_sock.send(data , size);
 		}
 	    }
 	  catch ( SocketException& ) {}

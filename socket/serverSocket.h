@@ -14,8 +14,8 @@ class ServerSocket : private Socket
   ServerSocket (){};
   virtual ~ServerSocket();
 
-  const ServerSocket& operator << ( const std::string& ) const;
-  const ServerSocket& operator >> ( std::string& ) const;
+  const ServerSocket& send ( void * data ,size_t size) const;
+  const ServerSocket& recv( void *) const;
 
   void accept ( ServerSocket& );
 

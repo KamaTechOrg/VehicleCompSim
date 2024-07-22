@@ -107,9 +107,12 @@ bool Socket::accept ( Socket& new_socket ) const
 }
 
 
-bool Socket::send ( const std::string s ) const
+bool Socket::send (void * data, size_t size ) const
 {
-  int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
+  std::cout << "send " << size << std::endl;
+  std::string reply((char *)data, 1024);
+  std::cout << reply << std::endl;
+  int status = ::send ( m_sock, data, 1024, MSG_NOSIGNAL );
   if ( status == -1 )
     {
       return false;
@@ -121,11 +124,11 @@ bool Socket::send ( const std::string s ) const
 }
 
 
-int Socket::recv ( std::string& s ) const
+int Socket::recv ( void * data ) const
 {
   char buf [ MAXRECV + 1 ];
 
-  s = "";
+ 
 
   memset ( buf, 0, MAXRECV + 1 );
 
@@ -142,7 +145,7 @@ int Socket::recv ( std::string& s ) const
     }
   else
     {
-      s = buf;
+      data = buf;
       return status;
     }
 }
