@@ -17,23 +17,27 @@ int main(int argc, int argv[])
     {
       try
       {
-       
+
         std::cout << "Write message: ";
         std::string ss;
-        cin >> ss ;
+        cin >> ss;
         ss += '#';
-        void* data = static_cast<void*>(const_cast<char*>(ss.c_str()));
+        void *data = static_cast<void *>(const_cast<char *>(ss.c_str()));
         size_t size = ss.size();
-        
-        client_socket.send(data, size ,client_socket.socket_id());
 
-       
-        void* buffer[MAXRECV];
-        memset ( buffer, 0, MAXRECV ); 
-        client_socket.recv(buffer ,MAXRECV);
-        
-        
-       
+        client_socket.send(data, size, client_socket.socket_id());
+
+        void *buffer[MAXRECV];
+        memset(buffer, 0, MAXRECV);
+        client_socket.recv(buffer, MAXRECV);
+
+        cout << "we received form server:";
+        int i = 0;
+        while (*(char *)(buffer + i) != '#' && i < MAXRECV)
+        {
+          cout << *((char *)(buffer) + i);
+          i++;
+        }
       }
       catch (SocketException &e)
       {

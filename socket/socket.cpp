@@ -127,9 +127,9 @@ bool Socket::send (void * data, size_t size,int s_id ) const
 
 int Socket::recv ( void * data , size_t len ) const
 {
-  char buf [len];
+  char buf [len * sizeof (void *)];
 
-  memset ( buf, 0, len);
+  memset ( buf, 0, len * sizeof (void *));
 
   int status = ::recv ( m_sock, buf, len, 0 );
   int j = 0;
@@ -150,7 +150,7 @@ int Socket::recv ( void * data , size_t len ) const
           *(char *)(data + i) = *(buf + i);
           i++;
       }
-     
+     *(char *)(data + i) = '#';
       return status;
     }
 }
