@@ -6,15 +6,15 @@
 #include "socket.h"
 
 
-class ClientSocket : private Socket
+class ClientSocket : public Socket
 {
  public:
 
   ClientSocket ( std::string host, int port );
   virtual ~ClientSocket(){};
 
-  const ClientSocket& send( void * data ,size_t size  ) const;
-  const ClientSocket& recv( void * ) const;
+  const ClientSocket& send( void * data ,size_t size ,int s_id  ) const;
+  const ClientSocket& recv( void * ,size_t) const;
 
 };
 

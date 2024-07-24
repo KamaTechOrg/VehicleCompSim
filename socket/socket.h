@@ -32,13 +32,14 @@ class Socket
   bool connect ( const std::string host, const int port );
 
   // Data Transimission
-  bool send ( void * data ,size_t size) const;
-  int recv ( void *data ) const;
+  bool send ( void * data ,size_t size ,int s_id) const;
+  int recv ( void *data, size_t len ) const;
 
 
   void set_non_blocking ( const bool );
 
   bool is_valid() const { return m_sock != -1; }
+  int socket_id()  { return m_sock; }
 
  private:
   

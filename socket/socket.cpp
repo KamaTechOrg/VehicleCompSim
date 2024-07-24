@@ -107,12 +107,13 @@ bool Socket::accept ( Socket& new_socket ) const
 }
 
 
-bool Socket::send (void * data, size_t size ) const
+bool Socket::send (void * data, size_t size,int s_id ) const
 {
-  std::cout << "send " << size << std::endl;
-  std::string reply((char *)data, 1024);
-  std::cout << reply << std::endl;
-  int status = ::send ( m_sock, data, 1024, MSG_NOSIGNAL );
+  
+	std::cout << static_cast<char*>(data);
+  std::cout << "Message" << std::endl;
+
+  int status = ::send ( s_id, data, size, MSG_NOSIGNAL );
   if ( status == -1 )
     {
       return false;
@@ -124,16 +125,15 @@ bool Socket::send (void * data, size_t size ) const
 }
 
 
-int Socket::recv ( void * data ) const
+int Socket::recv ( void * data , size_t len ) const
 {
-  char buf [ MAXRECV + 1 ];
+  char buf [len];
 
- 
+  memset ( buf, 0, len);
 
-  memset ( buf, 0, MAXRECV + 1 );
-
-  int status = ::recv ( m_sock, buf, MAXRECV, 0 );
-
+  int status = ::recv ( m_sock, buf, len, 0 );
+  int j = 0;
+        
   if ( status == -1 )
     {
       std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
@@ -145,7 +145,12 @@ int Socket::recv ( void * data ) const
     }
   else
     {
-      data = buf;
+      int i = 0;
+      while (*(buf + i) != '#' &&  i < len){
+          *(char *)(data + i) = *(buf + i);
+          i++;
+      }
+     
       return status;
     }
 }

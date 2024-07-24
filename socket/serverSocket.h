@@ -6,7 +6,7 @@
 #include "socket.h"
 
 
-class ServerSocket : private Socket
+class ServerSocket : public Socket
 {
  public:
 
@@ -14,8 +14,8 @@ class ServerSocket : private Socket
   ServerSocket (){};
   virtual ~ServerSocket();
 
-  const ServerSocket& send ( void * data ,size_t size) const;
-  const ServerSocket& recv( void *) const;
+  const ServerSocket& send ( void * data ,size_t size, int s_id) const;
+  const ServerSocket& recv( void * ,size_t) const;
 
   void accept ( ServerSocket& );
 

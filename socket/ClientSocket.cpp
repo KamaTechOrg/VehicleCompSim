@@ -19,9 +19,10 @@ ClientSocket::ClientSocket ( std::string host, int port )
 }
 
 
-const ClientSocket& ClientSocket::send(void * data ,size_t size) const
+const ClientSocket& ClientSocket::send(void * data ,size_t size ,int s_id) const
 {
-  if ( ! Socket::send ( data,size ) )
+  
+  if ( ! Socket::send ( data,size ,s_id ) )
     {
       throw SocketException ( "Could not write to socket." );
     }
@@ -31,9 +32,9 @@ const ClientSocket& ClientSocket::send(void * data ,size_t size) const
 }
 
 
-const ClientSocket& ClientSocket::recv(void * data)const
+const ClientSocket& ClientSocket::recv(void * data ,size_t len)const
 {
-  if ( ! Socket::recv ( data ) )
+  if ( ! Socket::recv ( data,len ) )
     {
       throw SocketException ( "Could not read from socket." );
     }

@@ -2,6 +2,9 @@
 #include "socketException.h"
 #include <iostream>
 #include <string>
+#include <string.h>
+
+using namespace std;
 
 int main(int argc, int argv[])
 {
@@ -17,24 +20,20 @@ int main(int argc, int argv[])
        
         std::cout << "Write message: ";
         std::string ss;
-        std::getline(std::cin, ss);
-
-        
+        cin >> ss ;
+        ss += '#';
         void* data = static_cast<void*>(const_cast<char*>(ss.c_str()));
         size_t size = ss.size();
-
         
-        client_socket.send(data, size);
+        client_socket.send(data, size ,client_socket.socket_id());
 
        
-        void* buffer[1024]; 
-        client_socket.recv(buffer);
+        void* buffer[MAXRECV];
+        memset ( buffer, 0, MAXRECV ); 
+        client_socket.recv(buffer ,MAXRECV);
         
         
-        std::string reply((char *)buffer, 1024);
-
-        // Display the response from the server
-        std::cout << "We received this response from the server:\n\"" << reply << "\"\n";
+       
       }
       catch (SocketException &e)
       {
