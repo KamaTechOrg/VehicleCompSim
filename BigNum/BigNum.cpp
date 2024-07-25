@@ -82,8 +82,8 @@ BigNum BigNum::operator+(const BigNum& other) const {
 	return result;
 }
 
-BigNum BigNum::operator+(int num) const {
-	return *this + BigNum(num , 32);
+BigNum BigNum::operator+(uint32_t num) const {
+	return *this + BigNum(num, 32);
 }
 
 BigNum BigNum::operator+=(const BigNum& other) {
@@ -91,7 +91,7 @@ BigNum BigNum::operator+=(const BigNum& other) {
 	return *this;
 }
 
-BigNum BigNum::operator+=(int num) {
+BigNum BigNum::operator+=(uint32_t num) {
 	*this = *this + num;
 	return *this;
 }
@@ -126,8 +126,8 @@ BigNum BigNum::operator-(const BigNum& other) const {
 	return result;
 }
 
-BigNum BigNum::operator-(int num) const {
-	return *this - BigNum(num , 32);
+BigNum BigNum::operator-(uint32_t num) const {
+	return *this - BigNum(num, 32);
 }
 
 BigNum BigNum::operator-=(const BigNum& other) {
@@ -135,7 +135,7 @@ BigNum BigNum::operator-=(const BigNum& other) {
 	return *this;
 }
 
-BigNum BigNum::operator-=(int num) {
+BigNum BigNum::operator-=(uint32_t num) {
 	*this = *this - num;
 	return *this;
 }
@@ -160,8 +160,8 @@ BigNum BigNum::operator*(const BigNum& other) const {
 	return result;
 }
 
-BigNum BigNum::operator*(int num) const {
-	return *this * BigNum(num,32);
+BigNum BigNum::operator*(uint32_t num) const {
+	return *this * BigNum(num, 32);
 }
 
 
@@ -170,7 +170,7 @@ BigNum BigNum::operator*=(const BigNum& other) {
 	return *this;
 }
 
-BigNum BigNum::operator*=(int num) {
+BigNum BigNum::operator*=(uint32_t num) {
 	*this = *this * num;
 	return *this;
 }
@@ -202,8 +202,8 @@ BigNum BigNum::operator/(const BigNum& other) const {
 }
 
 
-BigNum BigNum::operator/(int num) const {
-	return *this / BigNum(num,32);
+BigNum BigNum::operator/(uint32_t num) const {
+	return *this / BigNum(num, 32);
 }
 
 
@@ -212,7 +212,7 @@ BigNum BigNum::operator/=(const BigNum& other) {
 	return *this;
 }
 
-BigNum BigNum::operator/=(int num) {
+BigNum BigNum::operator/=(uint32_t num) {
 	*this = *this / num;
 	return *this;
 }
@@ -241,14 +241,14 @@ BigNum BigNum::operator/=(int num) {
 }
 
 
-BigNum BigNum::operator%(int num) const {
-	return *this % BigNum(num,32);
+BigNum BigNum::operator%(uint32_t num) const {
+	return *this % BigNum(num, 32);
 }
 
 
 
 // Left shift operator
-BigNum BigNum::operator<<(int shift) const {
+BigNum BigNum::operator<<(uint32_t shift) const {
 	int k = shift / 32;
 	int add = size > 0 ? data[size - 1] & 1 : 1;
 	BigNum result(size * UINT_T_SIZE + k + add);
@@ -266,7 +266,7 @@ BigNum BigNum::operator<<(int shift) const {
 }
 
 // Right shift operator
-BigNum BigNum::operator>>(int shift) const {
+BigNum BigNum::operator>>(uint32_t shift) const {
 	BigNum result(size * UINT_T_SIZE);
 	int k = shift / 32;
 	shift %= 32;
@@ -332,8 +332,8 @@ bool BigNum::operator ==(const BigNum& other) const {
 
 
 
-bool BigNum::operator==(int num) const {
-	return *this == BigNum(num,32);
+bool BigNum::operator==(uint32_t num) const {
+	return *this == BigNum(num, 32);
 }
 
 
@@ -341,7 +341,7 @@ bool BigNum::operator!=(const BigNum& other) const {
 	return !(*this == other);
 }
 
-bool BigNum::operator!=(int num) const {
+bool BigNum::operator!=(uint32_t num) const {
 	return !(*this == BigNum(num,32));
 }
 
@@ -359,8 +359,8 @@ bool BigNum::operator<=(const BigNum& other) const {
 	}
 }
 
-bool BigNum::operator<=(int num) const {
-	return *this <= BigNum(num,32);
+bool BigNum::operator<=(uint32_t num) const {
+	return *this <= BigNum(num, 32);
 }
 
 
@@ -368,14 +368,16 @@ bool BigNum::operator>(const BigNum& other) const {
 	return !(*this <= other);
 }
 
-bool BigNum::operator>(int num) const {
-	return *this > BigNum(num,32);
+bool BigNum::operator>(uint32_t num) const {
+	return *this > BigNum(num, 32);
 }
 
 
-int BigNum::operator&(int num) const {
+int BigNum::operator&(uint32_t num) const {
 	return this->data[0] & num;
 }
+
+
 
 
 

@@ -72,55 +72,55 @@ public:
 
     BigNum operator+(const BigNum& other) const;
 
-    BigNum operator+(int num) const;
+    BigNum operator+(uint32_t num) const;
 
     BigNum operator+=(const BigNum& other);
 
-	BigNum operator+=(int num);
+    BigNum operator+=(uint32_t num);
 
 
 
 
     BigNum operator*(const BigNum& other) const;
 
-	BigNum operator*(int num) const;
+    BigNum operator*(uint32_t num) const;
 
 
 
-	BigNum operator*=(const BigNum& other);
+    BigNum operator*=(const BigNum& other);
 
-	BigNum operator*=(int num);
+    BigNum operator*=(uint32_t num);
 
 
-    
+
 
     // Subtraction operator
     BigNum operator-(const BigNum& other) const;
 
-	BigNum operator-(int num) const;
+    BigNum operator-(uint32_t num) const;
 
-	BigNum operator-=(const BigNum& other);
+    BigNum operator-=(const BigNum& other);
 
-	BigNum operator-=(int num);
+    BigNum operator-=(uint32_t num);
 
     // Modulus operator
     BigNum operator%(const BigNum& other) const;
 
-	BigNum operator%(int num) const;
+    BigNum operator%(uint32_t num) const;
 
     BigNum operator/(const BigNum& other) const;
 
-	BigNum operator/(int num) const;
+    BigNum operator/(uint32_t num) const;
 
     BigNum operator/=(const BigNum& other);
 
-	BigNum operator/=(int num);
+    BigNum operator/=(uint32_t num);
 
     // Left shift operator
-    BigNum operator<<(int shift) const;
+    BigNum operator<<(uint32_t shift) const;
 
     // Right shift operator
-    BigNum operator>>(int shift) const;
+    BigNum operator>>(uint32_t shift) const;
 
     // Comparison operators
     bool operator<(const BigNum& other) const;
@@ -128,23 +128,23 @@ public:
     bool operator>=(const BigNum& other) const;
     bool operator==(const BigNum& other) const;
 
-    bool operator==(int num) const;
+    bool operator==(uint32_t num) const;
 
 
     bool operator!=(const BigNum& other) const;
 
-	bool operator!=(int num) const;
+    bool operator!=(uint32_t num) const;
 
     bool operator<=(const BigNum& other) const;
 
-	bool operator<=(int num) const;
+    bool operator<=(uint32_t num) const;
 
 
-	bool operator>(const BigNum& other) const;
+    bool operator>(const BigNum& other) const;
 
-	bool operator>(int num) const;
+    bool operator>(uint32_t num) const;
 
-    int operator&(int num) const;
+    int operator&(uint32_t num) const;
 
 
 	friend std::ostream& operator<<(std::ostream& out, const BigNum& num) {

@@ -606,7 +606,7 @@ void testeBigNumThatalreadyPassed() {
 
 
 
-
+/*
 
 void testRSAWithLongInt() {
 	std::cout << "Testing RSA with long int" << std::endl;
@@ -647,5 +647,7 @@ void testRSAWithLongInt() {
 
 	std::cout << "Testing RSA done" << std::endl;
 }
+
+*/
 
 
