@@ -86,41 +86,17 @@ BigNum BigNum::operator+(int num) const {
 	return *this + BigNum(num , 32);
 }
 
-
-// Comparison operators
-bool BigNum::operator<(const BigNum& other) const {
-	if (size != other.size) {
-		if (size < other.size) {
-			for(int i = size - 1; i >= other.size; --i) {
-				if (data[i] != 0) {
-					return true;
-				}
-			}
-		}
-		else {
-			for(int i = other.size - 1; i >= size; --i) {
-				if (other.data[i] != 0) {
-					return false;
-				}
-			}
-		}
-	}
-
-	int i = std::min(size, other.size) - 1;
-	for (; i >= 0; --i) {
-		if (data[i] < other.data[i]) {
-			return true;
-		}
-		else if (data[i] > other.data[i]) {
-			return false;
-		}
-	}
-	return false;
+BigNum BigNum::operator+=(const BigNum& other) {
+	*this = *this + other;
+	return *this;
 }
 
-bool BigNum::operator>=(const BigNum& other) const {
-	return !(*this < other);
+BigNum BigNum::operator+=(int num) {
+	*this = *this + num;
+	return *this;
 }
+
+
 
 // Subtraction operator
 BigNum BigNum::operator-(const BigNum& other) const {
@@ -153,6 +129,18 @@ BigNum BigNum::operator-(const BigNum& other) const {
 BigNum BigNum::operator-(int num) const {
 	return *this - BigNum(num , 32);
 }
+
+BigNum BigNum::operator-=(const BigNum& other) {
+	*this = *this - other;
+	return *this;
+}
+
+BigNum BigNum::operator-=(int num) {
+	*this = *this - num;
+	return *this;
+}
+
+
 
 
 
@@ -207,6 +195,16 @@ BigNum BigNum::operator/(int num) const {
 	return *this / BigNum(num,32);
 }
 
+
+BigNum BigNum::operator/=(const BigNum& other) {
+	*this = *this / other;
+	return *this;
+}
+
+BigNum BigNum::operator/=(int num) {
+	*this = *this / num;
+	return *this;
+}
 
 // Modulus operator
 // 
@@ -272,7 +270,40 @@ BigNum BigNum::operator>>(int shift) const {
 	return result;
 }
 
-// Equality operator
+// Comparison operators
+bool BigNum::operator<(const BigNum& other) const {
+	if (size != other.size) {
+		if (size < other.size) {
+			for (int i = size - 1; i >= other.size; --i) {
+				if (data[i] != 0) {
+					return true;
+				}
+			}
+		}
+		else {
+			for (int i = other.size - 1; i >= size; --i) {
+				if (other.data[i] != 0) {
+					return false;
+				}
+			}
+		}
+	}
+
+	int i = std::min(size, other.size) - 1;
+	for (; i >= 0; --i) {
+		if (data[i] < other.data[i]) {
+			return true;
+		}
+		else if (data[i] > other.data[i]) {
+			return false;
+		}
+	}
+	return false;
+}
+
+bool BigNum::operator>=(const BigNum& other) const {
+	return !(*this < other);
+}
 bool BigNum::operator ==(const BigNum& other) const {
 	int i = 0;
 	for (; i < size && i < other.size; ++i) {
@@ -287,5 +318,47 @@ bool BigNum::operator ==(const BigNum& other) const {
 	return true;
 }
 
+
+
+
+bool BigNum::operator==(int num) const {
+	return *this == BigNum(num,32);
+}
+
+
+bool BigNum::operator!=(const BigNum& other) const {
+	return !(*this == other);
+}
+
+bool BigNum::operator!=(int num) const {
+	return !(*this == BigNum(num,32));
+}
+
+
+bool BigNum::operator<=(const BigNum& other) const {
+
+	if (*this < other) {
+		return true;
+	}
+	else if (*this == other) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BigNum::operator<=(int num) const {
+	return *this <= BigNum(num,32);
+}
+
+
+bool BigNum::operator>(const BigNum& other) const {
+	return !(*this <= other);
+}
+
+bool BigNum::operator>(int num) const {
+	return *this > BigNum(num,32);
+}
 
 

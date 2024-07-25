@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "BigNum\BigNum.h"
-#include "rsa\rsa.h"
+#include "rsa\rsaLong.h"
 
 
 

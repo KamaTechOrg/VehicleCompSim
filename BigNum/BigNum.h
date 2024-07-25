@@ -74,21 +74,28 @@ public:
 
     BigNum operator+(int num) const;
 
+    BigNum operator+=(const BigNum& other);
+
+	BigNum operator+=(int num);
+
+
+
 
     BigNum operator*(const BigNum& other) const;
 
 	BigNum operator*(int num) const;
 
 
-    // Comparison operators
-    bool operator<(const BigNum& other) const;
-
-    bool operator>=(const BigNum& other) const;
+    
 
     // Subtraction operator
     BigNum operator-(const BigNum& other) const;
 
 	BigNum operator-(int num) const;
+
+	BigNum operator-=(const BigNum& other);
+
+	BigNum operator-=(int num);
 
     // Modulus operator
     BigNum operator%(const BigNum& other) const;
@@ -99,14 +106,39 @@ public:
 
 	BigNum operator/(int num) const;
 
+    BigNum operator/=(const BigNum& other);
+
+	BigNum operator/=(int num);
+
     // Left shift operator
     BigNum operator<<(int shift) const;
 
     // Right shift operator
     BigNum operator>>(int shift) const;
 
-    // Equality operator
+    // Comparison operators
+    bool operator<(const BigNum& other) const;
+
+    bool operator>=(const BigNum& other) const;
     bool operator==(const BigNum& other) const;
+
+    bool operator==(int num) const;
+
+
+    bool operator!=(const BigNum& other) const;
+
+	bool operator!=(int num) const;
+
+    bool operator<=(const BigNum& other) const;
+
+	bool operator<=(int num) const;
+
+
+	bool operator>(const BigNum& other) const;
+
+	bool operator>(int num) const;
+
+
 };
 
 
