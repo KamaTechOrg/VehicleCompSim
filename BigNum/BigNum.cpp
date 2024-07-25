@@ -165,6 +165,17 @@ BigNum BigNum::operator*(int num) const {
 }
 
 
+BigNum BigNum::operator*=(const BigNum& other) {
+	*this = *this * other;
+	return *this;
+}
+
+BigNum BigNum::operator*=(int num) {
+	*this = *this * num;
+	return *this;
+}
+
+
 
 
 BigNum BigNum::operator/(const BigNum& other) const {
@@ -360,5 +371,11 @@ bool BigNum::operator>(const BigNum& other) const {
 bool BigNum::operator>(int num) const {
 	return *this > BigNum(num,32);
 }
+
+
+int BigNum::operator&(int num) const {
+	return this->data[0] & num;
+}
+
 
 

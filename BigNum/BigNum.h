@@ -46,7 +46,7 @@ public:
 		
 	}
 
-    BigNum(std::string num) : size((num.size() / 8) + 1) {
+    BigNum(std::string num, int numBase = 16) : size((num.size() / 8) + 1) {
         if (size > MAX_SIZE)size = MAX_SIZE;
         data.resize(size, 0);
         int num_len = num.size();
@@ -57,7 +57,7 @@ public:
             std::string part = num.substr(i, 8);
             std::reverse(part.begin(), part.end());
             if (i / 8 < size) {
-                data[i / 8] = std::stoul(part, nullptr, 16);
+                data[i / 8] = std::stoul(part, nullptr, numBase);
             }
         }
     }
@@ -84,6 +84,12 @@ public:
     BigNum operator*(const BigNum& other) const;
 
 	BigNum operator*(int num) const;
+
+
+
+	BigNum operator*=(const BigNum& other);
+
+	BigNum operator*=(int num);
 
 
     
@@ -138,6 +144,13 @@ public:
 
 	bool operator>(int num) const;
 
+    int operator&(int num) const;
+
+
+	friend std::ostream& operator<<(std::ostream& out, const BigNum& num) {
+		out << num.toString();
+		return out;
+	}
 
 };
 
