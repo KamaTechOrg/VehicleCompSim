@@ -7,6 +7,15 @@
 #include <sstream>
 #include <iomanip>
 
+
+//this is a big number class that allows for large numbers
+//at any size up to 1024 bits
+
+//the class should be able to do basic arithmetic operations
+//such as addition, subtraction, multiplication, etc.
+
+
+
 class BigNum {
 public:
     static const int MAX_SIZE = 32;
