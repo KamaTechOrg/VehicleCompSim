@@ -18,13 +18,13 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(
-  hello_test
+  aes_test
   test.cpp
 )
 target_link_libraries(
-  hello_test
+  aes_test
   GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(aes_test)

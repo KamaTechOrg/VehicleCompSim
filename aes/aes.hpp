@@ -26,11 +26,11 @@ public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
 
-  std::string encript(std::string const& message) const;
-  std::string decript(std::string const& encripted_message) const;
+  std::string encrypt(std::string const& message) const;
+  std::string decrypt(std::string const& encrypted_message) const;
 
-  void encript(State&) const;
-  void decript(State&) const;
+  void encrypt(State&) const;
+  void decrypt(State&) const;
 
 private:
   void expand_key(std::array<uint8_t, KeySize> const &key);
@@ -64,10 +64,10 @@ void print_state(typename Aes<Aes_var>::State const& state){
 /* /////////////   implementation \\\\\\\\\\\\\\ */
 
 template <AesVariant Aes_var>
-std::string Aes<Aes_var>::encript(std::string const& message) const {
+std::string Aes<Aes_var>::encrypt(std::string const& message) const {
   State state;
-  std::string encripted_message;
-  encripted_message.reserve(message.size());
+  std::string encrypted_message;
+  encrypted_message.reserve(message.size());
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   size_t msg_idx = 0;
   while(msg_idx < message.size()+paddingN){
@@ -80,35 +80,35 @@ std::string Aes<Aes_var>::encript(std::string const& message) const {
         }
       }
     }
-    encript(state);
+    encrypt(state);
     for (uint col = 0; col < Nb; ++col) {
       for (uint row = 0; row < Nb; ++row) {
-        encripted_message += state[row][col];
+        encrypted_message += state[row][col];
       }
     }
     msg_idx += Nb*Nb;
   }
-  return encripted_message;
+  return encrypted_message;
 }
 
 
 template <AesVariant Aes_var>
-std::string Aes<Aes_var>::decript(std::string const& encripted_message) const {
-  if(encripted_message.size() % 16 != 0){
-    throw std::invalid_argument("encripted_message.size() most be N*16 not " + std::to_string(encripted_message.size()));
+std::string Aes<Aes_var>::decrypt(std::string const& encrypted_message) const {
+  if(encrypted_message.size() % 16 != 0){
+    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
   State state;
   std::string message;
-  message.reserve(encripted_message.size());
+  message.reserve(encrypted_message.size());
   size_t msg_idx = 0;
-  while(msg_idx < encripted_message.size()){
-    for (int col = 0; col < Nb && msg_idx < encripted_message.size(); ++col) {
+  while(msg_idx < encrypted_message.size()){
+    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
       for (int row = 0; row < Nb ; ++row) {
-          state[row][col] = encripted_message[msg_idx + row + col*4];
+          state[row][col] = encrypted_message[msg_idx + row + col*4];
       }
     }
-    decript(state);
-    for (int col = 0; col < Nb && msg_idx < encripted_message.size(); ++col) {
+    decrypt(state);
+    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
       for (int row = 0; row < Nb; ++row) {
         message += state[row][col];
       }
@@ -150,7 +150,7 @@ void Aes<Aes_var>::expand_key(std::array<uint8_t, KeySize> const &key) {
 }
 
 template <AesVariant Aes_var> 
-void Aes<Aes_var>::encript(State & state) const {
+void Aes<Aes_var>::encrypt(State & state) const {
   uint key_index = 0;
   add_round_key(state, key_index);
   ++key_index;
@@ -168,7 +168,7 @@ void Aes<Aes_var>::encript(State & state) const {
 }
 
 template <AesVariant Aes_var> 
-void Aes<Aes_var>::decript(State & state) const {
+void Aes<Aes_var>::decrypt(State & state) const {
   size_t key_index = m_expended_key.size()/Nb - 1;
   add_round_key(state, key_index);
   --key_index;
