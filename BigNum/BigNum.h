@@ -146,6 +146,9 @@ public:
 
     int operator&(uint32_t num) const;
 
+    int operator|(uint32_t num) const;
+
+
 
 	friend std::ostream& operator<<(std::ostream& out, const BigNum& num) {
 		out << num.toString();

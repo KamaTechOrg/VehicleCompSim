@@ -380,6 +380,10 @@ int BigNum::operator&(uint32_t num) const {
 	return this->data[0] & num;
 }
 
+int BigNum::operator|(uint32_t num) const {
+	return this->data[0] | num;
+}
+
 
 
 

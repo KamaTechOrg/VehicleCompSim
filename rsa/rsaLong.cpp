@@ -124,18 +124,12 @@ BigNum RSA::decrypt(BigNum message, BigNum privateKey, BigNum modulus) {
 std::string RSA::encrypt_string(std::string message, BigNum publicKey, BigNum modulus) {
     std::string result;
     for (char c : message) {
-        result += std::to_string(encrypt(c, publicKey, modulus)) + " ";
+        result += encrypt(c, publicKey, modulus).toString() + " ";
     }
     return result;
 }
 
 std::string RSA::decrypt_string(std::string encrypted_message, BigNum privateKey, BigNum modulus) {
-    std::string result;
-    std::stringstream ss(encrypted_message);
-    BigNum encrypted_char;
-    while (ss >> encrypted_char) {
-        result += static_cast<char>(decrypt(encrypted_char, privateKey, modulus));
-    }
-    return result;
+    return encrypt_string(encrypted_message, privateKey, modulus);
 }
 
