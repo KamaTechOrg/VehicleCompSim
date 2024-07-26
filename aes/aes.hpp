@@ -8,7 +8,7 @@
 
 enum class AesVariant {Aes128, Aes194, Aes256};
 
-template <AesVariant Aes_var> 
+template <AesVariant Aes_var>
 class Aes {
   static const uint Nb = 4; // number of columns in the state & expanded key
 
@@ -68,21 +68,21 @@ std::string Aes<Aes_var>::encript(std::string const& message) const {
   State state;
   std::string encripted_message;
   encripted_message.reserve(message.size());
+  uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   size_t msg_idx = 0;
-  while(msg_idx < message.size()){
-    for (int col = 0; col < Nb && msg_idx < message.size(); ++col) {
-      for (int row = 0; row < Nb ; ++row) {
+  while(msg_idx < message.size()+paddingN){
+    for (uint col = 0; col < Nb; ++col) {
+      for (uint row = 0; row < Nb ; ++row) {
         if(msg_idx + row + col*4 < message.size()){
           state[row][col] = message[msg_idx + row + col*4];
         } else {
-          // TODO: padding
-          break;
+          state[row][col] = paddingN;
         }
       }
     }
     encript(state);
-    for (int col = 0; col < Nb && msg_idx < message.size(); ++col) {
-      for (int row = 0; row < Nb; ++row) {
+    for (uint col = 0; col < Nb; ++col) {
+      for (uint row = 0; row < Nb; ++row) {
         encripted_message += state[row][col];
       }
     }
@@ -94,6 +94,9 @@ std::string Aes<Aes_var>::encript(std::string const& message) const {
 
 template <AesVariant Aes_var>
 std::string Aes<Aes_var>::decript(std::string const& encripted_message) const {
+  if(encripted_message.size() % 16 != 0){
+    throw std::invalid_argument("encripted_message.size() most be N*16 not " + std::to_string(encripted_message.size()));
+  }
   State state;
   std::string message;
   message.reserve(encripted_message.size());
@@ -101,12 +104,7 @@ std::string Aes<Aes_var>::decript(std::string const& encripted_message) const {
   while(msg_idx < encripted_message.size()){
     for (int col = 0; col < Nb && msg_idx < encripted_message.size(); ++col) {
       for (int row = 0; row < Nb ; ++row) {
-        if(msg_idx + row + col*4 < encripted_message.size()){
           state[row][col] = encripted_message[msg_idx + row + col*4];
-        } else {
-          // TODO: padding
-          break;
-        }
       }
     }
     decript(state);
@@ -117,8 +115,13 @@ std::string Aes<Aes_var>::decript(std::string const& encripted_message) const {
     }
     msg_idx += Nb*Nb;
   }
+  if(message.back() > 16){
+    throw std::invalid_argument("aes invalid padding char");
+  }
+  message.resize(message.size() - message.back());
   return message;
 }
+
 
 template <AesVariant Aes_var> 
 void Aes<Aes_var>::expand_key(std::array<uint8_t, KeySize> const &key) {
