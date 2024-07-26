@@ -122,6 +122,9 @@ BigNum BigNum::operator-(const BigNum& other) const {
 	for (; i < size; ++i) {
 		result.data[i] = data[i];
 	}
+	if(result > *this) {
+		return BigNum(0, 32);
+	}
 	
 	return result;
 }
