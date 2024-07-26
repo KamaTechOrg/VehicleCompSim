@@ -1,5 +1,9 @@
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <ostream>
+#include <string>
+#include <sys/types.h>
 #include "aes_consts.hpp"
 
 enum class AesVariant {Aes128, Aes194, Aes256};
@@ -44,8 +48,20 @@ private:
   std::array<std::array<uint8_t, 4>, Nb * (Nr + 1)> m_expended_key;
 };
 
+#include <iostream>
+template <AesVariant Aes_var>
+void print_state(typename Aes<Aes_var>::State const& state){
+    for (auto &row :state) {
+      for (uint c : row) {
+        std::cout << std::hex << c << ' ' << std::flush;
+      }
+      std::cout << "\n";
+    }
+    std::cout << "\n";
 
-/////////////   implementation \\\\\\\\\\\\\\
+}
+
+/* /////////////   implementation \\\\\\\\\\\\\\ */
 
 template <AesVariant Aes_var>
 std::string Aes<Aes_var>::encript(std::string const& message) const {
