@@ -20,10 +20,16 @@ public:
 
 private slots:
     void on_pushButton_clicked();
+    void updateData(const QString &id, const QString &name, const QString &family, const QString &phone);
+
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
-    PopupDialog *popupDialog;
-
+    QString A = "yossi";
+    QString B = "goldberg";
+    QString C = "0504176037";
+    QString D = "050417603dddd";
 };
 #endif // MAINWINDOW_H
