@@ -152,7 +152,7 @@ void Aes<Aes_var>::encript(State & state) const {
   add_round_key(state, key_index);
   ++key_index;
 
-  for (size_t round = 0; round < Nr; ++round) {
+  for (size_t round = 0; round < Nr-1; ++round) {
     subBytes(state);
     shiftRows(state);
     mixColumns(state);
@@ -166,12 +166,12 @@ void Aes<Aes_var>::encript(State & state) const {
 
 template <AesVariant Aes_var> 
 void Aes<Aes_var>::decript(State & state) const {
-  size_t key_index = m_expended_key.size()/Nb;
+  size_t key_index = m_expended_key.size()/Nb - 1;
   add_round_key(state, key_index);
   --key_index;
   inv_shiftRows(state);
   inv_subBytes(state);
-  for (size_t round = 0; round < Nr; ++round) {
+  for (size_t round = 0; round < Nr-1; ++round) {
     add_round_key(state, key_index);
     --key_index;
     inv_mixColumns(state);
@@ -185,7 +185,7 @@ template <AesVariant Aes_var>
 void Aes<Aes_var>::add_round_key(State &state, uint key_index) const {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      state[col][row] ^= m_expended_key[key_index*Nb + row][col];
+      state.at(col).at(row) ^= m_expended_key.at(key_index*Nb + row).at(col);
     }
   }
 }
@@ -201,6 +201,7 @@ template <AesVariant Aes_var>  void Aes<Aes_var>::inv_subBytes(State &state) con
     for (uint8_t &byte : row)
       byte = rs_box[byte];
 }
+
 
 template <AesVariant Aes_var>  void Aes<Aes_var>::shiftRows(State &state) const {
   std::array<uint8_t, 4> tmp;
@@ -225,35 +226,31 @@ template <AesVariant Aes_var>  void Aes<Aes_var>::inv_shiftRows(State &state) co
 }
 
 template <AesVariant Aes_var>  void Aes<Aes_var>::mixColumns(State &state) const {
+  State tmp;
   for (size_t col = 0; col < 4; ++col) {
-    uint8_t tmp[4];
-    tmp[0] = galo_mul_2[state[col][0]] ^ galo_mul_3[state[col][1]] ^
-             state[col][2] ^ state[col][3];
-    tmp[1] = state[col][0] ^ galo_mul_2[state[col][1]] ^
-             galo_mul_3[state[col][2]] ^ state[col][3];
-    tmp[2] = state[col][0] ^ state[col][1] ^ galo_mul_2[state[col][2]] ^
-             galo_mul_3[state[col][3]];
-    tmp[3] = galo_mul_3[state[col][0]] ^ state[col][1] ^ state[col][2] ^
-             galo_mul_2[state[col][3]];
-
-    for (size_t row = 0; row < 4; ++row)
-      state[col][row] = tmp[row];
+    tmp[0][col] = galo_mul_2[state[0][col]] ^ galo_mul_3[state[1][col]] ^
+             state[2][col] ^ state[3][col];
+    tmp[1][col] = state[0][col] ^ galo_mul_2[state[1][col]] ^
+             galo_mul_3[state[2][col]] ^ state[3][col];
+    tmp[2][col] = state[0][col] ^ state[1][col] ^ galo_mul_2[state[2][col]] ^
+             galo_mul_3[state[3][col]];
+    tmp[3][col] = galo_mul_3[state[0][col]] ^ state[1][col] ^ state[2][col] ^
+             galo_mul_2[state[3][col]];
   }
+  state = tmp;
 }
 
 template <AesVariant Aes_var>  void Aes<Aes_var>::inv_mixColumns(State &state) const {
+  State tmp;
   for (size_t col = 0; col < 4; ++col) {
-    uint8_t tmp[4];
-    tmp[0] = galo_mul_14[state[col][0]] ^ galo_mul_11[state[col][1]] ^
-             galo_mul_13[state[col][2]] ^ galo_mul_9[state[col][3]];
-    tmp[1] = galo_mul_9[state[col][0]] ^ galo_mul_14[state[col][1]] ^
-             galo_mul_11[state[col][2]] ^ galo_mul_13[state[col][3]];
-    tmp[2] = galo_mul_13[state[col][0]] ^ galo_mul_9[state[col][1]] ^
-             galo_mul_14[state[col][2]] ^ galo_mul_11[state[col][3]];
-    tmp[3] = galo_mul_11[state[col][0]] ^ galo_mul_13[state[col][1]] ^
-             galo_mul_9[state[col][2]] ^ galo_mul_14[state[col][3]];
-
-    for (size_t row = 0; row < 4; ++row)
-      state[col][row] = tmp[row];
+    tmp[0][col] = galo_mul_14[state[0][col]] ^ galo_mul_11[state[1][col]] ^
+             galo_mul_13[state[2][col]] ^ galo_mul_9[state[3][col]];
+    tmp[1][col] = galo_mul_9[state[0][col]] ^ galo_mul_14[state[1][col]] ^
+             galo_mul_11[state[2][col]] ^ galo_mul_13[state[3][col]];
+    tmp[2][col] = galo_mul_13[state[0][col]] ^ galo_mul_9[state[1][col]] ^
+             galo_mul_14[state[2][col]] ^ galo_mul_11[state[3][col]];
+    tmp[3][col] = galo_mul_11[state[0][col]] ^ galo_mul_13[state[1][col]] ^
+             galo_mul_9[state[2][col]] ^ galo_mul_14[state[3][col]];
   }
+  state = tmp;
 }

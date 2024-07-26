@@ -1,4 +1,4 @@
-#pragma onece
+#pragma once
 #include <cstdint>
 
 inline const uint8_t s_box[256] = {
