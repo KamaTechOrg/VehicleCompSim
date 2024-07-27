@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include "aes_consts.hpp"
 
-enum class AesVariant {Aes128, Aes194, Aes256};
+enum class AesVariant {Aes128, Aes192, Aes256};
 
 template <AesVariant Aes_var>
 class Aes {
@@ -14,13 +14,13 @@ class Aes {
 
   // number of rounds in encryption
   static const uint Nr = Aes_var == AesVariant::Aes128 ? 10 
-                        :Aes_var == AesVariant::Aes194 ? 12 
-                        : 14; /* AesVariant::Aes194 */
+                        :Aes_var == AesVariant::Aes192 ? 12 
+                        :       /* AesVariant::Aes256 */ 14;
 
   // number of columns in a key
   static const uint Nk = Aes_var == AesVariant::Aes128 ? 4
-                        :Aes_var == AesVariant::Aes194 ? 6 
-                        : 8; /* AesVariant::Aes256 */
+                        :Aes_var == AesVariant::Aes192 ? 6 
+                        :       /* AesVariant::Aes256 */ 8; 
   static const uint KeySize = Nk*4; // in bytes
 public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
@@ -67,8 +67,8 @@ template <AesVariant Aes_var>
 std::string Aes<Aes_var>::encrypt(std::string const& message) const {
   State state;
   std::string encrypted_message;
-  encrypted_message.reserve(message.size());
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
+  encrypted_message.reserve(message.size() + paddingN);
   size_t msg_idx = 0;
   while(msg_idx < message.size()+paddingN){
     for (uint col = 0; col < Nb; ++col) {
