@@ -1,6 +1,9 @@
 #include "baseitem.h"
 #include <qrandom.h>
 #include <QGraphicsSceneHoverEvent>
+#include <QPushButton>
+#include <QMessageBox>
+#include <QGraphicsScene>
 
 BaseItem::BaseItem(NodeType type,  QGraphicsItem* parent)
     : QGraphicsItem(parent), m_type(type){
@@ -9,7 +12,21 @@ BaseItem::BaseItem(NodeType type,  QGraphicsItem* parent)
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
+    
     m_color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 64, 192);
+
+    // Create close button
+    QPushButton* closeButton = new QPushButton("X");
+    closeButton->setFixedSize(20, 20);
+    closeButton->setToolTip("Remove Item");
+
+    QGraphicsProxyWidget* closeProxy = new QGraphicsProxyWidget(this);
+    closeProxy->setWidget(closeButton);
+
+    connect(closeButton, &QPushButton::clicked, this, &BaseItem::confirmRemove);
+
+    // Store proxies for visibility management
+    m_closeProxy = closeProxy;
 }
 
 QRectF BaseItem::boundingRect() const {
@@ -28,18 +45,24 @@ void BaseItem::removeEdge(EdgeItem* edge) {
 QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) {
     if (change == ItemPositionHasChanged) {
         for (EdgeItem* edge : m_edges) {
-            QPainterPath path = edge->path();
+            QPointF srcPos, destPos;
             if (edge->source() == this) {
-                QPointF srcPos = connectionPoint(edge->dest()->pos());
-                QPointF destPos = edge->dest()->connectionPoint(edge->source()->pos());
-                path.setElementPositionAt(0, srcPos.x(), srcPos.y());
-                path.setElementPositionAt(path.elementCount() - 1, destPos.x(), destPos.y());
+                srcPos = connectionPoint(edge->dest()->pos());
+                destPos = edge->dest()->connectionPoint(edge->source()->pos());
             } else {
-                QPointF destPos = connectionPoint(edge->source()->pos());
-                QPointF srcPos = edge->source()->connectionPoint(edge->dest()->pos());
-                path.setElementPositionAt(path.elementCount() - 1, destPos.x(), destPos.y());
-                path.setElementPositionAt(0, srcPos.x(), srcPos.y());
+                destPos = connectionPoint(edge->source()->pos());
+                srcPos = edge->source()->connectionPoint(edge->dest()->pos());
             }
+
+            // smooth the edge
+            QPointF midPoint = (srcPos + destPos) / 2;
+            QPointF controlPoint1 = midPoint + QPointF(-50, -50);
+            QPointF controlPoint2 = midPoint + QPointF(50, 50);
+
+            QPainterPath path;
+            path.moveTo(srcPos);
+            path.cubicTo(controlPoint1, controlPoint2, destPos);
+
             edge->setPath(path);
         }
     }
@@ -49,6 +72,36 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
 void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsItem::mouseMoveEvent(event);
     update();
+}
+void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+    QPointF nearestPoint;
+    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
+        m_hoveredPoint = nearestPoint;
+        update(); // Trigger a repaint
+    }
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
+void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+    QPointF nearestPoint;
+    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
+        if (nearestPoint != m_hoveredPoint) {
+            m_hoveredPoint = nearestPoint;
+            update(); // Trigger a repaint
+        }
+    } else {
+        if (!m_hoveredPoint.isNull()) {
+            m_hoveredPoint = QPointF();
+            update(); // Trigger a repaint
+        }
+    }
+    QGraphicsItem::hoverMoveEvent(event);
+}
+
+void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+    m_hoveredPoint = QPointF();
+    update(); // Trigger a repaint
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 QPointF BaseItem::connectionPoint(const QPointF& otherPoint) const {
@@ -95,33 +148,51 @@ bool BaseItem::isNearConnectionPoint(const QPointF& point, QPointF* nearestPoint
     return false;
 }
 
-void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    QPointF nearestPoint;
-    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
-        m_hoveredPoint = nearestPoint;
-        update(); // Trigger a repaint
-    }
-    QGraphicsItem::hoverEnterEvent(event);
+void BaseItem::showButtons()
+{
+    m_closeProxy->setVisible(true);
 }
 
-void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
-    QPointF nearestPoint;
-    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
-        if (nearestPoint != m_hoveredPoint) {
-            m_hoveredPoint = nearestPoint;
-            update(); // Trigger a repaint
-        }
-    } else {
-        if (!m_hoveredPoint.isNull()) {
-            m_hoveredPoint = QPointF();
-            update(); // Trigger a repaint
-        }
-    }
-    QGraphicsItem::hoverMoveEvent(event);
+void BaseItem::hideButtons()
+{
+    m_closeProxy->setVisible(false);
 }
 
-void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    m_hoveredPoint = QPointF();
-    update(); // Trigger a repaint
-    QGraphicsItem::hoverLeaveEvent(event);
+
+void BaseItem::confirmRemove() {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(nullptr, "Confirm Removal", 
+        "Are you sure you want to remove this item?",
+        QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        removeItem();
+    }
+}
+
+void BaseItem::removeItem() {
+    if (scene()) {
+        // Remove all connected edges
+        for (EdgeItem* edge : m_edges) {
+            auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
+            if(connectedItem->nodeType() == NodeType::Connector){
+                if(connectedItem->edges().size() <= 2){
+                    connectedItem->removeItem();
+                }
+                else{
+                    connectedItem->removeEdge(edge);
+                    scene()->removeItem(edge);
+                    delete edge;
+                }
+            }
+            else{
+                scene()->removeItem(edge);
+                delete edge;                    
+            }
+        }
+        m_edges.clear();
+
+        // Remove this item
+        scene()->removeItem(this);
+        deleteLater();
+    }
 }

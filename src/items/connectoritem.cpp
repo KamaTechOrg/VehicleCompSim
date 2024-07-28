@@ -3,7 +3,10 @@
 #include <cmath>
 
 ConnectorItem::ConnectorItem(QGraphicsItem* parent)
-    : BaseItem(BaseItem::NodeType::Connector, parent) {}
+    : BaseItem(BaseItem::NodeType::Connector, parent) {
+        m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25));
+        hideButtons();
+    }
 
 void ConnectorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     painter->setBrush(Qt::transparent);
@@ -21,6 +24,11 @@ void ConnectorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
                 painter->drawEllipse(point, DotRadius, DotRadius);
             }
         }
+    }
+    if(isSelected()){
+        showButtons();
+    } else {
+        hideButtons();
     }
 }
 

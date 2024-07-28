@@ -18,7 +18,6 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         QList<QGraphicsItem*> itemsAtClick = items(event->scenePos());
         BaseItem* baseItem = nullptr;
 
-        // Find the first BaseItem that is not an EdgeItem
         for (QGraphicsItem* item : itemsAtClick) {
             if (dynamic_cast<EdgeItem*>(item)) {
                 continue;
@@ -57,8 +56,6 @@ void CustomScene::handleEdgeConnection(QGraphicsSceneMouseEvent* event, BaseItem
     } else {
         removeItem(m_currentEdge);
         delete m_currentEdge;
-        m_currentEdge = nullptr;
-        m_startItem = nullptr;
     }
     m_currentEdge = nullptr;
     m_startItem = nullptr;
@@ -261,8 +258,11 @@ void CustomScene::routeEdge(EdgeItem* edge) {
 void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
 {
     if(src->nodeType() == BaseItem::NodeType::Connector){
-        if(dest->nodeType() == BaseItem::NodeType::Connector)
-            return;
+        if(dest->nodeType() == BaseItem::NodeType::Connector){
+            removeItem(m_currentEdge);
+            delete m_currentEdge;
+            return;            
+        }
         else{
             std::swap(src, dest);            
         }
@@ -271,8 +271,12 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
     QPointF startPoint = src->connectionPoint(m_startPoint);
     QPointF endPoint = dest->connectionPoint(m_startPoint);
     if(dest->nodeType() == BaseItem::NodeType::Connector){
+        QPointF midPoint = (startPoint + endPoint) / 2;
+        QPointF controlPoint1 = midPoint + QPointF(-50, -50); 
+        QPointF controlPoint2 = midPoint + QPointF(50, 50); 
+
         path.moveTo(startPoint);
-        path.lineTo(endPoint);
+        path.cubicTo(controlPoint1, controlPoint2, endPoint);
 
         EdgeItem* edge = new EdgeItem(QUuid::createUuid().toString());
         edge->setPath(path);
@@ -284,7 +288,7 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         dest->addEdge(edge);
 
         m_network->connect(dynamic_cast<SensorItem*>(src), dynamic_cast<ConnectorItem*>(dest));
-    } else{
+    } else if(dest->nodeType() == BaseItem::NodeType::Sensor){
         //create a new connector in the middle of the two sensors
         QPointF middlePoint = (startPoint + endPoint) / 2;
         ConnectorItem* connector = new ConnectorItem();
@@ -292,8 +296,13 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
 
         QPointF connectorPointIn = connector->connectionPoint(startPoint);
         QPointF connectorPointOut = connector->connectionPoint(endPoint);
+
+        QPointF midPoint = (startPoint + connectorPointIn) / 2;
+        QPointF controlPoint1 = midPoint + QPointF(-50, -50); 
+        QPointF controlPoint2 = midPoint + QPointF(50, 50); 
+
         path.moveTo(startPoint);
-        path.lineTo(connectorPointIn);
+        path.cubicTo(controlPoint1, controlPoint2, connectorPointIn);
 
         EdgeItem* edge1 = new EdgeItem(QUuid::createUuid().toString());
         edge1->setPath(path);
@@ -303,8 +312,13 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         connector->addEdge(edge1);
 
         path = QPainterPath();
+        
+        midPoint = (connectorPointOut + endPoint) / 2;
+        controlPoint1 = midPoint + QPointF(-50, -50);
+        controlPoint2 = midPoint + QPointF(50, 50);
+
         path.moveTo(connectorPointOut);
-        path.lineTo(endPoint);
+        path.cubicTo(controlPoint1, controlPoint2, endPoint);
 
         EdgeItem* edge2 = new EdgeItem(QUuid::createUuid().toString());
         edge2->setPath(path);
@@ -362,15 +376,15 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
         BaseItem* item = nullptr;
         if (itemType == "SensorItem") {
             SensorItem* sensorItem = new SensorItem();
-                PopupDialog popup(sensorItem);
-                popup.exec();
-                if(popup.result() == QDialog::Accepted && sensorItem->isInitialized()){
-                    item = sensorItem;
-                    m_network->addElement(dynamic_cast<SensorItem*>(item));
-                } else{
-                    delete item;
-                    return;
-                }
+            PopupDialog popup(sensorItem);
+            popup.exec();
+            if(popup.result() == QDialog::Accepted && sensorItem->isInitialized()){
+                item = sensorItem;
+                m_network->addElement(dynamic_cast<SensorItem*>(item));
+            } else{
+                delete item;
+                return;
+            }
             m_network->addElement(dynamic_cast<SensorItem*>(item));
         } else if (itemType == "ConnectorItem") {
             item = new ConnectorItem();

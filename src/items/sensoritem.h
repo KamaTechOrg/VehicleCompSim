@@ -5,6 +5,8 @@
 class SensorItem : public BaseItem {
 public:
     SensorItem(QGraphicsItem* parent = nullptr);
+    //copy constructor
+    SensorItem(const SensorItem& other);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
@@ -25,4 +27,11 @@ private:
     QString name = "";
     QString buildCommand = "";
     QString runCommand = "";
+
+    void updateItem();
+    
+    void showButtons();
+    void hideButtons();
+
+    QGraphicsProxyWidget* m_updateProxy;
 };
