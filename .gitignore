@@ -72,8 +72,6 @@ release/
 ehthumbs.db
 Thumbs.db
 
-# Project specific
-VehicleCompSim
 
 # CMake
 CMakeCache.txt
