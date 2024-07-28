@@ -14,6 +14,7 @@ public:
     MainWindow(QWidget* parent = nullptr);
 
 private:
+    void background_Layout();
     void saveLayout();
     void loadLayout();
     void setupToolBar();
