@@ -14,9 +14,9 @@ void CustomWidget::paintEvent(QPaintEvent* event) {
     painter.setRenderHint(QPainter::Antialiasing);
 
     if (m_type == "SensorItem") {
-        painter.drawRect(5, 5, 40, 40);
+        painter.drawRoundedRect(QRectF(5, 5, 40, 22.5), 4, 4);
     } else if (m_type == "ConnectorItem") {
-        painter.drawEllipse(5, 5, 40, 40);
+        painter.drawEllipse(12.5, 12.5, 25, 25);
     }
 }
 
