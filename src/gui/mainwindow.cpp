@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainWidget);
 
     auto toolBar = addToolBar("Tools");
+    toolBar->addAction("background", [this]() { background_Layout(); });
     toolBar->addAction("Save", [this]() { saveLayout(); });
     toolBar->addAction("Load", [this]() { loadLayout(); });
 }
@@ -39,6 +40,16 @@ void MainWindow::setupToolBar() {
     m_toolBar->addWidget(busWidget);
 
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
+}
+
+void MainWindow::background_Layout() {
+    QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
+    if (!imagePath.isEmpty()) {
+        QImage backgroundImage(imagePath);
+        QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(backgroundImage));
+        pixmapItem->setPos(0, 0);
+        m_scene->addItem(pixmapItem);
+    }
 }
 
 void MainWindow::saveLayout() {
