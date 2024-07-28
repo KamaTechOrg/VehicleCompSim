@@ -1,0 +1,1 @@
+add_library(BigNum OBJECT BigNum.cpp)
