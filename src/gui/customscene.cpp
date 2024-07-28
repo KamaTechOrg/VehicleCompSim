@@ -13,7 +13,7 @@ CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()), m_currentEdge(nullptr), m_startItem(nullptr) {
 }
 
-void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+void CustomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         QList<QGraphicsItem*> itemsAtClick = items(event->scenePos());
         BaseItem* baseItem = nullptr;
@@ -33,7 +33,7 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             cleanupCurrentEdge();
         }
     }
-    QGraphicsScene::mousePressEvent(event);
+    QGraphicsScene::mouseReleaseEvent(event);
 }
 
 void CustomScene::processBaseItem(QGraphicsSceneMouseEvent* event, BaseItem* baseItem) {

@@ -1,5 +1,6 @@
 #include "baseitem.h"
 #include <qrandom.h>
+//#include <QIcon>
 #include <QGraphicsSceneHoverEvent>
 #include <QPushButton>
 #include <QMessageBox>
@@ -17,6 +18,7 @@ BaseItem::BaseItem(NodeType type,  QGraphicsItem* parent)
 
     // Create close button
     QPushButton* closeButton = new QPushButton("X");
+    //closeButton->setIcon(QIcon(":/icons/delete.png"));
     closeButton->setFixedSize(20, 20);
     closeButton->setToolTip("Remove Item");
 

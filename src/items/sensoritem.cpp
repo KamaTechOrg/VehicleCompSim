@@ -1,5 +1,6 @@
 #include "SensorItem.h"
 #include <QPainter>
+// #include <QIcon>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
@@ -14,8 +15,9 @@
         m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
 
         // Create update button
-        QPushButton* updateButton = new QPushButton("🔄");
-        updateButton->setFixedSize(60, 20);
+        QPushButton* updateButton = new QPushButton("↻");
+        //updateButton->setIcon(QIcon(":/icons/update.png"));
+        updateButton->setFixedSize(20, 20);
         updateButton->setToolTip("Update Item");
 
         QGraphicsProxyWidget* updateProxy = new QGraphicsProxyWidget(this);
@@ -52,7 +54,7 @@
         painter->setPen(Qt::black);
         painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + id);
         painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + name);
-        
+
         if (isSelected() || !m_hoveredPoint.isNull())
         {
             painter->setBrush(Qt::darkGray);

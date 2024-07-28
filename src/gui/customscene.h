@@ -15,7 +15,7 @@ public:
 
 protected:
     //drag and drop handlers
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
     //sensoers's connection handlers    
