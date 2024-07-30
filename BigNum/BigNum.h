@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
-
+#include <algorithm>
 
 //this is a big number class that allows for large numbers
 //at any size up to 1024 bits
