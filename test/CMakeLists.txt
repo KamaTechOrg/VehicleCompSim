@@ -16,6 +16,10 @@ add_executable(BigNum_test BigNum_test.cpp)
 target_link_libraries(BigNum_test BigNum)
 list(APPEND test_targets BigNum_test)
 
+add_executable(RSA_test RSA_test.cpp)
+target_link_libraries(RSA_test RSA BigNum)
+list(APPEND test_targets RSA_test)
+
 foreach(test_target IN LISTS test_targets)
     target_link_libraries(${test_target} GTest::gtest_main)
     gtest_discover_tests(${test_target})

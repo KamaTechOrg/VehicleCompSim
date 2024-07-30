@@ -1,4 +1,4 @@
-﻿#include "rsa.h"
+﻿#include "RSA.h"
 
 void RSA::generate_keys(unsigned long long int& publicKey, unsigned long long int& privateKey, unsigned long long int& modulus, int bits) {
     unsigned long long int p = generateLargePrime(bits / 2);

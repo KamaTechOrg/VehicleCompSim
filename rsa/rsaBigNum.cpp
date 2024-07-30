@@ -1,4 +1,4 @@
-﻿#include "rsaBigNUM.h"
+﻿#include "rsaBigNum.h"
 #include <random>
 #include <iostream>
 
