@@ -13,7 +13,7 @@ target_link_libraries(aes_test aes)
 list(APPEND test_targets aes_test)
 
 add_executable(BigNum_test BigNum_test.cpp)
-target_link_libraries(BigNum_test aes)
+target_link_libraries(BigNum_test BigNum)
 list(APPEND test_targets BigNum_test)
 
 foreach(test_target IN LISTS test_targets)
