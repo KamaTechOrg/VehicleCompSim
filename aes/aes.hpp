@@ -2,9 +2,9 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <ostream>
+#include <iostream>
 #include <string>
-#include <sys/types.h>
+
 #include "aes_consts.hpp"
 
 enum class AesVariant {Aes128, Aes192, Aes256};
@@ -12,6 +12,7 @@ enum class AesVariant {Aes128, Aes192, Aes256};
 template <AesVariant Aes_var>
 class Aes {
   static const uint Nb = 4; // number of columns in the state & expanded key
+  static const uint BlockSize = Nb*Nb; // number of bytes in block
 
   // number of rounds in encryption
   static const uint Nr = Aes_var == AesVariant::Aes128 ? 10 
@@ -27,8 +28,11 @@ public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
 
-  std::string encrypt(std::string const& message) const;
-  std::string decrypt(std::string const& encrypted_message) const;
+  std::string encrypt_ecb(std::string const& message) const;
+  std::string decrypt_ecb(std::string const& encrypted_message) const;
+
+  std::string encrypt_cbc(std::string const& message, std::array<uint8_t, BlockSize> const& iv) const;
+  std::string decrypt_cbc(std::string const& encrypted_message, std::array<uint8_t, BlockSize> const& iv) const;
 
   void encrypt(State&) const;
   void decrypt(State&) const;
@@ -65,7 +69,7 @@ void print_state(typename Aes<Aes_var>::State const& state){
 /* /////////////   implementation \\\\\\\\\\\\\\ */
 
 template <AesVariant Aes_var>
-std::string Aes<Aes_var>::encrypt(std::string const& message) const {
+std::string Aes<Aes_var>::encrypt_ecb(std::string const& message) const {
   State state;
   std::string encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
@@ -94,7 +98,89 @@ std::string Aes<Aes_var>::encrypt(std::string const& message) const {
 
 
 template <AesVariant Aes_var>
-std::string Aes<Aes_var>::decrypt(std::string const& encrypted_message) const {
+std::string Aes<Aes_var>::encrypt_cbc(std::string const& message, std::array<uint8_t, BlockSize> const& iv) const {
+  State prev_state;
+  for (uint col = 0; col < Nb; ++col) {
+    for (uint row = 0; row < Nb ; ++row) {
+      prev_state[row][col] = iv[row + col*4];
+    }
+  }
+  State state;
+  std::string encrypted_message;
+  uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
+  uint8_t padding_idx = 0;
+  encrypted_message.reserve(message.size() + paddingN);
+  size_t msg_idx = 0;
+  while(msg_idx < message.size()+paddingN){
+    for (uint col = 0; col < Nb; ++col) {
+      for (uint row = 0; row < Nb ; ++row) {
+        if(msg_idx + row + col*4 < message.size()){
+          state[row][col] = message[msg_idx + row + col*4]^prev_state[row][col];
+        } else {
+          uint8_t p1 =  prev_state[row][col];
+          uint8_t pad1 = paddingN;
+          uint8_t r1 = p1^pad1;
+          state[row][col] = r1;
+        }
+      }
+    }
+    encrypt(state);
+    for (uint col = 0; col < Nb; ++col) {
+      for (uint row = 0; row < Nb; ++row) {
+        encrypted_message += state[row][col];
+      }
+    }
+    prev_state = state;
+    msg_idx += Nb*Nb;
+  }
+  return encrypted_message;
+}
+
+
+
+template <AesVariant Aes_var>
+std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std::array<uint8_t, BlockSize> const& iv) const {
+  if(encrypted_message.size() % 16 != 0){
+
+    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
+  }
+  State prev_state;
+  for (uint col = 0; col < Nb; ++col) {
+    for (uint row = 0; row < Nb ; ++row) {
+      prev_state[row][col] = iv[row + col*4];
+    }
+  }
+  State state;
+  std::string message;
+  message.reserve(encrypted_message.size());
+  size_t msg_idx = 0;
+  while(msg_idx < encrypted_message.size()){
+    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
+      for (int row = 0; row < Nb ; ++row) {
+          state[row][col] = encrypted_message[msg_idx + row + col*4];
+      }
+    }
+    auto tmp = state;
+    decrypt(state);
+    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
+      for (int row = 0; row < Nb; ++row) {
+        message += state[row][col]^prev_state[row][col];
+      }
+    }
+    prev_state = tmp;
+    msg_idx += Nb*Nb;
+  }
+  if(message.back() > 16){
+    throw std::invalid_argument(std::string("aes invalid padding char: ") + message.back());
+  }
+  message.resize(message.size() - message.back());
+  return message;
+}
+
+
+
+template <AesVariant Aes_var>
+std::string Aes<Aes_var>::decrypt_ecb(std::string const& encrypted_message) const {
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
