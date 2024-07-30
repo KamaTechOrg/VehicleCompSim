@@ -100,7 +100,7 @@ BigNum BigNum::operator+=(uint32_t num) {
 
 // Subtraction operator
 BigNum BigNum::operator-(const BigNum& other) const {
-	BigNum result(size* UINT_T_SIZE);
+	BigNum result(size * UINT_T_SIZE);
 	int64_t borrow = 0;
 	int i = 0;
 	for (; i < size && i < other.size; ++i) {
@@ -114,18 +114,20 @@ BigNum BigNum::operator-(const BigNum& other) const {
 		}
 		result.data[i] = static_cast<uint32_t>(temp);
 	}
-	if (borrow && i < size) {
-		result.data[i] = data[i] - borrow;
-		borrow = 0;
+	while (borrow && i < size) {
+		if (data[i] != 0) {
+			result.data[i] = data[i] - borrow;
+			borrow = 0;
+		}
 		i++;
 	}
 	for (; i < size; ++i) {
 		result.data[i] = data[i];
 	}
-	if(result > *this) {
+	if (result > *this) {
 		return BigNum(0, 32);
 	}
-	
+
 	return result;
 }
 
@@ -221,26 +223,27 @@ BigNum BigNum::operator/=(uint32_t num) {
 }
 
 // Modulus operator
-// 
- BigNum BigNum::operator%(const BigNum& other) const {
-    if (other == BigNum("0")) {
-        throw std::runtime_error("Division by zero error");
-    }
 
-    BigNum dividend = *this;
-    BigNum divisor = other;
-    BigNum remainder(size * UINT_T_SIZE);
 
-    for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i) {
-        remainder = remainder << 1;
-        remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
+BigNum BigNum::operator%(const BigNum& other) const {
+	if (other == BigNum("0")) {
+		throw std::runtime_error("Division by zero error");
+	}
 
-        if (remainder >= divisor) {
-            remainder = remainder - divisor;
-        }
-    }
+	BigNum dividend = *this;
+	BigNum divisor = other;
+	BigNum remainder(size * UINT_T_SIZE);
 
-    return remainder;
+	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i) {
+		remainder = remainder << 1;
+		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
+
+		if (remainder >= divisor) {
+			remainder = remainder - divisor;
+		}
+	}
+	
+	return remainder;
 }
 
 
@@ -254,7 +257,7 @@ BigNum BigNum::operator%(uint32_t num) const {
 BigNum BigNum::operator<<(uint32_t shift) const {
 	int k = shift / 32;
 	int add = size > 0 ? data[size - 1] & 1 : 1;
-	BigNum result(size * UINT_T_SIZE + k + add);
+	BigNum result((size + k) * UINT_T_SIZE + add);
 
 	shift %= 32;
 	for (int i = size - 1; i >= 0; --i) {
@@ -287,17 +290,17 @@ BigNum BigNum::operator>>(uint32_t shift) const {
 // Comparison operators
 bool BigNum::operator<(const BigNum& other) const {
 	if (size != other.size) {
-		if (size < other.size) {
+		if (size > other.size) {
 			for (int i = size - 1; i >= other.size; --i) {
 				if (data[i] != 0) {
-					return true;
+					return false;
 				}
 			}
 		}
 		else {
 			for (int i = other.size - 1; i >= size; --i) {
 				if (other.data[i] != 0) {
-					return false;
+					return true;
 				}
 			}
 		}
@@ -345,7 +348,7 @@ bool BigNum::operator!=(const BigNum& other) const {
 }
 
 bool BigNum::operator!=(uint32_t num) const {
-	return !(*this == BigNum(num,32));
+	return !(*this == BigNum(num, 32));
 }
 
 
@@ -382,6 +385,11 @@ int BigNum::operator&(uint32_t num) const {
 
 int BigNum::operator|(uint32_t num) const {
 	return this->data[0] | num;
+}
+
+
+uint64_t BigNum::to_ulong() const {
+	return static_cast<uint64_t>(data[0]);
 }
 
 

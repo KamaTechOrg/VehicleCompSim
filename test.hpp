@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "BigNum\BigNum.h"
-#include "rsa\rsaLong.h"
+#include "rsa\rsa.h"
 
 
 
@@ -566,8 +566,12 @@ void testeBigNumThatalreadyPassed() {
         }
         else {
             std::cout << "BigNum 128-bit modulus failed" << std::endl;
+			std::cout << "Expected: " << expected << " Result: " << result << std::endl;
         }
     }
+    
+
+
     
     // Test 128-bit < operator
     {
@@ -606,7 +610,7 @@ void testeBigNumThatalreadyPassed() {
 
 
 
-/*
+
 
 void testRSAWithLongInt() {
 	std::cout << "Testing RSA with long int" << std::endl;
@@ -648,6 +652,6 @@ void testRSAWithLongInt() {
 	std::cout << "Testing RSA done" << std::endl;
 }
 
-*/
+
 
 

@@ -105,7 +105,6 @@ public:
 
     // Modulus operator
     BigNum operator%(const BigNum& other) const;
-
     BigNum operator%(uint32_t num) const;
 
     BigNum operator/(const BigNum& other) const;
@@ -154,6 +153,8 @@ public:
 		out << num.toString();
 		return out;
 	}
+
+    uint64_t to_ulong() const;
 
 };
 

@@ -69,6 +69,8 @@ unsigned long long RSA::generateRandomNumber(int bits) {
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis(0, (1ULL << (bits - 1)) - 1);
     unsigned long long number = dis(gen) | (1ULL << (bits - 1)) | 1;
+
+	std::cout << "Generated number: " << number << std::endl;
     return number;
 }
 
