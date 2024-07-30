@@ -40,6 +40,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(VehicleCompSim
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        include/VehicleCompSim/utils/network.hpp
+        include/VehicleCompSim/utils/runCommand/runCommand.cpp include/VehicleCompSim/utils/runCommand/runCommand.h include/VehicleCompSim/utils/network.hpp include/VehicleCompSim/utils/run.cpp include/VehicleCompSim/utils/run.h src/gui/customscene.cpp src/gui/customscene.h src/gui/customwidget.cpp src/gui/customwidget.h src/gui/mainwindow.cpp src/gui/mainwindow.h src/gui/mainwindow.ui src/gui/popupdialog.cpp src/gui/popupdialog.h src/gui/popupdialog.ui src/items/baseitem.cpp src/items/baseitem.h src/items/connectoritem.cpp src/items/connectoritem.h src/items/edgeitem.cpp src/items/edgeitem.h src/items/sensoritem.cpp src/items/sensoritem.h src/main.cpp
     )
 else()
     if(ANDROID)
