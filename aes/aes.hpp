@@ -24,6 +24,8 @@ class Aes {
                         :Aes_var == AesVariant::Aes192 ? 6 
                         :       /* AesVariant::Aes256 */ 8; 
   static const uint KeySize = Nk*4; // in bytes
+  using KeyType = std::array<uint8_t, KeySize>;
+  
 public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
@@ -53,7 +55,6 @@ private:
   std::array<std::array<uint8_t, 4>, Nb * (Nr + 1)> m_expended_key;
 };
 
-#include <iostream>
 template <AesVariant Aes_var>
 void print_state(typename Aes<Aes_var>::State const& state){
     for (auto &row :state) {
@@ -137,7 +138,6 @@ std::string Aes<Aes_var>::encrypt_cbc(std::string const& message, std::array<uin
 }
 
 
-
 template <AesVariant Aes_var>
 std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std::array<uint8_t, BlockSize> const& iv) const {
   if(encrypted_message.size() % 16 != 0){
@@ -176,7 +176,6 @@ std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std:
   message.resize(message.size() - message.back());
   return message;
 }
-
 
 
 template <AesVariant Aes_var>
