@@ -9,6 +9,7 @@ add_subdirectory(aes)
 add_subdirectory(BigNum)
 add_subdirectory(rsa)
 add_subdirectory(test)
+add_subdirectory(benchmark)
 
 
 add_executable(main main.cpp)
