@@ -6,3 +6,4 @@ main.cpp
 .vscode/tasks.json
 build
 main.py
+.cache
