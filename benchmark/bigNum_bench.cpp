@@ -2,7 +2,7 @@
 #include "BigNum.h"
 
 // Define another benchmark
-static void BN_128_bit_modulu(benchmark::State& state) {
+static void BN_128_bit_modulo(benchmark::State& state) {
     std::string expected = "1"; // ffffffffffffffffffffffffffffffff % 2 = 1 in hex
     BigNum f2("ffffffffffffffffffffffffffffffff");
     BigNum g2("2");
@@ -10,7 +10,7 @@ static void BN_128_bit_modulu(benchmark::State& state) {
         BigNum h2 = f2 % g2;
     }
 }
-BENCHMARK(BN_128_bit_modulu);
+BENCHMARK(BN_128_bit_modulo);
 
 
 static void BN_128_bit_division(benchmark::State& state) {
