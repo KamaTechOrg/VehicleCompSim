@@ -1,4 +1,2 @@
-add_library(BigNum OBJECT BigNum.cpp)
-target_include_directories(BigNum 
-    INTERFACE .
-)
+add_library(BigNum BigNum.cpp)
+target_include_directories(BigNum PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

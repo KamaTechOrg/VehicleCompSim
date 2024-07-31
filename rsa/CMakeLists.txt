@@ -1,5 +1,2 @@
-add_library(RSA OBJECT RSA.cpp rsaBigNum.cpp)
-target_link_libraries(RSA PUBLIC BigNum)
-target_include_directories(RSA 
-    INTERFACE .
-)
+add_library(RSA RSA.cpp)
+target_include_directories(RSA PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

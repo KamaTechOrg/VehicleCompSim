@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
-#include "BigNum\BigNum.h"
-#include "rsa\rsa.h"
+#include "BigNum/BigNum.h"
+#include "rsa/RSA.h"
 
 
 
@@ -30,7 +30,7 @@ void testBigNum() {
 }
 
 
-void testeBigNumThatalreadyPassed() {
+void testBigNumThatAlreadyPassed() {
 
 
     //Test addition with int
