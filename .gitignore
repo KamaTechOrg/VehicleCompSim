@@ -5,3 +5,4 @@ main.cpp
 .vscode/launch.json
 .vscode/tasks.json
 build
+main.py

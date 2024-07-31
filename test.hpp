@@ -626,7 +626,7 @@ void testRSAWithLongInt() {
 
     if (message == decrypted && encrypted != message)
 	{
-		std::cout << "RSA encryption and decryption for int passed" << std::endl;
+		// std::cout << "RSA encryption and decryption for int passed" << std::endl;
 	}
 	else
     {
@@ -641,11 +641,14 @@ void testRSAWithLongInt() {
 
 	if (text == decrypted_text && encrypted_text != text)
 	{
-		std::cout << "RSA encryption and decryption for string passed" << std::endl;
+		// std::cout << "RSA encryption and decryption for string passed" << std::endl;
+       
+       
 	}
 	else
 	{
 		std::cout << "RSA encryption and decryption for string failed" << std::endl;
+        
 	}
 
 

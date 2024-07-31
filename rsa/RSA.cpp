@@ -12,6 +12,7 @@ void RSA::generate_keys(unsigned long long int& publicKey, unsigned long long in
     }
 
     unsigned long long int d = modInverse(e, phi);
+   
     publicKey = e;
     privateKey = d;
     modulus = n;
@@ -69,8 +70,6 @@ unsigned long long RSA::generateRandomNumber(int bits) {
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<unsigned long long> dis(0, (1ULL << (bits - 1)) - 1);
     unsigned long long number = dis(gen) | (1ULL << (bits - 1)) | 1;
-
-	std::cout << "Generated number: " << number << std::endl;
     return number;
 }
 
@@ -93,8 +92,8 @@ unsigned long long RSA::gcd(unsigned long long a, unsigned long long b) {
 }
 
 unsigned long long RSA::modInverse(unsigned long long a, unsigned long long m) {
-    unsigned long long m0 = m, t, q;
-    unsigned long long x0 = 0, x1 = 1;
+    long long m0 = m, t, q;
+    long long x0 = 0, x1 = 1;
 
     if (m == 1)
         return 0;
@@ -112,8 +111,9 @@ unsigned long long RSA::modInverse(unsigned long long a, unsigned long long m) {
     if (x1 < 0)
         x1 += m0;
 
-    return x1;
+    return static_cast<unsigned long long>(x1);
 }
+
 
 unsigned long long RSA::encrypt(unsigned long long int message, unsigned long long int publicKey, unsigned long long int modulus) {
     return power(message, publicKey, modulus);
