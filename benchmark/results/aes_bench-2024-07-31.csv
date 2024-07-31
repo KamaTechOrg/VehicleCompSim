@@ -1,0 +1,10 @@
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message
+"msg4k_encrypt_aes_ecb<AesVariant::Aes128>",9957,67822.7,67819.2,ns,,,,,
+"msg4k_encrypt_aes_ecb<AesVariant::Aes192>",8722,80449.5,80450,ns,,,,,
+"msg4k_encrypt_aes_ecb<AesVariant::Aes256>",7600,92659.7,92656.8,ns,,,,,
+"msg4k_decrypt_aes_ecb<AesVariant::Aes128>",9091,77629.6,77629.8,ns,,,,,
+"msg4k_decrypt_aes_ecb<AesVariant::Aes192>",7626,91677.2,91678,ns,,,,,
+"msg4k_decrypt_aes_ecb<AesVariant::Aes256>",6608,106392,106378,ns,,,,,
+"msg4k_decrypt_aes_cbc<AesVariant::Aes128>",8886,79188.7,79188.2,ns,,,,,
+"msg4k_decrypt_aes_cbc<AesVariant::Aes192>",7510,93551.6,93549.1,ns,,,,,
+"msg4k_decrypt_aes_cbc<AesVariant::Aes256>",6517,107736,107735,ns,,,,,
