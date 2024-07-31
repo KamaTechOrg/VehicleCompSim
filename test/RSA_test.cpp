@@ -27,8 +27,9 @@ TEST(RSA_Test, WithLongInt){
 
 
 // test RSA encryption and decryption for string
-TEST(RSA_Test, DISABLED_WithString){
+TEST(RSA_Test, WithString){
     unsigned long long int publicKey, privateKey, modulus;
+    RSA::generate_keys(publicKey, privateKey, modulus, 32);
     std::string text = "Hello, RSA!";
     std::string encrypted_text = RSA::encrypt_string(text, publicKey, modulus);
     std::string decrypted_text = RSA::decrypt_string(encrypted_text, privateKey, modulus);
@@ -42,6 +43,9 @@ TEST(RSA_Test, DISABLED_WithString){
 	// else
 	// {
 	// 	std::cout << "RSA encryption and decryption for string failed" << std::endl;
+    //     std::cout << "publicKey: " << publicKey << std::endl;
+    //     std::cout << "privateKey: " << privateKey << std::endl;
+    //     std::cout << "modulus: " << modulus << std::endl;
 	// }
 	// std::cout << "Testing RSA done" << std::endl;
 }
