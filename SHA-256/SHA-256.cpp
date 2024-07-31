@@ -1,3 +1,5 @@
+// SHA-256 implementation
+#include "SHA-256.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -135,19 +137,8 @@ std::string toHexString(const std::vector<uint32_t>& hash) {
 bool compareHashes(const std::vector<uint32_t>& hash1, const std::vector<uint32_t>& hash2) {
     if (hash1.size() != hash2.size()) return false;
     for (size_t i = 0; i < hash1.size(); i++) {
-        if (hash1[i] != hash2[i]) {
-            return false;
-        }
+        if (hash1[i] != hash2[i]) return false;
     }
     return true;
 }
 
-int main() {
-    std::string message = "Motivation: In real development, each team develops a separate component. It makes aofsensethat we will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulation Motivation: In real development, each team develops a separate component. It makes aofsensethat we will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulationwe will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulation Motivation: In real development, each team develops a separat  real development, each team develops a separate component. It makes aofsensethat we will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulation Motivation: In real development, each team develops a separate component. It makes aofsensethat we will run the simulation in a distributed way, where a representative o eateamrun hat the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulation Motivation: In real development, each team develops a separate component. It makes aofsensethat we will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulationwe will run the simulation in a distributed way, where a representative o eateamruns the component developed by that team. Meaning, that the GUI will beopene donmultiplecomputers simu ltaneously, and they all will define a singl simulation Motivation: In real development, each team develops a separat  real development, each team develops a separate component. It makes aofsensetha"; // Replace with the message you want to hash
-    std::vector<uint32_t> hash = sha256(message);
-    std::string hash_str = toHexString(hash);
-
-    std::cout << "SHA-256 hash: " << hash_str << std::endl;
-
-    return 0;
-}
