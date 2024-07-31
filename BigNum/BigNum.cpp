@@ -1,14 +1,11 @@
 
 #include "BigNum.h"
-
+#include <cstdint>
 using namespace std;
 
+#include "BigNum.h"
 
-
-
-
-
-
+using namespace std;
 
 // Print the number (for testing purposes)
 void BigNum::print() const {
