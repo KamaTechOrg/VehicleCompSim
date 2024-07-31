@@ -10,6 +10,7 @@ protected:
 
 public:
     CompositeCondition(ConditionBase* lhs, ConditionBase* rhs);
+    CompositeCondition(CompositeCondition* condition);
     virtual ~CompositeCondition();
 };
 

@@ -2,7 +2,12 @@
 #include <stdexcept>
 
 SimpleCondition::SimpleCondition(const std::string& input, const std::string& validationType, const std::string& validationValue)
-    : input(input), validationType(validationType), validationValue(validationValue) {}
+    : input(input), validationType(validationType), validationValue(validationValue)
+{}
+
+SimpleCondition::SimpleCondition(SimpleCondition* condition)
+    : input(condition->input), validationType(condition->validationType), validationValue(condition->validationValue)
+{}
 
 bool SimpleCondition::validate() {
     if (validationType == "equals") {

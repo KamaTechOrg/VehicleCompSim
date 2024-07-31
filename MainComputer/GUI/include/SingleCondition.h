@@ -19,7 +19,8 @@ public:
 	void setAndOrButton(bool And = true);
 	void deleteAndOrButton();
 	void andOrButtonSwitch();
-	ConditionBase* data(std::ofstream& file);
+	ConditionBase* data();
+	conditionType getConditionType();
 
 signals:
 	void requestDelete(ConditionLayoutBase* layout);

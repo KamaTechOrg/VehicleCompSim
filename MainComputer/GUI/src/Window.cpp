@@ -24,11 +24,15 @@ Window::Window()
 
 void Window::save()
 {
-    std::ofstream file("temp.txt");
-    
-    file << "Window::save" << std::endl;
+    std::string filename = "conditions.json";
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file: " + filename);
+    }
 
-    _ConditionsBox->data(file);
+    nlohmann::json j;
+    j = _ConditionsBox->data()->toJson();
 
+    file << j.dump(4);
     file.close();
 }

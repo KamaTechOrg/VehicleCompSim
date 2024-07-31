@@ -3,6 +3,12 @@
 #include <fstream>
 #include <QMenu>
 
+#include "SimpleCondition.h"
+#include <BinaryTreeBuilder.h>
+#include <CompositeCondition.h>
+#include <AndCondition.h>
+#include <OrCondition.h>
+
 ConditionsGroup::ConditionsGroup()
 	: _andOrButton(nullptr)
 {
@@ -29,18 +35,18 @@ ConditionsGroup::~ConditionsGroup()
 	if (_deleteButton)
 		delete _deleteButton;
 
-	_SingleConditions.clear();
+	_conditions.clear();
 }
 
 void ConditionsGroup::addSingleCondition(bool operationButton)
 {
 	SingleCondition* widgetsLayout = new SingleCondition;
-	if (operationButton == true && _SingleConditions.empty() == false)
+	if (operationButton == true && _conditions.empty() == false)
 	{
 		widgetsLayout->setAndOrButton();
 	}
 	_conditionsLayout->addLayout(widgetsLayout);
-	_SingleConditions.push_back(widgetsLayout);
+	_conditions.push_back(widgetsLayout);
 
 	connect(widgetsLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
 }
@@ -48,12 +54,12 @@ void ConditionsGroup::addSingleCondition(bool operationButton)
 void ConditionsGroup::addConditionGroup(bool operationButton)
 {
 	ConditionsGroup* widgetsLayout = new ConditionsGroup;
-	if (operationButton == true && _SingleConditions.empty() == false)
+	if (operationButton == true && _conditions.empty() == false)
 	{
 		widgetsLayout->setAndOrButton();
 	}
 	_conditionsLayout->addLayout(widgetsLayout);
-	_SingleConditions.push_back(widgetsLayout);
+	_conditions.push_back(widgetsLayout);
 
 	connect(widgetsLayout, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
 }
@@ -99,13 +105,13 @@ void ConditionsGroup::createDeleteButton()
 
 void ConditionsGroup::deleteCondition(ConditionLayoutBase* layout)
 {
-	if (_SingleConditions.size() > 1 && _SingleConditions.at(0) == layout)
+	if (_conditions.size() > 1 && _conditions.at(0) == layout)
 	{
-		_SingleConditions.at(1)->deleteAndOrButton();
+		_conditions.at(1)->deleteAndOrButton();
 		// it becames the first one, so no need in this button anymore
 	}
 	_conditionsLayout->removeItem(layout);
-	_SingleConditions.erase(std::remove(_SingleConditions.begin(), _SingleConditions.end(), layout), _SingleConditions.end());
+	_conditions.erase(std::remove(_conditions.begin(), _conditions.end(), layout), _conditions.end());
 	layout->deleteLater();
 	_conditionsLayout->update();
 }
@@ -161,21 +167,60 @@ void ConditionsGroup::andOrButtonSwitch()
 		_andOrButton->setText("or");
 }
 
-ConditionBase* ConditionsGroup::data(std::ofstream& file)
+ConditionBase* ConditionsGroup::data()
+{
+	std::vector<ConditionBase*> conditions;
+	std::vector<conditionType> operatorsType;
+
+	for (auto it : _conditions)
+	{
+		ConditionBase* condition = it->data();
+		if (condition != nullptr)
+			conditions.push_back(condition);
+
+		ConditionLayoutBase::conditionType type = it->getConditionType();
+		if (type != ConditionLayoutBase::conditionType::Null)
+			operatorsType.push_back(type);
+	}
+
+	return buildTree(conditions, operatorsType);
+}
+
+ConditionLayoutBase::conditionType ConditionsGroup::getConditionType()
 {
 	if (_andOrButton != nullptr)
 	{
-		file << _andOrButton->text().toStdString() << std::endl;
+		if (_andOrButton->text().toStdString() == "and")
+			return conditionType::And;
+		else if (_andOrButton->text().toStdString() == "or")
+			return conditionType::Or;
+	}
+	return conditionType::Null;
+}
+
+ConditionBase* ConditionsGroup::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
+{
+	/*
+	* TODO: assert that there are no nullptr's in the vector
+	*/
+
+	if (conditions.empty()) {
+		return nullptr;
 	}
 
-	file << std::endl;
+	ConditionBase* root = conditions[0];
+	ConditionBase* current = root;
 
-	for (const auto it : _SingleConditions)
-	{
-		it->data(file);
+	for (size_t i = 1; i < conditions.size(); ++i) {
+		ConditionBase* next = conditions[i];
+		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
+			current = new AndCondition(current, next);
+		}
+		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
+			current = new OrCondition(current, next);
+		}
+		root = current; // Update root to the current node for the next iteration
 	}
 
-	file << std::endl;
-
-	return nullptr; // temp
+	return root;
 }

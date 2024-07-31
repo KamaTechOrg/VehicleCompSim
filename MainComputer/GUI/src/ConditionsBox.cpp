@@ -2,6 +2,10 @@
 
 #include <iostream>
 #include <fstream>
+#include "BinaryTreeBuilder.h"
+#include "SimpleCondition.h"
+#include "AndCondition.h"
+#include "OrCondition.h"
 
 ConditionsBox::ConditionsBox()
 	: QGroupBox("if")
@@ -19,16 +23,22 @@ ConditionsBox::~ConditionsBox()
 		delete _addConditionGroup;
 }
 
-ConditionBase* ConditionsBox::data(std::ofstream& file)
+ConditionBase* ConditionsBox::data()
 {
-	file << "ConditionsBox::save" << std::endl;
+	std::vector<ConditionBase*> conditions;
+	std::vector<ConditionLayoutBase::conditionType> operatorsType;
 
-	for (const auto it : _conditionsGroup)
+	for (auto it : _conditionsGroup)
 	{
-		it->data(file);
-	}
+		ConditionBase* condition = it->data();
+		if (condition != nullptr)
+			conditions.push_back(condition);
 
-	return nullptr; // temp
+		ConditionLayoutBase::conditionType type = it->getConditionType();
+		if (type != ConditionLayoutBase::conditionType::Null)
+			operatorsType.push_back(type);
+	}
+	return buildTree(conditions, operatorsType);
 }
 
 void ConditionsBox::addConditionGroup(bool operationButton)
@@ -74,4 +84,31 @@ void ConditionsBox::addButtonClicked()
 
 	addConditionGroup(true);
 	createAddGroupButton();
+}
+
+ConditionBase* ConditionsBox::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
+{
+	/*
+	* TODO: assert that there are no nullptr's in the vector
+	*/
+
+	if (conditions.empty()) {
+		return nullptr;
+	}
+
+	ConditionBase* root = conditions[0];
+	ConditionBase* current = root;
+
+	for (size_t i = 1; i < conditions.size(); ++i) {
+		ConditionBase* next = conditions[i];
+		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
+			current = new AndCondition(current, next);
+		}
+		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
+			current = new OrCondition(current, next);
+		}
+		root = current; // Update root to the current node for the next iteration
+	}
+
+	return root;
 }
