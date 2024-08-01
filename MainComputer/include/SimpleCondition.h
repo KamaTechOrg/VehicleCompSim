@@ -3,6 +3,7 @@
 
 #include "ConditionBase.h"
 #include <string>
+#include <memory>
 
 class SimpleCondition : public ConditionBase {
 private:
@@ -13,10 +14,9 @@ private:
 public:
     SimpleCondition() = delete;
     SimpleCondition(const std::string& input, const std::string& validationType, const std::string& validationValue);
-    SimpleCondition(SimpleCondition* condition);
+    SimpleCondition(std::shared_ptr<SimpleCondition> condition);
     bool validate() override;
     nlohmann::json toJson() const override;
-
 };
 
-#endif 
+#endif
