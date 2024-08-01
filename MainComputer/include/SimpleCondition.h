@@ -11,7 +11,9 @@ private:
     std::string validationValue;
 
 public:
+    SimpleCondition() = delete;
     SimpleCondition(const std::string& input, const std::string& validationType, const std::string& validationValue);
+    SimpleCondition(SimpleCondition* condition);
     bool validate() override;
     nlohmann::json toJson() const override;
 

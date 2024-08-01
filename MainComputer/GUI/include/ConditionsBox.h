@@ -15,7 +15,7 @@ public:
 	ConditionsBox();
 	~ConditionsBox();
 
-	ConditionBase* data(std::ofstream& file);
+	ConditionBase* data();
 
 private:
 	QVBoxLayout* _layout;
@@ -26,4 +26,5 @@ private:
 	void deleteGroup(ConditionLayoutBase* group);
 	void createAddGroupButton();
 	void addButtonClicked();
+	ConditionBase* buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
 };

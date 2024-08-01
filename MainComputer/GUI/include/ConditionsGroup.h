@@ -17,10 +17,11 @@ public:
 	void setAndOrButton(bool And = true);
 	void deleteAndOrButton();
 	void andOrButtonSwitch();
-	ConditionBase* data(std::ofstream& file);
+	ConditionBase* data();
+	conditionType getConditionType();
 
 private:
-	std::vector<ConditionLayoutBase*> _SingleConditions;
+	std::vector<ConditionLayoutBase*> _conditions;
 	QGroupBox* _conditionsBox;
 	QVBoxLayout* _conditionsLayout;
 	QHBoxLayout* _buttonsLayout;
@@ -35,6 +36,7 @@ private:
 	void deleteCondition(ConditionLayoutBase* layout);
 	void addSingleButtonClicked();
 	void addGroupButtonClicked();
+	ConditionBase* buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
 	
 signals:
 	void requestDelete(ConditionLayoutBase* group);

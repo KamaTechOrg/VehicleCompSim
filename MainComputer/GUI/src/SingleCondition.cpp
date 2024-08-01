@@ -1,6 +1,7 @@
 #include "SingleCondition.h"
 
 #include <fstream>
+#include "SimpleCondition.h"
 
 SingleCondition::SingleCondition()
 	: _andOrButton(nullptr)
@@ -81,23 +82,26 @@ void SingleCondition::andOrButtonSwitch()
 		_andOrButton->setText("or");
 }
 
-ConditionBase* SingleCondition::data(std::ofstream& file)
+ConditionBase* SingleCondition::data()
+{
+	SimpleCondition* condition = new SimpleCondition(
+		_inputSource->currentText().toStdString(),
+		_conditionType->currentText().toStdString(),
+		_validationValue->text().toStdString());
+
+	return condition;
+}
+
+ConditionLayoutBase::conditionType SingleCondition::getConditionType()
 {
 	if (_andOrButton != nullptr)
 	{
-		if (_andOrButton->text().toStdString()._Equal("and"))
-			file << "and";
-		else
-			file << "or";
-		file << std::endl;
+		if (_andOrButton->text().toStdString() == "and")
+			return conditionType::And;
+		else if (_andOrButton->text().toStdString() == "or")
+			return conditionType::Or;
 	}
-	file << _inputSource->currentText().toStdString()	<< " > "
-		<< _conditionType->currentText().toStdString()	<< " > "
-		<< _validationValue->text().toStdString();
-
-	file << std::endl;
-
-	return nullptr; // temp
+	return conditionType::Null;
 }
 
 void SingleCondition::deleteAndOrButton()
