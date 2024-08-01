@@ -24,5 +24,11 @@
 
 4. To store the results, you can run:
     ```bash
-    ./benchmark/aes_bench --benchmark_format=csv > ../benchmark/results/aes_bench-$(date +%Y-%m-%d)-ex-pol-par.csv
+    ./benchmark/aes_bench --benchmark_format=csv > ../benchmark/results/aes_bench-$(date +%Y-%m-%d).csv
     ```
+
+5. Learn more:
+    ```bash
+    ./benchmark/aes_bench --help
+    ```
+   
