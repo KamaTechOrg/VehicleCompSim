@@ -134,6 +134,33 @@ void ConditionsGroup::addGroupButtonClicked()
 	createAddConditionButton();
 }
 
+std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
+{
+	/*
+	* TODO: assert that there are no nullptr's in the vector
+	*/
+
+	if (conditions.empty()) {
+		return nullptr;
+	}
+
+	std::shared_ptr<ConditionBase> root = conditions[0];
+	std::shared_ptr<ConditionBase> current = root;
+
+	for (size_t i = 1; i < conditions.size(); ++i) {
+		std::shared_ptr<ConditionBase> next = conditions[i];
+		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
+			current = std::make_shared<AndCondition>(AndCondition(current, next));
+		}
+		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
+			current = std::make_shared<OrCondition>(OrCondition(current, next));
+		}
+		root = current; // Update root to the current node for the next iteration
+	}
+
+	return root;
+}
+
 void ConditionsGroup::setAndOrButton(bool And)
 {
 	if (!_andOrButton)
@@ -167,14 +194,14 @@ void ConditionsGroup::andOrButtonSwitch()
 		_andOrButton->setText("or");
 }
 
-ConditionBase* ConditionsGroup::data()
+std::shared_ptr<ConditionBase> ConditionsGroup::data()
 {
-	std::vector<ConditionBase*> conditions;
+	std::vector<std::shared_ptr<ConditionBase>> conditions;
 	std::vector<conditionType> operatorsType;
 
 	for (auto it : _conditions)
 	{
-		ConditionBase* condition = it->data();
+		std::shared_ptr<ConditionBase> condition = it->data();
 		if (condition != nullptr)
 			conditions.push_back(condition);
 
@@ -196,31 +223,4 @@ ConditionLayoutBase::conditionType ConditionsGroup::getConditionType()
 			return conditionType::Or;
 	}
 	return conditionType::Null;
-}
-
-ConditionBase* ConditionsGroup::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
-{
-	/*
-	* TODO: assert that there are no nullptr's in the vector
-	*/
-
-	if (conditions.empty()) {
-		return nullptr;
-	}
-
-	ConditionBase* root = conditions[0];
-	ConditionBase* current = root;
-
-	for (size_t i = 1; i < conditions.size(); ++i) {
-		ConditionBase* next = conditions[i];
-		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
-			current = new AndCondition(current, next);
-		}
-		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
-			current = new OrCondition(current, next);
-		}
-		root = current; // Update root to the current node for the next iteration
-	}
-
-	return root;
 }

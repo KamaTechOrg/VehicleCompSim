@@ -86,13 +86,13 @@ void SingleCondition::andOrButtonSwitch()
 		_andOrButton->setText("or");
 }
 
-ConditionBase* SingleCondition::data()
+std::shared_ptr<ConditionBase> SingleCondition::data()
 {
-	SimpleCondition* condition = new SimpleCondition(
+	std::shared_ptr<ConditionBase> condition = std::make_shared<SimpleCondition>(SimpleCondition(
 		_inputSource->currentText().toStdString(),
 		_conditionType->currentText().toStdString(),
-		_validationValue->text().toStdString());
-
+		_validationValue->text().toStdString()
+		));
 	return condition;
 }
 

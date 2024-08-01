@@ -17,7 +17,7 @@ public:
 	void setAndOrButton(bool And = true);
 	void deleteAndOrButton();
 	void andOrButtonSwitch();
-	ConditionBase* data();
+	std::shared_ptr<ConditionBase> data() override;
 	conditionType getConditionType();
 
 private:
@@ -36,7 +36,7 @@ private:
 	void deleteCondition(ConditionLayoutBase* layout);
 	void addSingleButtonClicked();
 	void addGroupButtonClicked();
-	ConditionBase* buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
+	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
 	
 signals:
 	void requestDelete(ConditionLayoutBase* group);

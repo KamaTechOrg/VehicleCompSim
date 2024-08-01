@@ -15,7 +15,7 @@ public:
 	ConditionsBox();
 	~ConditionsBox();
 
-	ConditionBase* data();
+	std::shared_ptr<ConditionBase> data();
 
 private:
 	QVBoxLayout* _layout;
@@ -26,5 +26,5 @@ private:
 	void deleteGroup(ConditionLayoutBase* group);
 	void createAddGroupButton();
 	void addButtonClicked();
-	ConditionBase* buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
+	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
 };

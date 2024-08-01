@@ -19,7 +19,7 @@ public:
 	void setAndOrButton(bool And = true);
 	void deleteAndOrButton();
 	void andOrButtonSwitch();
-	ConditionBase* data();
+	std::shared_ptr<ConditionBase> data() override;
 	conditionType getConditionType();
 
 signals:
