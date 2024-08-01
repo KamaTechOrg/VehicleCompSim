@@ -8,6 +8,7 @@
 #include <fstream>
 
 ConditionBase* BinaryTreeBuilder::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators) {
+    /*
     if (conditions.empty()) {
         return nullptr;
     }
@@ -34,6 +35,8 @@ ConditionBase* BinaryTreeBuilder::buildTree(const std::vector<ConditionBase*>& c
         }
     }
     return root;
+    */
+    return nullptr;
 }
 
 //void BinaryTreeBuilder::exportToJson(const std::string& filename) {

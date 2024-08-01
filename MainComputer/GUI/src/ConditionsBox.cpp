@@ -23,14 +23,14 @@ ConditionsBox::~ConditionsBox()
 		delete _addConditionGroup;
 }
 
-ConditionBase* ConditionsBox::data()
+std::shared_ptr<ConditionBase> ConditionsBox::data()
 {
-	std::vector<ConditionBase*> conditions;
+	std::vector<std::shared_ptr<ConditionBase>> conditions;
 	std::vector<ConditionLayoutBase::conditionType> operatorsType;
 
 	for (auto it : _conditionsGroup)
 	{
-		ConditionBase* condition = it->data();
+		std::shared_ptr<ConditionBase> condition = it->data();
 		if (condition != nullptr)
 			conditions.push_back(condition);
 
@@ -86,7 +86,7 @@ void ConditionsBox::addButtonClicked()
 	createAddGroupButton();
 }
 
-ConditionBase* ConditionsBox::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
+std::shared_ptr<ConditionBase> ConditionsBox::buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
 {
 	/*
 	* TODO: assert that there are no nullptr's in the vector
@@ -96,16 +96,16 @@ ConditionBase* ConditionsBox::buildTree(const std::vector<ConditionBase*>& condi
 		return nullptr;
 	}
 
-	ConditionBase* root = conditions[0];
-	ConditionBase* current = root;
+	std::shared_ptr<ConditionBase> root = conditions[0];
+	std::shared_ptr<ConditionBase> current = root;
 
 	for (size_t i = 1; i < conditions.size(); ++i) {
-		ConditionBase* next = conditions[i];
+		std::shared_ptr<ConditionBase> next = conditions[i];
 		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
-			current = new AndCondition(current, next);
+			current = std::make_shared<AndCondition>(AndCondition(current, next));
 		}
 		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
-			current = new OrCondition(current, next);
+			current = std::make_shared<OrCondition>(OrCondition(current, next));
 		}
 		root = current; // Update root to the current node for the next iteration
 	}

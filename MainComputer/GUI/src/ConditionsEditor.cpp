@@ -29,7 +29,7 @@ void ConditionsEditor::save()
         throw std::runtime_error("Cannot open file: " + filename);
     }
 
-    ConditionBase* conditionsTree = _ConditionsBox->data();
+    std::shared_ptr<ConditionBase> conditionsTree = _ConditionsBox->data();
     nlohmann::json j;
     if (conditionsTree != nullptr)
     {
