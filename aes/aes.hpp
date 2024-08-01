@@ -5,9 +5,11 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <execution>
 #include <cstring>
-#include "aes_consts.hpp"
 
+#include "aes_consts.hpp"
 enum class AesVariant {Aes128, Aes192, Aes256};
 
 template <AesVariant Aes_var>
@@ -71,17 +73,16 @@ void print_state(typename Aes<Aes_var>::State const& state){
 
 template <AesVariant Aes_var>
 std::string Aes<Aes_var>::encrypt_ecb(std::string const& message) const {
-  State state;
   std::string encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   encrypted_message.reserve(message.size() + paddingN); // encrypted_message.size() == N*sizeof(State)
   
   encrypted_message += message; // fill message
   encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
-  for(size_t msg_idx = 0; msg_idx<encrypted_message.size(); msg_idx += sizeof(State)){
-    auto& state = reinterpret_cast<State&>(encrypted_message[msg_idx]);
+  State* states_buf = reinterpret_cast<State*>(encrypted_message.data());
+  std::for_each_n(std::execution::par, states_buf, encrypted_message.size()/16, [this](auto& state){
     encrypt(state);
-  }
+  });
   return encrypted_message;
 }
 
@@ -90,13 +91,13 @@ std::string Aes<Aes_var>::decrypt_ecb(std::string const& encrypted_message) cons
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
-  State state;
   std::string message = encrypted_message;
-  // message.reserve(encrypted_message.size());
-  for(size_t msg_idx = 0; msg_idx<encrypted_message.size(); msg_idx += sizeof(State)){
-    auto& state = reinterpret_cast<State&>(message[msg_idx]);
+
+  State* states_buf = reinterpret_cast<State*>(message.data());
+  std::for_each_n(std::execution::par, states_buf, message.size()/16, [this](auto& state){
     decrypt(state);
-  }
+  });
+
   if(message.back() > 16){
     throw std::invalid_argument("aes invalid padding char");
   }
@@ -116,7 +117,7 @@ std::string Aes<Aes_var>::encrypt_cbc(std::string const& message, std::array<uin
   State state;
   std::string encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
-  uint8_t padding_idx = 0;
+  // uint8_t padding_idx = 0;
   encrypted_message.reserve(message.size() + paddingN);
   size_t msg_idx = 0;
   while(msg_idx < message.size()+paddingN){
