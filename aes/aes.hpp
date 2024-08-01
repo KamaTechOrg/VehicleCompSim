@@ -11,6 +11,7 @@ enum class AesVariant {Aes128, Aes192, Aes256};
 
 template <AesVariant Aes_var>
 class Aes {
+public:
   static const uint Nb = 4; // number of columns in the state & expanded key
   static const uint BlockSize = Nb*Nb; // number of bytes in block
 
@@ -26,7 +27,6 @@ class Aes {
   static const uint KeySize = Nk*4; // in bytes
   using KeyType = std::array<uint8_t, KeySize>;
   
-public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
 
