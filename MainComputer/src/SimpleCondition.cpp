@@ -11,15 +11,6 @@ enum class ValidationType {
     Unknown
 };
 
-ValidationType stringToValidationType(const std::string& str) {
-    if (str == "equals to") return ValidationType::EqualsTo;
-    if (str == "greater then") return ValidationType::GreaterThan;
-    if (str == "smaller then") return ValidationType::SmallerThan;
-    if (str == "starts with") return ValidationType::StartsWith;
-    if (str == "ends with") return ValidationType::EndsWith;
-    return ValidationType::Unknown;
-}
-
 SimpleCondition::SimpleCondition(const std::string& input, const std::string& validationType, const std::string& validationValue)
     : input(input), validationType(validationType), validationValue(validationValue)
 {}
@@ -29,7 +20,16 @@ SimpleCondition::SimpleCondition(std::shared_ptr<SimpleCondition> condition)
 {}
 
 bool SimpleCondition::validate() {
-    switch (stringToValidationType(validationType)) {
+    ValidationType type;
+
+    if (validationType == "equals to") type = ValidationType::EqualsTo;
+    else if (validationType == "greater than") type = ValidationType::GreaterThan;
+    else if (validationType == "smaller than") type = ValidationType::SmallerThan;
+    else if (validationType == "starts with") type = ValidationType::StartsWith;
+    else if (validationType == "ends with") type = ValidationType::EndsWith;
+    else type = ValidationType::Unknown;
+
+    switch (type) {
     case ValidationType::EqualsTo:
         return input == validationValue;
     case ValidationType::GreaterThan:
@@ -44,6 +44,7 @@ bool SimpleCondition::validate() {
         throw std::runtime_error("Unknown validation type: " + validationType);
     }
 }
+
 
 nlohmann::json SimpleCondition::toJson() const {
     return {
