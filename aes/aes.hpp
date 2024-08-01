@@ -2,9 +2,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <string>
-
+#include <cstring>
 #include "aes_consts.hpp"
 
 enum class AesVariant {Aes128, Aes192, Aes256};
@@ -64,7 +65,6 @@ void print_state(typename Aes<Aes_var>::State const& state){
       std::cout << "\n";
     }
     std::cout << "\n";
-
 }
 
 /* /////////////   implementation \\\\\\\\\\\\\\ */
@@ -74,27 +74,34 @@ std::string Aes<Aes_var>::encrypt_ecb(std::string const& message) const {
   State state;
   std::string encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
-  encrypted_message.reserve(message.size() + paddingN);
-  size_t msg_idx = 0;
-  while(msg_idx < message.size()+paddingN){
-    for (uint col = 0; col < Nb; ++col) {
-      for (uint row = 0; row < Nb ; ++row) {
-        if(msg_idx + row + col*4 < message.size()){
-          state[row][col] = message[msg_idx + row + col*4];
-        } else {
-          state[row][col] = paddingN;
-        }
-      }
-    }
+  encrypted_message.reserve(message.size() + paddingN); // encrypted_message.size() == N*sizeof(State)
+  
+  encrypted_message += message; // fill message
+  encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
+  for(size_t msg_idx = 0; msg_idx<encrypted_message.size(); msg_idx += sizeof(State)){
+    auto& state = reinterpret_cast<State&>(encrypted_message[msg_idx]);
     encrypt(state);
-    for (uint col = 0; col < Nb; ++col) {
-      for (uint row = 0; row < Nb; ++row) {
-        encrypted_message += state[row][col];
-      }
-    }
-    msg_idx += Nb*Nb;
   }
   return encrypted_message;
+}
+
+template <AesVariant Aes_var>
+std::string Aes<Aes_var>::decrypt_ecb(std::string const& encrypted_message) const {
+  if(encrypted_message.size() % 16 != 0){
+    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
+  }
+  State state;
+  std::string message = encrypted_message;
+  // message.reserve(encrypted_message.size());
+  for(size_t msg_idx = 0; msg_idx<encrypted_message.size(); msg_idx += sizeof(State)){
+    auto& state = reinterpret_cast<State&>(message[msg_idx]);
+    decrypt(state);
+  }
+  if(message.back() > 16){
+    throw std::invalid_argument("aes invalid padding char");
+  }
+  message.resize(message.size() - message.back());
+  return message;
 }
 
 
@@ -103,7 +110,7 @@ std::string Aes<Aes_var>::encrypt_cbc(std::string const& message, std::array<uin
   State prev_state;
   for (uint col = 0; col < Nb; ++col) {
     for (uint row = 0; row < Nb ; ++row) {
-      prev_state[row][col] = iv[row + col*4];
+      prev_state[col][row] = iv[row + col*4];
     }
   }
   State state;
@@ -116,19 +123,19 @@ std::string Aes<Aes_var>::encrypt_cbc(std::string const& message, std::array<uin
     for (uint col = 0; col < Nb; ++col) {
       for (uint row = 0; row < Nb ; ++row) {
         if(msg_idx + row + col*4 < message.size()){
-          state[row][col] = message[msg_idx + row + col*4]^prev_state[row][col];
+          state[col][row] = message[msg_idx + row + col*4]^prev_state[col][row];
         } else {
-          uint8_t p1 =  prev_state[row][col];
+          uint8_t p1 =  prev_state[col][row];
           uint8_t pad1 = paddingN;
           uint8_t r1 = p1^pad1;
-          state[row][col] = r1;
+          state[col][row] = r1;
         }
       }
     }
     encrypt(state);
     for (uint col = 0; col < Nb; ++col) {
       for (uint row = 0; row < Nb; ++row) {
-        encrypted_message += state[row][col];
+        encrypted_message += state[col][row];
       }
     }
     prev_state = state;
@@ -147,7 +154,7 @@ std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std:
   State prev_state;
   for (uint col = 0; col < Nb; ++col) {
     for (uint row = 0; row < Nb ; ++row) {
-      prev_state[row][col] = iv[row + col*4];
+      prev_state[col][row] = iv[row + col*4];
     }
   }
   State state;
@@ -157,14 +164,14 @@ std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std:
   while(msg_idx < encrypted_message.size()){
     for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
       for (int row = 0; row < Nb ; ++row) {
-          state[row][col] = encrypted_message[msg_idx + row + col*4];
+          state[col][row] = encrypted_message[msg_idx + row + col*4];
       }
     }
     auto tmp = state;
     decrypt(state);
     for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
       for (int row = 0; row < Nb; ++row) {
-        message += state[row][col]^prev_state[row][col];
+        message += state[col][row]^prev_state[col][row];
       }
     }
     prev_state = tmp;
@@ -177,36 +184,6 @@ std::string Aes<Aes_var>::decrypt_cbc(std::string const& encrypted_message, std:
   return message;
 }
 
-
-template <AesVariant Aes_var>
-std::string Aes<Aes_var>::decrypt_ecb(std::string const& encrypted_message) const {
-  if(encrypted_message.size() % 16 != 0){
-    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
-  }
-  State state;
-  std::string message;
-  message.reserve(encrypted_message.size());
-  size_t msg_idx = 0;
-  while(msg_idx < encrypted_message.size()){
-    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
-      for (int row = 0; row < Nb ; ++row) {
-          state[row][col] = encrypted_message[msg_idx + row + col*4];
-      }
-    }
-    decrypt(state);
-    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
-      for (int row = 0; row < Nb; ++row) {
-        message += state[row][col];
-      }
-    }
-    msg_idx += Nb*Nb;
-  }
-  if(message.back() > 16){
-    throw std::invalid_argument("aes invalid padding char");
-  }
-  message.resize(message.size() - message.back());
-  return message;
-}
 
 
 template <AesVariant Aes_var> 
@@ -274,7 +251,8 @@ template <AesVariant Aes_var>
 void Aes<Aes_var>::add_round_key(State &state, uint key_index) const {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      state.at(col).at(row) ^= m_expended_key.at(key_index*Nb + row).at(col);
+      state[row][col] ^= m_expended_key[key_index*Nb + row][col];
+      // state.at(col).at(row) ^= m_expended_key.at(key_index*Nb + row).at(col);
     }
   }
 }
@@ -295,36 +273,46 @@ template <AesVariant Aes_var>  void Aes<Aes_var>::inv_subBytes(State &state) con
 template <AesVariant Aes_var>  void Aes<Aes_var>::shiftRows(State &state) const {
   std::array<uint8_t, 4> tmp;
   for (int row = 1; row < 4; ++row) {
-    int& offset = row;
+    for (int col = 0; col < 4; ++col) tmp[col] = state[col][row];
+    int offset = 4-row;
     for (int col = 0; col < 4; ++col) {
-      tmp[col] = state[row][(col + offset) % 4];
+      state[(col + offset) % 4][row] = tmp[col];
+      // tmp[col] = state[row][(col + offset) % 4];
     }
-    state[row] = tmp;
+    // state[row] = tmp;
   }
 }
 
 template <AesVariant Aes_var>  void Aes<Aes_var>::inv_shiftRows(State &state) const {
+  // std::array<uint8_t, 4> tmp;
+  // for (int row = 1; row < 4; ++row) {
+  //   int offset = 4 - row;
+  //   for (int col = 0; col < 4; ++col) {
+  //     tmp[col] = state[row][(col + offset) % 4];
+  //   }
+  //   state[row] = tmp;
+  // }
   std::array<uint8_t, 4> tmp;
   for (int row = 1; row < 4; ++row) {
-    int offset = 4 - row;
+    for (int col = 0; col < 4; ++col) tmp[col] = state[col][row];
+    int offset = row;
     for (int col = 0; col < 4; ++col) {
-      tmp[col] = state[row][(col + offset) % 4];
+      state[(col + offset) % 4][row] = tmp[col];
     }
-    state[row] = tmp;
   }
 }
 
 template <AesVariant Aes_var>  void Aes<Aes_var>::mixColumns(State &state) const {
   State tmp;
   for (size_t col = 0; col < 4; ++col) {
-    tmp[0][col] = galo_mul_2[state[0][col]] ^ galo_mul_3[state[1][col]] ^
-             state[2][col] ^ state[3][col];
-    tmp[1][col] = state[0][col] ^ galo_mul_2[state[1][col]] ^
-             galo_mul_3[state[2][col]] ^ state[3][col];
-    tmp[2][col] = state[0][col] ^ state[1][col] ^ galo_mul_2[state[2][col]] ^
-             galo_mul_3[state[3][col]];
-    tmp[3][col] = galo_mul_3[state[0][col]] ^ state[1][col] ^ state[2][col] ^
-             galo_mul_2[state[3][col]];
+    tmp[col][0] = galo_mul_2[state[col][0]] ^ galo_mul_3[state[col][1]] ^
+             state[col][2] ^ state[col][3];
+    tmp[col][1] = state[col][0] ^ galo_mul_2[state[col][1]] ^
+             galo_mul_3[state[col][2]] ^ state[col][3];
+    tmp[col][2] = state[col][0] ^ state[col][1] ^ galo_mul_2[state[col][2]] ^
+             galo_mul_3[state[col][3]];
+    tmp[col][3] = galo_mul_3[state[col][0]] ^ state[col][1] ^ state[col][2] ^
+             galo_mul_2[state[col][3]];
   }
   state = tmp;
 }
@@ -332,14 +320,14 @@ template <AesVariant Aes_var>  void Aes<Aes_var>::mixColumns(State &state) const
 template <AesVariant Aes_var>  void Aes<Aes_var>::inv_mixColumns(State &state) const {
   State tmp;
   for (size_t col = 0; col < 4; ++col) {
-    tmp[0][col] = galo_mul_14[state[0][col]] ^ galo_mul_11[state[1][col]] ^
-             galo_mul_13[state[2][col]] ^ galo_mul_9[state[3][col]];
-    tmp[1][col] = galo_mul_9[state[0][col]] ^ galo_mul_14[state[1][col]] ^
-             galo_mul_11[state[2][col]] ^ galo_mul_13[state[3][col]];
-    tmp[2][col] = galo_mul_13[state[0][col]] ^ galo_mul_9[state[1][col]] ^
-             galo_mul_14[state[2][col]] ^ galo_mul_11[state[3][col]];
-    tmp[3][col] = galo_mul_11[state[0][col]] ^ galo_mul_13[state[1][col]] ^
-             galo_mul_9[state[2][col]] ^ galo_mul_14[state[3][col]];
+    tmp[col][0] = galo_mul_14[state[col][0]] ^ galo_mul_11[state[col][1]] ^
+             galo_mul_13[state[col][2]] ^ galo_mul_9[state[col][3]];
+    tmp[col][1] = galo_mul_9[state[col][0]] ^ galo_mul_14[state[col][1]] ^
+             galo_mul_11[state[col][2]] ^ galo_mul_13[state[col][3]];
+    tmp[col][2] = galo_mul_13[state[col][0]] ^ galo_mul_9[state[col][1]] ^
+             galo_mul_14[state[col][2]] ^ galo_mul_11[state[col][3]];
+    tmp[col][3] = galo_mul_11[state[col][0]] ^ galo_mul_13[state[col][1]] ^
+             galo_mul_9[state[col][2]] ^ galo_mul_14[state[col][3]];
   }
   state = tmp;
 }

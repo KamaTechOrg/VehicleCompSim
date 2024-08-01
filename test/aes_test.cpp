@@ -9,7 +9,7 @@ strToStateBlock(std::string const &str_block) {
   assert(str_block.size() == 16);
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      state[j][i] = str_block[i * 4 + j];
+      state[i][j] = str_block[i * 4 + j];
     }
   }
   return state;
@@ -26,6 +26,7 @@ TEST(AesTest, Aes_128_ecb_encrypt_decrypt_block) {
   std::string encrypted_str_block =
       "\x39\x25\x84\x1d\x02\xdc\x09\xfb\xdc\x11\x85\x97\x19\x6a\x0b\x32";
   auto state = strToStateBlock(str_block);
+
   auto expected_encrypted_block = strToStateBlock(encrypted_str_block);
   Aes<AesVariant::Aes128> aes(key);
   auto encrypted_block = state;
