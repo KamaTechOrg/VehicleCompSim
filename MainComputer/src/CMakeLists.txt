@@ -4,4 +4,5 @@ target_sources(MainComputer PRIVATE
     OrCondition.cpp
     AndCondition.cpp
     BinaryTreeBuilder.cpp
+   
 )

@@ -13,6 +13,8 @@ add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(GUI/src)
 add_subdirectory(GUI/include)
+add_subdirectory(tests)
+
 
 set_target_properties(MainComputer PROPERTIES
     WIN32_EXECUTABLE TRUE

@@ -1,7 +1,7 @@
 #ifndef CONDITION_BASE_H
 #define CONDITION_BASE_H
 
-#include <../resources/json.hpp>
+#include "../resources/json.hpp"
 
 class ConditionBase {
 public:

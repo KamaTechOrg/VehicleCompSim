@@ -7,7 +7,7 @@ bool OrCondition::validate() {
 nlohmann::json OrCondition::toJson() const {
     return {
         {"type", "or"},
-        {"left", LHS->toJson()}, 
-        {"right", RHS->toJson()} 
+        {"left", LHS->toJson()},
+        {"right", RHS->toJson()}
     };
 }
