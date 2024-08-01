@@ -27,7 +27,7 @@
     ./benchmark/aes_bench --benchmark_format=csv > ../benchmark/results/aes_bench-$(date +%Y-%m-%d).csv
     ```
 
-5. Learn more:
+5. Learn more about benchmark options:
     ```bash
     ./benchmark/aes_bench --help
     ```
