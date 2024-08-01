@@ -6,16 +6,15 @@
 
 class CompositeCondition : public ConditionBase {
 public:
-    CompositeCondition(std::unique_ptr<ConditionBase> lhs, std::unique_ptr<ConditionBase> rhs);
+    CompositeCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs);
     virtual ~CompositeCondition() = default;
 
-    // גישה לאובייקטים המוגדרים ב-CompositeCondition
-    std::unique_ptr<ConditionBase>& getLHS();
-    std::unique_ptr<ConditionBase>& getRHS();
+    const std::shared_ptr<ConditionBase>& getLHS() const;
+    const std::shared_ptr<ConditionBase>& getRHS() const;
 
 protected:
-    std::unique_ptr<ConditionBase> LHS;
-    std::unique_ptr<ConditionBase> RHS;
+    std::shared_ptr<ConditionBase> LHS;
+    std::shared_ptr<ConditionBase> RHS;
 };
 
-#endif 
+#endif // COMPOSITE_CONDITION_H

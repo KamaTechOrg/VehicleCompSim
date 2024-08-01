@@ -6,18 +6,13 @@
 #include "ConditionBase.h"
 #include <memory>
 
-
-class AndCondition : public ConditionBase {
+class AndCondition : public CompositeCondition {
 public:
-    AndCondition(std::unique_ptr<ConditionBase> lhs, std::unique_ptr<ConditionBase> rhs);
+    AndCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs);
     virtual ~AndCondition() = default;
 
     bool validate() override;
     nlohmann::json toJson() const override;
-
-private:
-    std::unique_ptr<ConditionBase> LHS;
-    std::unique_ptr<ConditionBase> RHS;
 };
 
-#endif // AND_CONDITION_H
+#endif 

@@ -1,16 +1,16 @@
 #include "AndCondition.h"
 
-AndCondition::AndCondition(std::unique_ptr<ConditionBase> lhs, std::unique_ptr<ConditionBase> rhs)
-    : LHS(std::move(lhs)), RHS(std::move(rhs)) {}
+AndCondition::AndCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs)
+    : CompositeCondition(lhs, rhs) {}
 
 bool AndCondition::validate() {
-    return LHS->validate() && RHS->validate();
+    return getLHS()->validate() && getRHS()->validate();
 }
 
 nlohmann::json AndCondition::toJson() const {
     return {
-        {"type", "and"},
-        {"left", LHS->toJson()},
-        {"right", RHS->toJson()}
+        {"type", "AndCondition"},
+        {"LHS", getLHS()->toJson()},
+        {"RHS", getRHS()->toJson()}
     };
 }

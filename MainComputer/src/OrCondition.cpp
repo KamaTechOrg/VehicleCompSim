@@ -1,13 +1,13 @@
 #include "OrCondition.h"
 
 bool OrCondition::validate() {
-    return LHS->validate() || RHS->validate();
+    return getLHS()->validate() || getRHS()->validate();
 }
 
 nlohmann::json OrCondition::toJson() const {
     return {
-        {"type", "or"},
-        {"left", LHS->toJson()},
-        {"right", RHS->toJson()}
+        {"type", "OrCondition"},
+        {"LHS", getLHS()->toJson()},
+        {"RHS", getRHS()->toJson()}
     };
 }

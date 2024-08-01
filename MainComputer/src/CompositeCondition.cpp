@@ -1,12 +1,12 @@
 #include "CompositeCondition.h"
 
-CompositeCondition::CompositeCondition(std::unique_ptr<ConditionBase> lhs, std::unique_ptr<ConditionBase> rhs)
-    : LHS(std::move(lhs)), RHS(std::move(rhs)) {}
+CompositeCondition::CompositeCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs)
+    : LHS(lhs), RHS(rhs) {}
 
-std::unique_ptr<ConditionBase>& CompositeCondition::getLHS() {
+const std::shared_ptr<ConditionBase>& CompositeCondition::getLHS() const {
     return LHS;
 }
 
-std::unique_ptr<ConditionBase>& CompositeCondition::getRHS() {
+const std::shared_ptr<ConditionBase>& CompositeCondition::getRHS() const {
     return RHS;
 }
