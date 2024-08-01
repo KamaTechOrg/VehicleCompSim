@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "customwidget.h"
+#include "qpushbutton.h"
 #include <QGraphicsView>
 #include <QToolBar>
 #include <QJsonDocument>
@@ -9,9 +10,13 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QUuid>
+#include <QTimeEdit>
+
+
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), m_scene(std::make_unique<CustomScene>()) {
+    : QMainWindow(parent), m_scene(std::make_unique<CustomScene>())
+{
     m_view = new QGraphicsView(m_scene.get());
 
     setupToolBar();
@@ -27,6 +32,9 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("background", [this]() { background_Layout(); });
     toolBar->addAction("Save", [this]() { saveLayout(); });
     toolBar->addAction("Load", [this]() { loadLayout(); });
+
+    setupRunService();
+
 }
 
 void MainWindow::setupToolBar() {
@@ -40,6 +48,37 @@ void MainWindow::setupToolBar() {
     m_toolBar->addWidget(busWidget);
 
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
+}
+
+void MainWindow::setupRunService()
+{
+    runService.setScene(m_scene.get());
+
+    QPushButton *startBtn = new QPushButton("start", m_toolBar);
+    m_toolBar->addWidget(startBtn);
+    QPushButton *stopBtn = new QPushButton("stop", m_toolBar);
+    m_toolBar->addWidget(stopBtn);
+    QTimeEdit *timer = new QTimeEdit(m_toolBar);
+    timer->setDisplayFormat("hh:mm:ss");
+    timer->setFixedSize(120, 30);
+    timer->setCurrentSection(QDateTimeEdit::MinuteSection);
+    m_toolBar->addWidget(timer);
+
+    QObject::connect(startBtn, &QPushButton::clicked, [this](){
+        this->runService.start();
+    });
+
+    QObject::connect(stopBtn, &QPushButton::clicked, [this](){
+        this->runService.stop();
+    });
+
+    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this, timer](){
+        int t = timer->time().hour();
+        t = t*60 + timer->time().minute();
+        t = t*60 + timer->time().second();
+
+        this->runService.setTimer(t);
+    });
 }
 
 void MainWindow::background_Layout() {
