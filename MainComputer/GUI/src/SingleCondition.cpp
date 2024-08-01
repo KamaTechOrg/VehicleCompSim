@@ -10,9 +10,11 @@ SingleCondition::SingleCondition()
 
 	_inputSource = new QComboBox();
 	_inputSource->setPlaceholderText("input source");
-	_inputSource->addItem("sensor 1");
-	_inputSource->addItem("sensor 2");
-	_inputSource->addItem("sensor 3");
+	_inputSource->addItem("id 1");
+	_inputSource->addItem("id 2");
+	_inputSource->addItem("id 3");
+	_inputSource->addItem("id 4");
+	_inputSource->addItem("id 5");
 	_SingleCondition->addWidget(_inputSource);
 
 	_conditionType = new QComboBox();
@@ -20,6 +22,8 @@ SingleCondition::SingleCondition()
 	_conditionType->addItem("greater then");
 	_conditionType->addItem("smaller then");
 	_conditionType->addItem("equels to");
+	_conditionType->addItem("starts with");
+	_conditionType->addItem("ends with");
 	_SingleCondition->addWidget(_conditionType);
 
 	_validationValue = new QLineEdit();

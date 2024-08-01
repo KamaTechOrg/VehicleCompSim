@@ -2,22 +2,18 @@
 
 #include <QApplication>
 #include <QWidget>
-#include <QVBoxLayout>
 
-#include "ConditionsBox.h"
-#include "ThenGroupBox.h"
+#include "ConditionsEditor.h"
+#include "ExplorerBox.h"
 
 class Window : public QWidget
 {
 public:
 	Window();
-	
-	void save();
+	~Window();
 
 private:
-	QVBoxLayout* _windowLayout;
-	ConditionsBox* _ConditionsBox;
-	ThenGroupBox* _thenGroupBox;
-	QPushButton* _saveButton;
-
+	QHBoxLayout* _layout;
+	ConditionsEditor* _editor;
+	ExplorerBox* _explorer;
 };

@@ -214,7 +214,7 @@ csx/
 ecf/
 rcf/
 
-# Windows Store app package directories and files
+# ConditionsEditors Store app package directories and files
 AppPackages/
 BundleArtifacts/
 Package.StoreAssociation.xml

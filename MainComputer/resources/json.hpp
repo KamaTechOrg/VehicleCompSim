@@ -20213,7 +20213,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         {
             // The cast is to ensure op[size_type] is called, bearing in mind size_type may not be int;
             // (many string types can be constructed from 0 via its null-pointer guise, so we get a
-            // broken call to op[key_type], the wrong semantics and a 4804 warning on Windows)
+            // broken call to op[key_type], the wrong semantics and a 4804 warning on ConditionsEditors)
             return element_ref->is_array() && element_ref->size() == 2 && (*element_ref)[static_cast<size_type>(0)].is_string();
         });
 

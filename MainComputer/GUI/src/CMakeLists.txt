@@ -5,10 +5,12 @@ target_link_libraries(MainComputer PRIVATE
 )
 
 target_sources(MainComputer PRIVATE
-    Window.cpp
+    ConditionsEditor.cpp
     SingleCondition.cpp
     ThenWidgetsLayout.cpp
     ConditionsBox.cpp
     ThenGroupBox.cpp
     ConditionsGroup.cpp
+    Window.cpp
+    ExplorerBox.cpp
 )
