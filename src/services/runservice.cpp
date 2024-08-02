@@ -30,6 +30,7 @@ void RunService::setTimer(int t)
     timer = t;
 }
 
+
 std::shared_ptr<QProcess> RunService::processInit(const QString &program, const QStringList& arguments)
 {
     std::shared_ptr<QProcess> process_ptr(new QProcess);

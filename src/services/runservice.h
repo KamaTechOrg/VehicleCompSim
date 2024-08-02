@@ -47,8 +47,6 @@ public:
     void stop();
     void setTimer(int t);
 
-
-
 };
 
 #endif // RUNSERVICE_H

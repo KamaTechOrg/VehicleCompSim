@@ -21,6 +21,8 @@ private slots:
 
     void on_Cancel_Button_clicked();
 
+    void on_isDefaultCommands_stateChanged(int arg1);
+
 private:
     Ui::PopupDialog *ui;
     SensorItem* oldSensorItem;

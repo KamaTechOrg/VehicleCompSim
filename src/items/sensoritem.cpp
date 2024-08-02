@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <cmath>
 #include "gui/popupdialog.h"
+#include "../include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
 
     SensorItem::SensorItem( QGraphicsItem *parent):
     BaseItem(BaseItem::NodeType::Sensor, parent){
@@ -30,6 +31,7 @@
         m_updateProxy = updateProxy;
 
         hideButtons();
+
     }
 
     SensorItem::SensorItem(const SensorItem& other)
@@ -39,6 +41,8 @@
         name = other.name;
         buildCommand = other.buildCommand;
         runCommand = other.runCommand;
+        cmakePath = other.cmakePath;
+        useCmakePath = other.useCmakePath;
     }
 
     void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -89,6 +93,16 @@ QString SensorItem::getRunCommand() const {
     return runCommand;
 }
 
+QString SensorItem::getCmakePath() const
+{
+    return cmakePath;
+}
+
+bool SensorItem::isUseCmakePath() const
+{
+    return useCmakePath;
+}
+
 void SensorItem::setID(const QString& id) {
     this->id = id;
 }
@@ -103,6 +117,16 @@ void SensorItem::setBuildCommand(const QString& buildCommand) {
 
 void SensorItem::setRunCommand(const QString& runCommand) {
     this->runCommand = runCommand;
+}
+
+void SensorItem::setCmakePath(const QString &path)
+{
+    cmakePath = path;
+}
+
+void SensorItem::setUseCmakePath(bool use)
+{
+    useCmakePath = use;
 }
 
 bool SensorItem::isInitialized() const
@@ -122,6 +146,8 @@ void SensorItem::updateItem()
             name = tempSensorItem->getName();
             buildCommand = tempSensorItem->getBuildCommand();
             runCommand = tempSensorItem->getRunCommand();
+            cmakePath = tempSensorItem->getCmakePath();
+            useCmakePath = tempSensorItem->isUseCmakePath();
         }
         else{
             QMessageBox::StandardButton reply;

@@ -11,8 +11,8 @@
 #include <QHBoxLayout>
 #include <QUuid>
 #include <QTimeEdit>
-
-
+#include <bson/bson.h>
+#include "../include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), m_scene(std::make_unique<CustomScene>())

@@ -14,12 +14,15 @@ public:
     QString getName() const;
     QString getBuildCommand() const;
     QString getRunCommand() const;
+    QString getCmakePath() const;
+    bool isUseCmakePath() const;
 
     void setID(const QString& id);
     void setName(const QString& name);
     void setBuildCommand(const QString& buildCommand);
     void setRunCommand(const QString& runCommand);
-
+    void setCmakePath(const QString& path);
+    void setUseCmakePath(bool use);
     bool isInitialized() const;
 
 private:
@@ -27,9 +30,10 @@ private:
     QString name = "";
     QString buildCommand = "";
     QString runCommand = "";
+    QString cmakePath = "";
+    bool useCmakePath = true;
 
     void updateItem();
-    
     void showButtons();
     void hideButtons();
 
