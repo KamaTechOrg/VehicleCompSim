@@ -368,3 +368,6 @@ FodyWeavers.xsd
 *.swp
 *.swo
 *~
+
+# folder
+VehicleCompSim/
