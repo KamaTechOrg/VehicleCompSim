@@ -42,20 +42,20 @@ std::shared_ptr<QProcess> RunService::processInit(const QString &program, const 
 
     QObject::connect(process_ptr.get(), &QProcess::errorOccurred, [weak_process_ptr](QProcess::ProcessError error){
         if (auto process_ptr = weak_process_ptr.lock()) {
-            qDebug() << "Error occurred: " << error << '\n';
-            qDebug() << "Error string: " << process_ptr->errorString();
+            qDebug().noquote() << "Error occurred: " << error << '\n';
+            qDebug().noquote() << "Error string: " << process_ptr->errorString();
         }
     });
 
     QObject::connect(process_ptr.get(), &QProcess::readyReadStandardOutput, [weak_process_ptr](){
         if (auto process_ptr = weak_process_ptr.lock()) {
-            qDebug() << process_ptr->readAllStandardOutput();
+            qDebug().noquote() << process_ptr->readAllStandardOutput();
         }
     });
 
     QObject::connect(process_ptr.get(), &QProcess::readyReadStandardError, [weak_process_ptr](){
         if (auto process_ptr = weak_process_ptr.lock()) {
-            qDebug() << process_ptr->readAllStandardError();
+            qDebug().noquote() << process_ptr->readAllStandardError();
         }
     });
 
@@ -65,6 +65,13 @@ std::shared_ptr<QProcess> RunService::processInit(const QString &program, const 
 
 std::shared_ptr<QProcess> RunService::processInit(const QString &command)
 {
+    // Start the process with a shell to interpret the combined command
+// #ifdef Q_OS_WIN
+//     return processInit("cmd.exe", {"/c", command});
+// #else
+//     return processInit("sh", {"-c", command});
+// #endif
+
     QStringList list = command.split(' ');
     QString program = list.takeFirst();
 
