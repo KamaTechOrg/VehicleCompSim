@@ -10,7 +10,7 @@ bool AndCondition::validate() {
 nlohmann::json AndCondition::toJson() const {
     return {
         {"type", "AndCondition"},
-        {"elapsedTime", _elapsedTime.count()},
+        {"elapsedTime", std::to_string(_elapsedTime.count())},
         {"LHS", getLHS()->toJson()},
         {"RHS", getRHS()->toJson()}
     };

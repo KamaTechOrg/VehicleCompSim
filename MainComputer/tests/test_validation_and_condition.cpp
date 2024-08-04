@@ -87,6 +87,7 @@ TEST_CASE("AndCondition Tests") {
         CHECK(andCond.validate());
         CHECK(andCond.toJson() == nlohmann::json({
             {"type", "AndCondition"},
+            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
             {"LHS", nlohmann::json({
                 {"input", "value"},
                 {"validationType", "starts with"},
@@ -107,6 +108,7 @@ TEST_CASE("AndCondition Tests") {
         CHECK_FALSE(andCond.validate());
         CHECK(andCond.toJson() == nlohmann::json({
             {"type", "AndCondition"},
+            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
             {"LHS", nlohmann::json({
                 {"input", "value"},
                 {"validationType", "starts with"},
@@ -130,6 +132,7 @@ TEST_CASE("OrCondition Tests") {
         CHECK(orCond.validate());
         CHECK(orCond.toJson() == nlohmann::json({
             {"type", "OrCondition"},
+            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
             {"LHS", nlohmann::json({
                 {"input", "hello world"},
                 {"validationType", "starts with"},
@@ -150,6 +153,7 @@ TEST_CASE("OrCondition Tests") {
         CHECK(orCond.validate());
         CHECK(orCond.toJson() == nlohmann::json({
             {"type", "OrCondition"},
+            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
             {"LHS", nlohmann::json({
                 {"input", "hello world"},
                 {"validationType", "starts with"},
@@ -170,6 +174,7 @@ TEST_CASE("OrCondition Tests") {
         CHECK_FALSE(orCond.validate());
         CHECK(orCond.toJson() == nlohmann::json({
             {"type", "OrCondition"},
+            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
             {"LHS", nlohmann::json({
                 {"input", "hello world"},
                 {"validationType", "starts with"},
@@ -179,6 +184,51 @@ TEST_CASE("OrCondition Tests") {
                 {"input", "hello world"},
                 {"validationType", "ends with"},
                 {"validationValue", "hello"}
+            })}
+            }));
+    }
+}
+
+
+TEST_CASE("elapsedTime test") {
+    SUBCASE("orCondition with elapsedTime") {
+        auto trueCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
+        auto trueCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "world");
+        OrCondition orCond(trueCond1, trueCond2, std::chrono::milliseconds(1024));
+        CHECK(orCond.validate());
+        CHECK(orCond.toJson() == nlohmann::json({
+            {"type", "OrCondition"},
+            {"elapsedTime", std::to_string(1024)},
+            {"LHS", nlohmann::json({
+                {"input", "hello world"},
+                {"validationType", "starts with"},
+                {"validationValue", "hello"}
+            })},
+            {"RHS", nlohmann::json({
+                {"input", "hello world"},
+                {"validationType", "ends with"},
+                {"validationValue", "world"}
+            })}
+            }));
+    }
+
+    SUBCASE("andCondition with elapsedTime") {
+        auto trueCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
+        auto trueCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "world");
+        AndCondition andCond(trueCond1, trueCond2, std::chrono::milliseconds(1024));
+        CHECK(andCond.validate());
+        CHECK(andCond.toJson() == nlohmann::json({
+            {"type", "AndCondition"},
+            {"elapsedTime", std::to_string(1024)},
+            {"LHS", nlohmann::json({
+                {"input", "hello world"},
+                {"validationType", "starts with"},
+                {"validationValue", "hello"}
+            })},
+            {"RHS", nlohmann::json({
+                {"input", "hello world"},
+                {"validationType", "ends with"},
+                {"validationValue", "world"}
             })}
             }));
     }
