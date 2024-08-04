@@ -2,12 +2,13 @@
 
 #include <fstream>
 #include <QMenu>
+#include <QSpinBox>
 
 #include "SimpleCondition.h"
-#include <BinaryTreeBuilder.h>
-#include <CompositeCondition.h>
-#include <AndCondition.h>
-#include <OrCondition.h>
+#include "BinaryTreeBuilder.h"
+#include "CompositeCondition.h"
+#include "AndCondition.h"
+#include "OrCondition.h"
 
 ConditionsGroup::ConditionsGroup()
 {
@@ -39,24 +40,27 @@ void ConditionsGroup::addSingleCondition()
 {
 	SingleCondition* conditionLayout = new SingleCondition;
 	connect(conditionLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
-	addCondition(conditionLayout);
+	addGenericCondition(conditionLayout);
 }
 
 void ConditionsGroup::addConditionsGroup()
 {
 	ConditionsGroup* conditionLayout = new ConditionsGroup;
 	connect(conditionLayout, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
-	addCondition(conditionLayout);
+	addGenericCondition(conditionLayout);
 }
 
-void ConditionsGroup::addCondition(ConditionLayoutBase* condition)
+void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
 {
 	_conditions.push_back(condition);
 	if (_conditions.size() > 1) // it's not the first condition added
 	{
 		QPushButton* andOrButton = new QPushButton("and");
-		QLineEdit* elapsedTime = new QLineEdit("time elapsed");
-		elapsedTime->setValidator(new QIntValidator(0, 5000));
+		connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
+			andOrButton->setText(andOrButton->text() == "and" ? "or" : "and");
+			});
+		QSpinBox* elapsedTime = new QSpinBox;
+		elapsedTime->setRange(0, 10000);
 
 		QHBoxLayout* operationLayout = new QHBoxLayout;
 		operationLayout->addWidget(andOrButton);

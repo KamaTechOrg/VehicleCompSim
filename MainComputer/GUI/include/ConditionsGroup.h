@@ -32,7 +32,7 @@ private:
 	
 	void addSingleCondition();
 	void addConditionsGroup();
-	void addCondition(ConditionLayoutBase* condition);
+	void addGenericCondition(ConditionLayoutBase* condition);
 	void createAddConditionButton();
 	void createDeleteButton();
 	void deleteCondition(ConditionLayoutBase* layout);
