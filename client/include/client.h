@@ -6,7 +6,7 @@ class ClientSocket
 {
 
 public:
-    ClientSocket(const int id);
+    ClientSocket( int id);
 
     void send(void *data, size_t size, int source_id, int dest_id);
     void send_async(void *data, size_t size, int dest_id, int source_id) const;

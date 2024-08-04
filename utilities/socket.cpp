@@ -82,13 +82,14 @@ int Socket::accept()
 {
   int addr_length = sizeof(m_addr);
   int fd = ::accept(m_sock, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
-
+  
   if (fd <= 0)
   {
     std::cout << "status == -1   errno == " << errno << "  in Socket::eccept\n";
     // throw...
   }
   else
+    std::cout << "connection is on " << fd << std::endl;
     return fd;
 }
 
@@ -136,7 +137,10 @@ void Socket::recv(void *data, size_t len) const
   }
 }
 
-
+void Socket::set_FD(int fd)
+{
+  m_sock = fd;
+}
 
 void Socket::connect(const std::string host, const int port)
 {

@@ -38,7 +38,7 @@ public:
   void recv ( void *data, size_t len ) const;
 
 
-  
+  void set_FD( int fd );
 
   bool is_valid() const { return m_sock != -1; }
  

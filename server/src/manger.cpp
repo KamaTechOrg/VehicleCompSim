@@ -2,17 +2,20 @@
 
 #include <thread>
 
-MangServer::MangServer():m_server{0} ,m_req{} , m_connect{}
+MangServer::MangServer():m_server{50000} ,m_req{} , m_connect{}
 {
 }
 
 void MangServer::init()
 {
-    std::thread t_s (&run_server , this);
-    std::thread t_c (&run_connect, this);
-
+     auto callback = [this](int fd) {
+        this->add_socket(fd);
+    };
+    std::thread t_s (&MangServer::run_server , this, callback );
+    // std::thread t_c (&run_connect, this);
+   
     t_s.join();
-    t_c.join();
+    // t_c.join();
 }
 
 void MangServer::run_server(std::function<void(int)> callback)
@@ -36,7 +39,5 @@ void MangServer::add_socket(int FD)
 {
     auto pair = m_connect.create(FD);
    
-    // new_socket.msocket = fd;
-
     m_connect.add_to_map(pair);
 }

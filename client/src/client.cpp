@@ -5,11 +5,13 @@
 #include <iostream>
 #include <string.h>
 
-ClientSocket::ClientSocket(const int id)
+ClientSocket::ClientSocket(int id)
   : my_id(id)
 {
     m_clientSocket.create();
     m_clientSocket.connect("localhost", 50000);
+    std::string ss {"Hello"};
+    m_clientSocket.send((void *)ss.c_str() ,ss.size());
 }
 
 void ClientSocket::send(void *data, size_t size, int source_id, int dest_id)
