@@ -3,8 +3,9 @@
 #include <QApplication>
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QPushButton>
 
-#include "ConditionsBox.h"
+#include "ConditionsGroup.h"
 #include "ThenGroupBox.h"
 
 class ConditionsEditor : public QGroupBox
@@ -16,8 +17,7 @@ public:
 
 private:
 	QVBoxLayout* _ConditionsEditorLayout;
-	ConditionsBox* _ConditionsBox;
+	ConditionsGroup* _conditionsGroup;
 	ThenGroupBox* _thenGroupBox;
 	QPushButton* _saveButton;
-
 };

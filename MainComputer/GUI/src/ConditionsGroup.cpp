@@ -10,58 +10,61 @@
 #include <OrCondition.h>
 
 ConditionsGroup::ConditionsGroup()
-	: _andOrButton(nullptr)
 {
+	createDeleteButton();
+
+	_layout = new QVBoxLayout;
 	_conditionsBox = new QGroupBox;
 	_conditionsLayout = new QVBoxLayout;
-	_buttonsLayout = new QHBoxLayout;
 	
-	addLayout(_buttonsLayout);
-	_conditionsBox->setLayout(_conditionsLayout);
+	_layout->addLayout(_conditionsLayout);
+	_conditionsBox->setLayout(_layout);
 	addWidget(_conditionsBox);
 
 	createAddConditionButton();
-	createDeleteButton();
 }
 
 ConditionsGroup::~ConditionsGroup()
 {
-	if (_conditionsBox)
+	if (_conditionsBox != nullptr)
 		delete _conditionsBox;
-	
-	if (_andOrButton)
-		delete _andOrButton;
 
-	if (_deleteButton)
+	if (_deleteButton != nullptr)
 		delete _deleteButton;
 
 	_conditions.clear();
 }
 
-void ConditionsGroup::addSingleCondition(bool operationButton)
+void ConditionsGroup::addSingleCondition()
 {
-	SingleCondition* widgetsLayout = new SingleCondition;
-	if (operationButton == true && _conditions.empty() == false)
-	{
-		widgetsLayout->setAndOrButton();
-	}
-	_conditionsLayout->addLayout(widgetsLayout);
-	_conditions.push_back(widgetsLayout);
-
-	connect(widgetsLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
+	SingleCondition* conditionLayout = new SingleCondition;
+	connect(conditionLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
+	addCondition(conditionLayout);
 }
 
-void ConditionsGroup::addConditionGroup(bool operationButton)
+void ConditionsGroup::addConditionsGroup()
 {
-	ConditionsGroup* widgetsLayout = new ConditionsGroup;
-	if (operationButton == true && _conditions.empty() == false)
-	{
-		widgetsLayout->setAndOrButton();
-	}
-	_conditionsLayout->addLayout(widgetsLayout);
-	_conditions.push_back(widgetsLayout);
+	ConditionsGroup* conditionLayout = new ConditionsGroup;
+	connect(conditionLayout, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
+	addCondition(conditionLayout);
+}
 
-	connect(widgetsLayout, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
+void ConditionsGroup::addCondition(ConditionLayoutBase* condition)
+{
+	_conditions.push_back(condition);
+	if (_conditions.size() > 1) // it's not the first condition added
+	{
+		QPushButton* andOrButton = new QPushButton("and");
+		QLineEdit* elapsedTime = new QLineEdit("time elapsed");
+		elapsedTime->setValidator(new QIntValidator(0, 5000));
+
+		QHBoxLayout* operationLayout = new QHBoxLayout;
+		operationLayout->addWidget(andOrButton);
+		operationLayout->addWidget(elapsedTime);
+		_operations.push_back(operationLayout);
+		_conditionsLayout->addLayout(operationLayout);
+	}
+	_conditionsLayout->addLayout(condition);
 }
 
 void ConditionsGroup::createAddConditionButton()
@@ -86,8 +89,7 @@ void ConditionsGroup::createAddConditionButton()
 		menu->exec(QCursor::pos());
 	});
 
-	_conditionsLayout->addWidget(_addConditionButton);
-	//_buttonsLayout->addStretch(1);
+	_layout->addWidget(_addConditionButton);
 }
 
 void ConditionsGroup::createDeleteButton()
@@ -95,8 +97,7 @@ void ConditionsGroup::createDeleteButton()
 	_deleteButton = new QPushButton("-");
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
-	_buttonsLayout->addWidget(_deleteButton);
-	_buttonsLayout->addStretch(1);
+	addWidget(_deleteButton);
 
 	connect(_deleteButton, &QPushButton::clicked, this, [this]() {
 		emit requestDelete(this);
@@ -105,36 +106,39 @@ void ConditionsGroup::createDeleteButton()
 
 void ConditionsGroup::deleteCondition(ConditionLayoutBase* layout)
 {
-	if (_conditions.size() > 1 && _conditions.at(0) == layout)
-	{
-		_conditions.at(1)->deleteAndOrButton();
-		// it becames the first one, so no need in this button anymore
-	}
+	auto condition = std::find(_conditions.begin(), _conditions.end(), layout);
+	int index = std::distance(_conditions.begin(), condition);
+	
+	// remove the condition itself:
+	_conditions.erase(condition);
 	_conditionsLayout->removeItem(layout);
-	_conditions.erase(std::remove(_conditions.begin(), _conditions.end(), layout), _conditions.end());
 	layout->deleteLater();
+
+	int deleteOperationIndex = index > 0 ? index - 1 : index;
+
+	if (!_operations.empty())
+	{
+		_conditionsLayout->removeItem(_operations.at(deleteOperationIndex));
+		_operations.at(deleteOperationIndex)->itemAt(0)->widget()->deleteLater();
+		_operations.at(deleteOperationIndex)->itemAt(1)->widget()->deleteLater();
+		_operations.at(deleteOperationIndex)->deleteLater();
+		_operations.erase(_operations.begin() + (deleteOperationIndex));
+	}
+
 	_conditionsLayout->update();
 }
 
 void ConditionsGroup::addSingleButtonClicked()
 {
-	if (_addConditionButton)
-		delete _addConditionButton;
-
-	addSingleCondition(true);
-	createAddConditionButton();
+	addSingleCondition();
 }
 
 void ConditionsGroup::addGroupButtonClicked()
 {
-	if (_addConditionButton)
-		delete _addConditionButton;
-
-	addConditionGroup(true);
-	createAddConditionButton();
+	addConditionsGroup();
 }
 
-std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators)
+std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions)
 {
 	/*
 	* TODO: assert that there are no nullptr's in the vector
@@ -149,10 +153,11 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 
 	for (size_t i = 1; i < conditions.size(); ++i) {
 		std::shared_ptr<ConditionBase> next = conditions[i];
-		if (operators[i - 1] == ConditionLayoutBase::conditionType::And) {
+		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i - 1]->itemAt(0)->widget());
+		if (andOrButton->text() == "and") {
 			current = std::make_shared<AndCondition>(AndCondition(current, next));
 		}
-		else if (operators[i - 1] == ConditionLayoutBase::conditionType::Or) {
+		else if (andOrButton->text() == "or") {
 			current = std::make_shared<OrCondition>(OrCondition(current, next));
 		}
 		root = current; // Update root to the current node for the next iteration
@@ -160,67 +165,14 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 
 	return root;
 }
-
-void ConditionsGroup::setAndOrButton(bool And)
-{
-	if (!_andOrButton)
-	{
-		_andOrButton = new QPushButton(And == true ? "and" : "or");
-		int defaultHeight = _andOrButton->sizeHint().height();
-		_andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
-		_buttonsLayout->insertWidget(0, _andOrButton);
-
-		connect(_andOrButton, &QPushButton::clicked, this, &ConditionsGroup::andOrButtonSwitch);
-	}
-	else
-	{
-		_andOrButton->setText(And == true ? "and" : "or");
-	}
-}
-
-void ConditionsGroup::deleteAndOrButton()
-{
-	_andOrButton->deleteLater();
-	delete _andOrButton;
-	_andOrButton = nullptr;
-}
-
-void ConditionsGroup::andOrButtonSwitch()
-{
-	QString text = _andOrButton->text();
-	if (text == "or")
-		_andOrButton->setText("and");
-	else
-		_andOrButton->setText("or");
-}
-
 std::shared_ptr<ConditionBase> ConditionsGroup::data()
 {
 	std::vector<std::shared_ptr<ConditionBase>> conditions;
-	std::vector<conditionType> operatorsType;
-
 	for (auto it : _conditions)
 	{
 		std::shared_ptr<ConditionBase> condition = it->data();
 		if (condition != nullptr)
 			conditions.push_back(condition);
-
-		ConditionLayoutBase::conditionType type = it->getConditionType();
-		if (type != ConditionLayoutBase::conditionType::Null)
-			operatorsType.push_back(type);
 	}
-
-	return buildTree(conditions, operatorsType);
-}
-
-ConditionLayoutBase::conditionType ConditionsGroup::getConditionType()
-{
-	if (_andOrButton != nullptr)
-	{
-		if (_andOrButton->text().toStdString() == "and")
-			return conditionType::And;
-		else if (_andOrButton->text().toStdString() == "or")
-			return conditionType::Or;
-	}
-	return conditionType::Null;
+	return buildTree(conditions);
 }

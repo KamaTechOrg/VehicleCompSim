@@ -8,7 +8,6 @@ set(HEADER_FILES
     ConditionsEditor.h
     SingleCondition.h
     ThenWidgetsLayout.h
-    ConditionsBox.h
     ThenGroupBox.h
     ConditionsGroup.h
     ConditionLayoutBase.h
