@@ -60,7 +60,8 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
 			andOrButton->setText(andOrButton->text() == "and" ? "or" : "and");
 			});
 		QSpinBox* elapsedTime = new QSpinBox;
-		elapsedTime->setRange(0, 10000);
+		elapsedTime->setRange(0, MAX_ELAPSED_TIME);
+		elapsedTime->setSuffix(" ms");
 
 		QHBoxLayout* operationLayout = new QHBoxLayout;
 		operationLayout->addWidget(andOrButton);
@@ -158,11 +159,12 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 	for (size_t i = 1; i < conditions.size(); ++i) {
 		std::shared_ptr<ConditionBase> next = conditions[i];
 		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i - 1]->itemAt(0)->widget());
+		QSpinBox* elapsedTime = qobject_cast<QSpinBox*>(_operations[i - 1]->itemAt(1)->widget());
 		if (andOrButton->text() == "and") {
-			current = std::make_shared<AndCondition>(AndCondition(current, next));
+			current = std::make_shared<AndCondition>(AndCondition(current, next, std::chrono::milliseconds(elapsedTime->value())));
 		}
 		else if (andOrButton->text() == "or") {
-			current = std::make_shared<OrCondition>(OrCondition(current, next));
+			current = std::make_shared<OrCondition>(OrCondition(current, next, std::chrono::milliseconds(elapsedTime->value())));
 		}
 		root = current; // Update root to the current node for the next iteration
 	}

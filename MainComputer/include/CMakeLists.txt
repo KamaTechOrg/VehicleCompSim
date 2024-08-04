@@ -5,6 +5,7 @@ project(MainComputerHeaders LANGUAGES CXX)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(HEADER_FILES
+    constants.h
     SimpleCondition.h
     CompositeCondition.h
     conditionsManager.h
