@@ -1,7 +1,14 @@
 #include <iostream>
 
+
+#include "../include/manger.h"
+
 using namespace std;
 
 int main(){
-    cout << "Running server <<" << endl;
+
+    MangServer ms;
+    ms.init();
+
+    return 0;
 }

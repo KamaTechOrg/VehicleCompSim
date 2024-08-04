@@ -3,7 +3,7 @@ project(MyProject)
 
 # Create a library from the utilities
 add_library(utilities STATIC
-    utilities/socket.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/socket.cpp
 )
 
 # Specify include directories for the utilities library
@@ -11,28 +11,28 @@ target_include_directories(utilities PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
-# Define the client executable
-add_executable(client
-    client/src/main.cpp
-)
+# Helper function to create executables from sources containing main()
+function(create_executable_from_sources source_dir executable_prefix)
+    file(GLOB SOURCES ${source_dir}/*.cpp)
+    foreach(source ${SOURCES})
+        # Check if the source file contains a main function (simple approach)
+        file(READ ${source} file_content)
+        if(file_content MATCHES "int\\s+main\\s*\\(")
+            get_filename_component(executable_name ${source} NAME_WE)
+            set(executable_name "${executable_prefix}_${executable_name}")
+            
+            add_executable(${executable_name} ${source})
+            target_link_libraries(${executable_name} PRIVATE utilities)
+            target_include_directories(${executable_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/client/include)
+        endif()
+    endforeach()
+endfunction()
 
-# Link the utilities library to the client executable
-target_link_libraries(client PRIVATE utilities)
+# Create client executables
+create_executable_from_sources(${CMAKE_CURRENT_SOURCE_DIR}/client/src client)
 
-# Specify include directories for the client
-target_include_directories(client PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/client/include
-)
+# Create server executables
+create_executable_from_sources(${CMAKE_CURRENT_SOURCE_DIR}/server/src server)
 
-# Define the server executable (if needed)
-add_executable(server
-    server/src/main.cpp
-)
-
-# Link the utilities library to the server executable (if server is needed)
-target_link_libraries(server PRIVATE utilities)
-
-# Specify include directories for the server (if server is needed)
-target_include_directories(server PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/server/include
-)
+# Create utility executables if needed
+create_executable_from_sources(${CMAKE_CURRENT_SOURCE_DIR}/utilities utility)
