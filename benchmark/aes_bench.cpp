@@ -46,7 +46,6 @@ BENCHMARK(msg4k_encrypt_aes_ecb<AesVariant::Aes128>);
 BENCHMARK(msg4k_encrypt_aes_ecb<AesVariant::Aes192>);
 BENCHMARK(msg4k_encrypt_aes_ecb<AesVariant::Aes256>);
 
-
 template<AesVariant AesVar>
 static void msg4k_decrypt_aes_ecb(benchmark::State& state) {
     Aes<AesVar> aes(aes_key<AesVar>);
@@ -58,6 +57,48 @@ static void msg4k_decrypt_aes_ecb(benchmark::State& state) {
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes128>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes192>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes256>);
+
+#ifdef SYCL_ENABELED
+#include <sycl/sycl.hpp>
+sycl::queue q{};
+
+template<AesVariant AesVar>
+static void msg4k_encrypt_aes_ecb_sycl(benchmark::State& state) {
+    Aes<AesVar> aes(aes_key<AesVar>); 
+    aes.encrypt_ecb(q, msg4k); // The first time takes an inordinate amount of time
+    for (auto _ : state){
+        aes.encrypt_ecb(q, msg4k);
+    }
+}
+BENCHMARK(msg4k_encrypt_aes_ecb_sycl<AesVariant::Aes128>);
+BENCHMARK(msg4k_encrypt_aes_ecb_sycl<AesVariant::Aes192>);
+BENCHMARK(msg4k_encrypt_aes_ecb_sycl<AesVariant::Aes256>);
+
+
+template<AesVariant AesVar>
+static void msg4k_decrypt_aes_ecb_sycl(benchmark::State& state) {
+    Aes<AesVar> aes(aes_key<AesVar>);
+    auto decrypted_msg = aes.encrypt_ecb(msg4k);
+    for (auto _ : state){
+        aes.decrypt_ecb(q, decrypted_msg);
+    }
+}
+BENCHMARK(msg4k_decrypt_aes_ecb_sycl<AesVariant::Aes128>);
+BENCHMARK(msg4k_decrypt_aes_ecb_sycl<AesVariant::Aes192>);
+BENCHMARK(msg4k_decrypt_aes_ecb_sycl<AesVariant::Aes256>);
+
+#endif
+
+template<AesVariant AesVar>
+static void msg4k_encrypt_aes_cbc(benchmark::State& state) {
+    Aes<AesVar> aes(aes_key<AesVar>);
+    for (auto _ : state){
+        aes.encrypt_cbc(msg4k, iv);
+    }
+}
+BENCHMARK(msg4k_encrypt_aes_cbc<AesVariant::Aes128>);
+BENCHMARK(msg4k_encrypt_aes_cbc<AesVariant::Aes192>);
+BENCHMARK(msg4k_encrypt_aes_cbc<AesVariant::Aes256>);
 
 
 template<AesVariant AesVar>

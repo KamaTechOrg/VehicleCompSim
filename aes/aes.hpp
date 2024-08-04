@@ -6,6 +6,11 @@
 #include <string>
 #include <cstring>
 
+
+#ifdef SYCL_ENABELED
+#include <sycl/sycl.hpp>
+#endif
+
 enum class AesVariant {Aes128, Aes192, Aes256};
 
 template <AesVariant Aes_var>
@@ -31,6 +36,11 @@ public:
 
   std::string encrypt_ecb(std::string const& message) const;
   std::string decrypt_ecb(std::string const& encrypted_message) const;
+
+#ifdef SYCL_ENABELED
+  std::string encrypt_ecb(sycl::queue& q, std::string const& message) const;
+  std::string decrypt_ecb(sycl::queue& q, std::string const& message) const;
+#endif
 
   std::string encrypt_cbc(std::string const& message, std::array<uint8_t, BlockSize> const& iv) const;
   std::string decrypt_cbc(std::string const& encrypted_message, std::array<uint8_t, BlockSize> const& iv) const;
