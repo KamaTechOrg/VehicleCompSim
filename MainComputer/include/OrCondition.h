@@ -8,8 +8,7 @@
 
 class OrCondition : public CompositeCondition {
 public:
-    OrCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs)
-        : CompositeCondition(lhs,rhs) {}
+    OrCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime = std::chrono::milliseconds(MAX_ELAPSED_TIME));
 
     bool validate() override;
     nlohmann::json toJson() const override;

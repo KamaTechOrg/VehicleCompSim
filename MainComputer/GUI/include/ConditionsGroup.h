@@ -14,29 +14,31 @@ public:
 	ConditionsGroup();
 	~ConditionsGroup();
 
-	void setAndOrButton(bool And = true);
-	void deleteAndOrButton();
-	void andOrButtonSwitch();
 	std::shared_ptr<ConditionBase> data() override;
-	conditionType getConditionType();
 
 private:
 	std::vector<ConditionLayoutBase*> _conditions;
+
+	// contains the "and" / "or" operations between every two conditions in _conditions.
+	// and also the elapsed time allowed between every two conditions
+	std::vector<QHBoxLayout*> _operations;
+	//std::vector<std::pair<std::unique_ptr<QPushButton>, std::unique_ptr<QLineEdit>>> _operations; // with safe pointers. we will later try using this instead.
+	
+	QVBoxLayout* _layout;
 	QGroupBox* _conditionsBox;
 	QVBoxLayout* _conditionsLayout;
-	QHBoxLayout* _buttonsLayout;
-	QPushButton* _andOrButton;
 	QPushButton* _addConditionButton;
-	QPushButton* _deleteButton;
+	QPushButton* _deleteButton; // delete *this group button
 	
-	void addSingleCondition(bool operationButton = false);
-	void addConditionGroup(bool operationButton = false);
+	void addSingleCondition();
+	void addConditionsGroup();
+	void addGenericCondition(ConditionLayoutBase* condition);
 	void createAddConditionButton();
 	void createDeleteButton();
 	void deleteCondition(ConditionLayoutBase* layout);
 	void addSingleButtonClicked();
 	void addGroupButtonClicked();
-	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
+	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions);
 	
 signals:
 	void requestDelete(ConditionLayoutBase* group);
