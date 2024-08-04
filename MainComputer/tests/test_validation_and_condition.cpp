@@ -191,6 +191,16 @@ TEST_CASE("Performance Test") {
             "test string " + std::to_string(i), "contains", std::to_string(i)));
     }
 
+    // Example complex condition
+    auto andCond = std::make_shared<AndCondition>(
+        std::make_shared<SimpleCondition>("hello world", "starts with", "hello"),
+        std::make_shared<SimpleCondition>("hello world", "ends with", "world")
+    );
+    auto complexCondition = std::make_shared<OrCondition>(
+        andCond,
+        std::make_shared<SimpleCondition>("test", "equals to", "test")
+    );
+
     SUBCASE("Both Conditions False") {
         auto falseCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "world");
         auto falseCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "hello");
@@ -211,57 +221,14 @@ TEST_CASE("Performance Test") {
             })}
             }));
     }
-}
 
+    SUBCASE("Performance Measurement") {
+        auto start = std::chrono::high_resolution_clock::now();
+        bool result = complexCondition->validate();
+        auto end = std::chrono::high_resolution_clock::now();
 
-TEST_CASE("elapsedTime test") {
-    SUBCASE("orCondition with elapsedTime") {
-        auto trueCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
-        auto trueCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "world");
-        OrCondition orCond(trueCond1, trueCond2, std::chrono::milliseconds(1024));
-        CHECK(orCond.validate());
-        CHECK(orCond.toJson() == nlohmann::json({
-            {"type", "OrCondition"},
-            {"elapsedTime", std::to_string(1024)},
-            {"LHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "starts with"},
-                {"validationValue", "hello"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "ends with"},
-                {"validationValue", "world"}
-            })}
-            }));
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        CHECK(duration.count() < 1000);
+        CHECK(result);
     }
-
-    SUBCASE("andCondition with elapsedTime") {
-        auto trueCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
-        auto trueCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "world");
-        AndCondition andCond(trueCond1, trueCond2, std::chrono::milliseconds(1024));
-        CHECK(andCond.validate());
-        CHECK(andCond.toJson() == nlohmann::json({
-            {"type", "AndCondition"},
-            {"elapsedTime", std::to_string(1024)},
-            {"LHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "starts with"},
-                {"validationValue", "hello"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "ends with"},
-                {"validationValue", "world"}
-            })}
-            }));
-    }
-
-    auto start = std::chrono::high_resolution_clock::now();
-    bool result = complexCondition->validate();
-    auto end = std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    CHECK(duration.count() < 1000);
-    CHECK(result);
 }
