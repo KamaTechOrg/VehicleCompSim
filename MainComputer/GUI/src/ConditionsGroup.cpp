@@ -12,17 +12,19 @@
 
 ConditionsGroup::ConditionsGroup()
 {
-	createDeleteButton();
-
-	_layout = new QVBoxLayout;
+	_layout = new QHBoxLayout;
+	_boxLayout = new QVBoxLayout;
 	_conditionsBox = new QGroupBox;
 	_conditionsLayout = new QVBoxLayout;
 	
-	_layout->addLayout(_conditionsLayout);
-	_conditionsBox->setLayout(_layout);
-	addWidget(_conditionsBox);
+	_boxLayout->addLayout(_conditionsLayout);
+	_conditionsBox->setLayout(_boxLayout);
+	_layout->addWidget(_conditionsBox);
 
+	createDeleteButton();
 	createAddConditionButton();
+
+	addLayout(_layout);
 }
 
 ConditionsGroup::~ConditionsGroup()
@@ -66,17 +68,28 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
 	_conditions.push_back(condition);
 	if (_conditions.size() > 1) // it's not the first condition added
 	{
+		// create and/or button
 		QPushButton* andOrButton = new QPushButton("and");
 		connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
 			andOrButton->setText(andOrButton->text() == "and" ? "or" : "and");
 			});
+		int defaultHeight = andOrButton->sizeHint().height();
+		andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
+
+		// create elapsedTime edit line
 		QSpinBox* elapsedTime = new QSpinBox;
 		elapsedTime->setRange(0, MAX_ELAPSED_TIME);
 		elapsedTime->setSuffix(" ms");
+		defaultHeight = elapsedTime->sizeHint().height();
+		elapsedTime->setFixedSize(defaultHeight * 3, defaultHeight);
 
+		// push the both to a horizontal layout
 		QHBoxLayout* operationLayout = new QHBoxLayout;
 		operationLayout->addWidget(andOrButton);
 		operationLayout->addWidget(elapsedTime);
+		operationLayout->addStretch(1);
+
+		// instert the layout to the _operations vector and to the _conditionsLayout
 		_operations.push_back(operationLayout);
 		_conditionsLayout->addLayout(operationLayout);
 	}
@@ -105,7 +118,7 @@ void ConditionsGroup::createAddConditionButton()
 		menu->exec(QCursor::pos());
 	});
 
-	_layout->addWidget(_addConditionButton);
+	_boxLayout->addWidget(_addConditionButton);
 }
 
 void ConditionsGroup::createDeleteButton()
@@ -113,7 +126,7 @@ void ConditionsGroup::createDeleteButton()
 	_deleteButton = new QPushButton("-");
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
-	addWidget(_deleteButton);
+	_layout->addWidget(_deleteButton);
 
 	connect(_deleteButton, &QPushButton::clicked, this, [this]() {
 		emit requestDelete(this);

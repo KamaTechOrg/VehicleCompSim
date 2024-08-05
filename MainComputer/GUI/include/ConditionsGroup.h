@@ -27,7 +27,8 @@ private:
 	std::vector<QHBoxLayout*> _operations;
 	//std::vector<std::pair<std::unique_ptr<QPushButton>, std::unique_ptr<QLineEdit>>> _operations; // with safe pointers. we will later try using this instead.
 	
-	QVBoxLayout* _layout;
+	QHBoxLayout* _layout;
+	QVBoxLayout* _boxLayout;
 	QGroupBox* _conditionsBox;
 	QVBoxLayout* _conditionsLayout;
 	QPushButton* _addConditionButton;
