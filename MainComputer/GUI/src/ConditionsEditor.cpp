@@ -7,6 +7,8 @@ ConditionsEditor::ConditionsEditor()
     : QGroupBox("Editor")
 {
     _conditionsGroup = new ConditionsGroup;
+    _conditionsGroup->unableDelete();
+    _conditionsGroup->setBoxTitle("if");
     _thenGroupBox = new ThenGroupBox;
 
     _saveButton = new QPushButton("save");

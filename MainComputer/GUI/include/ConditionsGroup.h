@@ -14,6 +14,9 @@ public:
 	ConditionsGroup();
 	~ConditionsGroup();
 
+	void unableDelete(); // unable the option to delete *this group
+	void setBoxTitle(const char* title);
+
 	std::shared_ptr<ConditionBase> data() override;
 
 private:

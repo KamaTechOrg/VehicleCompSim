@@ -36,6 +36,17 @@ ConditionsGroup::~ConditionsGroup()
 	_conditions.clear();
 }
 
+void ConditionsGroup::unableDelete()
+{
+	_deleteButton->deleteLater(); // remove from GUI
+	_deleteButton = nullptr;
+}
+
+void ConditionsGroup::setBoxTitle(const char* title)
+{
+	_conditionsBox->setTitle(title);
+}
+
 void ConditionsGroup::addSingleCondition()
 {
 	SingleCondition* conditionLayout = new SingleCondition;
