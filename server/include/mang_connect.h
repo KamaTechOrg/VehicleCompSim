@@ -8,10 +8,9 @@
 class Mange_connect
 {
 public:
-    std::pair<int,std::shared_ptr<Socket>> create(int);
 
+    std::pair<int,std::shared_ptr<Socket>> create(FD);
     void add_to_map(std::pair<int,std::shared_ptr<Socket>>);
-
     std::shared_ptr<Socket> get_sock(int);
 
 private:

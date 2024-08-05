@@ -11,7 +11,7 @@ ClientSocket::ClientSocket(int id)
     m_clientSocket.create();
     m_clientSocket.connect("localhost", 50000);
     std::string ss {"Hello"};
-    m_clientSocket.send((void *)ss.c_str() ,ss.size());
+    m_clientSocket.send((char *)ss.c_str() ,ss.size());
 }
 
 void ClientSocket::send(void *data, size_t size, int source_id, int dest_id)

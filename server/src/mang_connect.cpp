@@ -1,14 +1,19 @@
 #include "mang_connect.h"
 #include <iostream>
 
-std::pair<int, std::shared_ptr<Socket>> Mange_connect::create(int fd)
+std::pair<int, std::shared_ptr<Socket>>  Mange_connect::create(FD fd)
 {
     auto new_socket = std::make_shared<Socket>();
     new_socket->set_FD(fd);
-    void *data[MAXRECV];
+    void *data[MAXRECVID];
 
-    new_socket->recv(data, MAXRECV);
-
+    new_socket->recv(data, MAXRECVID);
+    int i = 0;
+    while (*(char *)(data + i) != '\0' )
+    {
+      std::cout << *(char *)(data + i ) << std::endl;
+      i++;
+    }
     return std::make_pair(0, new_socket);
 }
 
