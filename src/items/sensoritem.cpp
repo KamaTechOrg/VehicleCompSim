@@ -7,8 +7,8 @@
 #include <cmath>
 #include "gui/popupdialog.h"
 
-    SensorItem::SensorItem( QGraphicsItem *parent):
-    BaseItem(BaseItem::NodeType::Sensor, parent){
+    SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent){
+        m_type = ItemType::Sensor;
         m_width = 160;
         m_height = 90;
 
@@ -33,9 +33,8 @@
     }
 
     SensorItem::SensorItem(const SensorItem& other)
-        : BaseItem(BaseItem::NodeType::Sensor)
     {
-        id = other.id;
+        priority = other.priority;
         name = other.name;
         buildCommand = other.buildCommand;
         runCommand = other.runCommand;
@@ -52,7 +51,7 @@
         painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
 
         painter->setPen(Qt::black);
-        painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + id);
+        painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + priority);
         painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + name);
 
         if (isSelected() || !m_hoveredPoint.isNull())
@@ -73,8 +72,8 @@
         }
     }
 
-QString SensorItem::getID() const {
-    return id;
+QString SensorItem::getPriority() const {
+    return priority;
 }
 
 QString SensorItem::getName() const {
@@ -89,8 +88,8 @@ QString SensorItem::getRunCommand() const {
     return runCommand;
 }
 
-void SensorItem::setID(const QString& id) {
-    this->id = id;
+void SensorItem::setPriority(const QString& priority) {
+    this->priority = priority;
 }
 
 void SensorItem::setName(const QString& name) {
@@ -107,7 +106,7 @@ void SensorItem::setRunCommand(const QString& runCommand) {
 
 bool SensorItem::isInitialized() const
 {
-    return !id.isEmpty() && !name.isEmpty() && !buildCommand.isEmpty() && !runCommand.isEmpty();
+    return !priority.isEmpty() && !name.isEmpty() && !buildCommand.isEmpty() && !runCommand.isEmpty();
 }
 
 void SensorItem::updateItem()
@@ -118,7 +117,7 @@ void SensorItem::updateItem()
     popup.exec();
     if(popup.result() == QDialog::Accepted){
         if(tempSensorItem->isInitialized()){
-            id = tempSensorItem->getID();
+            priority = tempSensorItem->getPriority();
             name = tempSensorItem->getName();
             buildCommand = tempSensorItem->getBuildCommand();
             runCommand = tempSensorItem->getRunCommand();

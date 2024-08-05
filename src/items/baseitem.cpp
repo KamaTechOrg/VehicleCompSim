@@ -6,8 +6,7 @@
 #include <QMessageBox>
 #include <QGraphicsScene>
 
-BaseItem::BaseItem(NodeType type,  QGraphicsItem* parent)
-    : QGraphicsItem(parent), m_type(type){
+BaseItem::BaseItem(QGraphicsItem* parent){
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -66,6 +65,7 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
             path.cubicTo(controlPoint1, controlPoint2, destPos);
 
             edge->setPath(path);
+            //Todo: send update to server
         }
     }
     return QGraphicsItem::itemChange(change, value);
@@ -176,7 +176,7 @@ void BaseItem::removeItem() {
         // Remove all connected edges
         for (EdgeItem* edge : m_edges) {
             auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
-            if(connectedItem->nodeType() == NodeType::Connector){
+            if(connectedItem->itemType() == ItemType::Connector){
                 if(connectedItem->edges().size() <= 2){
                     connectedItem->removeItem();
                 }
@@ -197,4 +197,18 @@ void BaseItem::removeItem() {
         scene()->removeItem(this);
         deleteLater();
     }
+}
+
+QJsonObject BaseItem::serialize() const {
+    QJsonObject itemData = SerializableItem::serialize();
+    itemData["type"] = static_cast<int>(m_type);
+    itemData["x"] = pos().x();
+    itemData["y"] = pos().y();
+    return itemData;
+}
+
+void BaseItem::deserialize(const QJsonObject &itemData) {
+    SerializableItem::deserialize(itemData);
+    m_type = static_cast<ItemType>(itemData["type"].toInt());
+    setPos(itemData["x"].toDouble(), itemData["y"].toDouble());
 }

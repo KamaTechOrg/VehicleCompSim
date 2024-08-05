@@ -9,7 +9,7 @@ PopupDialog::PopupDialog(SensorItem* oldSensorItem, QWidget *parent)
 {
     setModal(true);
     ui->setupUi(this);
-    ui->ID->setText(oldSensorItem->getID());
+    ui->ID->setText(oldSensorItem->getPriority());
     ui->Name->setText(oldSensorItem->getName());
     ui->BuildCommand->setText(oldSensorItem->getBuildCommand());
     ui->RunCommand->setText(oldSensorItem->getRunCommand());
@@ -24,7 +24,7 @@ PopupDialog::~PopupDialog()
 
 void PopupDialog::on_Save_Button_clicked()
 {
-    oldSensorItem->setID(ui->ID->text());
+    oldSensorItem->setPriority(ui->ID->text());
     oldSensorItem->setName(ui->Name->text());
     oldSensorItem->setBuildCommand(ui->BuildCommand->text());
     oldSensorItem->setRunCommand(ui->RunCommand->text());

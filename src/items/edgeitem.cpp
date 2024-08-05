@@ -1,8 +1,9 @@
 #include "EdgeItem.h"
 #include <QPen>
 
-EdgeItem::EdgeItem(const QString& id, QGraphicsItem* parent)
-    : QGraphicsPathItem(parent), m_source(nullptr), m_dest(nullptr), m_id(id) {
+EdgeItem::EdgeItem(QGraphicsItem* parent)
+    : QGraphicsPathItem(parent), m_source(nullptr), m_dest(nullptr) {
+    m_type = ItemType::Edge;
     setPen(QPen(Qt::black, 2));
 }
 
@@ -34,4 +35,17 @@ void EdgeItem::setDest(BaseItem* dest) {
 void EdgeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     painter->setRenderHint(QPainter::Antialiasing);
     QGraphicsPathItem::paint(painter, option, widget);
+}
+
+QJsonObject EdgeItem::serialize() const {
+    QJsonObject itemData = SerializableItem::serialize();
+    itemData["source"] = m_source->getId();
+    itemData["dest"] = m_dest->getId();
+    return itemData;
+}
+
+void EdgeItem::deserialize(const QJsonObject &itemData) {
+    SerializableItem::deserialize(itemData);
+    m_source = nullptr;
+    m_dest = nullptr;
 }

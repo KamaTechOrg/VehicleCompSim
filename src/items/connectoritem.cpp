@@ -3,7 +3,8 @@
 #include <cmath>
 
 ConnectorItem::ConnectorItem(QGraphicsItem* parent)
-    : BaseItem(BaseItem::NodeType::Connector, parent) {
+    : BaseItem(parent) {
+        m_type = ItemType::Connector;
         m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25));
         hideButtons();
     }
