@@ -1,9 +1,9 @@
 #include "manger.h"
 #include <iostream>
+#include "constants.h"
 
 
-
-MangServer::MangServer():m_server{50000} ,m_req{} , m_connect{}
+MangServer::MangServer():m_server{PORTSERVER} ,m_req{} , m_connect{}
 {
 }
 

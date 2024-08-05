@@ -21,7 +21,7 @@ public:
 private:
     Server m_server;
     Mamge_req m_req;
-    FD m_sock_to_eccept = 0;
     Mange_connect m_connect;
+    FD m_sock_to_eccept = 0;
     std::mutex m_sock_mutex;
 };

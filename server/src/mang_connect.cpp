@@ -5,15 +5,14 @@ std::pair<int, std::shared_ptr<Socket>>  Mange_connect::create(FD fd)
 {
     auto new_socket = std::make_shared<Socket>();
     new_socket->set_FD(fd);
+
+
+    // check if need array ???/?????
+
     void *data[MAXRECVID];
 
     new_socket->recv(data, MAXRECVID);
-    int i = 0;
-    while (*(char *)(data + i) != '\0' )
-    {
-      std::cout << *(char *)(data + i ) << std::endl;
-      i++;
-    }
+ 
     return std::make_pair(0, new_socket);
 }
 

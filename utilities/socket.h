@@ -11,13 +11,9 @@
 #include <unistd.h>
 #include <string>
 #include <arpa/inet.h>
+#include "constants.h"
 
 
-const int MAXHOSTNAME = 200;
-const int MAXCONNECTIONS = 5;
-const int MAXRECV = 500;
-const int MAXRECVID = 50;
-using FD = int;
 
 
 class Socket
