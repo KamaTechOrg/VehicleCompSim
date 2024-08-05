@@ -4,17 +4,17 @@
 #include "ConditionBase.h"
 #include <vector>
 #include <string>
+#include <memory>
 #include <../resources/json.hpp>
 
 class ConditionsManager {
 private:
-    std::vector<ConditionBase*> conditions;
+    std::vector<std::shared_ptr<ConditionBase>> conditions;
 
 public:
-    void addCondition(ConditionBase* condition);
+    void addCondition(std::shared_ptr<ConditionBase> condition);
     bool validateAll() const;
     void exportToJson(const std::string& filename) const;
-    ~ConditionsManager();
 };
 
 #endif
