@@ -13,6 +13,8 @@ ClientSocket::ClientSocket(int id)
     m_clientSocket.connect(IPSERVER , PORTSERVER);
     std::string ss {"Hello"};
     m_clientSocket.send((char *)ss.c_str() ,ss.size());
+    char buffer[20];
+    m_clientSocket.recv(buffer, 20);
 }
 
 void ClientSocket::send(void *data, size_t size, int source_id, int dest_id)

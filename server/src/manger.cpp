@@ -11,7 +11,7 @@ void MangServer::init()
 {
    
     std::thread t_s (&MangServer::run_server , this);
-    std::thread t_change_eccept (&MangServer::change_m_sock , this );
+    std::thread t_change_eccept (&MangServer::insert_socket , this );
    
     t_s.join();
     t_change_eccept.join();
@@ -22,8 +22,8 @@ void MangServer::run_server()
 {
     while (true){
         int fd = m_server.run();
-        std::unique_lock<std::mutex> lock(m_sock_mutex);
-        m_sock_to_eccept = fd;
+        std::unique_lock<std::mutex> lock(new_fd_mutex);
+        new_fd = fd;
 
     }
 }
@@ -37,22 +37,14 @@ void MangServer::run_connect()
     }
 }
 
-void MangServer::add_socket()
-{
-   
-    auto pair = m_connect.create(m_sock_to_eccept);
-    std::cout << "the fd is : " << m_sock_to_eccept << std::endl;
-   
-    m_connect.add_to_map(pair);
-}
 
-void MangServer::change_m_sock()
+void MangServer::insert_socket()
 {
     while (true){
-        std::unique_lock<std::mutex> lock(m_sock_mutex);
-        if (m_sock_to_eccept != 0){
-            add_socket();
-            m_sock_to_eccept = 0;
+        std::unique_lock<std::mutex> lock(new_fd_mutex);
+        if (new_fd != 0){
+            m_connect.add_socket(new_fd);
+            new_fd = 0;
         }
     }
 }

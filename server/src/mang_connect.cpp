@@ -1,6 +1,15 @@
 #include "mang_connect.h"
 #include <iostream>
 
+void Mange_connect::add_socket(FD new_socket)
+{
+   
+    auto pair = create(new_socket);
+    std::cout << "the fd is : " << new_socket << std::endl;
+   
+    add_to_map(pair);
+}
+
 std::pair<int, std::shared_ptr<Socket>>  Mange_connect::create(FD fd)
 {
     auto new_socket = std::make_shared<Socket>();

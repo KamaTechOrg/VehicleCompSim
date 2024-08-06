@@ -13,15 +13,16 @@ class MangServer
 public:
     MangServer();
     void init();
-    void run_server();
-    void run_connect();
-    void add_socket();
-    void change_m_sock();
 
 private:
+
+    void run_server();
+    void run_connect();
+    void insert_socket();
+
     Server m_server;
     Mamge_req m_req;
     Mange_connect m_connect;
-    FD m_sock_to_eccept = 0;
-    std::mutex m_sock_mutex;
+    FD new_fd = 0;
+    std::mutex new_fd_mutex;
 };
