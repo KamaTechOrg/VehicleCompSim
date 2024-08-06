@@ -24,5 +24,5 @@ private:
     std::mutex m_vec_client_mutex;
 
     std::unordered_map<int, std::shared_ptr<Socket>> m_connections;
-    std::vector<int> m_client_fd {MAXCONNECTIONS , 0};
+    std::vector<int> m_client_fd ;
 };

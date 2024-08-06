@@ -4,14 +4,7 @@
 
 static void add_fd__to_vect(std::vector<int> &clientSocket, FD new_socket)
 {
-    for (int i = 0; i < MAXCONNECTIONS; i++)
-    {
-        if (clientSocket[i] == 0)
-        {
-            clientSocket[i] = new_socket;
-            break;
-        }
-    }
+    clientSocket.push_back(new_socket);
 }
 
 void Mange_connect::add_socket(FD new_socket)
@@ -55,47 +48,53 @@ void Mange_connect::select_menger()
 {
     int newSocket, maxSd, activity, sd, valread;
     fd_set readfds;
-    char buffer[MAXCONNECTIONS];
+    char buffer[MAXRECV];
 
     while (true)
     {
-        FD_ZERO(&readfds);
-
-        maxSd = 0;
-
-            std::unique_lock<std::mutex> lock(m_vec_client_mutex);
-        for (int i = 0; i < 10; i++)
+        if (m_client_fd.size())
         {
-           
-            sd = m_client_fd[i];
-            if (sd > 0)
-                FD_SET(sd, &readfds);
-            if (sd > maxSd)
-                maxSd = sd;
-        }
-             lock.unlock();
+            FD_ZERO(&readfds);
 
-        activity = select(maxSd + 1, &readfds, NULL, NULL, NULL);
-        if ((activity < 0) && (errno != EINTR))
-        {
-            // break;
-            perror("Select error");
-        }
+            maxSd = 0;
 
-        int fff = 0;
-        for (int i = 0; i < 10; i++)
-        {
-            sd = m_client_fd[i];
-            if (FD_ISSET(sd, &readfds))
+            // std::unique_lock<std::mutex> lock(m_vec_client_mutex);
+            for (int i = 0; i < 10; i++)
             {
-                // std::cout << "fffffffffffffffffffff" << std::endl;
-                (fff = recv(sd, buffer, 1024, 0));
 
-                // buffer[valread] = '\0';
-                std::cout << "Received: " << fff << buffer << std::endl;
-                // send(sd, buffer, strlen(buffer), 0);
+                sd = m_client_fd[i];
+                if (sd > 0)
+                    FD_SET(sd, &readfds);
+                if (sd > maxSd)
+                    maxSd = sd;
             }
-            // std::cout << "ggggggggggggg" << std::endl;
+            // lock.unlock();
+
+            activity = select(maxSd + 1, &readfds, NULL, NULL, NULL);
+            if ((activity < 0) && (errno != EINTR))
+            {
+                // break;
+                perror("Select error");
+            }
+
+            int fff = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                sd = m_client_fd[i];
+                if (FD_ISSET(sd, &readfds))
+                {
+                    // std::cout << "fffffffffffffffffffff" << std::endl;
+                    (fff = recv(sd, buffer, 1024, 0));
+
+                    // buffer[valread] = '\0';
+                    std::cout << "Received: " << fff << buffer << std::endl;
+                    send(sd, buffer, strlen(buffer), 0);
+                }
+                // std::cout << "ggggggggggggg" << std::endl;
+            }
+        }
+        else {
+            std::cout << "no connection" << std::endl;
         }
     }
 }
