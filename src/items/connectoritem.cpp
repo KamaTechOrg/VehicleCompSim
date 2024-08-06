@@ -1,4 +1,4 @@
-#include "ConnectorItem.h"
+#include "connectorItem.h"
 #include <QPainter>
 #include <cmath>
 

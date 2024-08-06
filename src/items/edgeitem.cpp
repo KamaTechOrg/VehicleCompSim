@@ -1,4 +1,4 @@
-#include "EdgeItem.h"
+#include "edgeItem.h"
 #include <QPen>
 
 EdgeItem::EdgeItem(QGraphicsItem* parent)

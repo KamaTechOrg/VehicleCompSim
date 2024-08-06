@@ -6,7 +6,7 @@
 #include <QGraphicsProxyWidget>
 
 #include "SerializableItem.h"
-#include "EdgeItem.h"
+#include "edgeItem.h"
 
 class EdgeItem;
 

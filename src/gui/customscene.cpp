@@ -4,8 +4,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include "items/SensorItem.h"
-#include "items/ConnectorItem.h"
+#include "items/sensorItem.h"
+#include "items/connectorItem.h"
 #include "popupdialog.h"
 
 CustomScene::CustomScene(QObject* parent)
