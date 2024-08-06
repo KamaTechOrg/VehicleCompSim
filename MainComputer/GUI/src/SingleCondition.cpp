@@ -31,6 +31,8 @@ SingleCondition::SingleCondition()
 	_conditionType->addItem("equels to");
 	_conditionType->addItem("starts with");
 	_conditionType->addItem("ends with");
+	_conditionType->addItem("contains");
+
 	_layout->addWidget(_conditionType);
 
 	_validationValue = new QLineEdit();
