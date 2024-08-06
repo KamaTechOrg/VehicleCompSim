@@ -94,18 +94,19 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(sycl::queue& q, Aes<Aes_var> co
   std::string message = encrypted_message;
 
   using State = typename Aes<Aes_var>::State;
-  sycl::range<1> blocksN_range{message.size()/16};
-  sycl::buffer states_buf(reinterpret_cast<State*>(message.data()), blocksN_range);
-  sycl::buffer aes_buf(&aes, sycl::range<1>{1});
-  q.submit([&](sycl::handler &h){
-    sycl::accessor aes_accessor(aes_buf, h, sycl::read_only);
-    sycl::accessor states_accessor(states_buf, h, sycl::read_write);
-    h.parallel_for(blocksN_range, [=](auto i) {
-       aes_accessor[0].decrypt(states_accessor[i]);
+  { 
+    sycl::range<1> blocksN_range{message.size()/16};
+    sycl::buffer states_buf(reinterpret_cast<State*>(message.data()), blocksN_range);
+    sycl::buffer aes_buf(&aes, sycl::range<1>{1});
+    q.submit([&](sycl::handler &h){
+      sycl::accessor aes_accessor(aes_buf, h, sycl::read_only);
+      sycl::accessor states_accessor(states_buf, h, sycl::read_write);
+      h.parallel_for(blocksN_range, [=](auto i) {
+        aes_accessor[0].decrypt(states_accessor[i]);
+      });
     });
-  });
-  q.wait();
-
+    q.wait();
+  } // On exiting this block the data should be copied back to the host
   if(message.back() > 16){
     throw std::invalid_argument("aes invalid padding char");
   }
