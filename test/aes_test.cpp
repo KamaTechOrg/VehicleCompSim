@@ -131,12 +131,11 @@ TEST(AesTest, Aes_128_ecb_encrypt_decrypt_string_with_size_15_sycl) {
   std::string expected_encrypted_msg =
       "\xbb\x6e\xd0\xed\x30\xfa\x44\x64\xd2\x1f\xf1\xcb\xd9\x27\xf9\x56";
   Aes<AesVariant::Aes128> aes(key);
-  auto result = AesTextEncrypt<AesVariant::Aes128>::encrypt_ecb(q, aes, msg);
+  auto encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ecb(q, aes, msg);
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg);
 
-  EXPECT_EQ(result.size(), expected_encrypted_msg.size());
-
-  EXPECT_EQ(result, expected_encrypted_msg);
-  EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::decrypt_ecb(q, aes, expected_encrypted_msg), msg);
+  auto decrypted_msg = AesTextEncrypt<AesVariant::Aes128>::decrypt_ecb(q, aes, expected_encrypted_msg);
+  EXPECT_EQ(decrypted_msg, msg);
 }
 
 TEST(AesTest, Aes_128_ecb_encrypt_decrypt_empty_string_sycl) {
@@ -147,10 +146,13 @@ TEST(AesTest, Aes_128_ecb_encrypt_decrypt_empty_string_sycl) {
   std::string expected_encrypted_msg =
       "\xa2\x54\xbe\x88\xe0\x37\xdd\xd9\xd7\x9f\xb6\x41\x1c\x3f\x9d\xf8";
   Aes<AesVariant::Aes128> aes(key);
-  auto result = AesTextEncrypt<aes::AesVariant::Aes128>::encrypt_ecb(q, aes, msg);
+  auto encrypted_msg = AesTextEncrypt<aes::AesVariant::Aes128>::encrypt_ecb(q, aes, msg);
 
-  EXPECT_EQ(result, expected_encrypted_msg);
-  EXPECT_EQ(AesTextEncrypt<aes::AesVariant::Aes128>::decrypt_ecb(q, aes, expected_encrypted_msg), msg);
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg);
+
+  auto decrypted_msg = AesTextEncrypt<aes::AesVariant::Aes128>::decrypt_ecb(q, aes, expected_encrypted_msg);
+
+  EXPECT_EQ(decrypted_msg, msg);
 }
 
 TEST(AesTest, Aes_256_ecb_encrypt_decrypt_I_sycl) {

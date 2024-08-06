@@ -140,7 +140,7 @@ std::string AesTextEncrypt<Aes_var>::decrypt_cbc(typename Aes<Aes_var>::KeyType 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 16> const& iv) {
   using State = typename Aes<Aes_var>::State;
-  auto& Nb = Aes<Aes_var>::Nb;
+  auto Nb = Aes<Aes_var>::Nb;
 
   State prev_state;
   for (uint col = 0; col < Nb; ++col) {
@@ -182,7 +182,7 @@ std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::s
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::decrypt_cbc(Aes<Aes_var> const& aes, std::string const& encrypted_message, std::array<uint8_t, 16> const& iv)  {
   using State = typename Aes<Aes_var>::State;
-  auto& Nb = Aes<Aes_var>::Nb;
+  auto Nb = Aes<Aes_var>::Nb;
 
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
