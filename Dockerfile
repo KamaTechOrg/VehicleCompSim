@@ -7,7 +7,14 @@ USER root
 RUN apt-get update && apt-get install -y \
     cmake \
     libgl1-mesa-dev \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install aqt
+RUN pip3 install aqtinstall
+
+# Install required Qt6 modules using aqt
+RUN aqt install-qt linux desktop 6.7.0 gcc_64 -m qtwebsockets -m qtnetwork -m qtwidgets
 
 # Set up the Qt environment
 ENV PATH="/opt/Qt/6.7.0/gcc_64/bin:${PATH}"
