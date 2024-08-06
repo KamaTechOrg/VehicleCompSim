@@ -11,8 +11,6 @@ RUN mkdir -p /tmp/apt/lists && \
     libgl1-mesa-dev && \
     rm -rf /tmp/apt/lists
 
-# Switch back to the original user
-USER qtuser
 
 WORKDIR /app
 
