@@ -62,7 +62,7 @@ BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes128>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes192>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes256>);
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 sycl::queue q;
 

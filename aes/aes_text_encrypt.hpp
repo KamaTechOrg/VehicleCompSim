@@ -1,7 +1,7 @@
 #pragma once
 #include "aes.hpp"
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 #endif
 
@@ -20,7 +20,7 @@ public:
     std::string static encrypt_ecb(Aes<Aes_var> const& aes, std::string const& message);
     std::string static decrypt_ecb(Aes<Aes_var> const& aes, std::string const& encrypted_message);
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
     std::string static encrypt_ecb(sycl::queue& q, KeyType const& key, std::string const& message);
     std::string static decrypt_ecb(sycl::queue& q, KeyType const& key, std::string const& message);
 

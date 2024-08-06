@@ -22,7 +22,7 @@ target_link_libraries(aes_test aes)
 list(APPEND test_targets aes_test)
 
 
-if(DEFINED SYCL_ENABELED AND (NOT(SYCL_ENABELED EQUAL 0)))
+if(DEFINED SYCL_ENABLED AND (NOT(SYCL_ENABLED EQUAL 0)))
     SET_COMPILER_TO_ICPX()
     target_link_libraries(aes_test sycl_flags)
 endif()

@@ -21,7 +21,7 @@ MACRO(SET_COMPILER_TO_ICPX)
 ENDMACRO()
 
 add_library(sycl_flags INTERFACE)
-target_compile_definitions(sycl_flags INTERFACE SYCL_ENABELED=1)
+target_compile_definitions(sycl_flags INTERFACE SYCL_ENABLED=1)
 target_link_options(sycl_flags INTERFACE "-fsycl")
 target_compile_options(sycl_flags INTERFACE "-fsycl")
 

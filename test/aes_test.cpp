@@ -119,7 +119,7 @@ TEST(AesTest, Aes_256_ecb_encrypt_decrypt_II) {
 }
 
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 sycl::queue q;
 

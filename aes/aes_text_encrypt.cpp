@@ -1,7 +1,7 @@
 #include <execution>
 #include "aes_text_encrypt.hpp"
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 #endif
 
@@ -58,7 +58,7 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(KeyType const& key, std::string
 }
 
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::encrypt_ecb(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message)  {

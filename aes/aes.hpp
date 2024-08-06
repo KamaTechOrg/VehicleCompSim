@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <iostream>
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 #endif
 
@@ -32,7 +32,7 @@ public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
 
-#if SYCL_ENABELED
+#if SYCL_ENABLED
   SYCL_EXTERNAL void encrypt(State&) const;
   SYCL_EXTERNAL void decrypt(State&) const;
 #else
