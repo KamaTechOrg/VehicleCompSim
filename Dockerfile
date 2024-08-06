@@ -11,6 +11,8 @@ RUN mkdir -p /tmp/apt/lists && \
     libgl1-mesa-dev && \
     rm -rf /tmp/apt/lists
 
+# Install required Qt6 modules using aqt
+RUN aqt install-qt linux desktop 6.7.0 gcc_64 -m qtwebsockets -m qtnetwork -m qtwidgets
 
 WORKDIR /app
 
