@@ -1,4 +1,4 @@
-#include "sensorItem.h"
+#include "sensoritem.h"
 #include <QPainter>
 // #include <QIcon>
 #include <QPushButton>

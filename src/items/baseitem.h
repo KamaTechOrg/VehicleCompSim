@@ -5,8 +5,8 @@
 #include <QList>
 #include <QGraphicsProxyWidget>
 
-#include "SerializableItem.h"
-#include "edgeItem.h"
+#include "serializableitem.h"
+#include "edgeitem.h"
 
 class EdgeItem;
 

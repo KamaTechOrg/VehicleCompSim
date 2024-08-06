@@ -2,7 +2,7 @@
 
 #include <QPainter>
 #include <QGraphicsLineItem>
-#include "BaseItem.h"
+#include "baseitem.h"
 
 class BaseItem;
 

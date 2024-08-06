@@ -3,9 +3,9 @@
 #include <QGraphicsScene>
 #include <memory>
 #include "VehicleCompSim/utils/network.hpp"
-#include "items/sensorItem.h"
-#include "items/connectorItem.h"
-#include "items/edgeItem.h"
+#include "items/sensoritem.h"
+#include "items/connectoritem.h"
+#include "items/edgeitem.h"
 #include "items/serializableitem.h"
 
 

@@ -1,11 +1,11 @@
-#include "CustomScene.h"
+#include "customscene.h"
 #include <QMimeData>
 #include <QGraphicsSceneMouseEvent>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include "items/sensorItem.h"
-#include "items/connectorItem.h"
+#include "items/sensoritem.h"
+#include "items/connectoritem.h"
 #include "popupdialog.h"
 
 CustomScene::CustomScene(QObject* parent)
