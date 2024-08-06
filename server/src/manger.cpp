@@ -11,10 +11,12 @@ void MangServer::init()
 {
    
     std::thread t_s (&MangServer::run_server , this);
-    std::thread t_change_eccept (&MangServer::insert_socket , this );
+    std::thread t_new_connection (&MangServer::insert_socket , this );
+    std::thread t_select(&MangServer::run_connect, this);
    
     t_s.join();
-    t_change_eccept.join();
+    t_new_connection.join();
+    t_select.join();
    
 }
 
@@ -30,11 +32,7 @@ void MangServer::run_server()
 
 void MangServer::run_connect()
 {
-    while(true){
-        m_req.recv();
-        m_req.send();
-        // TODO: use selct to recv and send packets
-    }
+   m_connect.select_menger();
 }
 
 
