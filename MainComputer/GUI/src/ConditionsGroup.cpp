@@ -181,6 +181,9 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 	std::shared_ptr<ConditionBase> current = root;
 
 	for (size_t i = 1; i < conditions.size(); ++i) {
+		if (conditions[i] == nullptr)
+			continue;
+
 		std::shared_ptr<ConditionBase> next = conditions[i];
 		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i - 1]->itemAt(0)->widget());
 		QSpinBox* elapsedTime = qobject_cast<QSpinBox*>(_operations[i - 1]->itemAt(1)->widget());
@@ -201,8 +204,7 @@ std::shared_ptr<ConditionBase> ConditionsGroup::data()
 	for (auto it : _conditions)
 	{
 		std::shared_ptr<ConditionBase> condition = it->data();
-		if (condition != nullptr)
-			conditions.push_back(condition);
+		conditions.push_back(condition);
 	}
 	return buildTree(conditions);
 }

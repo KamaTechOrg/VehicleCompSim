@@ -26,9 +26,9 @@ SingleCondition::SingleCondition()
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
-	_conditionType->addItem("greater then");
-	_conditionType->addItem("smaller then");
-	_conditionType->addItem("equels to");
+	_conditionType->addItem("greater than");
+	_conditionType->addItem("smaller than");
+	_conditionType->addItem("equals to");
 	_conditionType->addItem("starts with");
 	_conditionType->addItem("ends with");
 	_conditionType->addItem("contains");
@@ -75,10 +75,10 @@ std::string to_string(const QString& qstr) {
 std::shared_ptr<ConditionBase> SingleCondition::data()
 {
 	std::string input = _inputSource->currentText().toStdString();
-	std::string conditionType = to_string(_conditionType->currentText());
+	std::string conditionType = _conditionType->currentText().toStdString();
 	std::string validationValue = _validationValue->text().toStdString();
 
-	static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>()>> conditionFactory = {
+	const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>()>> conditionFactory = {
 		{"greater than", [input, validationValue]() {
 			return std::make_shared<GreaterThanCondition>(input, validationValue);
 		}},
@@ -104,6 +104,6 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 		return it->second();
 	}
 	else {
-		throw std::runtime_error("Invalid condition type: " + conditionType);
+		return nullptr;
 	}
 }
