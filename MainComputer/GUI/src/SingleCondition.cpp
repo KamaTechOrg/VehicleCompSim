@@ -1,7 +1,15 @@
 #include "SingleCondition.h"
-
-#include <fstream>
+#include "GreaterThanCondition.h"
+#include "SmallerThanCondition.h"
+#include "EqualsToCondition.h"
+#include "StartsWithCondition.h"
+#include "EndsWithCondition.h"
+#include "ContainsCondition.h"
 #include "SimpleCondition.h"
+#include <stdexcept>
+#include <fstream>
+#include <unordered_map>
+#include <functional>
 
 SingleCondition::SingleCondition()
 {
@@ -58,12 +66,42 @@ SingleCondition::~SingleCondition()
 		delete _layout;
 }
 
+std::string to_string(const QString& qstr) {
+	return qstr.toStdString();
+}
+
 std::shared_ptr<ConditionBase> SingleCondition::data()
 {
-	std::shared_ptr<ConditionBase> condition = std::make_shared<SimpleCondition>(SimpleCondition(
-		_inputSource->currentText().toStdString(),
-		_conditionType->currentText().toStdString(),
-		_validationValue->text().toStdString()
-		));
-	return condition;
+	std::string input = _inputSource->currentText().toStdString();
+	std::string conditionType = to_string(_conditionType->currentText());
+	std::string validationValue = _validationValue->text().toStdString();
+
+	static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>()>> conditionFactory = {
+		{"greater than", [input, validationValue]() {
+			return std::make_shared<GreaterThanCondition>(input, validationValue);
+		}},
+		{"smaller than", [input, validationValue]() {
+			return std::make_shared<SmallerThanCondition>(input, validationValue);
+		}},
+		{"equals to", [input, validationValue]() {
+			return std::make_shared<EqualsToCondition>(input, validationValue);
+		}},
+		{"starts with", [input, validationValue]() {
+			return std::make_shared<StartsWithCondition>(input, validationValue);
+		}},
+		{"ends with", [input, validationValue]() {
+			return std::make_shared<EndsWithCondition>(input, validationValue);
+		}},
+		{"contains", [input, validationValue]() {
+			return std::make_shared<ContainsCondition>(input, validationValue);
+		}}
+	};
+
+	auto it = conditionFactory.find(conditionType);
+	if (it != conditionFactory.end()) {
+		return it->second();
+	}
+	else {
+		throw std::runtime_error("Invalid condition type: " + conditionType);
+	}
 }

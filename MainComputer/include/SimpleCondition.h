@@ -2,21 +2,20 @@
 #define SIMPLE_CONDITION_H
 
 #include "ConditionBase.h"
+#include "../resources/json.hpp"
 #include <string>
-#include <memory>
 
 class SimpleCondition : public ConditionBase {
-private:
-    std::string input;
-    std::string validationType;
-    std::string validationValue;
-
 public:
-    SimpleCondition() = delete;
-    SimpleCondition(const std::string& input, const std::string& validationType, const std::string& validationValue);
-    SimpleCondition(std::shared_ptr<SimpleCondition> condition);
-    bool validate() override;
+    SimpleCondition(const std::string& senderId, const std::string& validationValue);
+    virtual ~SimpleCondition() = default;
+
+    virtual bool validate(const std::string& senderId, const std::string& value) const override = 0;
     nlohmann::json toJson() const override;
+
+protected:
+    std::string senderId;
+    std::string validationValue;
 };
 
-#endif
+#endif 

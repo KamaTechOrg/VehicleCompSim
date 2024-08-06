@@ -1,230 +1,196 @@
 #define DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS 
+
 #include "doctest.h"
 #include "../include/AndCondition.h"
 #include "../include/OrCondition.h"
 #include "../include/SimpleCondition.h"
+#include "../include/ContainsCondition.h"
+#include "../include/GreaterThanCondition.h"
+#include "../include/SmallerThanCondition.h"
+#include "../include/StartsWithCondition.h"
+#include "../include/EndsWithCondition.h"
+#include "../include/EqualsToCondition.h"
 #include <memory>
 #include <chrono>
 
-class TrueCondition : public ConditionBase {
-public:
-    bool validate() override { return true; }
-    nlohmann::json toJson() const override { return { {"type", "true"} }; }
-};
-
-class FalseCondition : public ConditionBase {
-public:
-    bool validate() override { return false; }
-    nlohmann::json toJson() const override { return { {"type", "false"} }; }
-};
-
 TEST_CASE("SimpleCondition Tests") {
+    const std::string senderId = "testSender";
+
     SUBCASE("Equals To Validation") {
-        SimpleCondition cond("value", "equals to", "value");
-        CHECK(cond.validate());
+        EqualsToCondition cond(senderId, "value");
+        CHECK(cond.validate(senderId, "value"));
+        CHECK_FALSE(cond.validate(senderId, "other"));
+        CHECK_FALSE(cond.validate("wrongSender", "value"));
     }
 
     SUBCASE("Greater Than Validation") {
-        SimpleCondition cond("10", "greater than", "5");
-        CHECK(cond.validate());
+        GreaterThanCondition cond(senderId, "5");
+        CHECK(cond.validate(senderId, "10"));
+        CHECK_FALSE(cond.validate(senderId, "3"));
+        CHECK_FALSE(cond.validate("wrongSender", "10"));
     }
 
     SUBCASE("Smaller Than Validation") {
-        SimpleCondition cond("3", "smaller than", "5");
-        CHECK(cond.validate());
+        SmallerThanCondition cond(senderId, "5");
+        CHECK(cond.validate(senderId, "3"));
+        CHECK_FALSE(cond.validate(senderId, "10"));
+        CHECK_FALSE(cond.validate("wrongSender", "3"));
     }
 
     SUBCASE("Starts With Validation") {
-        SimpleCondition cond("hello world", "starts with", "hello");
-        CHECK(cond.validate());
+        StartsWithCondition cond(senderId, "hello");
+        CHECK(cond.validate(senderId, "hello world"));
+        CHECK_FALSE(cond.validate(senderId, "world hello"));
+        CHECK_FALSE(cond.validate("wrongSender", "hello world"));
     }
 
     SUBCASE("Ends With Validation") {
-        SimpleCondition cond("hello world", "ends with", "world");
-        CHECK(cond.validate());
+        EndsWithCondition cond(senderId, "world");
+        CHECK(cond.validate(senderId, "hello world"));
+        CHECK_FALSE(cond.validate(senderId, "world hello"));
+        CHECK_FALSE(cond.validate("wrongSender", "hello world"));
     }
 
     SUBCASE("Contains Validation") {
-        SimpleCondition cond("hello world", "contains", "lo wo");
-        CHECK(cond.validate());
-    }
-
-    SUBCASE("Does Not Contain Validation") {
-        SimpleCondition cond("hello world", "contains", "goodbye");
-        CHECK_FALSE(cond.validate());
+        ContainsCondition cond(senderId, "lo wo");
+        CHECK(cond.validate(senderId, "hello world"));
+        CHECK_FALSE(cond.validate(senderId, "hi there"));
+        CHECK_FALSE(cond.validate("wrongSender", "hello world"));
     }
 }
 
 TEST_CASE("AndCondition Tests") {
+    const std::string senderId = "testSender";
+    const std::chrono::milliseconds elapsedTime(100);
+
     SUBCASE("Both Conditions True") {
-        auto trueCond1 = std::make_shared<SimpleCondition>("value", "starts with", "val");
-        auto trueCond2 = std::make_shared<SimpleCondition>("value", "ends with", "ue");
-        AndCondition andCond(trueCond1, trueCond2);
-        CHECK(andCond.validate());
-        CHECK(andCond.toJson() == nlohmann::json({
+        auto trueCond1 = std::make_shared<StartsWithCondition>(senderId, "val");
+        auto trueCond2 = std::make_shared<EndsWithCondition>(senderId, "ue");
+        AndCondition andCond(trueCond1, trueCond2, elapsedTime);
+        CHECK(andCond.validate(senderId, "value"));
+        CHECK_FALSE(andCond.validate("wrongSender", "value"));
+
+        nlohmann::json expectedJson = {
             {"type", "AndCondition"},
-            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
-            {"LHS", nlohmann::json({
-                {"input", "value"},
-                {"validationType", "starts with"},
-                {"validationValue", "val"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "value"},
-                {"validationType", "ends with"},
-                {"validationValue", "ue"}
-            })}
-            }));
+            {"lhs", trueCond1->toJson()},
+            {"rhs", trueCond2->toJson()},
+            {"elapsedTime", elapsedTime.count()}
+        };
+        CHECK(andCond.toJson() == expectedJson);
     }
 
     SUBCASE("One Condition False") {
-        auto trueCond = std::make_shared<SimpleCondition>("value", "starts with", "val");
-        auto falseCond = std::make_shared<SimpleCondition>("value", "ends with", "world");
-        AndCondition andCond(trueCond, falseCond);
-        CHECK_FALSE(andCond.validate());
-        CHECK(andCond.toJson() == nlohmann::json({
-            {"type", "AndCondition"},
-            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
-            {"LHS", nlohmann::json({
-                {"input", "value"},
-                {"validationType", "starts with"},
-                {"validationValue", "val"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "value"},
-                {"validationType", "ends with"},
-                {"validationValue", "world"}
-            })}
-            }));
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "val");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "world");
+        AndCondition andCond(trueCond, falseCond, elapsedTime);
+        CHECK_FALSE(andCond.validate(senderId, "value"));
     }
 }
 
 TEST_CASE("OrCondition Tests") {
+    const std::string senderId = "testSender";
+    const std::chrono::milliseconds elapsedTime(100);
+
     SUBCASE("Both Conditions True") {
-        auto trueCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
-        auto trueCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "world");
-        OrCondition orCond(trueCond1, trueCond2);
-        CHECK(orCond.validate());
-        CHECK(orCond.toJson() == nlohmann::json({
+        auto trueCond1 = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto trueCond2 = std::make_shared<EndsWithCondition>(senderId, "world");
+        OrCondition orCond(trueCond1, trueCond2, elapsedTime);
+        CHECK(orCond.validate(senderId, "hello world"));
+        CHECK_FALSE(orCond.validate("wrongSender", "hello world"));
+
+        nlohmann::json expectedJson = {
             {"type", "OrCondition"},
-            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
-            {"LHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "starts with"},
-                {"validationValue", "hello"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "ends with"},
-                {"validationValue", "world"}
-            })}
-            }));
+            {"lhs", trueCond1->toJson()},
+            {"rhs", trueCond2->toJson()},
+            {"elapsedTime", elapsedTime.count()}
+        };
+        CHECK(orCond.toJson() == expectedJson);
     }
 
     SUBCASE("One Condition True") {
-        auto trueCond = std::make_shared<SimpleCondition>("hello world", "starts with", "hello");
-        auto falseCond = std::make_shared<SimpleCondition>("hello world", "ends with", "unknown");
-        OrCondition orCond(trueCond, falseCond);
-        CHECK(orCond.validate());
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "unknown");
+        OrCondition orCond(trueCond, falseCond, elapsedTime);
+        CHECK(orCond.validate(senderId, "hello world"));
     }
 
-    SUBCASE("Contains or Equals To") {
-        auto containsCond = std::make_shared<SimpleCondition>("hello world", "contains", "universe");
-        auto equalsCond = std::make_shared<SimpleCondition>("hello world", "equals to", "hello world");
-        OrCondition orCond(containsCond, equalsCond);
-        CHECK(orCond.validate());
+    SUBCASE("Both Conditions False") {
+        auto falseCond1 = std::make_shared<StartsWithCondition>(senderId, "world");
+        auto falseCond2 = std::make_shared<EndsWithCondition>(senderId, "hello");
+        OrCondition orCond(falseCond1, falseCond2, elapsedTime);
+        CHECK_FALSE(orCond.validate(senderId, "hello world"));
     }
 }
 
 TEST_CASE("SimpleCondition Edge Cases") {
+    const std::string senderId = "testSender";
+
     SUBCASE("Empty string comparison") {
-        SimpleCondition cond("", "equals to", "");
-        CHECK(cond.validate());
+        EqualsToCondition cond(senderId, "");
+        CHECK(cond.validate(senderId, ""));
     }
 
     SUBCASE("Case sensitivity") {
-        SimpleCondition cond("Value", "equals to", "value");
-        CHECK_FALSE(cond.validate());
+        EqualsToCondition cond(senderId, "Value");
+        CHECK_FALSE(cond.validate(senderId, "value"));
     }
 
     SUBCASE("Whitespace handling") {
-        SimpleCondition cond(" value ", "equals to", "value");
-        CHECK_FALSE(cond.validate());
+        EqualsToCondition cond(senderId, "value");
+        CHECK_FALSE(cond.validate(senderId, " value "));
     }
 
     SUBCASE("Contains with empty string") {
-        SimpleCondition cond("hello world", "contains", "");
-        CHECK(cond.validate());
+        ContainsCondition cond(senderId, "");
+        CHECK(cond.validate(senderId, "hello world"));
     }
 
     SUBCASE("Contains with full string") {
-        SimpleCondition cond("hello world", "contains", "hello world");
-        CHECK(cond.validate());
+        ContainsCondition cond(senderId, "hello world");
+        CHECK(cond.validate(senderId, "hello world"));
     }
 }
 
 TEST_CASE("Nested Composite Conditions") {
-    auto cond1 = std::make_shared<SimpleCondition>("value", "starts with", "v");
-    auto cond2 = std::make_shared<SimpleCondition>("value", "contains", "alu");
-    auto cond3 = std::make_shared<SimpleCondition>("value", "ends with", "e");
+    const std::string senderId = "testSender";
+    const std::chrono::milliseconds elapsedTime(100);
 
-    SUBCASE("Nested And-Or with Contains") {
-        auto andCond = std::make_shared<AndCondition>(cond1, cond2);
-        OrCondition orCond(andCond, cond3);
-        CHECK(orCond.validate());
-    }
-}
+    auto cond1 = std::make_shared<StartsWithCondition>(senderId, "v");
+    auto cond2 = std::make_shared<ContainsCondition>(senderId, "alu");
+    auto cond3 = std::make_shared<EndsWithCondition>(senderId, "e");
 
-TEST_CASE("Exception Handling") {
-    SUBCASE("Invalid validation type") {
-        SimpleCondition cond("value", "invalid type", "value");
-        CHECK_THROWS_AS(cond.validate(), std::runtime_error);
+    SUBCASE("Nested And-Or") {
+        auto andCond = std::make_shared<AndCondition>(cond1, cond2, elapsedTime);
+        OrCondition orCond(andCond, cond3, elapsedTime);
+        CHECK(orCond.validate(senderId, "value"));
     }
 }
 
 TEST_CASE("Performance Test") {
+    const std::string senderId = "testSender";
+    const std::chrono::milliseconds elapsedTime(1);
     const int NUM_CONDITIONS = 1000;
     std::vector<std::shared_ptr<ConditionBase>> conditions;
 
     for (int i = 0; i < NUM_CONDITIONS; ++i) {
-        conditions.push_back(std::make_shared<SimpleCondition>(
-            "test string " + std::to_string(i), "contains", std::to_string(i)));
+        conditions.push_back(std::make_shared<ContainsCondition>(
+            senderId, std::to_string(i)));
     }
 
-    // Example complex condition
     auto andCond = std::make_shared<AndCondition>(
-        std::make_shared<SimpleCondition>("hello world", "starts with", "hello"),
-        std::make_shared<SimpleCondition>("hello world", "ends with", "world")
+        std::make_shared<StartsWithCondition>(senderId, "hello"),
+        std::make_shared<EndsWithCondition>(senderId, "world"),
+        elapsedTime
     );
     auto complexCondition = std::make_shared<OrCondition>(
         andCond,
-        std::make_shared<SimpleCondition>("test", "equals to", "test")
+        std::make_shared<EqualsToCondition>(senderId, "test"),
+        elapsedTime
     );
-
-    SUBCASE("Both Conditions False") {
-        auto falseCond1 = std::make_shared<SimpleCondition>("hello world", "starts with", "world");
-        auto falseCond2 = std::make_shared<SimpleCondition>("hello world", "ends with", "hello");
-        OrCondition orCond(falseCond1, falseCond2);
-        CHECK_FALSE(orCond.validate());
-        CHECK(orCond.toJson() == nlohmann::json({
-            {"type", "OrCondition"},
-            {"elapsedTime", std::to_string(MAX_ELAPSED_TIME)},
-            {"LHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "starts with"},
-                {"validationValue", "world"}
-            })},
-            {"RHS", nlohmann::json({
-                {"input", "hello world"},
-                {"validationType", "ends with"},
-                {"validationValue", "hello"}
-            })}
-            }));
-    }
 
     SUBCASE("Performance Measurement") {
         auto start = std::chrono::high_resolution_clock::now();
-        bool result = complexCondition->validate();
+        bool result = complexCondition->validate(senderId, "hello test world");
         auto end = std::chrono::high_resolution_clock::now();
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

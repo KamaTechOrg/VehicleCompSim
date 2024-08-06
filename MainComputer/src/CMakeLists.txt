@@ -4,5 +4,10 @@ target_sources(MainComputer PRIVATE
     OrCondition.cpp
     AndCondition.cpp
     BinaryTreeBuilder.cpp
-   
+    ContainsCondition.cpp
+    EndsWithCondition.cpp
+    EqualsToCondition.cpp
+    GreaterThanCondition.cpp
+    SmallerThanCondition.cpp
+    StartsWithCondition.cpp
 )

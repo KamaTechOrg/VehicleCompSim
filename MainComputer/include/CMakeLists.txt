@@ -13,6 +13,13 @@ set(HEADER_FILES
     OrCondition.h
     AndCondition.h
     BinaryTreeBuilder.h
+    ContainsCondition.h
+    EndsWithCondition.h
+    EqualsToCondition.h
+    GreaterThanCondition.h
+    SmallerThanCondition.h
+    StartsWithCondition.h
+
 )
 
 add_library(MainComputerHeaders INTERFACE)

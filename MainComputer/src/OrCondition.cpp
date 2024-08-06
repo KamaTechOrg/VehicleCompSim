@@ -3,15 +3,15 @@
 OrCondition::OrCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime)
     : CompositeCondition(lhs, rhs, elapsedTime) {}
 
-bool OrCondition::validate() {
-    return getLHS()->validate() || getRHS()->validate();
+bool OrCondition::validate(const std::string& senderId, const std::string& value) const {
+    return LHS->validate(senderId, value) || RHS->validate(senderId, value);
 }
 
 nlohmann::json OrCondition::toJson() const {
     return {
         {"type", "OrCondition"},
-        {"elapsedTime", std::to_string(_elapsedTime.count())},
-        {"LHS", getLHS()->toJson()},
-        {"RHS", getRHS()->toJson()}
+        {"lhs", LHS->toJson()},
+        {"rhs", RHS->toJson()},
+        {"elapsedTime", _elapsedTime.count()}
     };
 }
