@@ -1,15 +1,13 @@
 #pragma once
 #include <array>
 #include <cstdint>
-#include <cstring>
 #include <iostream>
-#include <string>
-#include <cstring>
 
-
-#ifdef SYCL_ENABELED
+#if SYCL_ENABELED
 #include <sycl/sycl.hpp>
 #endif
+
+namespace aes {
 
 enum class AesVariant {Aes128, Aes192, Aes256};
 
@@ -34,19 +32,13 @@ public:
   explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
 
-  std::string encrypt_ecb(std::string const& message) const;
-  std::string decrypt_ecb(std::string const& encrypted_message) const;
-
-#ifdef SYCL_ENABELED
-  std::string encrypt_ecb(sycl::queue& q, std::string const& message) const;
-  std::string decrypt_ecb(sycl::queue& q, std::string const& message) const;
-#endif
-
-  std::string encrypt_cbc(std::string const& message, std::array<uint8_t, BlockSize> const& iv) const;
-  std::string decrypt_cbc(std::string const& encrypted_message, std::array<uint8_t, BlockSize> const& iv) const;
-
+#if SYCL_ENABELED
+  SYCL_EXTERNAL void encrypt(State&) const;
+  SYCL_EXTERNAL void decrypt(State&) const;
+#else
   void encrypt(State&) const;
   void decrypt(State&) const;
+#endif
 
 private:
   void expand_key(std::array<uint8_t, KeySize> const &key);
@@ -74,3 +66,5 @@ void print_state(typename Aes<Aes_var>::State const& state){
     }
     std::cout << "\n";
 }
+
+} // namespace aes
