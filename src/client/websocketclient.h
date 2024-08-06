@@ -15,7 +15,7 @@ class WebSocketClient : public QObject, public Observer
 {
     Q_OBJECT
 public:
-    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://localhost:1234")), bool debug = false);
+    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://104.131.73.137:28770")), bool debug = false);
 
     WebSocketClient(const WebSocketClient&) = delete;
     WebSocketClient& operator=(const WebSocketClient&) = delete;

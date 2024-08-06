@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
 
-	WebSocketServer server(1234, true, nullptr);
+	WebSocketServer server(28770, true, nullptr);
 	
 	return app.exec();
 }

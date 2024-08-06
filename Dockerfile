@@ -1,4 +1,4 @@
-FROM stateoftheartio/qt6:6.5-gcc-aqt
+FROM stateoftheartio/qt6:6.7-gcc-aqt
 
 # Install additional dependencies
 RUN apt-get update && apt-get install -y \
@@ -18,7 +18,7 @@ RUN mkdir build && cd build && \
     make
 
 # Expose the port your server will run on (adjust if needed)
-EXPOSE 8080
+EXPOSE 28770
 
 # Run the server application
-CMD ["./build/ServerApp"]
+CMD ["./build/ServerApp", "28770"]
