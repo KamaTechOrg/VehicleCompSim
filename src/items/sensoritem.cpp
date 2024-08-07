@@ -106,10 +106,6 @@ bool SensorItem::isUseCmakePath() const
     return useCmakePath;
 }
 
-void SensorItem::setID(const QString& id) {
-    this->id = id;
-}
-
 void SensorItem::setName(const QString& name) {
     this->name = name;
 }

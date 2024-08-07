@@ -64,7 +64,7 @@ void MainWindow::onConnectionStatusChanged(bool connected)
 
 void MainWindow::setupRunService()
 {
-    runService.setScene(m_scene.get());
+    runService.setScene(m_scene);
 
     startBtn = new QPushButton("start", m_toolBar);
     m_toolBar->addWidget(startBtn);
