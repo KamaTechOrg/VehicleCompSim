@@ -10,5 +10,10 @@ int main(){
     client.send((void *)m.c_str() , m.size(), 10 ,100);
     char buffer[MAXRECV];
     client.listen(buffer , MAXRECV);
+    int i = 25;
+    while (true){
+        cin >> m;
+         client.send((void *)m.c_str() , m.size(), ++i ,100);
+    }
     std::cout << buffer << std::endl;
 }
