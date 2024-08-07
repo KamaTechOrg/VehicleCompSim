@@ -1,11 +1,19 @@
 #include "runservice.h"
 #include <thread>
+#include "../include/VehicleCompSim/utils/processControls.h"
+#include "../include/VehicleCompSim/utils/createDump.h"
+
 
 int RunService::RunControllData::RunControllCounter = 0;
 
 RunService::RunService()
     : scene(nullptr), timer(0)
 {}
+
+RunService::~RunService()
+{
+    isRunning = false;
+}
 
 void RunService::setScene(CustomScene *_scene)
 {
@@ -14,15 +22,27 @@ void RunService::setScene(CustomScene *_scene)
 
 void RunService::start()
 {
-
+    isRunning = true;
     extarctSensorsFromScene();
 
     compile();
 }
 
+void RunService::start(const std::function<void(void)> onFinish)
+{
+    isRunning = true;
+    auto listner = std::thread([onFinish, this](){
+        while (this->isRunning) { }
+        onFinish();
+    });
+    listner.detach();
+    start();
+}
+
 void RunService::stop()
 {    
     runControl.stop();
+    isRunning = false;
 }
 
 void RunService::setTimer(int t)
@@ -33,6 +53,7 @@ void RunService::setTimer(int t)
 
 std::shared_ptr<QProcess> RunService::processInit(const QString &program, const QStringList& arguments)
 {
+
     std::shared_ptr<QProcess> process_ptr(new QProcess);
     std::weak_ptr<QProcess> weak_process_ptr(process_ptr); // waek_ptr is used to safly calling the qprocess withoout incrementing its ptr count
 
@@ -83,7 +104,8 @@ void RunService::extarctSensorsFromScene()
     sensors.clear();
     for (auto & item: scene->items())
     {
-        if (SensorItem* sensor = dynamic_cast<SensorItem*>(item))
+        SensorItem* sensor = dynamic_cast<SensorItem*>(item);
+        if (sensor && !sensor->isExludeFromProject())
         {
             sensors.push_back(sensor);
         }
@@ -136,9 +158,10 @@ void RunService::run()
     {
         auto process = processInit(sensor->getRunCommand());
         auto process_ptr = process.get();
-
         QObject::connect(process_ptr, &QProcess::errorOccurred, [process_ptr, this](QProcess::ProcessError error){
             this->runControl.isErrorAccure = true;
+            //this->dump(process_ptr->processId());
+
         });
 
         QObject::connect(process_ptr, &QProcess::finished, [process_ptr, this](int exitCode, QProcess::ExitStatus exitStatus){
@@ -155,27 +178,51 @@ void RunService::run()
         runControl.sensorsProcesses.push_back(process);
     }
     runControl.timer = timer;
-    runControl.start();
+    runControl.start(true);
 
 }
 
-void RunService::RunControllData::start()
+void RunService::dump(unsigned long long pid)
 {
+    std::string dumpOutputPath = (QDir::currentPath() + "/dumps/" + QString::number(pid) + ".dump").toStdString();
+    //CreateProcessDump(pid, dumpOutputPath.toStdString());
+//    std::system((std::string("C:/QT PROJECTS/TEST/GUI/VehicleCompSim/externalLibraries/Procdump/procdump.exe -e 1 -f \"\" -ma ") + QString::number(pid).toStdString() + " " + dumpOutputPath).c_str());
+    //qInfo() << QDir::currentPath();
 
+}
+
+
+
+void RunService::RunControllData::start(bool simultaneously)
+{
+    if (isStarted) return;
     isRunning = true;
-    for (auto& process : sensorsProcesses) process->start();
+    auto runControlId = this->controllerId;
+    for (auto& process : sensorsProcesses)
+    {
+        process->start();
+        if (simultaneously)
+        {
+            std::thread([&process, runControlId, this](){
+                process->waitForStarted();
+                suspendProcess(process->processId());
+                if (this->controllerId == runControlId) ++this->successfulStartedProcesses;
+                while (this->controllerId == runControlId && this->successfulStartedProcesses != this->sensorsProcesses.size());
+
+                if (this->controllerId == runControlId) resumeProcess(process->processId());
+            }).detach();
+        }
+        std::string dumpOutputPath = (QString("C:/Procdump") + "/dumps/" + QString::number(process->processId()) + ".dump").toStdString();
+        //CreateProcessDump(pid, dumpOutputPath.toStdString());
+        //std::system((std::string("C:/Procdump/procdump.exe -e 1 -f \"\" -ma ") + QString::number(process->processId()).toStdString() + " " + dumpOutputPath).c_str());
+        //qInfo() << QDir::currentPath();
+    }
     isStarted = true;
     if (isErrorAccure) return;
 
-    auto currentControllerId = this->controllerId;
-    if (timer > 0)
-    {
-        timer_async_return = std::async(std::launch::async, [this, currentControllerId]() {
-            std::this_thread::sleep_for(std::chrono::seconds(this->timer));
-            if (this->controllerId == currentControllerId) this->stop();
-        });
-    }
+    startTimer();
 }
+
 
 void RunService::RunControllData::stop()
 {
@@ -190,7 +237,21 @@ void RunService::RunControllData::stop()
     isRunning = false;
 }
 
+void RunService::RunControllData::startTimer()
+{
+    auto currentControllerId = this->controllerId;
+    if (timer > 0)
+    {
+        timer_async_return = std::async(std::launch::async, [this, currentControllerId]() {
+            std::this_thread::sleep_for(std::chrono::seconds(this->timer));
+            if (this->controllerId == currentControllerId) this->stop();
+        });
+    }
+}
+
 void RunService::RunControllData::reset()
 {
     *this = RunService::RunControllData();
 }
+
+

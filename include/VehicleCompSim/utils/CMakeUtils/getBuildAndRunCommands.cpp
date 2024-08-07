@@ -1,4 +1,4 @@
-#include "getBuildAndRunCommands.h".h"
+#include "getBuildAndRunCommands.h"
 #include <QDir>
 #include <QFile>
 #include <QTextStream>

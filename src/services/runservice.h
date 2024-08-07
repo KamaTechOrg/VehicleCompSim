@@ -2,8 +2,10 @@
 #define RUNSERVICE_H
 
 #include "../gui/customscene.h"
-#include "../include/VehicleCompSim/utils/runCommand/runCommand.h"
+#include <QProcess>
 #include <future>
+#include <minwindef.h>
+
 
 class RunService
 {
@@ -17,33 +19,37 @@ class RunService
         bool isStarted = false;
         bool isFinished = false;
         bool isErrorAccure = false;
+        int successfulStartedProcesses = 0;
         int successfulFinishedProcesses = 0;
         int timer = 0;
         std::future<void> timer_async_return;
-        void start();
+        void start(bool simultaneously = false);
         void stop();
+        void startTimer();
         void reset();
     };
 
     CustomScene* scene;
     QVector<SensorItem*> sensors;
     RunControllData runControl;
-    int timer;
+    int timer = 0;
+    bool isRunning = false;
 
     std::shared_ptr<QProcess> processInit(const QString &program, const QStringList& arguments);
     std::shared_ptr<QProcess> processInit(const QString &command);
     void extarctSensorsFromScene();
     void compile();
     void run();
+    void dump(unsigned long long pid);
+
+
 public:
     RunService();
-
-    bool running = false;
-
-
+    ~RunService();
 
     void setScene(CustomScene* _scene);
     void start();
+    void start(const std::function<void ()> onFinish);
     void stop();
     void setTimer(int t);
 

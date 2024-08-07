@@ -24,6 +24,8 @@ public:
     void setCmakePath(const QString& path);
     void setUseCmakePath(bool use);
     bool isInitialized() const;
+    bool isExludeFromProject() const;
+
 
 private:
     QString id = "";
@@ -32,7 +34,7 @@ private:
     QString runCommand = "";
     QString cmakePath = "";
     bool useCmakePath = true;
-
+    bool excludeFromProject = false;
     void updateItem();
     void showButtons();
     void hideButtons();

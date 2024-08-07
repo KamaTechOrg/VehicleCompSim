@@ -47,7 +47,7 @@
 
     void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
     {
-        painter->setBrush(Qt::transparent);
+//        painter->setBrush(Qt::green);
         painter->setPen(Qt::NoPen);
         painter->drawRect(boundingRect());
 
@@ -132,6 +132,11 @@ void SensorItem::setUseCmakePath(bool use)
 bool SensorItem::isInitialized() const
 {
     return !id.isEmpty() && !name.isEmpty() && !buildCommand.isEmpty() && !runCommand.isEmpty();
+}
+
+bool SensorItem::isExludeFromProject() const
+{
+    return excludeFromProject;
 }
 
 void SensorItem::updateItem()

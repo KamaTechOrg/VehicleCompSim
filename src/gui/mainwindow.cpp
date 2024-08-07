@@ -11,8 +11,8 @@
 #include <QHBoxLayout>
 #include <QUuid>
 #include <QTimeEdit>
+#include <QRect>
 #include <bson/bson.h>
-#include "../include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), m_scene(std::make_unique<CustomScene>())
@@ -34,8 +34,10 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this]() { loadLayout(); });
 
     setupRunService();
-
 }
+
+
+
 
 void MainWindow::setupToolBar() {
     m_toolBar = new QToolBar("Shapes", this);
@@ -54,31 +56,58 @@ void MainWindow::setupRunService()
 {
     runService.setScene(m_scene.get());
 
-    QPushButton *startBtn = new QPushButton("start", m_toolBar);
+    startBtn = new QPushButton("start", m_toolBar);
     m_toolBar->addWidget(startBtn);
-    QPushButton *stopBtn = new QPushButton("stop", m_toolBar);
+    stopBtn = new QPushButton("stop", m_toolBar);
     m_toolBar->addWidget(stopBtn);
-    QTimeEdit *timer = new QTimeEdit(m_toolBar);
+    timer = new QTimeEdit(m_toolBar);
     timer->setDisplayFormat("hh:mm:ss");
     timer->setFixedSize(120, 30);
     timer->setCurrentSection(QDateTimeEdit::MinuteSection);
     m_toolBar->addWidget(timer);
 
+    m_toolbar_blocker = new ActionsBlocker(m_toolBar);
+    m_scene_blocker = new ActionsBlocker(m_view);
+    m_scene_blocker->transparency(0.0);
+    onRunEnd();
+
     QObject::connect(startBtn, &QPushButton::clicked, [this](){
-        this->runService.start();
+        this->onRunStart();
+        this->runService.start([this](){this->onRunEnd();});
     });
 
     QObject::connect(stopBtn, &QPushButton::clicked, [this](){
         this->runService.stop();
     });
 
-    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this, timer](){
+    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this](){
         int t = timer->time().hour();
         t = t*60 + timer->time().minute();
         t = t*60 + timer->time().second();
 
         this->runService.setTimer(t);
     });
+}
+
+void MainWindow::onRunStart()
+{
+    startBtn->hide();
+    timer->hide();
+
+    stopBtn->show();
+    m_toolbar_blocker->show();
+    m_scene_blocker->show();
+    stopBtn->raise();
+}
+
+void MainWindow::onRunEnd()
+{
+    startBtn->show();
+    timer->show();
+
+    stopBtn->hide();
+    m_toolbar_blocker->hide();
+    m_scene_blocker->hide();
 }
 
 void MainWindow::background_Layout() {
