@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <cmath>
 #include "gui/popupdialog.h"
+#include "../include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
 
     SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent){
         m_type = ItemType::Sensor;
@@ -30,6 +31,7 @@
         m_updateProxy = updateProxy;
 
         hideButtons();
+
     }
 
     SensorItem::SensorItem(const SensorItem& other)
@@ -38,11 +40,13 @@
         name = other.name;
         buildCommand = other.buildCommand;
         runCommand = other.runCommand;
+        cmakePath = other.cmakePath;
+        useCmakePath = other.useCmakePath;
     }
 
     void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
     {
-        painter->setBrush(Qt::transparent);
+//        painter->setBrush(Qt::green);
         painter->setPen(Qt::NoPen);
         painter->drawRect(boundingRect());
 
@@ -92,6 +96,20 @@ void SensorItem::setPriority(const QString& priority) {
     this->priority = priority;
 }
 
+QString SensorItem::getCmakePath() const
+{
+    return cmakePath;
+}
+
+bool SensorItem::isUseCmakePath() const
+{
+    return useCmakePath;
+}
+
+void SensorItem::setID(const QString& id) {
+    this->id = id;
+}
+
 void SensorItem::setName(const QString& name) {
     this->name = name;
 }
@@ -104,9 +122,24 @@ void SensorItem::setRunCommand(const QString& runCommand) {
     this->runCommand = runCommand;
 }
 
+void SensorItem::setCmakePath(const QString &path)
+{
+    cmakePath = path;
+}
+
+void SensorItem::setUseCmakePath(bool use)
+{
+    useCmakePath = use;
+}
+
 bool SensorItem::isInitialized() const
 {
     return !priority.isEmpty() && !name.isEmpty() && !buildCommand.isEmpty() && !runCommand.isEmpty();
+}
+
+bool SensorItem::isExludeFromProject() const
+{
+    return excludeFromProject;
 }
 
 void SensorItem::updateItem()
@@ -121,6 +154,8 @@ void SensorItem::updateItem()
             name = tempSensorItem->getName();
             buildCommand = tempSensorItem->getBuildCommand();
             runCommand = tempSensorItem->getRunCommand();
+            cmakePath = tempSensorItem->getCmakePath();
+            useCmakePath = tempSensorItem->isUseCmakePath();
         }
         else{
             QMessageBox::StandardButton reply;

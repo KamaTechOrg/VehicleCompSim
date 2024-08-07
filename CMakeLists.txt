@@ -15,6 +15,18 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Network)
 
+# Specify the path to the bson library
+set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
+
+# Add the include directory for the bson headers
+include_directories(${BSON_ROOT}/include)
+
+# Add the library directories for the bson library
+#link_directories(${BSON_ROOT}/lib)
+link_directories(${BSON_ROOT}/lib/Debug)
+link_directories(${BSON_ROOT}/lib/Relese)
+
+
 # Define source files
 set(COMMON_SOURCES
     src/items/serializableitem.cpp
@@ -68,6 +80,24 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${COMMON_SOURCES}
         ${CLIENT_SOURCES}
+# NOTICE:  this list has some duplicates
+        ${PROJECT_SOURCES}
+        include/VehicleCompSim/utils/network.hpp
+        include/VehicleCompSim/utils/runCommand/runCommand.cpp
+        include/VehicleCompSim/utils/runCommand/runCommand.h
+        include/VehicleCompSim/utils/network.hpp
+        src/gui/customscene.cpp
+        src/gui/customscene.h
+        src/gui/customwidget.cpp
+        src/gui/customwidget.h
+        src/gui/mainwindow.cpp
+        src/gui/mainwindow.h src/gui/mainwindow.ui src/gui/popupdialog.cpp src/gui/popupdialog.h src/gui/popupdialog.ui src/items/baseitem.cpp src/items/baseitem.h src/items/connectoritem.cpp src/items/connectoritem.h src/items/edgeitem.cpp src/items/edgeitem.h src/items/sensoritem.cpp src/items/sensoritem.h src/main.cpp
+        src/services/runservice.cpp src/services/runservice.h
+        include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.cpp include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h
+        src/items/actionsblocker.h src/items/actionsblocker.cpp
+        include/VehicleCompSim/utils/processControls.cpp
+        include/VehicleCompSim/utils/processControls.h
+
     )
 else()
     add_executable(ClientApp
@@ -103,6 +133,15 @@ target_include_directories(ServerApp PRIVATE
 # Link libraries
 target_link_libraries(ClientApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(ServerApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network)
+
+
+# Link the BSON library
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(VehicleCompSim PRIVATE "${BSON_ROOT}/lib/Debug/bson-1.0.lib")
+else()
+    target_link_libraries(VehicleCompSim PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
+endif()
+
 
 # Set properties for macOS and iOS
 if(${QT_VERSION} VERSION_LESS 6.1.0)
