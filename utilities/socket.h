@@ -26,7 +26,7 @@ public:
   void create();
   void bind ( const int port );
   void listen() const;
-   int accept (  ) ;
+  FD accept (  ) ;
 
   
   void connect ( const std::string host, const int port );

@@ -22,7 +22,7 @@ private:
 
     Server m_server;
     Mamge_req m_req;
-    Mange_connect m_connect;
+    Receive_manger m_connect;
     FD new_fd = 0;
     std::mutex new_fd_mutex;
 };

@@ -6,7 +6,7 @@ class Server
 {
 public:
     Server(int port);
-    int run();
+    FD wait_next_client();
 
 private:
 

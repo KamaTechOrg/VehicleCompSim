@@ -23,7 +23,7 @@ void MangServer::init()
 void MangServer::run_server()
 {
     while (true){
-        int fd = m_server.run();
+        int fd = m_server.wait_next_client();
         std::unique_lock<std::mutex> lock(new_fd_mutex);
         new_fd = fd;
 

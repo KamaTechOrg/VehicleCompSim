@@ -7,7 +7,7 @@ Server::Server(int port)
     m_server_socket.listen();
 }
 
-int Server::run()
+FD Server::wait_next_client()
 {
     return m_server_socket.accept();
 }

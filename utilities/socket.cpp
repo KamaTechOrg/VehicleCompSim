@@ -78,10 +78,10 @@ void Socket::listen() const
   
 }
 
-int Socket::accept() 
+FD Socket::accept() 
 {
   int addr_length = sizeof(m_addr);
-  int fd = ::accept(m_sock, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
+  FD fd = ::accept(m_sock, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
   
   if (fd <= 0)
   {

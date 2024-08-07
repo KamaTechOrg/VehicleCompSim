@@ -41,7 +41,7 @@ void ClientSocket::listen(void *data, size_t size)
     // Receive the data from server
     void* buffer[MAXRECV];
     memset(buffer, 0, sizeof(buffer));
-    m_clientSocket.recv(buffer, sizeof(buffer));
+    // m_clientSocket.recv(buffer, sizeof(buffer));
 
     data = buffer;
  
