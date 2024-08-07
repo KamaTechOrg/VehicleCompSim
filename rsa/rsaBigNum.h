@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include "BigNum.h"
-#include "BigNumWithMinus.hpp"
+#include "BigNumWithMinus.cpp"
 
 
 class RSABigNum

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "BigNumWithMinus.hpp"
+#include "BigNumWithMinus.h"
 
 //Test addition with int
 TEST(BigNumWithMinusTest, addition_with_int){
