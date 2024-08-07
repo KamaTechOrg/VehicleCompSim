@@ -105,7 +105,7 @@ void Socket::send(void *data, size_t size) const
 
 }
 
-void Socket::recv(void *data, size_t len) const
+int Socket::recv(void *data, size_t len) const
 {
     // Allocate buffer
     char buf[len];
@@ -136,6 +136,7 @@ void Socket::recv(void *data, size_t len) const
             static_cast<char*>(data)[status] = '!';
         }
     }
+    return status;
 }
 
 void Socket::set_FD(int fd)

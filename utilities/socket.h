@@ -32,7 +32,7 @@ public:
   void connect ( const std::string host, const int port );
 
   void send ( void * data ,size_t size ) const;
-  void recv ( void *data, size_t len ) const;
+  int recv ( void *data, size_t len ) const;
 
 
   void set_FD( int fd );

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "client.h"
+#include <string.h>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ int main(){
 
     int i = 25;
     while (true){
+        memset(buffer, 0, sizeof(buffer));
         cin >> m;
 
          client.send((void *)m.c_str() , m.size(), ++i ,100);
