@@ -27,7 +27,9 @@ private:
     void onRunStart();
     void onRunEnd();
 
-    std::unique_ptr<CustomScene> m_scene;
+    void onConnectionStatusChanged(bool connected);
+
+    CustomScene* m_scene;
     QGraphicsView* m_view;  // Owned by QMainWindow
     QToolBar* m_toolBar;  // ToolBar for draggable items
     ActionsBlocker* m_toolbar_blocker;

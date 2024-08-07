@@ -2,13 +2,14 @@
 
 #include <QPainter>
 #include <QGraphicsLineItem>
-#include "BaseItem.h"
+#include "baseitem.h"
 
 class BaseItem;
 
-class EdgeItem : public QGraphicsPathItem {
+class EdgeItem : public SerializableItem, public QGraphicsPathItem
+{
 public:
-    EdgeItem(const QString& id, QGraphicsItem* parent = nullptr);
+    EdgeItem(QGraphicsItem* parent = nullptr);
 
     void addConnection(BaseItem* item);
     // void updatePosition();
@@ -17,11 +18,13 @@ public:
     void setSource(BaseItem* source);
     void setDest(BaseItem* dest);
 
+    QJsonObject serialize() const override;
+    void deserialize(const QJsonObject &itemData) override;
+
 protected:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
 private:
-    BaseItem* m_source;
-    BaseItem* m_dest;
-    QString m_id;
+    BaseItem* m_source = nullptr;
+    BaseItem* m_dest = nullptr;
 };

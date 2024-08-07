@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseItem.h"
+#include "baseitem.h"
 
 class SensorItem : public BaseItem {
 public:
@@ -10,14 +10,14 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    QString getID() const;
+    QString getPriority() const;
     QString getName() const;
     QString getBuildCommand() const;
     QString getRunCommand() const;
     QString getCmakePath() const;
     bool isUseCmakePath() const;
 
-    void setID(const QString& id);
+    void setPriority(const QString& priority);
     void setName(const QString& name);
     void setBuildCommand(const QString& buildCommand);
     void setRunCommand(const QString& runCommand);
@@ -28,7 +28,7 @@ public:
 
 
 private:
-    QString id = "";
+    QString priority = "";
     QString name = "";
     QString buildCommand = "";
     QString runCommand = "";

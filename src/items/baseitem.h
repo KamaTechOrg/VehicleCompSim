@@ -5,20 +5,18 @@
 #include <QList>
 #include <QGraphicsProxyWidget>
 
-#include "EdgeItem.h"
+#include "serializableitem.h"
+#include "edgeitem.h"
 
 class EdgeItem;
 
-class BaseItem : public QObject, public QGraphicsItem {
+class BaseItem : public QObject, public SerializableItem, public QGraphicsItem  {
     Q_OBJECT
     public:
-    enum class NodeType { Sensor, Connector };
 
-    BaseItem(NodeType type, QGraphicsItem* parent = nullptr);
+    BaseItem(QGraphicsItem* parent = nullptr);
 
     QRectF boundingRect() const override;
-
-    NodeType nodeType() const { return m_type; }
 
     virtual void addEdge(EdgeItem* edge);
     virtual void removeEdge(EdgeItem* edge);
@@ -33,6 +31,9 @@ class BaseItem : public QObject, public QGraphicsItem {
     void removeItem();
     void confirmRemove();
 
+    QJsonObject serialize() const override;
+    void deserialize(const QJsonObject &itemData) override;
+
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
@@ -44,7 +45,6 @@ protected:
     void showButtons();
     void hideButtons();
 
-    NodeType m_type;
     QColor m_color;
     qreal m_width = 25;
     qreal m_height = 25;

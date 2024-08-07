@@ -10,14 +10,15 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QUuid>
+#include "customwidget.h"
+#include "client/websocketclient.h"
+
 #include <QTimeEdit>
 #include <QRect>
 #include <bson/bson.h>
-
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), m_scene(std::make_unique<CustomScene>())
-{
-    m_view = new QGraphicsView(m_scene.get());
+    : QMainWindow(parent), m_scene(new CustomScene()) {
+    m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
 
@@ -33,6 +34,10 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Save", [this]() { saveLayout(); });
     toolBar->addAction("Load", [this]() { loadLayout(); });
 
+    WebSocketClient& client = WebSocketClient::getInstance();
+    client.setScene(m_scene);
+    connect(&client, &WebSocketClient::connectionStatusChanged, this, &MainWindow::onConnectionStatusChanged);
+      
     setupRunService();
 }
 
@@ -50,6 +55,11 @@ void MainWindow::setupToolBar() {
     m_toolBar->addWidget(busWidget);
 
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
+}
+
+void MainWindow::onConnectionStatusChanged(bool connected)
+{
+  
 }
 
 void MainWindow::setupRunService()
