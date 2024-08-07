@@ -21,6 +21,10 @@ add_executable(aes_test aes_test.cpp)
 target_link_libraries(aes_test aes)
 list(APPEND test_targets aes_test)
 
+add_executable(BigNumWithMinus_test BigNumWithMinus_test.cpp)
+target_link_libraries(BigNumWithMinus_test BigNum)
+list(APPEND test_targets BigNumWithMinus_test)
+
 
 if(DEFINED SYCL_ENABLED AND (NOT(SYCL_ENABLED EQUAL 0)))
     SET_COMPILER_TO_ICPX()

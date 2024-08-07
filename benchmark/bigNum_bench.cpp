@@ -25,7 +25,6 @@ BENCHMARK(BN_128_bit_division);
 
 static void BN_128_bit_addition(benchmark::State& state) {
 
-    std::string expected = "100000000000000000000000000000000"; // ffffffffffffffffffffffffffffffff + 1 = 100000000000000000000000000000000 in hex
     BigNum t1("ffffffffffffffffffffffffffffffff");
     BigNum u1("1");
     for (auto _ : state){
