@@ -25,6 +25,10 @@ add_executable(BigNumWithMinus_test BigNumWithMinus_test.cpp)
 target_link_libraries(BigNumWithMinus_test BigNum)
 list(APPEND test_targets BigNumWithMinus_test)
 
+add_executable(RSA_BigNum_test RSA_BigNum_test.cpp)
+target_link_libraries(RSA_BigNum_test RSA BigNum)
+list(APPEND test_targets RSA_BigNum_test)
+
 
 if(DEFINED SYCL_ENABLED AND (NOT(SYCL_ENABLED EQUAL 0)))
     SET_COMPILER_TO_ICPX()

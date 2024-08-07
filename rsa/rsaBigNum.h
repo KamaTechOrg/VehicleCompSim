@@ -5,7 +5,13 @@
 #include <cmath>
 #include <string>
 #include <sstream>
-#include "../BigNum/BigNum.h"
+#include <fstream>
+#include <vector>
+#include <iomanip>
+#include <stdexcept>
+#include "BigNum.h"
+#include "BigNumWithMinus.hpp"
+
 
 class RSABigNum
 {
@@ -19,13 +25,14 @@ public:
 
     static bool millerTest(const BigNum& d, const BigNum& n);
     static BigNum generateRandomNumber(int bits, int& count);
+    static std::string generateRandomBits(size_t length);
     static BigNum generateLargePrime(int bits);
     static BigNum gcd(BigNum a, BigNum b);
     static BigNum modInverse(BigNum a, BigNum m);
 
     static BigNum encrypt(const BigNum& message, const BigNum& publicKey, const BigNum& modulus);
 
-    static BigNum decrypt(const BigNum& message, const BigNum& praivateKey, const BigNum& modulus);
+    static BigNum decrypt(const BigNum& message, const BigNum& praizvateKey, const BigNum& modulus);
 
     static std::string encrypt_string(const std::string& message, const BigNum& publicKey, const BigNum& modulus);
 

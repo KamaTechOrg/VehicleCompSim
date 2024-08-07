@@ -10,7 +10,7 @@ void RSABigNum::generate_keys(BigNum& publicKey, BigNum& privateKey, BigNum& mod
 
 	BigNum n = p * q;
 	BigNum phi = (p - 1) * (q - 1);
-	BigNum e = 65537; // Common choice for e
+	BigNum e(65537); // Common choice for e
 
 	// Ensure e is coprime with phi
 	while (gcd(e, phi) != 1) {
@@ -88,15 +88,8 @@ bool RSABigNum::millerTest(const BigNum& d, const BigNum& n) {
 BigNum RSABigNum::generateRandomNumber(int bits,int& count) {
 	// Determine the number of uint32_t values needed
 	count++;
-	BigNum number(bits);
-	for(auto& v : number.data) {
-		for(int i = 0; i < BigNum::UINT_T_SIZE; ++i) {
-			v = v << 1;
-			v += rand() & 1;
-		}
-	}
-
-
+	std::string bits_str = generateRandomBits(bits);
+	BigNum number(bits_str);
 	// Ensure the number is odd
 	number.data[0] |= 1;
 
@@ -111,15 +104,41 @@ BigNum RSABigNum::generateRandomNumber(int bits,int& count) {
 
 
 
+std::string RSABigNum::generateRandomBits(size_t length) {
+    // Calculate the number of bytes needed
+    size_t numBytes = (length + 7) / 8; // Round up to the nearest byte
 
-//BigNum RSABigNum::generateRandomNumber(int bits) {
-//    BigNum number(bits);
-//    for (int i = 0; i < number.size; ++i) {
-//        number.data[i] = rand();
-//    }
-//    std::cout << "Generated number: " << number << std::endl;
-//    return number;
-//}
+    // Open /dev/urandom for reading
+    std::ifstream urandom("/dev/urandom", std::ios::in | std::ios::binary);
+    if (!urandom) {
+        throw std::runtime_error("Failed to open /dev/urandom");
+    }
+
+    // Create a buffer to hold the random bytes
+    std::vector<unsigned char> buffer(numBytes);
+    urandom.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
+
+    if (!urandom) {
+        throw std::runtime_error("Failed to read from /dev/urandom");
+    }
+
+     std::ostringstream oss;
+    for (unsigned char byte : buffer) {
+        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    }
+
+    // Trim the string to the specified length
+    std::string binaryString = oss.str();
+    return binaryString.substr(0, length/4);
+}
+
+
+
+
+
+
+
+
 
 BigNum RSABigNum::generateLargePrime(int bits) {
 	BigNum prime;
@@ -141,13 +160,13 @@ BigNum RSABigNum::gcd(BigNum a, BigNum b) {
 }
 
 BigNum RSABigNum::modInverse(BigNum a, BigNum m) {
-	BigNum m0 = m, t, q;
-	BigNum x0("0", m.size * BigNum::UINT_T_SIZE), x1("1", m.size * BigNum::UINT_T_SIZE);
+	BigNumWithMinus m0 = m, t, q;
+	BigNumWithMinus x0("0"), x1("1");
 
-	if (m == BigNum("1", m.size * BigNum::UINT_T_SIZE))
-		return BigNum("0", m.size * BigNum::UINT_T_SIZE);
+	if (m == 1)
+		return BigNum("0");
 
-	while (a > BigNum("1", a.size * BigNum::UINT_T_SIZE)) {
+	while (a > 1) {
 		q = a / m;
 		t = m;
 		m = a % m;
@@ -157,7 +176,7 @@ BigNum RSABigNum::modInverse(BigNum a, BigNum m) {
 		x1 = t;
 	}
 
-	if (x1 < BigNum("0", x1.size * BigNum::UINT_T_SIZE))
+	if (x1 < 0)
 		x1 += m0;
 
 	return x1;

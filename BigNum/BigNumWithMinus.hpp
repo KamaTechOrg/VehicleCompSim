@@ -51,16 +51,32 @@ public:
         return BigNum::operator<(other);
     }
 
+    bool operator<(uint32_t num) const {
+        return *this < BigNumWithMinus(num, MAX_SIZE * UINT_T_SIZE);
+    }
+
     bool operator>(const BigNumWithMinus& other) const {
         return !(*this < other) && !(*this == other);
+    }
+
+    bool operator>(uint32_t num) const {
+        return *this > BigNumWithMinus(num, MAX_SIZE * UINT_T_SIZE);
     }
 
     bool operator<=(const BigNumWithMinus& other) const {
         return !(*this > other);
     }
 
+    bool operator<=(uint32_t num) const {
+        return *this <= BigNumWithMinus(num, MAX_SIZE * UINT_T_SIZE);
+    }
+
     bool operator>=(const BigNumWithMinus& other) const {
         return !(*this < other);
+    }
+
+    bool operator>=(uint32_t num) const {
+        return *this >= BigNumWithMinus(num, MAX_SIZE * UINT_T_SIZE);
     }
 
     BigNumWithMinus operator-(const BigNumWithMinus& other) const {
