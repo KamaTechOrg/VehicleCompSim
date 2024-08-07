@@ -107,34 +107,35 @@ void Socket::send(void *data, size_t size) const
 
 void Socket::recv(void *data, size_t len) const
 {
-  char buf[len * sizeof(void *)];
+    // Allocate buffer
+    char buf[len];
 
-  memset(buf, 0, len * sizeof(void *));
+    memset(buf, 0, len);
 
-  int status = ::recv(m_sock, buf, len, 0);
-  int j = 0;
+    // Receive data
+    int status = ::recv(m_sock, buf, len, 0);
 
-  if (status == -1)
-  {
-    std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
-    // throw...
-  }
-  else if (status == 0)
-  {
-    // std::cout << "Client disconnected\n";
-
-  }
-  else
-  {
-    int i = 0;
-    while (*(buf + i) != '#' && i < len)
+    if (status == -1)
     {
-      *(char *)(data + i) = *(buf + i);
-      i++;
+        std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
     }
-    *(char *)(data + i) = '#';
-    
-  }
+    else if (status == 0)
+    {
+        // Client disconnected
+    }
+    else
+    {
+        buf[status] = '\0';
+        std::cout << buf << std::flush;
+        // Copy received data to the provided buffer
+        memcpy(data, buf, std::min(len, static_cast<size_t>(status)));
+
+        // Add delimiter if there's space
+        if (status < static_cast<int>(len))
+        {
+            static_cast<char*>(data)[status] = '!';
+        }
+    }
 }
 
 void Socket::set_FD(int fd)

@@ -87,7 +87,7 @@ void Receive_manger::select_menger() {
                     } else if (valread > 0) {
                         buffer[valread] = '\0';
                         std::cout << "Received: " << buffer << std::endl;
-                        send(sd, buffer, valread, 0);
+                        send(sd, buffer, valread, MSG_NOSIGNAL);
                     } else {
                         perror("recv error");
                     }

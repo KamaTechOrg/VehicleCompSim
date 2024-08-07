@@ -1,7 +1,7 @@
 #pragma once
 
 #include "server.h"
-#include "mang_connect.h"
+#include "receive_manger.h"
 #include "mang_req.h"
 
 

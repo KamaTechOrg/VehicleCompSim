@@ -1,7 +1,7 @@
 #include <iostream>
 
 
-#include "../include/manger.h"
+#include "manger.h"
 
 using namespace std;
 

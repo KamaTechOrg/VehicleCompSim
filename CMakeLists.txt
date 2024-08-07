@@ -27,7 +27,7 @@ add_executable(client
 # Server executable
 add_executable(server
     server/src/main.cpp
-    server/src/mang_connect.cpp
+    server/src/receive_manger.cpp
     server/src/mang_req.cpp
     server/src/manger.cpp
     server/src/server.cpp
