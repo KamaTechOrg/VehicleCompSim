@@ -9,7 +9,9 @@ int main(){
     std::string m { "Hello"};
     client.send((void *)m.c_str() , m.size(), 10 ,100);
     char buffer[MAXRECV];
-    // client.listen(buffer , MAXRECV);
+    client.listen(buffer , MAXRECV);
+    std::cout << buffer << std::endl;
+
     int i = 25;
     while (true){
         cin >> m;

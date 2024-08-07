@@ -37,6 +37,8 @@ public:
 
   void set_FD( int fd );
 
+  int get_FD() const { return m_sock; }
+
   bool is_valid() const { return m_sock != -1; }
  
 

@@ -11,7 +11,7 @@ ClientSocket::ClientSocket(int id)
 {
     m_clientSocket.create();
     m_clientSocket.connect(IPSERVER , PORTSERVER);
-    std::string ss {"Hello"};
+    std::string ss {"26!Hello"};
     m_clientSocket.send((char *)ss.c_str() ,ss.size());
     char buffer[20];
     m_clientSocket.recv(buffer, 20);
