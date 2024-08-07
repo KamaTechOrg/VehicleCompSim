@@ -1,4 +1,4 @@
-#include "websocketclient.h"
+// #include "websocketclient.h"
 
 #include <QApplication>
 #include <QUrl>
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
-    ObserverConfig::setObserver(&WebSocketClient::getInstance());
+    // ObserverConfig::setObserver(&WebSocketClient::getInstance());
 
 	MainWindow w;
     w.resize(800, 600);

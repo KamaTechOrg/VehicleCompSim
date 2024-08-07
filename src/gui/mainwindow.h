@@ -1,12 +1,22 @@
 #pragma once
+#include <QtWidgets/QMainWindow>
 
 #include <QMainWindow>
 #include <memory>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTimeEdit>
+
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
 #include "qpushbutton.h"
 #include "services/runservice.h"
+#include "SimulationRecorder.h"
+#include "SimulationReplayer.h"
+#include "LiveUpdate.h"
+#include "LogReader.h"
+#include <bson/bson.h>
+
 
 class QGraphicsView;
 class QToolBar;
@@ -26,7 +36,9 @@ private:
     void setupRunService();
     void onRunStart();
     void onRunEnd();
-
+    void play();
+    void replayer();
+    void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void onConnectionStatusChanged(bool connected);
 
     CustomScene* m_scene;
@@ -38,4 +50,9 @@ private:
     QPushButton *stopBtn ;
     QTimeEdit *timer;
     RunService runService;
+    std::unique_ptr<LogReader> m_logReader;
+    std::unique_ptr<SimulationRecorder> m_simulationRecorder;
+    std::unique_ptr<SimulationReplayer> m_simulationReplayer;
+    std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
+    std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
 };

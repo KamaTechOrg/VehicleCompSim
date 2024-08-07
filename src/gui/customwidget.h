@@ -3,6 +3,8 @@
 #include <QWidget>
 #include <QMimeData>
 #include <QDrag>
+#include <QPaintEvent>
+#include <QMouseEvent>
 
 class CustomWidget : public QWidget {
     Q_OBJECT

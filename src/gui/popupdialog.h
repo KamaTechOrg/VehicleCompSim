@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QDialog>
+//#include <QDialog>
 #include <QString>
+#include <QtWidgets/QDialog>
 #include "items/sensoritem.h"
 
 namespace Ui {
