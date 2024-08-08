@@ -48,7 +48,8 @@ TEST(RSA_BigNum_test, gcd_test_with_512bit_3)
     EXPECT_EQ(RSABigNum::gcd(q, p), p);
 }
 
-TEST(RSA_BigNum_test, modInverse_test_1)
+ 
+TEST(RSA_BigNum_test, modInverse_test_1)//doesn't pass
 {
     std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
     std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
@@ -62,7 +63,7 @@ TEST(RSA_BigNum_test, modInverse_test_1)
     EXPECT_EQ(RSABigNum::modInverse(e, phi), d);
 }
 
-TEST(RSA_BigNum_test, modInverse_test_2)
+TEST(RSA_BigNum_test, modInverse_test_2)//doesn't pass
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
@@ -77,7 +78,7 @@ TEST(RSA_BigNum_test, modInverse_test_2)
 
 // test RSA encryption and decryption for int
 
-TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)//doesn't pass
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
@@ -94,7 +95,7 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)
     EXPECT_NE(message, encrypted);
 }
 
-TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)//doesn't pass
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
@@ -137,8 +138,9 @@ TEST(RSA_BigNum_test, power_test1)
     BigNum q(num2);
     BigNum a("12345");
     BigNum b("12345");
+    BigNum result("1454aef10701f520");
     BigNum c = RSABigNum::power(a, b, p * q);
-    EXPECT_EQ(c, a);
+    EXPECT_EQ(c, result);
 }
 
 TEST(RSA_BigNum_test, power_test2)
@@ -148,9 +150,27 @@ TEST(RSA_BigNum_test, power_test2)
     BigNum p(num1);
     BigNum q(num2);
     BigNum a("12345");
-    BigNum b("12345");
-    BigNum c = RSABigNum::power(p, q, a * b);
-    EXPECT_EQ(c, a);
+    BigNum result("b4a9");
+    BigNum c = RSABigNum::power(p, q, a);
+    EXPECT_EQ(c, result);
+}
+
+TEST(RSA_BigNum_test, power_test3){
+    BigNum x("2");
+    BigNum y("3");
+    BigNum mod("5");
+    BigNum exp("3");
+    BigNum c = RSABigNum::power(x, y, mod);
+    EXPECT_EQ(c, exp);
+}  
+
+TEST(RSA_BigNum_test, power_test4){
+    BigNum x("2");
+    BigNum y("3");
+    BigNum mod("50");
+    BigNum exp("8");
+    BigNum c = RSABigNum::power(x, y, mod);
+    EXPECT_EQ(c, exp);
 }
 
 // TEST(RSA_BigNum_test, WithBigNum){

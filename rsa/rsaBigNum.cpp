@@ -46,6 +46,7 @@ bool RSABigNum::isPrime(const BigNum& n, int k) {
 
 BigNum RSABigNum::power(const BigNum& x, const BigNum& y, const BigNum& p) {
 	BigNum res(p.size * BigNum::UINT_T_SIZE);
+	res += 1;
 	BigNum base = x % p;
 	BigNum exp = y;
 
