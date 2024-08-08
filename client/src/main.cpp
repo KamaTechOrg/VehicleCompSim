@@ -5,9 +5,18 @@
 
 using namespace std;
 
+bool is_valid_id(int id) {
+    return id > 0;
+}
+
 int main()
 {
-    int id = 10;
+    int id = 0;
+    std::cout << "enter id" << std::endl;
+    cin >> id;
+    if (!is_valid_id(id)){
+        throw("Invalid id");
+    }
     ClientSocket client(id);
     std::string m;
     char buffer[MAXRECV];

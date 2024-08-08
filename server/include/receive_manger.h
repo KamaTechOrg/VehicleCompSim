@@ -6,6 +6,7 @@
 
 class Receive_manger {
 public:
+    Receive_manger();
     void add_socket(int new_socket);
     std::shared_ptr<Socket> get_sock(int id);
     void select_menger();
@@ -20,5 +21,6 @@ private:
     std::vector<int> m_client_fd;
     std::map<int, std::shared_ptr<Socket>> m_connections;
     std::mutex m_vec_client_mutex;  
-    std::mutex m_map_mutex;         
+    std::mutex m_map_mutex;   
+    // Socket m_my_socket;   
 };
