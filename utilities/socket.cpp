@@ -121,13 +121,11 @@ int Socket::recv(void *data, size_t len) const
     }
     else if (status == 0)
     {
-        // Client disconnected
+        std::cout << " Client disconnected" << std::endl;
     }
     else
     {
-        buf[status] = '\0';
-        std::cout << buf << std::flush;
-        // Copy received data to the provided buffer
+       
         memcpy(data, buf, std::min(len, static_cast<size_t>(status)));
 
         // Add delimiter if there's space

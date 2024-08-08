@@ -26,8 +26,11 @@ std::pair<int, std::shared_ptr<Socket>> Receive_manger::create(int fd)
     new_socket->set_FD(fd);
 
     char data[MAXRECVID];
-    new_socket->recv(data, MAXRECVID);
+    int a = new_socket->recv(data, MAXRECVID);
+    data[a] = '\0';
+    std::cout << "received " << data << std::endl;
     new_socket->send(data, MAXRECVID);
+    std::cout << "sent " << data << std::endl;
 
     return std::make_pair(fd, new_socket);
 }
@@ -87,7 +90,11 @@ void Receive_manger::select_menger() {
                     } else if (valread > 0) {
                         buffer[valread] = '\0';
                         std::cout << "Received: " << buffer << std::endl;
-                        send(sd, buffer, valread, MSG_NOSIGNAL);
+                        int a =send(sd, buffer, valread, MSG_NOSIGNAL);
+                        if (a == -1){
+                            std::cout << "send error: " << errno<< std::endl;
+                        }
+                        
                     } else {
                         perror("recv error");
                     }
