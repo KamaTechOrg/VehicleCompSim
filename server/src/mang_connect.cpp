@@ -4,6 +4,8 @@
 #include <unistd.h> // For close()
 #include <cstring> // for memcpy
 #include <cstdlib> 
+#include <vector>
+#include <utility>
 static void add_fd_to_vect(std::vector<int> &clientSocket, FD new_socket)
 {
     clientSocket.push_back(new_socket);
@@ -169,4 +171,52 @@ int Mange_connect::extractid(char* data)
     // Convert the extracted string to integer
     int dest_id = std::atoi(extractedStr.c_str());
     return dest_id;
+}
+
+
+
+std::vector<std::pair<int, char*>> Mange_connect::extractid_and_data( char* data, int len) {
+    std::vector<std::pair<int, char*>> result;
+    std::string datatosend;
+    int sourceid = 0;
+    int destid = 0;
+    int identify = 0;
+
+    for (int i = 0; i < len; ++i) {
+        if (data[i] != '!') {
+            datatosend += data[i];
+        } else {
+           
+
+            if (identify == 0) {
+                if (!datatosend.empty()) {
+                    std::cout << datatosend << std::endl;
+                    sourceid = std::stoi(datatosend);
+                }
+                datatosend.clear();
+            }
+            if (identify == 1) {
+                if (!datatosend.empty()) {
+                    std::cout << datatosend << std::endl;
+                    destid = std::stoi(datatosend);
+                }
+                datatosend.clear();
+            }
+            if (identify == 2) {
+                if (!datatosend.empty()) {
+                    char* dataCopy = new char[datatosend.size() + 1];
+                    std::strcpy(dataCopy, datatosend.c_str());
+                    result.emplace_back(destid, dataCopy);
+                }
+                datatosend.clear();
+            }
+
+             if (identify == 2) { identify = 0; }
+            else { identify += 1; }
+            
+        }
+    }
+
+
+    return result;
 }

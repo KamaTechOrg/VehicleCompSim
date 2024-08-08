@@ -19,7 +19,11 @@ public:
 
     void select_menger();
 
-    int extractid(char * );
+   int extractid(char * );
+
+   std::vector<std::pair<int, char*>> extractid_and_data(char* data , int len);
+
+
 
 
 private:
