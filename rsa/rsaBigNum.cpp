@@ -3,14 +3,16 @@
 #include <iostream>
 
 void RSABigNum::generate_keys(BigNum& publicKey, BigNum& privateKey, BigNum& modulus, int bits) {
-	BigNum p = generateLargePrime(bits / 2);
-	std::cout << "Prime p: " << p << std::endl;
-	BigNum q = generateLargePrime(bits / 2);
-	std::cout << "Prime q: " << q << std::endl;
+	std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
+	std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
+	BigNum p(num1);
+	// std::cout << "Prime p: " << p << std::endl;
+	BigNum q(num2);
+	// std::cout << "Prime q: " << q << std::endl;
 
 	BigNum n = p * q;
 	BigNum phi = (p - 1) * (q - 1);
-	BigNum e(65537); // Common choice for e
+	BigNum e("65537"); // Common choice for e
 
 	// Ensure e is coprime with phi
 	while (gcd(e, phi) != 1) {
@@ -121,7 +123,10 @@ std::string RSABigNum::generateRandomBits(size_t length) {
     if (!urandom) {
         throw std::runtime_error("Failed to read from /dev/urandom");
     }
+	//close(urandom);
+	urandom.close();
 
+	// Convert the bytes to a string
      std::ostringstream oss;
     for (unsigned char byte : buffer) {
         oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
@@ -129,7 +134,7 @@ std::string RSABigNum::generateRandomBits(size_t length) {
 
     // Trim the string to the specified length
     std::string binaryString = oss.str();
-    return binaryString.substr(0, length/4);
+    return binaryString.substr(0, (length/4)+ 1);
 }
 
 
@@ -151,7 +156,8 @@ BigNum RSABigNum::generateLargePrime(int bits) {
 }
 
 BigNum RSABigNum::gcd(BigNum a, BigNum b) {
-	while (b != BigNum("0", b.size * BigNum::UINT_T_SIZE)) {
+	std::cout << "a: " << a << std::endl << " b: " << b << std::endl;
+	while (b != 0) {
 		BigNum t = b;
 		b = a % b;
 		a = t;
@@ -160,7 +166,8 @@ BigNum RSABigNum::gcd(BigNum a, BigNum b) {
 }
 
 BigNum RSABigNum::modInverse(BigNum a, BigNum m) {
-	BigNumWithMinus m0 = m, t, q;
+	BigNumWithMinus m0 = m;
+	BigNumWithMinus t, q;
 	BigNumWithMinus x0("0"), x1("1");
 
 	if (m == 1)
