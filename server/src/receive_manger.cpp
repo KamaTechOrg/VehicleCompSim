@@ -5,31 +5,43 @@
 #include <mutex>
 #include <cstring>
 
-
-static std::vector<std::pair<int, std::string>> extractid_and_data(char* data, int len) {
+static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, int len)
+{
     std::vector<std::pair<int, std::string>> result;
     std::string datatosend;
     int sourceid = 0;
     int destid = 0;
     int identify = 0;
 
-    for (int i = 0; i < len; ++i) {
-        if (data[i] != '!') {
+    for (int i = 0; i < len; ++i)
+    {
+        if (data[i] != '!')
+        {
             datatosend += data[i];
-        } else {
+        }
+        else
+        {
             // Process the current datatosend based on identify
-            if (identify == 0) {
-                if (!datatosend.empty()) {
+            if (identify == 0)
+            {
+                if (!datatosend.empty())
+                {
                     std::cout << "Source ID: " << datatosend << std::endl;
                     sourceid = std::stoi(datatosend);
                 }
-            } else if (identify == 1) {
-                if (!datatosend.empty()) {
+            }
+            else if (identify == 1)
+            {
+                if (!datatosend.empty())
+                {
                     std::cout << "Destination ID: " << datatosend << std::endl;
                     destid = std::stoi(datatosend);
                 }
-            } else if (identify == 2) {
-                if (!datatosend.empty()) {
+            }
+            else if (identify == 2)
+            {
+                if (!datatosend.empty())
+                {
                     std::cout << "Data: " << datatosend << std::endl;
                     result.emplace_back(destid, datatosend);
                 }
@@ -41,13 +53,13 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char* data, i
     }
 
     // Handle the case where the last data segment isn't followed by '!'
-    if (identify == 2 && !datatosend.empty()) {
+    if (identify == 2 && !datatosend.empty())
+    {
         result.emplace_back(destid, datatosend);
     }
 
     return result;
 }
-
 
 static void add_fd_to_vect(std::vector<int> &clientSocket, int new_socket)
 {
@@ -104,7 +116,9 @@ void Receive_manger::select_menger()
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
-   
+    struct timeval tv;
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
     while (true)
     {
         std::cout << "Inside select loop" << std::endl;
@@ -130,10 +144,11 @@ void Receive_manger::select_menger()
                 }
             }
             lock.unlock();
-            for (auto &fd : m_client_fd){
-                std:: cout << fd << "," << std::flush;
+            for (auto &fd : m_client_fd)
+            {
+                std::cout << fd << "," << std::flush;
             }
-            activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
+            activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
             if ((activity < 0) && (errno != EINTR))
             {
                 perror("Select error");
@@ -148,9 +163,7 @@ void Receive_manger::select_menger()
                 {
                     valread = ::recv(sd, buffer, sizeof(buffer), 0);
 
-                    std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer,valread);
-                    
-                  
+                    std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer, valread);
 
                     if (valread == 0)
                     {
@@ -161,24 +174,21 @@ void Receive_manger::select_menger()
                     }
                     else if (valread > 0)
                     {
-                        for(auto pair : result){
-
-
-                        char dataCopy [pair.second.size() + 1];
-                        std::strcpy(dataCopy, pair.second.c_str());
-                        int localdestid = pair.first;
-                        std::cout << " " << pair.second << std::endl;
-                        auto d_s = get_sock(localdestid);
-                        int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
-                           if (status == -1)
+                        for (auto pair : result)
                         {
-                            std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-                            // throw...
+
+                            char dataCopy[pair.second.size() + 1];
+                            std::strcpy(dataCopy, pair.second.c_str());
+                            int localdestid = pair.first;
+                            std::cout << " " << pair.second << std::endl;
+                            auto d_s = get_sock(localdestid);
+                            int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
+                            if (status == -1)
+                            {
+                                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                                // throw...
+                            }
                         }
-
-
-                        }
-
 
                         //   buffer[valread] = '\0';
                         // std::cout << "Received: " << buffer << std::endl;
@@ -187,10 +197,6 @@ void Receive_manger::select_menger()
                         // if (a == -1){
                         //     std::cout << "send error: " << errno<< std::endl;
                         // }
-                        
-                       
-                        
-                     
                     }
                     else
                     {
