@@ -156,7 +156,6 @@ BigNum RSABigNum::generateLargePrime(int bits) {
 }
 
 BigNum RSABigNum::gcd(BigNum a, BigNum b) {
-	std::cout << "a: " << a << std::endl << " b: " << b << std::endl;
 	while (b != 0) {
 		BigNum t = b;
 		b = a % b;
@@ -165,7 +164,9 @@ BigNum RSABigNum::gcd(BigNum a, BigNum b) {
 	return a;
 }
 
-BigNum RSABigNum::modInverse(BigNum a, BigNum m) {
+BigNum RSABigNum::modInverse(BigNum a1, BigNum m1) {
+	BigNumWithMinus a(a1);
+	BigNumWithMinus m(m1);
 	BigNumWithMinus m0 = m;
 	BigNumWithMinus t, q;
 	BigNumWithMinus x0("0"), x1("1");
@@ -179,7 +180,7 @@ BigNum RSABigNum::modInverse(BigNum a, BigNum m) {
 		m = a % m;
 		a = t;
 		t = x0;
-		x0 = x1 - q * x0;
+		x0 = x1 - (q * x0);
 		x1 = t;
 	}
 
@@ -197,7 +198,7 @@ BigNum RSABigNum::decrypt(const BigNum& message, const BigNum& privateKey, const
 	return power(message, privateKey, modulus);
 }
 
-std::string RSABigNum::encrypt_string(const std::string& message, const BigNum& publicKey, const BigNum& modulus) {
+std::string RSABigNum::encrypt(const std::string& message, const BigNum& publicKey, const BigNum& modulus) {
 	std::string result;
 	for (char c : message) {
 		BigNum encryptedChar = encrypt(BigNum(std::to_string(c), modulus.size * BigNum::UINT_T_SIZE), publicKey, modulus);
@@ -206,7 +207,7 @@ std::string RSABigNum::encrypt_string(const std::string& message, const BigNum& 
 	return result;
 }
 
-std::string RSABigNum::decrypt_string(const std::string& encrypted_message, const BigNum& privateKey, const BigNum& modulus) {
+std::string RSABigNum::decrypt(const std::string& encrypted_message, const BigNum& privateKey, const BigNum& modulus) {
 	std::stringstream ss(encrypted_message);
 	std::string item;
 	std::string result;
