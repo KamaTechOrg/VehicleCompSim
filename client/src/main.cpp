@@ -20,15 +20,18 @@ int main()
     ClientSocket client(id);
     std::string m;
     char buffer[MAXRECV];
-
+    int d_id;
     while (true)
     {
 
         client.listen(buffer, sizeof(buffer));
         std::cout << buffer << std::endl;
         memset(buffer, 0, sizeof(buffer));
+        std::cout << "enter your d_id" << std::endl;
+        cin >> d_id;
+        std::cout << "enter your buffer" << std::endl;
         cin >> m;
-        client.send((void *)m.c_str(), m.size(), id, 100);
+        client.send((void *)m.c_str(), m.size(), id, d_id);
     }
 }
 

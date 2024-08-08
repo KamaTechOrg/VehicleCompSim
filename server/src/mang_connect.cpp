@@ -121,6 +121,8 @@ void Mange_connect::select_menger()
                     valread = recv(sd, buffer , m_req.size_recv , 0);
                     memcpy(m_req.buffer, buffer, valread);
                     m_req.recv();
+
+                    
                     if (valread == 0)
                     {
                         // Connection closed
