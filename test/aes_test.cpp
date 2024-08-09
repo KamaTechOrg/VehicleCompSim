@@ -122,7 +122,11 @@ TEST(AesTest, Aes_256_ecb_encrypt_decrypt_II) {
 #if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 sycl::queue q;
-ha                0x09, 0xcf, 0x4f, 0x3c};
+
+TEST(AesTest, Aes_128_ecb_encrypt_decrypt_string_with_size_15_sycl) {
+  std::array<uint8_t, 16> key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae,
+                                 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
+                                 0x09, 0xcf, 0x4f, 0x3c};
   std::string msg = "hello hello hsm";
   std::string expected_encrypted_msg =
       "\xbb\x6e\xd0\xed\x30\xfa\x44\x64\xd2\x1f\xf1\xcb\xd9\x27\xf9\x56";
@@ -130,7 +134,10 @@ ha                0x09, 0xcf, 0x4f, 0x3c};
   auto encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ecb(q, aes, msg);
   EXPECT_EQ(encrypted_msg, expected_encrypted_msg);
 
-  auto decryha
+  auto decrypted_msg = AesTextEncrypt<AesVariant::Aes128>::decrypt_ecb(q, aes, expected_encrypted_msg);
+  EXPECT_EQ(decrypted_msg, msg);
+}
+
 TEST(AesTest, Aes_128_ecb_encrypt_decrypt_empty_string_sycl) {
   std::array<uint8_t, 16> key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae,
                                  0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
