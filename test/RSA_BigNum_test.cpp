@@ -54,23 +54,21 @@ TEST(RSA_BigNum_test, modInverse_test_1)//doesn't pass
     std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
     std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
     BigNum p(num1);
-    // std::cout << "Prime p: " << p << std::endl;
     BigNum q(num2);
     BigNum d("35c8d39b52bd4dc211d66eb037c9b3b1439328fb9ae690436e9c398dc4f32f7fc794272f90d2914882311c9bde7351c89988d96cb53d7b2c82d2fef7811744eb30038490a19edd25d122b5f264136abac6ee61343d8c4f994c4327af3010943b807aec072d226227a0a4b78700eb1cfa723e026edb8a937d5a3fa6bfa9600fe1");
-    BigNum e("65537");
+    BigNum e("10001");
     BigNum phi = (p - 1) * (q - 1);
-    // std::cout << "Prime q: " << q << std::endl;
     EXPECT_EQ(RSABigNum::modInverse(e, phi), d);
 }
 
-TEST(RSA_BigNum_test, modInverse_test_2)//doesn't pass
+TEST(RSA_BigNum_test, modInverse_test_2)
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
     BigNum p(num1);
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
-    BigNum e("65537");
+    BigNum e("10001");
     BigNum phi = (p - 1) * (q - 1);
 
     EXPECT_EQ(RSABigNum::modInverse(e, phi), d);
@@ -85,7 +83,7 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)//doesn't pass
     BigNum p(num1);
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
-    BigNum e("65537");
+    BigNum e("10001");
     BigNum message = 12345;
 
     BigNum encrypted = RSABigNum::encrypt(message, e, p * q);
@@ -102,7 +100,7 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)//doesn't pass
     BigNum p(num1);
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
-    BigNum e("65537");
+    BigNum e("10001");
     std::string message = "12345";
     std::string encrypted = RSABigNum::encrypt(message, e, p * q);
     std::string decrypted = RSABigNum::decrypt(encrypted, d, p * q);
