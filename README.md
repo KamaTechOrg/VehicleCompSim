@@ -17,7 +17,7 @@ The `Can_Bus_Library` project includes a library for CAN bus communication, prov
 1. **Clone the Repository**
 
    ```sh
-   git clone <git@github.com:KamaTechOrg/VehicleCompSim.git>
+   git clone <git@github.com:KamaTechOrg/VehicleCompSim.git/library_to_user>
    cd <VehicleCompSim>
 
 2. **build and run the Project**
