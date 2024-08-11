@@ -31,6 +31,9 @@ add_subdirectory(aes)
 add_subdirectory(BigNum)
 add_subdirectory(SHA-256)
 add_subdirectory(rsa)
+add_subdirectory(API)
+add_subdirectory(KeyStorage)
+
 add_subdirectory(test)
 add_subdirectory(benchmark)
 
