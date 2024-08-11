@@ -10,9 +10,6 @@ The `Can_Bus_Library` project includes a library for CAN bus communication, prov
 - A C++11 compatible compiler
 - Precompiled library files (`libclient.so` and `libserver.so`)
 
-## Directory Structure
-
-Assuming the following structure for your library files:
 
 
 ## Build and Run Instructions
@@ -23,8 +20,8 @@ Assuming the following structure for your library files:
    git clone <repository_url>
    cd <repository_directory>
 
-mkdir build
-cd build
-make
-./server_exec
-./client_exec
+ ```mkdir build
+    cd build
+    make
+    ./server_exec
+    ./client_exec
