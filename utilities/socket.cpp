@@ -1,136 +1,145 @@
-
-
 #include "socket.h"
 
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <iostream>
+#include <cstring>
 
 Socket::Socket() : m_sock(-1)
 {
-
-  memset(&m_addr, 0, sizeof(m_addr));
+#ifdef _WIN32
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        std::cerr << "WSAStartup failed\n";
+        // throw...
+    }
+#endif
+    memset(&m_addr, 0, sizeof(m_addr));
 }
 
 Socket::~Socket()
 {
-  if (is_valid())
-    ::close(m_sock);
+    if (is_valid())
+        close(m_sock);
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 void Socket::create()
 {
-  m_sock = socket(AF_INET, SOCK_STREAM, 0);
+    m_sock = socket(AF_INET, SOCK_STREAM, 0);
 
-  if (!is_valid()){
+    if (!is_valid()) {
+        std::cerr << "Socket creation failed\n";
         // throw...
-  }
-    
+    }
 
-  // TIME_WAIT - argh
-  int on = 1;
-  if (setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on)) == -1){
-         // throw...
-  }
-   
-
-  
+    int on = 1;
+    if (setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on)) == -1) {
+        std::cerr << "setsockopt failed\n";
+        // throw...
+    }
 }
 
 void Socket::bind(const int port)
 {
+    if (!is_valid()) {
+        std::cerr << "Invalid socket\n";
+        // throw...
+    }
 
-  if (!is_valid()){
-         // throw...
-  }
-    
+    m_addr.sin_family = AF_INET;
+    m_addr.sin_addr.s_addr = INADDR_ANY;
+    m_addr.sin_port = htons(port);
 
-  m_addr.sin_family = AF_INET;
-  m_addr.sin_addr.s_addr = INADDR_ANY;
-  m_addr.sin_port = htons(port);
+    int bind_return = ::bind(m_sock, (struct sockaddr*)&m_addr, sizeof(m_addr));
 
-  int bind_return = ::bind(m_sock, (struct sockaddr *)&m_addr, sizeof(m_addr));
-
-  if (bind_return == -1){
-     std::cout << "status == -1   errno == " << errno << "  in Socket::bind\n";
-    
-  }
-
-  
+    if (bind_return == -1) {
+#ifdef _WIN32
+        std::cerr << "bind failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "bind failed with errno: " << errno << "\n";
+#endif
+        // throw...
+    }
 }
 
 void Socket::listen() const
 {
-  if (!is_valid())
-  {
-     // throw...
-  }
+    if (!is_valid()) {
+        std::cerr << "Invalid socket\n";
+        // throw...
+    }
 
-  int listen_return = ::listen(m_sock, MAXCONNECTIONS);
+    int listen_return = ::listen(m_sock, SOMAXCONN);
 
-  if (listen_return == -1)
-  {
-    std::cout << "status == -1   errno == " << errno << "  in Socket::listen\n";
-     // throw...
-  }
-
-  
+    if (listen_return == -1) {
+#ifdef _WIN32
+        std::cerr << "listen failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "listen failed with errno: " << errno << "\n";
+#endif
+        // throw...
+    }
 }
 
-FD Socket::accept() 
+FD Socket::accept()
 {
-  int addr_length = sizeof(m_addr);
-  FD fd = ::accept(m_sock, (sockaddr *)&m_addr, (socklen_t *)&addr_length);
-  
-  if (fd <= 0)
-  {
-    std::cout << "status == -1   errno == " << errno << "  in Socket::eccept\n";
-    // throw...
-  }
-  else
-    std::cout << "connection is on " << fd << std::endl;
+    int addr_length = sizeof(m_addr);
+    FD fd = ::accept(m_sock, (sockaddr*)&m_addr, (socklen_t*)&addr_length);
+
+    if (fd == -1) {
+#ifdef _WIN32
+        std::cerr << "accept failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "accept failed with errno: " << errno << "\n";
+#endif
+        // throw...
+    } else {
+        std::cout << "Connection established with FD: " << fd << std::endl;
+    }
     return fd;
 }
 
 void Socket::send(void *data, size_t size) const
 {
+#ifdef _WIN32
+    int status = ::send(m_sock, static_cast<const char*>(data), static_cast<int>(size), 0);
+#else
+    int status = ::send(m_sock, data, size, MSG_NOSIGNAL);
+#endif
 
-  int status = ::send(m_sock, data, size, MSG_NOSIGNAL);
-  if (status == -1)
-  {
-    std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-    // throw...
-  }
-
+    if (status == -1) {
+#ifdef _WIN32
+        std::cerr << "send failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "send failed with errno: " << errno << "\n";
+#endif
+        // throw...
+    }
 }
 
 int Socket::recv(void *data, size_t len) const
 {
-    // Allocate buffer
     char buf[len];
-
     memset(buf, 0, len);
 
-    // Receive data
+#ifdef _WIN32
+    int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
+#else
     int status = ::recv(m_sock, buf, len, 0);
+#endif
 
-    if (status == -1)
-    {
-        std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
-    }
-    else if (status == 0)
-    {
-        std::cout << " Client disconnected" << std::endl;
-    }
-    else
-    {
-       
+    if (status == -1) {
+#ifdef _WIN32
+        std::cerr << "recv failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "recv failed with errno: " << errno << "\n";
+#endif
+    } else if (status == 0) {
+        std::cerr << "Client disconnected\n";
+    } else {
         memcpy(data, buf, std::min(len, static_cast<size_t>(status)));
-
-        // Add delimiter if there's space
-        if (status < static_cast<int>(len))
-        {
+        if (status < static_cast<int>(len)) {
             static_cast<char*>(data)[status] = '!';
         }
     }
@@ -139,36 +148,40 @@ int Socket::recv(void *data, size_t len) const
 
 void Socket::set_FD(int fd)
 {
-  m_sock = fd;
+    m_sock = fd;
 }
 
 void Socket::connect(const std::string host, const int port)
 {
-  if (!is_valid())
-    {
-         // throw...
+    if (!is_valid()) {
+        std::cerr << "Invalid socket\n";
+        // throw...
     }
 
-  m_addr.sin_family = AF_INET;
-  m_addr.sin_port = htons(port);
+    m_addr.sin_family = AF_INET;
+    m_addr.sin_port = htons(port);
 
-  int status = inet_pton(AF_INET, host.c_str(), &m_addr.sin_addr);
+    int status = inet_pton(AF_INET, host.c_str(), &m_addr.sin_addr);
 
-  if (errno == EAFNOSUPPORT)
-    {
-         std::cout << "Address not supported\n";
-         // throw...
+    if (status <= 0) {
+#ifdef _WIN32
+        std::cerr << "Invalid address/ Address not supported: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "Invalid address/ Address not supported: " << errno << "\n";
+#endif
+        // throw...
     }
 
-  status = ::connect(m_sock, (sockaddr *)&m_addr, sizeof(m_addr));
+    status = ::connect(m_sock, (sockaddr*)&m_addr, sizeof(m_addr));
 
-  if (status == 0)
-    {
-         // std::cout << "Connected to server\n";   
+    if (status == -1) {
+#ifdef _WIN32
+        std::cerr << "connect failed with error: " << WSAGetLastError() << "\n";
+#else
+        std::cerr << "connect failed with errno: " << errno << "\n";
+#endif
+        // throw...
+    } else {
+        std::cout << "Successfully connected to server\n";
     }
-  else
-  {
-    std::cout << "status == -1   errno == " << errno << "  in Socket::connect\n";
-    // throw...
-  }
 }
