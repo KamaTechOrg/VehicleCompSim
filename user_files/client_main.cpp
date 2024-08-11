@@ -1,7 +1,7 @@
 #include <iostream>
+#include <string.h>
 
 #include "client.h"
-#include <string.h>
 
 using namespace std;
 

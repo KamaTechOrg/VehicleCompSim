@@ -1,5 +1,7 @@
 #pragma once
+
 #include "socket.h"
+#include "constants.h"
 
 
 class ClientSocket

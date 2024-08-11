@@ -1,5 +1,6 @@
 #include "receive_manger.h"
 #include "constants.h"
+
 #include <iostream>
 #include <string.h>
 #include <unistd.h> // For close()
@@ -123,7 +124,7 @@ void Receive_manger::select_menger()
     while (true)
     {
         std::cout << "Inside select loop" << std::endl;
-        sleep(1);
+        sleep(2);
 
         if (!m_client_fd.empty())
         {
@@ -162,7 +163,12 @@ void Receive_manger::select_menger()
                 sd = m_client_fd[i];
                 if (FD_ISSET(sd, &readfds))
                 {
+                   
+#ifdef _WIN32
+                    valread = ::recv(sd, buffer, static_cast<int> sizeof(buffer), 0);
+#else
                     valread = ::recv(sd, buffer, sizeof(buffer), 0);
+#endif
 
                     std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer, valread);
 
@@ -183,21 +189,18 @@ void Receive_manger::select_menger()
                             int localdestid = pair.first;
                             std::cout << " " << pair.second << std::endl;
                             auto d_s = get_sock(localdestid);
+#ifdef _WIN32
+                            int status = ::send(d_s->get_FD(), static_cast<const char *>(dataCopy), static_cast<int>(pair.second.size()) + 1, 0);
+#else
                             int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
+#endif
+
                             if (status == -1)
                             {
                                 std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
                                 // throw...
                             }
                         }
-
-                        //   buffer[valread] = '\0';
-                        // std::cout << "Received: " << buffer << std::endl;
-                        // send(sd, buffer, valread, MSG_NOSIGNAL);
-                        // int a =send(sd, buffer, valread, MSG_NOSIGNAL);
-                        // if (a == -1){
-                        //     std::cout << "send error: " << errno<< std::endl;
-                        // }
                     }
                     else
                     {
