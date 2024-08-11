@@ -12,23 +12,13 @@ include_directories(client/include)
 include_directories(server/include)
 include_directories(utilities)
 
-# Utilities source
-set(UTILITIES_SRC
-    utilities/socket.cpp
-)
+# Gather all .cpp files for client and server
+file(GLOB_RECURSE CLIENT_SRC_FILES "client/src/*.cpp")
+file(GLOB_RECURSE SERVER_SRC_FILES "server/src/*.cpp")
+file(GLOB_RECURSE UTILITIES_SRC_FILES "utilities/*.cpp")
 
-# Client executable
-add_executable(client
-    client/src/client.cpp
-    client/src/main.cpp
-    ${UTILITIES_SRC}
-)
+# Create client library
+add_library(client_lib STATIC ${CLIENT_SRC_FILES} ${UTILITIES_SRC_FILES})
 
-# Server executable
-add_executable(server
-    server/src/main.cpp
-    server/src/receive_manger.cpp
-    server/src/mang_req.cpp
-    server/src/manger.cpp
-    server/src/server.cpp
-    ${UTILITIES_SRC})
+# Create server library
+add_library(server_lib STATIC ${SERVER_SRC_FILES} ${UTILITIES_SRC_FILES})

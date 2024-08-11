@@ -1,14 +1,14 @@
-#include <iostream>
+// #include <iostream>
 
 
-#include "manger.h"
+// #include "manger.h"
 
-using namespace std;
+// using namespace std;
 
-int main(){
+// int main(){
 
-    MangServer ms;
-    ms.init();
+//     MangServer ms;
+//     ms.init();
 
-    return 0;
-}
+//     return 0;
+// }
