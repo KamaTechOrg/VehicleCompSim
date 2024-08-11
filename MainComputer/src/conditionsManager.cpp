@@ -8,9 +8,7 @@ void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition) {
 
 bool ConditionsManager::validateAll() const {
     for (const auto& condition : conditions) {
-        if (!condition->validate()) {
-            return false;
-        }
+        if (!condition->validate()) return false;
     }
     return true;
 }

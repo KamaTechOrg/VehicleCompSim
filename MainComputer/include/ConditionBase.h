@@ -2,7 +2,7 @@
 #define CONDITION_BASE_H
 
 #include <string>
-#include "../resources/json.hpp"
+#include "json.hpp"
 
 class ConditionBase {
 public:

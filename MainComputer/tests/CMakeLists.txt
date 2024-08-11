@@ -14,7 +14,13 @@ target_include_directories(test_validation_and_condition PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR} 
 )
 
-target_sources(test_validation_and_condition PRIVATE ${CMAKE_SOURCE_DIR}/src/SimpleCondition.cpp ${CMAKE_SOURCE_DIR}/src/AndCondition.cpp ${CMAKE_SOURCE_DIR}/src/CompositeCondition.cpp ${CMAKE_SOURCE_DIR}/src/OrCondition.cpp ${CMAKE_SOURCE_DIR}/src/ContainsCondition.cpp  ${CMAKE_SOURCE_DIR}/src/GreaterThanCondition.cpp
+target_sources(test_validation_and_condition PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/SimpleCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/AndCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/CompositeCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/OrCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/ContainsCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/GreaterThanCondition.cpp
     ${CMAKE_SOURCE_DIR}/src/SmallerThanCondition.cpp
     ${CMAKE_SOURCE_DIR}/src/StartsWithCondition.cpp
     ${CMAKE_SOURCE_DIR}/src/EndsWithCondition.cpp

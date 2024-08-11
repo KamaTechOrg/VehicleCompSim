@@ -1,15 +1,15 @@
 #define DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS 
 
 #include "doctest.h"
-#include "../include/AndCondition.h"
-#include "../include/OrCondition.h"
-#include "../include/SimpleCondition.h"
-#include "../include/ContainsCondition.h"
-#include "../include/GreaterThanCondition.h"
-#include "../include/SmallerThanCondition.h"
-#include "../include/StartsWithCondition.h"
-#include "../include/EndsWithCondition.h"
-#include "../include/EqualsToCondition.h"
+#include "AndCondition.h"
+#include "OrCondition.h"
+#include "SimpleCondition.h"
+#include "ContainsCondition.h"
+#include "GreaterThanCondition.h"
+#include "SmallerThanCondition.h"
+#include "StartsWithCondition.h"
+#include "EndsWithCondition.h"
+#include "EqualsToCondition.h"
 #include <memory>
 #include <chrono>
 

@@ -25,5 +25,7 @@ set(HEADER_FILES
 add_library(MainComputerHeaders INTERFACE)
 target_sources(MainComputerHeaders INTERFACE ${HEADER_FILES})
 target_include_directories(MainComputerHeaders INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/resources)
+
 
 install(FILES ${HEADER_FILES} DESTINATION include)

@@ -11,3 +11,5 @@ target_sources(MainComputer PRIVATE
     SmallerThanCondition.cpp
     StartsWithCondition.cpp
 )
+
+include_directories(${CMAKE_SOURCE_DIR}/resources)

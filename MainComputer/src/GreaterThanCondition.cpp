@@ -1,14 +1,13 @@
 #include "GreaterThanCondition.h"
 #include <stdexcept>
-#include <../resources/json.hpp>
+#include "json.hpp"
 
 GreaterThanCondition::GreaterThanCondition(const std::string& senderId, const std::string& validationValue)
     : SimpleCondition(senderId, validationValue) {}
 
 bool GreaterThanCondition::validate(const std::string& senderId, const std::string& value) const {
-    if (senderId != this->senderId) {
-        return false;
-    }
+    if (senderId != this->senderId) return false;
+    
     try {
         double numValue = std::stod(value);
         double numValidationValue = std::stod(validationValue);

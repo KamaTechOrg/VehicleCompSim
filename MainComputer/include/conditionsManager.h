@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <../resources/json.hpp>
+#include "json.hpp"
 
 class ConditionsManager {
 private:

@@ -2,7 +2,7 @@
 #define SIMPLE_CONDITION_H
 
 #include "ConditionBase.h"
-#include "../resources/json.hpp"
+#include "json.hpp"
 #include <string>
 
 class SimpleCondition : public ConditionBase {
