@@ -204,15 +204,15 @@ std::string AesTextEncrypt<Aes_var>::decrypt_cbc(Aes<Aes_var> const& aes, std::s
   message.reserve(encrypted_message.size());
   size_t msg_idx = 0;
   while(msg_idx < encrypted_message.size()){
-    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
-      for (int row = 0; row < Nb ; ++row) {
+    for (uint col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
+      for (uint row = 0; row < Nb ; ++row) {
           state[col][row] = encrypted_message[msg_idx + row + col*4];
       }
     }
     auto tmp = state;
     aes.decrypt(state);
-    for (int col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
-      for (int row = 0; row < Nb; ++row) {
+    for (uint col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
+      for (uint row = 0; row < Nb; ++row) {
         message += state[col][row]^prev_state[col][row];
       }
     }
@@ -275,7 +275,7 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ctr(Aes<Aes_var> const& aes, std::s
 }
 
 template <AesVariant Aes_var>
-std::string static AesTextEncrypt<Aes_var>::encrypt_ctr(KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+std::string AesTextEncrypt<Aes_var>::encrypt_ctr(KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
   return encrypt_ctr(Aes<Aes_var>(key), message, iv, nonce);
 }
 
