@@ -1,15 +1,10 @@
 #include "SingleCondition.h"
-#include "GreaterThanCondition.h"
-#include "SmallerThanCondition.h"
-#include "EqualsToCondition.h"
-#include "StartsWithCondition.h"
-#include "EndsWithCondition.h"
-#include "ContainsCondition.h"
-#include "SimpleCondition.h"
+
 #include <stdexcept>
 #include <fstream>
-#include <unordered_map>
-#include <functional>
+
+#include "ConditionBase.h"
+#include "ConditionsFactory.h"
 
 SingleCondition::SingleCondition()
 {
@@ -78,32 +73,5 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	std::string conditionType = _conditionType->currentText().toStdString();
 	std::string validationValue = _validationValue->text().toStdString();
 
-	const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>()>> conditionFactory = {
-		{"greater than", [input, validationValue]() {
-			return std::make_shared<GreaterThanCondition>(input, validationValue);
-		}},
-		{"smaller than", [input, validationValue]() {
-			return std::make_shared<SmallerThanCondition>(input, validationValue);
-		}},
-		{"equals to", [input, validationValue]() {
-			return std::make_shared<EqualsToCondition>(input, validationValue);
-		}},
-		{"starts with", [input, validationValue]() {
-			return std::make_shared<StartsWithCondition>(input, validationValue);
-		}},
-		{"ends with", [input, validationValue]() {
-			return std::make_shared<EndsWithCondition>(input, validationValue);
-		}},
-		{"contains", [input, validationValue]() {
-			return std::make_shared<ContainsCondition>(input, validationValue);
-		}}
-	};
-
-	auto it = conditionFactory.find(conditionType);
-	if (it != conditionFactory.end()) {
-		return it->second();
-	}
-	else {
-		return nullptr;
-	}
+	return ConditionsFactory().createCondition(input, conditionType, validationValue);
 }

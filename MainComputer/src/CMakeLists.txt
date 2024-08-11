@@ -10,4 +10,5 @@ target_sources(MainComputer PRIVATE
     GreaterThanCondition.cpp
     SmallerThanCondition.cpp
     StartsWithCondition.cpp
+    ConditionsFactory.cpp
 )

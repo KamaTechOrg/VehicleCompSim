@@ -44,4 +44,8 @@ void ConditionsEditor::save()
     
     file << j.dump(4);
     file.close();
+
+    /*
+    * TODO: ConditionsManager.loadFromJson();
+    */
 }

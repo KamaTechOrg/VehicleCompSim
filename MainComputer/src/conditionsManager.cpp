@@ -1,6 +1,22 @@
 #include "ConditionsManager.h"
+#include "ConditionsManager.h"
+#include "ConditionsManager.h"
 #include <stdexcept>
 #include <fstream>
+
+ConditionsManager::ConditionsManager()
+{
+    /*
+    * TODO: loadFromJson();
+    */
+}
+
+void ConditionsManager::run()
+{
+    /*
+    * TODO: listen to camera/sensors and validateAll() for each message.
+    */
+}
 
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition) {
     conditions.push_back(condition);
@@ -15,14 +31,8 @@ bool ConditionsManager::validateAll() const {
     return true;
 }
 
-void ConditionsManager::exportToJson(const std::string& filename) const {
-    nlohmann::json j;
-    for (const auto& condition : conditions) {
-        j["conditions"].push_back(condition->toJson());
-    }
-    std::ofstream file(filename);
-    if (!file) {
-        throw std::runtime_error("Cannot open file: " + filename);
-    }
-    file << j.dump(4);
+void ConditionsManager::loadFromJson(const std::string& filename) const {
+    /*
+    * filename = "conditions.json"
+    */
 }

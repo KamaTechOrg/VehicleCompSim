@@ -11,10 +11,13 @@ class ConditionsManager {
 private:
     std::vector<std::shared_ptr<ConditionBase>> conditions;
 
-public:
     void addCondition(std::shared_ptr<ConditionBase> condition);
     bool validateAll() const;
-    void exportToJson(const std::string& filename) const;
+
+public:
+    ConditionsManager();
+    void run();
+    void loadFromJson(const std::string& filename) const;
 };
 
 #endif
