@@ -199,23 +199,20 @@ BigNum RSABigNum::decrypt(const BigNum& message, const BigNum& privateKey, const
 	return power(message, privateKey, modulus);
 }
 
-std::string RSABigNum::encrypt(const std::string& message, const BigNum& publicKey, const BigNum& modulus) {
-	std::string result;
-	for (char c : message) {
-		BigNum encryptedChar = encrypt(BigNum(std::to_string(c), modulus.size * BigNum::UINT_T_SIZE), publicKey, modulus);
-		result += encryptedChar.toString() + " ";
-	}
-	return result;
-}
 
-std::string RSABigNum::decrypt(const std::string& encrypted_message, const BigNum& privateKey, const BigNum& modulus) {
+
+std::string RSABigNum::encrypt(const std::string& encrypted_message, const BigNum& privateKey, const BigNum& modulus) {
 	std::stringstream ss(encrypted_message);
 	std::string item;
 	std::string result;
 	while (std::getline(ss, item, ' ')) {
-		BigNum encryptedChar(item, modulus.size * BigNum::UINT_T_SIZE);
-		char decryptedChar = static_cast<char>(decrypt(encryptedChar, privateKey, modulus).to_ulong());
-		result += decryptedChar;
+		BigNum encryptedChar(item);
+		result += encrypt(encryptedChar, privateKey, modulus).toString();
 	}
 	return result;
+}
+
+
+std::string RSABigNum::decrypt(const std::string& encrypted_message, const BigNum& privateKey, const BigNum& modulus) {
+	return encrypt(encrypted_message, privateKey, modulus);
 }
