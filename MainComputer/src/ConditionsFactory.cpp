@@ -11,3 +11,13 @@ std::shared_ptr<ConditionBase> ConditionsFactory::createCondition(
 		return nullptr;
 	}
 }
+
+std::vector<std::string> ConditionsFactory::getConditionTypes()
+{
+	std::vector<std::string> types;
+
+	for (const auto& pair : _conditionsMap)
+		types.push_back(pair.first);
+
+	return types;
+}

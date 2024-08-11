@@ -16,9 +16,10 @@ class ConditionsFactory
 {
 public:
 	std::shared_ptr<ConditionBase> createCondition(std::string input, std::string conditionType, std::string validationValue);
+	std::vector<std::string> getConditionTypes();
 
 private:
-    const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>(const std::string&, const std::string&)>> _conditionsMap = {
+    inline static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>(const std::string&, const std::string&)>> _conditionsMap = {
 		{"greater than", [](std::string input, std::string validationValue) {
 			return std::make_shared<GreaterThanCondition>(input, validationValue);
 		}},

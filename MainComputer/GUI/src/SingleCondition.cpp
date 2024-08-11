@@ -21,12 +21,9 @@ SingleCondition::SingleCondition()
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
-	_conditionType->addItem("greater than");
-	_conditionType->addItem("smaller than");
-	_conditionType->addItem("equals to");
-	_conditionType->addItem("starts with");
-	_conditionType->addItem("ends with");
-	_conditionType->addItem("contains");
+	std::vector<std::string> conditionTypes = ConditionsFactory().getConditionTypes();
+	for (const auto& type : conditionTypes)
+		_conditionType->addItem(QString(type.c_str()));
 
 	_layout->addWidget(_conditionType);
 
