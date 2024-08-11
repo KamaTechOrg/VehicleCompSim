@@ -26,9 +26,13 @@ ConditionsEditor::ConditionsEditor()
 void ConditionsEditor::save()
 {
     std::string filename = "conditions.json";
+   // std::string filename = "C:/Windows/conditions.json"; 
+
     std::ofstream file(filename);
     if (!file.is_open()) {
-        throw std::runtime_error("Cannot open file: " + filename);
+        showSaveFeedback(false);
+        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(filename));
+        return;
     }
 
     std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->data();
@@ -44,4 +48,19 @@ void ConditionsEditor::save()
     
     file << j.dump(4);
     file.close();
+    showSaveFeedback(true);
+}
+
+void ConditionsEditor::showSaveFeedback(bool success)
+{
+    if (success) {
+        _saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
+    }
+    else {
+        _saveButton->setStyleSheet("background-color: #F44336;"); // Red
+    }
+
+    QTimer::singleShot(3000, [this]() {
+        _saveButton->setStyleSheet("");
+        });
 }
