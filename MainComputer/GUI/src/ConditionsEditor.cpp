@@ -68,4 +68,3 @@ void ConditionsEditor::showSaveFeedback(bool success)
     /*
     * TODO: ConditionsManager.loadFromJson();
     */
-}

@@ -1,8 +1,6 @@
 #include "SingleCondition.h"
-
 #include <stdexcept>
 #include <fstream>
-
 #include "ConditionBase.h"
 #include "ConditionsFactory.h"
 

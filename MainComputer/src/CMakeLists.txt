@@ -10,8 +10,7 @@ target_sources(MainComputer PRIVATE
     GreaterThanCondition.cpp
     SmallerThanCondition.cpp
     StartsWithCondition.cpp
+    ConditionsFactory.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/resources)
-    ConditionsFactory.cpp
-)
