@@ -64,3 +64,8 @@ void ConditionsEditor::showSaveFeedback(bool success)
         _saveButton->setStyleSheet("");
         });
 }
+
+    /*
+    * TODO: ConditionsManager.loadFromJson();
+    */
+}

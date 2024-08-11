@@ -1,15 +1,10 @@
 #include "SingleCondition.h"
-#include "GreaterThanCondition.h"
-#include "SmallerThanCondition.h"
-#include "EqualsToCondition.h"
-#include "StartsWithCondition.h"
-#include "EndsWithCondition.h"
-#include "ContainsCondition.h"
-#include "SimpleCondition.h"
+
 #include <stdexcept>
 #include <fstream>
-#include <unordered_map>
-#include <functional>
+
+#include "ConditionBase.h"
+#include "ConditionsFactory.h"
 
 SingleCondition::SingleCondition()
 {
@@ -26,12 +21,9 @@ SingleCondition::SingleCondition()
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
-	_conditionType->addItem("greater than");
-	_conditionType->addItem("smaller than");
-	_conditionType->addItem("equals to");
-	_conditionType->addItem("starts with");
-	_conditionType->addItem("ends with");
-	_conditionType->addItem("contains");
+	std::vector<std::string> conditionTypes = ConditionsFactory().getConditionTypes();
+	for (const auto& type : conditionTypes)
+		_conditionType->addItem(QString(type.c_str()));
 
 	_layout->addWidget(_conditionType);
 
@@ -78,32 +70,5 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	std::string conditionType = _conditionType->currentText().toStdString();
 	std::string validationValue = _validationValue->text().toStdString();
 
-	const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>()>> conditionFactory = {
-		{"greater than", [input, validationValue]() {
-			return std::make_shared<GreaterThanCondition>(input, validationValue);
-		}},
-		{"smaller than", [input, validationValue]() {
-			return std::make_shared<SmallerThanCondition>(input, validationValue);
-		}},
-		{"equals to", [input, validationValue]() {
-			return std::make_shared<EqualsToCondition>(input, validationValue);
-		}},
-		{"starts with", [input, validationValue]() {
-			return std::make_shared<StartsWithCondition>(input, validationValue);
-		}},
-		{"ends with", [input, validationValue]() {
-			return std::make_shared<EndsWithCondition>(input, validationValue);
-		}},
-		{"contains", [input, validationValue]() {
-			return std::make_shared<ContainsCondition>(input, validationValue);
-		}}
-	};
-
-	auto it = conditionFactory.find(conditionType);
-	if (it != conditionFactory.end()) {
-		return it->second();
-	}
-	else {
-		return nullptr;
-	}
+	return ConditionsFactory().createCondition(input, conditionType, validationValue);
 }

@@ -4,6 +4,12 @@
 
 int main(int argv, char* args[])
 {
+    /*
+    * TODO: run here some code, that somehow listens to camera/sensors, and acts acording to the conditions.json
+    * ConditionsMangaer manager;
+    * manager.run();
+    */
+
     QApplication app(argv, args);
     Window window;
     window.show();
