@@ -1,11 +1,27 @@
+#include <cstddef>
+#include <cstdint>
 #include <execution>
+
+// for htonl
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
+
 #include "aes_text_encrypt.hpp"
+#include "aes.hpp"
+
+
 
 #if SYCL_ENABLED
 #include <sycl/sycl.hpp>
 #endif
 
 namespace aes {
+
+
+/* /////////// ECB mode \\\\\\\\\\\  */
 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::encrypt_ecb(Aes<Aes_var> const& aes, std::string const& message){
@@ -46,17 +62,13 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(Aes<Aes_var> const& aes, std::s
 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::encrypt_ecb(KeyType const& key, std::string const& message){
-    Aes<Aes_var> aes(key);
-    return encrypt_ecb(aes, message);
+    return encrypt_ecb(Aes<Aes_var>(key), message);
 }
-
 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::decrypt_ecb(KeyType const& key, std::string const& encrypted_message){
-    Aes<Aes_var> aes(key);
-    return decrypt_ecb(aes, encrypted_message);
+    return decrypt_ecb(Aes<Aes_var>(key), encrypted_message);
 }
-
 
 #if SYCL_ENABLED
 
@@ -124,19 +136,12 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(sycl::queue& q, typename Aes<Ae
     return AesTextEncrypt<Aes_var>::decrypt_ecb(q, Aes<Aes_var>(key), encrypted_message);
 }
 
+
 #endif
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& message, std::array<uint8_t, 16> const& iv){
-    Aes<Aes_var> aes(key);
-    return encrypt_cbc(aes, message, iv);
-}
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& encrypted_message, std::array<uint8_t, 16> const& iv){
-    Aes<Aes_var> aes(key);
-    return decrypt_cbc(aes, encrypted_message, iv);
-}
+
+/* /////////// CBC mode \\\\\\\\\\\  */
 
 template <AesVariant Aes_var>
 std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 16> const& iv) {
@@ -220,6 +225,111 @@ std::string AesTextEncrypt<Aes_var>::decrypt_cbc(Aes<Aes_var> const& aes, std::s
   message.resize(message.size() - message.back());
   return message;
 }
+
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::encrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& message, std::array<uint8_t, 16> const& iv){
+    return encrypt_cbc(Aes<Aes_var>(key), message, iv);
+}
+
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::decrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& encrypted_message, std::array<uint8_t, 16> const& iv){
+    return decrypt_cbc(Aes<Aes_var>(key), encrypted_message, iv);
+}
+
+
+
+/* /////////// CTR mode \\\\\\\\\\\  */
+
+struct CtrBlock{
+  union {
+    AesState state;
+    struct {
+      std::array<uint8_t, 4> nonce;
+      std::array<uint8_t, 8> iv;
+      uint32_t counter;
+    };
+    std::array<uint8_t, 16> data;
+  };
+};
+
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::encrypt_ctr(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+    size_t blocksN = (message.size() + 15) / 16; 
+    std::string encrypted_message = message;
+    size_t msg_idx = 0;
+    for(uint32_t counter = 1; counter<=blocksN; ++counter){
+      CtrBlock block = {
+        .nonce = nonce,
+        .iv = iv,
+        .counter = htonl(counter)
+      };
+      aes.encrypt(block.state);
+      for(uint8_t c: block.data){
+        if(msg_idx >= encrypted_message.size()){
+          break;
+        }
+        encrypted_message[msg_idx++] ^= c;
+      }
+    }
+    return encrypted_message;
+}
+
+template <AesVariant Aes_var>
+std::string static AesTextEncrypt<Aes_var>::encrypt_ctr(KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+  return encrypt_ctr(Aes<Aes_var>(key), message, iv, nonce);
+}
+
+
+
+#if SYCL_ENABLED
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::encrypt_ctr(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+    size_t blocksN = message.size() / 16; //entire blocks
+    size_t remain = message.size() % 16;
+    std::string encrypted_message = message;
+    if(blocksN) {
+      sycl::buffer aes_buf(&aes, sycl::range<1>{1});
+      sycl::range<1> blocksN_range{blocksN};
+      sycl::buffer msg_buf(encrypted_message.data(), sycl::range<1>{encrypted_message.size()-remain});
+      q.submit([&](sycl::handler &h){
+        sycl::accessor aes_accessor(aes_buf, h, sycl::read_only);
+        sycl::accessor msg_accessor(msg_buf, h, sycl::read_write);
+        h.parallel_for(blocksN_range, [=](uint32_t blockIdx) {
+          CtrBlock block = {
+              .nonce = nonce,
+              .iv = iv,
+              .counter = htonl(blockIdx + 1)
+          };
+          aes_accessor[0].encrypt(block.state);
+          for(size_t i = 0; i<16; ++i){
+              msg_accessor[blockIdx*16 + i] ^= block.data[i];
+          }
+        });
+      });
+    }
+    if(remain){
+        CtrBlock block = {
+          .nonce = nonce,
+          .iv = iv,
+          .counter = htonl(blocksN + 1)
+        };
+        aes.encrypt(block.state);
+        for(size_t i = 0; i<remain; ++i){
+            encrypted_message[encrypted_message.size() - remain + i] ^= block.data[i];
+        }
+    }
+
+    q.wait();
+    return encrypted_message;
+}
+
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::encrypt_ctr(sycl::queue& q, typename Aes<Aes_var>::KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+    return AesTextEncrypt<Aes_var>::encrypt_ctr(q, Aes<Aes_var>(key), message, iv, nonce);
+}
+
+
+#endif
 
 /* /////////// explicit instantiations \\\\\\\\\\\  */
 

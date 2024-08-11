@@ -186,6 +186,45 @@ TEST(AesTest, Aes_256_ecb_encrypt_decrypt_II_sycl) {
   EXPECT_EQ(AesTextEncrypt<AesVariant::Aes256>::decrypt_ecb(q, aes, expected_encrypted_msg), msg);
 }
 
+
+TEST(AesTest, Aes_128_ctr_encrypt_decrypt_string_with_size_16_sycl) {
+/*
+  This test case is Test Vector #1 in:
+  https://datatracker.ietf.org/doc/html/rfc3686
+*/
+  std::array<uint8_t, 16> key = {0xAE, 0x68, 0x52, 0xF8, 0x12, 0x10, 0x67, 0xCC, 0x4B, 0xF7, 0xA5, 0x76, 0x55, 0x77, 0xF3, 0x9E};
+  std::array<uint8_t, 8> iv = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  std::array<uint8_t, 4> nonce = {0x00, 0x00, 0x00, 0x30};
+  Aes<AesVariant::Aes128> aes(key);
+  std::string msg = "Single block msg";
+  std::string expected_encrypted_msg = 
+    "\xE4\x09\x5D\x4F\xB7\xA7\xB3\x79\x2D\x61\x75\xA3\x26\x13\x11\xB8";
+  std::string encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, msg, iv, nonce);
+  // EXPECT_EQ(msg, AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, msg, iv, nonce), iv, nonce) ) << "encrypt";
+
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg) << "encrypt";
+  EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, encrypted_msg, iv, nonce), msg) << "decrypt back";
+}
+
+
+TEST(AesTest, Aes_128_ctr_encrypt_decrypt_string_36_size_sycl) {
+/*
+  This test case is Test Vector #3 in:
+  https://datatracker.ietf.org/doc/html/rfc3686
+*/
+  std::array<uint8_t, 16> key = {0x76, 0x91, 0xBE, 0x03, 0x5E, 0x50, 0x20, 0xA8, 0xAC, 0x6E, 0x61, 0x85, 0x29, 0xF9, 0xA0, 0xDC};
+  std::array<uint8_t, 8> iv = {0x27, 0x77, 0x7F, 0x3F, 0x4A, 0x17, 0x86, 0xF0};
+  std::array<uint8_t, 4> nonce = {0x00, 0xE0, 0x01, 0x7B};
+  Aes<AesVariant::Aes128> aes(key);
+  std::string msg("\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20\x21\x22\x23", 36);
+  std::string expected_encrypted_msg = 
+    "\xC1\xCF\x48\xA8\x9F\x2F\xFD\xD9\xCF\x46\x52\xE9\xEF\xDB\x72\xD7\x45\x40\xA4\x2B\xDE\x6D\x78\x36\xD5\x9A\x5C\xEA\xAE\xF3\x10\x53\x25\xB2\x07\x2F";
+  std::string encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, msg, iv, nonce);
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg) << "encrypt";
+  EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(q, aes, encrypted_msg, iv, nonce), msg) << "decrypt back";
+}
+
+
 #endif
 
 TEST(AesTest, Aes_128_cbc_encrypt_decrypt_string_with_size_16) {
@@ -204,4 +243,41 @@ TEST(AesTest, Aes_128_cbc_encrypt_decrypt_string_with_size_16) {
   
   EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::encrypt_cbc(aes,msg, iv), expected_encrypted_msg);
   EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::decrypt_cbc(aes,expected_encrypted_msg, iv), msg);
+}
+
+
+
+TEST(AesTest, Aes_128_ctr_encrypt_decrypt_string_with_size_16) {
+/*
+  This test case is Test Vector #1 in:
+  https://datatracker.ietf.org/doc/html/rfc3686
+*/
+  std::array<uint8_t, 16> key = {0xAE, 0x68, 0x52, 0xF8, 0x12, 0x10, 0x67, 0xCC, 0x4B, 0xF7, 0xA5, 0x76, 0x55, 0x77, 0xF3, 0x9E};
+  std::array<uint8_t, 8> iv = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  std::array<uint8_t, 4> nonce = {0x00, 0x00, 0x00, 0x30};
+  Aes<AesVariant::Aes128> aes(key);
+  std::string msg = "Single block msg";
+  std::string expected_encrypted_msg = 
+    "\xE4\x09\x5D\x4F\xB7\xA7\xB3\x79\x2D\x61\x75\xA3\x26\x13\x11\xB8";
+  std::string encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(aes, msg, iv, nonce);
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg) << "encrypt";
+  EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(aes, encrypted_msg, iv, nonce), msg) << "decrypt back";
+}
+
+
+TEST(AesTest, Aes_128_ctr_encrypt_decrypt_string_36_size) {
+/*
+  This test case is Test Vector #3 in:
+  https://datatracker.ietf.org/doc/html/rfc3686
+*/
+  std::array<uint8_t, 16> key = {0x76, 0x91, 0xBE, 0x03, 0x5E, 0x50, 0x20, 0xA8, 0xAC, 0x6E, 0x61, 0x85, 0x29, 0xF9, 0xA0, 0xDC};
+  std::array<uint8_t, 8> iv = {0x27, 0x77, 0x7F, 0x3F, 0x4A, 0x17, 0x86, 0xF0};
+  std::array<uint8_t, 4> nonce = {0x00, 0xE0, 0x01, 0x7B};
+  Aes<AesVariant::Aes128> aes(key);
+  std::string msg("\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20\x21\x22\x23", 36);
+  std::string expected_encrypted_msg = 
+    "\xC1\xCF\x48\xA8\x9F\x2F\xFD\xD9\xCF\x46\x52\xE9\xEF\xDB\x72\xD7\x45\x40\xA4\x2B\xDE\x6D\x78\x36\xD5\x9A\x5C\xEA\xAE\xF3\x10\x53\x25\xB2\x07\x2F";
+  std::string encrypted_msg = AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(aes, msg, iv, nonce);
+  EXPECT_EQ(encrypted_msg, expected_encrypted_msg) << "encrypt";
+  EXPECT_EQ(AesTextEncrypt<AesVariant::Aes128>::encrypt_ctr(aes, encrypted_msg, iv, nonce), msg) << "decrypt back";
 }

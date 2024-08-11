@@ -6,6 +6,11 @@
 #include "aes.hpp"
 #include "aes_text_encrypt.hpp"
 
+#if SYCL_ENABLED
+#include <sycl/sycl.hpp>
+sycl::queue q;
+#endif
+
 using namespace aes;
 
 template<AesVariant Aes_var>
@@ -62,10 +67,9 @@ BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes128>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes192>);
 BENCHMARK(msg4k_decrypt_aes_ecb<AesVariant::Aes256>);
 
-#if SYCL_ENABLED
-#include <sycl/sycl.hpp>
-sycl::queue q;
 
+
+#if SYCL_ENABLED
 template<AesVariant Aes_var>
 static void msg4k_encrypt_aes_ecb_sycl(benchmark::State& state) {
     Aes<Aes_var> aes(aes_key<Aes_var>); 
@@ -116,5 +120,39 @@ static void msg4k_decrypt_aes_cbc(benchmark::State& state) {
 BENCHMARK(msg4k_decrypt_aes_cbc<AesVariant::Aes128>);
 BENCHMARK(msg4k_decrypt_aes_cbc<AesVariant::Aes192>);
 BENCHMARK(msg4k_decrypt_aes_cbc<AesVariant::Aes256>);
+
+
+
+
+
+template<AesVariant Aes_var>
+static void msg4k_encrypt_aes_ctr(benchmark::State& state) {
+    std::array<uint8_t, 8> iv = {0x27, 0x77, 0x7F, 0x3F, 0x4A, 0x17, 0x86, 0xF0};
+    std::array<uint8_t, 4> nonce = {0x00, 0xE0, 0x01, 0x7B};
+    Aes<Aes_var> aes(aes_key<Aes_var>);
+    for(auto _ : state){
+        AesTextEncrypt<Aes_var>::encrypt_ctr(aes, msg4k, iv, nonce);
+    }
+}
+BENCHMARK(msg4k_encrypt_aes_ctr<AesVariant::Aes128>);
+BENCHMARK(msg4k_encrypt_aes_ctr<AesVariant::Aes192>);
+BENCHMARK(msg4k_encrypt_aes_ctr<AesVariant::Aes256>);
+
+
+#if SYCL_ENABLED
+template<AesVariant Aes_var>
+static void msg4k_encrypt_aes_ctr_sycl(benchmark::State& state) {
+    std::array<uint8_t, 8> iv = {0x27, 0x77, 0x7F, 0x3F, 0x4A, 0x17, 0x86, 0xF0};
+    std::array<uint8_t, 4> nonce = {0x00, 0xE0, 0x01, 0x7B};
+    Aes<Aes_var> aes(aes_key<Aes_var>);
+    for(auto _ : state){
+        AesTextEncrypt<Aes_var>::encrypt_ctr(q, aes, msg4k, iv, nonce);
+    }
+}
+BENCHMARK(msg4k_encrypt_aes_ctr_sycl<AesVariant::Aes128>);
+BENCHMARK(msg4k_encrypt_aes_ctr_sycl<AesVariant::Aes192>);
+BENCHMARK(msg4k_encrypt_aes_ctr_sycl<AesVariant::Aes256>);
+#endif
+
 
 BENCHMARK_MAIN();

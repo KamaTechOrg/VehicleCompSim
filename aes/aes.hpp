@@ -11,6 +11,8 @@ namespace aes {
 
 enum class AesVariant {Aes128, Aes192, Aes256};
 
+using AesState = std::array<std::array<uint8_t, 4>, 4>;
+
 template <AesVariant Aes_var>
 class Aes {
 public:
