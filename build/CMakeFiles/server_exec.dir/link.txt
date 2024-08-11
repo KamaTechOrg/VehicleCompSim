@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/server_exec.dir/server_main.cpp.o -o server_exec   -L/home/mefathim-tech-41/ccccccccc/all/library_to_user/lib  -Wl,-rpath,/home/mefathim-tech-41/ccccccccc/all/library_to_user/lib -lclient_lib -lserver_lib 
