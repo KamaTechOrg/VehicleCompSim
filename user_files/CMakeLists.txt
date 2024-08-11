@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Specify the path to your library
-link_directories(../../library_to_user/lib)
+link_directories(../build)
 
 # Include directories for your library headers
-include_directories(../../library_to_user/client)
-include_directories(../../library_to_user/server)
-include_directories(../../library_to_user/utilities)
+include_directories(../client/include)
+include_directories(../server/include)
+include_directories(../utilities)
 
 
 # Create the server executable
