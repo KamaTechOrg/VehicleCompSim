@@ -8,7 +8,7 @@ The `Can_Bus_Library` project includes a library for CAN bus communication, prov
 
 - CMake 3.10 or higher
 - A C++11 compatible compiler
-- Precompiled library files (`libclient.so` and `libserver.so`)
+
 
 
 
