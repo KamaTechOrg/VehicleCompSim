@@ -20,7 +20,7 @@
 
 class BigNum {
 public:
-    static const int MAX_SIZE = 32;
+    static const int MAX_SIZE = 64;
     static const int UINT_T_SIZE = 32;
 
     int size;

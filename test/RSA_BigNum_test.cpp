@@ -19,7 +19,7 @@ TEST(RSA_BigNum_test, gcd_test_with_512bit_1)
     // std::cout << "Prime q: " << q << std::endl;
 
     BigNum phi = (p - 1) * (q - 1);
-    BigNum e("65537"); // Common choice for e
+    BigNum e("10001"); // Common choice for e
 
     EXPECT_EQ(RSABigNum::gcd(e, phi), 1);
 }
@@ -49,7 +49,7 @@ TEST(RSA_BigNum_test, gcd_test_with_512bit_3)
 }
 
  
-TEST(RSA_BigNum_test, modInverse_test_1)//doesn't pass
+TEST(RSA_BigNum_test, modInverse_test_1)
 {
     std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
     std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
@@ -74,9 +74,23 @@ TEST(RSA_BigNum_test, modInverse_test_2)
     EXPECT_EQ(RSABigNum::modInverse(e, phi), d);
 }
 
+TEST(RSA_BigNum_test, modInverse_test_3)
+{
+    std::string num1 = "33c46f1f3e1f281314d7978ccbbf855d";
+    std::string num2 = "b6a1080240cb915cc873906d458492bf";
+    BigNum p(num1);
+    BigNum q(num2);
+    BigNum d("15e93dd7ddb120dbe554a78aad68214341bbe428efaf6ba5e2c5d9bc73928edd");
+    BigNum e("f212ec50962209fb413f34d63b184e4d");
+    BigNum phi = (p - 1) * (q - 1);
+    EXPECT_EQ(RSABigNum::modInverse(e, phi), d);
+}
+
+
+
 // test RSA encryption and decryption for int
 
-TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)//doesn't pass
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
@@ -84,16 +98,17 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int)//doesn't pass
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
     BigNum e("10001");
-    BigNum message = 12345;
+    BigNum message ("12345");
 
-    BigNum encrypted = RSABigNum::encrypt(message, e, p * q);
+    BigNum encrypted = RSABigNum::power(message, e, p * q);
     BigNum decrypted = RSABigNum::decrypt(encrypted, d, p * q);
+    BigNum expected("1ceee7cc810c265");
 
     EXPECT_EQ(message, decrypted);
-    EXPECT_NE(message, encrypted);
+    EXPECT_EQ(expected, encrypted);
 }
 
-TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)//doesn't pass
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)
 {
     std::string num1 = "3c07baa3";
     std::string num2 = "614557f1";
@@ -103,6 +118,37 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)//doesn't pass
     BigNum e("10001");
     std::string message = "12345";
     std::string encrypted = RSABigNum::encrypt(message, e, p * q);
+    std::string decrypted = RSABigNum::decrypt(encrypted, d, p * q);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(message, encrypted);
+}
+
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_2)
+{
+    std::string num1 = "3c07baa3";
+    std::string num2 = "614557f1";
+    BigNum p(num1);
+    BigNum q(num2);
+    BigNum d("13dcfa5db7bcc201");
+    BigNum e("10001");
+    std::string message = "12345";
+    std::string encrypted = RSABigNum::encrypt(message, e, p * q);
+    std::string decrypted = RSABigNum::encrypt(encrypted, d, p * q);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(message, encrypted);
+}
+
+
+TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_3)
+{
+    std::string num1 = "3c07baa3";
+    std::string num2 = "614557f1";
+    BigNum p(num1);
+    BigNum q(num2);
+    BigNum d("13dcfa5db7bcc201");
+    BigNum e("10001");
+    std::string message = "12345";
+    std::string encrypted = RSABigNum::decrypt(message, e, p * q);
     std::string decrypted = RSABigNum::decrypt(encrypted, d, p * q);
     EXPECT_EQ(message, decrypted);
     EXPECT_NE(message, encrypted);
@@ -171,28 +217,28 @@ TEST(RSA_BigNum_test, power_test4){
     EXPECT_EQ(c, exp);
 }
 
-// TEST(RSA_BigNum_test, WithBigNum){
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum){
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSABigNum::generate_keys(publicKey, privateKey, modulus, 256);
+    RSABigNum::generate_keys(publicKey, privateKey, modulus, 256);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message = 12345;
-//     BigNum encrypted = RSABigNum::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSABigNum::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
+    // test RSA encryption and decryption for int
+    BigNum message("12345");
+    BigNum encrypted = RSABigNum::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSABigNum::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
 
-//     // if (message == decrypted && encrypted != message)
-// 	// {
-// 	// 	std::cout << "RSA encryption and decryption for int passed" << std::endl;
-// 	// }
-// 	// else
-//     // {
-// 	// 	std::cout << "RSA encryption and decryption for int failed" << std::endl;
-//     // }
-// }
+    // if (message == decrypted && encrypted != message)
+	// {
+	// 	std::cout << "RSA encryption and decryption for int passed" << std::endl;
+	// }
+	// else
+    // {
+	// 	std::cout << "RSA encryption and decryption for int failed" << std::endl;
+    // }
+}
 
 // test RSA encryption and decryption for string
 // TEST(RSA_BigNum_test , WithString){

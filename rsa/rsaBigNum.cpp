@@ -12,7 +12,7 @@ void RSABigNum::generate_keys(BigNum& publicKey, BigNum& privateKey, BigNum& mod
 
 	BigNum n = p * q;
 	BigNum phi = (p - 1) * (q - 1);
-	BigNum e("65537"); // Common choice for e
+	BigNum e("10001"); // Common choice for e
 
 	// Ensure e is coprime with phi
 	while (gcd(e, phi) != 1) {
