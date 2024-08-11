@@ -23,12 +23,10 @@ The `Can_Bus_Library` project includes a library for CAN bus communication, prov
    git checkout < communication-library-to-user >
 
 2. **Build  the Project**
- ```sh
-    mkdir build
-    && cd build
-    && cmake ..
-    && make
-
-3. **Run the Project**
+    ```sh
+    mkdir build && cd build && cmake .. && make
+    
+3. **Run the project**
+    ```sh
     ./server_exec
     ./client_exec
