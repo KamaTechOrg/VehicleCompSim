@@ -39,12 +39,12 @@ public:
 
 // ctr mode
 // note: in ctr mode decrypt and encrypt are the same
-    std::string static encrypt_ctr(sycl::queue& q, KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
-    std::string static encrypt_ctr(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
-
-#if SYCL_ENABLED
     std::string static encrypt_ctr(KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
     std::string static encrypt_ctr(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
+
+#if SYCL_ENABLED
+    std::string static encrypt_ctr(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
+    std::string static encrypt_ctr(sycl::queue& q, KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce);
 #endif
 
 };
