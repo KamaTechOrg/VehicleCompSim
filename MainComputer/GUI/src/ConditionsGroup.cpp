@@ -204,6 +204,7 @@ std::shared_ptr<ConditionBase> ConditionsGroup::data()
 	for (auto it : _conditions)
 	{
 		std::shared_ptr<ConditionBase> condition = it->data();
+		if (condition == nullptr) return nullptr;
 		conditions.push_back(condition);
 	}
 	return buildTree(conditions);
