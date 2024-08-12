@@ -5,4 +5,4 @@
 * opencv
 * YOLO3V
 * change the location of the images forlder in the main
-* 
+
