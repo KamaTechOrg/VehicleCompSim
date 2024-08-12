@@ -1,8 +1,9 @@
+#include "ConditionBase.h"
+#include "ConditionsFactory.h"
 #include "SingleCondition.h"
 #include <stdexcept>
 #include <fstream>
-#include "ConditionBase.h"
-#include "ConditionsFactory.h"
+#include <QMessageBox>
 
 SingleCondition::SingleCondition()
 {
@@ -67,6 +68,16 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	std::string input = _inputSource->currentText().toStdString();
 	std::string conditionType = _conditionType->currentText().toStdString();
 	std::string validationValue = _validationValue->text().toStdString();
+
+	if (input.empty() || conditionType.empty() || validationValue.empty()) {
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setWindowTitle(tr("Validation Error"));
+		msgBox.setText(tr("Please make sure all fields are filled out."));
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.exec();
+		return nullptr;
+	}
 
 	return ConditionsFactory().createCondition(input, conditionType, validationValue);
 }

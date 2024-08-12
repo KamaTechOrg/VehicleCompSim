@@ -25,6 +25,12 @@ ConditionsEditor::ConditionsEditor()
 
 void ConditionsEditor::save()
 {
+    std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->data();
+
+    if (conditionsTree == nullptr) {
+        return;
+    }
+
     std::string filename = "conditions.json";
    // std::string filename = "C:/Windows/conditions.json"; 
 
@@ -35,17 +41,10 @@ void ConditionsEditor::save()
         return;
     }
 
-    std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->data();
     nlohmann::json j;
-    if (conditionsTree != nullptr)
-    {
-        j = conditionsTree->toJson();
-    }
-    else
-    {
-        j = {};
-    }
+    j = conditionsTree->toJson();
     
+   
     file << j.dump(4);
     file.close();
     showSaveFeedback(true);
