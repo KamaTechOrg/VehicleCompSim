@@ -1,6 +1,6 @@
 #include "SimpleCondition.h"
 
-SimpleCondition::SimpleCondition(const std::string& senderId, const std::string& validationValue)
+SimpleCondition::SimpleCondition(const std::string &senderId, const std::string &validationValue)
     : senderId(senderId), validationValue(validationValue) {}
 
 nlohmann::json SimpleCondition::toJson() const {

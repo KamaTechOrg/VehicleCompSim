@@ -68,7 +68,7 @@ SingleCondition::~SingleCondition()
 		delete _layout;
 }
 
-std::string to_string(const QString& qstr) {
+std::string to_string(const QString &qstr) {
 	return qstr.toStdString();
 }
 

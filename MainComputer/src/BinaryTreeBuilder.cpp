@@ -7,7 +7,7 @@
 #include <stack>
 #include <fstream>
 
-ConditionBase* BinaryTreeBuilder::buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators) {
+ConditionBase* BinaryTreeBuilder::buildTree(const std::vector<ConditionBase*> &conditions, const std::vector<ConditionLayoutBase::conditionType> &operators) {
     /*
     if (conditions.empty()) {
         return nullptr;
@@ -45,7 +45,7 @@ ConditionBase* BinaryTreeBuilder::buildTree(const std::vector<ConditionBase*>& c
 //    }
 //}
 
-void BinaryTreeBuilder::exportBinaryTreeToJson(ConditionBase* root, const std::string& filename) {
+void BinaryTreeBuilder::exportBinaryTreeToJson(ConditionBase* root, const std::string &filename) {
     std::ofstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open file: " + filename);

@@ -42,7 +42,7 @@ private:
 	void deleteCondition(ConditionLayoutBase* layout);
 	void addSingleButtonClicked();
 	void addGroupButtonClicked();
-	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions);
+	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>> &conditions);
 	
 signals:
 	void requestDelete(ConditionLayoutBase* group);

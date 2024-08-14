@@ -2,10 +2,10 @@
 #include <stdexcept>
 #include "json.hpp"
 
-SmallerThanCondition::SmallerThanCondition(const std::string& senderId, const std::string& validationValue)
+SmallerThanCondition::SmallerThanCondition(const std::string &senderId, const std::string &validationValue)
     : SimpleCondition(senderId, validationValue) {}
 
-bool SmallerThanCondition::validate(const std::string& senderId, const std::string& value) const {
+bool SmallerThanCondition::validate(const std::string &senderId, const std::string &value) const {
     if (senderId != this->senderId) return false;
     
     try {

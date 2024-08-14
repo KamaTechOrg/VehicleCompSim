@@ -7,10 +7,10 @@
 
 class SimpleCondition : public ConditionBase {
 public:
-    SimpleCondition(const std::string& senderId, const std::string& validationValue);
+    SimpleCondition(const std::string &senderId, const std::string &validationValue);
     virtual ~SimpleCondition() = default;
 
-    virtual bool validate(const std::string& senderId, const std::string& value) const override = 0;
+    virtual bool validate(const std::string &senderId, const std::string &value) const override = 0;
     nlohmann::json toJson() const override;
 
 protected:

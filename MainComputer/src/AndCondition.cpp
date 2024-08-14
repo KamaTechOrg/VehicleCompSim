@@ -8,8 +8,8 @@ AndCondition::AndCondition(std::shared_ptr<ConditionBase> lhs,
 {
 }
 
-bool AndCondition::validate(const std::string& senderId,
-                            const std::string& value) const
+bool AndCondition::validate(const std::string &senderId,
+                            const std::string &value) const
 {
     return LHS->validate(senderId, value) && RHS->validate(senderId, value);
 }

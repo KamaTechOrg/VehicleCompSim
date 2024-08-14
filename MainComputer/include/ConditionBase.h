@@ -6,7 +6,7 @@
 
 class ConditionBase {
 public:
-    virtual bool validate(const std::string& senderId, const std::string& value) const = 0;
+    virtual bool validate(const std::string &senderId, const std::string &value) const = 0;
     virtual nlohmann::json toJson() const = 0;
     virtual ~ConditionBase() = default;
 };

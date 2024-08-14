@@ -12,8 +12,8 @@ private:
     std::vector<std::shared_ptr<ConditionBase>> conditions;
 
     void addCondition(std::shared_ptr<ConditionBase> condition);
-    bool validateAll(const std::string& senderId, const std::string& value) const;
-    void loadFromJson(const std::string& filename) const;
+    bool validateAll(const std::string &senderId, const std::string &value) const;
+    void loadFromJson(const std::string &filename) const;
     bool _isRunning;
 
 public:

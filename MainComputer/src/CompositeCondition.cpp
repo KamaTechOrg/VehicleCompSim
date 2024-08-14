@@ -5,10 +5,10 @@ CompositeCondition::CompositeCondition(std::shared_ptr<ConditionBase> lhs,
                                        std::chrono::milliseconds elapsedTime)
     : LHS(lhs), RHS(rhs), _elapsedTime(elapsedTime) {}
 
-const std::shared_ptr<ConditionBase>& CompositeCondition::getLHS() const {
+const std::shared_ptr<ConditionBase> &CompositeCondition::getLHS() const {
     return LHS;
 }
 
-const std::shared_ptr<ConditionBase>& CompositeCondition::getRHS() const {
+const std::shared_ptr<ConditionBase> &CompositeCondition::getRHS() const {
     return RHS;
 }

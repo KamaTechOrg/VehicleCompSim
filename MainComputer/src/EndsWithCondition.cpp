@@ -1,10 +1,10 @@
 #include "EndsWithCondition.h"
 #include "json.hpp"
 
-EndsWithCondition::EndsWithCondition(const std::string& senderId, const std::string& validationValue)
+EndsWithCondition::EndsWithCondition(const std::string &senderId, const std::string &validationValue)
     : SimpleCondition(senderId, validationValue) {}
 
-bool EndsWithCondition::validate(const std::string& senderId, const std::string& value) const {
+bool EndsWithCondition::validate(const std::string &senderId, const std::string &value) const {
     if (senderId != this->senderId) return false;
     
     if (validationValue.length() > value.length()) return false;

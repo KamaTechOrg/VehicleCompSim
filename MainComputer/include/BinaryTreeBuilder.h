@@ -10,11 +10,11 @@ class SimpleCondition;
 
 class BinaryTreeBuilder {
 private:
-    void exportBinaryTreeToJson(ConditionBase* root, const std::string& filename);
+    void exportBinaryTreeToJson(ConditionBase* root, const std::string &filename);
 public:
     BinaryTreeBuilder() = default;
     ~BinaryTreeBuilder() = default;
-    ConditionBase* buildTree(const std::vector<ConditionBase*>& conditions, const std::vector<ConditionLayoutBase::conditionType>& operators);
+    ConditionBase* buildTree(const std::vector<ConditionBase*> &conditions, const std::vector<ConditionLayoutBase::conditionType> &operators);
     //void exportToJson(const std::string& filename);
 };
 

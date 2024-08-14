@@ -53,16 +53,16 @@ void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
     conditions.push_back(condition);
 }
 
-bool ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
+bool ConditionsManager::validateAll(const std::string &senderId, const std::string &value) const
 {
-    for (const auto& condition : conditions) {
+    for (const auto &condition : conditions) {
         if (!condition->validate(senderId, value))
             return false;
     }
     return true;
 }
 
-void ConditionsManager::loadFromJson(const std::string& filename) const
+void ConditionsManager::loadFromJson(const std::string &filename) const
 {
     std::ifstream file(filename);
     if (!file.is_open())
