@@ -17,7 +17,7 @@
 #include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), m_scene(new CustomScene()) {
+        : QMainWindow(parent), m_scene(new CustomScene()) {
     m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
@@ -31,16 +31,16 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainWidget);
 
     auto toolBar = addToolBar("Tools");
-    toolBar->addAction("background", [this]() { background_Layout(); });
-    toolBar->addAction("Save", [this]() { saveLayout(); });
-    toolBar->addAction("Load", [this]() { loadLayout(); });
-    toolBar->addAction("Record", [this]() { start_and_record(); });
-    toolBar->addAction("Replay", [this]() { replayer(); });
+    toolBar->addAction( "Background", [this] { background_Layout(); });
+    toolBar->addAction( "Save", [this] { saveLayout(); });
+    toolBar->addAction("Load", [this] { loadLayout(); });
+    toolBar->addAction("Record", [this] { record(); });
+    toolBar->addAction("Replay", [this] { replayer(); });
 
     WebSocketClient& client = WebSocketClient::getInstance();
     client.setScene(m_scene);
     connect(&client, &WebSocketClient::connectionStatusChanged, this, &MainWindow::onConnectionStatusChanged);
-      
+
     setupRunService();
 }
 
@@ -57,24 +57,20 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
 
-void MainWindow::onConnectionStatusChanged(bool connected)
-{
-  
-}
-
-void MainWindow::setupRunService()
-{
+void MainWindow::setupRunService() {
     runService.setScene(m_scene);
 
-    startBtn = new QPushButton("start", m_toolBar);
-    m_toolBar->addWidget(startBtn);
-    stopBtn = new QPushButton("stop", m_toolBar);
-    m_toolBar->addWidget(stopBtn);
+    startBtn = new QPushButton("Start", m_toolBar);
+    stopBtn = new QPushButton("Stop", m_toolBar);
     timer = new QTimeEdit(m_toolBar);
     timer->setDisplayFormat("hh:mm:ss");
     timer->setFixedSize(120, 30);
     timer->setCurrentSection(QDateTimeEdit::MinuteSection);
+
+    m_toolBar->addWidget(startBtn);
+    m_toolBar->addWidget(stopBtn);
     m_toolBar->addWidget(timer);
+
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
@@ -82,22 +78,27 @@ void MainWindow::setupRunService()
     m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), nullptr, this);
 
     onRunEnd();
-    QObject::connect(startBtn, &QPushButton::clicked, [this](){
+    QObject::connect(startBtn, &QPushButton::clicked, [this] {
         this->onRunStart();
-        this->runService.start([this](){this->onRunEnd();});
+        this->runService.start([this] { this->onRunEnd(); });
     });
 
-    QObject::connect(stopBtn, &QPushButton::clicked, [this](){
+    QObject::connect(stopBtn, &QPushButton::clicked, [this] {
         this->runService.stop();
     });
 
-    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this](){
+    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
         int t = timer->time().hour();
-        t = t*60 + timer->time().minute();
-        t = t*60 + timer->time().second();
+        t = t * 60 + timer->time().minute();
+        t = t * 60 + timer->time().second();
 
         this->runService.setTimer(t);
     });
+}
+
+void MainWindow::onConnectionStatusChanged(bool connected)
+{
+  
 }
 
 void MainWindow::onRunStart()
@@ -130,15 +131,18 @@ void MainWindow::background_Layout() {
         m_scene->addItem(pixmapItem);
     }
 }
-void MainWindow::start_and_record() {
-    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
+void MainWindow::record() {
+    QString defaultFileName = "record.log";
+    QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
         m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
         m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
     }
     saveLayout();
 }
+
 void MainWindow::replayer() {
+    close_previous_replay();
     loadLayout();
     QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
@@ -147,6 +151,14 @@ void MainWindow::replayer() {
         m_simulationReplayer->startReplay();
         controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
         m_mainLayout->addWidget(controlPanel);
+    }
+}
+void MainWindow::close_previous_replay(){
+    if (controlPanel != nullptr) {
+        m_simulationReplayer->clear_current_events();
+        controlPanel->close();
+        delete controlPanel;
+        controlPanel = nullptr;
     }
 }
 

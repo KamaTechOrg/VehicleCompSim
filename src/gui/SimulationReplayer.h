@@ -24,9 +24,10 @@ public:
     void jumpToTime(const QTime &targetTime);
     void startReplay();
     QDateTime start() const { return m_startTime; }
+    void clear_current_events();
+
 
 private:
-    void clear_current_events();
     void scheduleEvent(const QString &event, int delay);
 
 private slots:

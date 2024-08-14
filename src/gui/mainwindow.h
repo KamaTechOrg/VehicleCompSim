@@ -37,10 +37,11 @@ private:
     void setupRunService();
     void onRunStart();
     void onRunEnd();
-    void start_and_record();
+    void record();
     void replayer();
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void onConnectionStatusChanged(bool connected);
+    void close_previous_replay();
 
     CustomScene* m_scene;
     QGraphicsView* m_view;  // Owned by QMainWindow
@@ -56,14 +57,7 @@ private:
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
-    SimulationControlPanel* controlPanel;
+    SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_topLayout;
-//    QPushButton* startBtn;
-//    std::function<void()> startLambda; // Member variable to store the lambda
-//    RunService runService; // Assuming you have a RunService class
-//private slots:
-//    void onRunStart();
-//    void onRunEnd();
-//    void triggerRun(); // New function to trigger the lambda
 };
