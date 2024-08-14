@@ -31,5 +31,5 @@ private:
 	QPushButton* _statusButton;
 	bool _editorRunning;
 	Window editor;
-//	ConditionsManager manager;
+	ConditionsManager manager;
 };

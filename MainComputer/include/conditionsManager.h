@@ -20,6 +20,7 @@ public:
     ConditionsManager();
     void run();
     void stop();
+    bool isRunning();
 };
 
 #endif

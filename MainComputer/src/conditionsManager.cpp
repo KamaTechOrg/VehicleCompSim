@@ -3,29 +3,45 @@
 #include <fstream>
 #include <iostream>
 #include <windows.h>
+#include <thread>
 #include "json.hpp"
 #include "constants.h"
+#include <QtDebug>
 
 ConditionsManager::ConditionsManager()
-    : _isRunning(true)
+    : _isRunning(false)
 {
     loadFromJson(CONDITIONS_JSON_FILE_NAME);
 }
 
 void ConditionsManager::run()
 {
-    while (_isRunning)
-    {
-        Sleep(1000); // temp, just to not stall the all program.
-        /*
-        * TODO: listen to camera/sensors and validateAll() for each message.
-        */
-    }
+    _isRunning = true;
+    std::thread([this]() {
+        int count = 1;
+        while (_isRunning)
+        {
+            qInfo() << "running " << count << "\n----- ----- ----- ----- -----\n";
+            count++;
+            // Sleep for 1 second to avoid busy waiting
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+            /*
+            * TODO: listen to camera/sensors and validateAll() for each message.
+            */
+        }
+        }).detach(); // Detach the thread so it runs independently
 }
 
 void ConditionsManager::stop()
 {
     _isRunning = false;
+    qInfo() << "stopping" << "\n----- ----- ----- ----- -----\n";
+}
+
+bool ConditionsManager::isRunning()
+{
+    return _isRunning;
 }
 
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
@@ -52,7 +68,7 @@ void ConditionsManager::loadFromJson(const std::string& filename) const
     file >> j;
     file.close();
 
-    std::cout << j.dump(4) << std::endl;
+    qInfo() << "JSON file ----- ----- ----- ----- -----\n" << j.dump(4) << "\n----- ----- ----- ----- -----\n";
 
     /*
     * TODO: create compsite conditions and push them into "conditions" member vector

@@ -44,10 +44,9 @@ void Gui::onOpenEditor()
 
 void Gui::onStartStopEditor()
 {
-	/*if (manager.isRunning())
+	if (manager.isRunning())
 		manager.stop();
 	else
-     	manager.run();*/
-
+     	manager.run();
 }
 
