@@ -18,11 +18,15 @@ void ConditionsManager::run()
 {
     _isRunning = true;
     std::thread([this]() {
-        int count = 1;
+        std::string count;
         while (_isRunning)
         {
-            qInfo() << "running " << count << "\n----- ----- ----- ----- -----\n";
-            count++;
+            count.push_back('.');
+            qInfo() << "running " << count.c_str();
+
+            if (count.size() == 10)
+                count.clear();
+
             // Sleep for 1 second to avoid busy waiting
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 

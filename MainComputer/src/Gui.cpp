@@ -8,8 +8,8 @@ Gui::Gui() : _editorRunning(false)
 	_buttonLayout = new QVBoxLayout();
 
 	_openEditorButton = new QPushButton("Open Editor", this);
-	_startStopButton = new QPushButton("Start/stop Editor", this);
-	_statusButton = new QPushButton("Status: Closed", this);
+	_startStopButton = new QPushButton("Start/stop Manager", this);
+	_statusButton = new QPushButton("Not Running", this);
 
 	connect(_openEditorButton, &QPushButton::clicked, this, &Gui::onOpenEditor);
 	connect(_startStopButton, &QPushButton::clicked, this, &Gui::onStartStopEditor);
@@ -45,8 +45,16 @@ void Gui::onOpenEditor()
 void Gui::onStartStopEditor()
 {
 	if (manager.isRunning())
+	{
 		manager.stop();
+		_statusButton->setText("Not Running");
+		_statusButton->setStyleSheet("background-color: red; color: white;");
+	}
 	else
+	{
      	manager.run();
+		_statusButton->setText("Running");
+		_statusButton->setStyleSheet("background-color: green; color: white;");
+	}
 }
 
