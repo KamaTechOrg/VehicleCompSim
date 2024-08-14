@@ -1,6 +1,8 @@
 #include "OrCondition.h"
 
-OrCondition::OrCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime)
+OrCondition::OrCondition(std::shared_ptr<ConditionBase> lhs,
+                         std::shared_ptr<ConditionBase> rhs,
+                         std::chrono::milliseconds elapsedTime)
     : CompositeCondition(lhs, rhs, elapsedTime) {}
 
 bool OrCondition::validate(const std::string& senderId, const std::string& value) const {

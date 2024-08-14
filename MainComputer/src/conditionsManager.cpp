@@ -1,6 +1,4 @@
 #include "ConditionsManager.h"
-#include "ConditionsManager.h"
-#include "ConditionsManager.h"
 #include <stdexcept>
 #include <fstream>
 
@@ -19,11 +17,12 @@ void ConditionsManager::run()
 }
 
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition) {
+    assert(condition != nullptr);
     conditions.push_back(condition);
 }
 
 bool ConditionsManager::validateAll() const {
-    for (const auto& condition : conditions) {
+    for (const auto &condition : conditions) {
         if (!condition->validate()) return false;
     }
     return true;

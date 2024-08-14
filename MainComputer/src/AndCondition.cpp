@@ -1,10 +1,16 @@
 #include "AndCondition.h"
 
 
-AndCondition::AndCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime)
-    : CompositeCondition(lhs, rhs, elapsedTime) {}
+AndCondition::AndCondition(std::shared_ptr<ConditionBase> lhs,
+                           std::shared_ptr<ConditionBase> rhs,
+                           std::chrono::milliseconds elapsedTime)
+    : CompositeCondition(lhs, rhs, elapsedTime)
+{
+}
 
-bool AndCondition::validate(const std::string& senderId, const std::string& value) const {
+bool AndCondition::validate(const std::string& senderId,
+                            const std::string& value) const
+{
     return LHS->validate(senderId, value) && RHS->validate(senderId, value);
 }
 
