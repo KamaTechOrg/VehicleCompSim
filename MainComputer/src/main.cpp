@@ -1,6 +1,8 @@
 #include <QApplication>
 
 #include "Window.h"
+#include "Gui.h"
+
 
 int main(int argv, char* args[])
 {
@@ -11,8 +13,10 @@ int main(int argv, char* args[])
     */
 
     QApplication app(argv, args);
-    Window window;
-    window.show();
+   /* Window window;
+    window.show();*/
+    Gui gui;
+    gui.show();
     return app.exec();
 }
 
