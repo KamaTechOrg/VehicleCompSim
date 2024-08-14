@@ -19,8 +19,7 @@ int findNumberByName(const unordered_map<string, int>& data, const string& name)
 //=============================================================================
 int main()
 {
-    // Define the folder path
-    string images_folder_path = R"(C:\Users\mende\Desktop\Project\Data\img\davidImg)";
+    string images_folder_path = R"(C:\Users\dmaro\Downloads\Cars3)";
 
     std::ofstream resultsFile("results.csv");
     resultsFile << "Image,Model,Time(sec),precision,real number,succes presentage\n";
@@ -40,7 +39,7 @@ int main()
 
         cv::Mat crroped_collage = optimizeCollageGreedy(image, diff_boxes);
 
-        cv::imshow("original", image);
+        cv::imshow("crroped_collage", crroped_collage);
         waitKey(0);
 
         auto end = std::chrono::high_resolution_clock::now();
