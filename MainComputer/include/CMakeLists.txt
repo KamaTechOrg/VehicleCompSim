@@ -20,6 +20,7 @@ set(HEADER_FILES
     SmallerThanCondition.h
     StartsWithCondition.h
     ConditionsFactory.h
+    ConditionsManager.h
 
 )
 
