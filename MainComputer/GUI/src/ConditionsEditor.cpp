@@ -21,6 +21,10 @@ ConditionsEditor::ConditionsEditor()
     _ConditionsEditorLayout->addWidget(_saveButton);
 
     setLayout(_ConditionsEditorLayout);
+
+
+    resize(350, 200);
+
 }
 
 void ConditionsEditor::save()

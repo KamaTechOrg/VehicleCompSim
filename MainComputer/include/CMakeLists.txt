@@ -21,6 +21,7 @@ set(HEADER_FILES
     StartsWithCondition.h
     ConditionsFactory.h
     ConditionsManager.h
+    Gui.h
 
 )
 

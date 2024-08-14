@@ -12,6 +12,7 @@ target_sources(MainComputer PRIVATE
     StartsWithCondition.cpp
     ConditionsFactory.cpp
     ConditionsManager.cpp
+    Gui.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/resources)
