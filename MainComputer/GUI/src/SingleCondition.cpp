@@ -1,9 +1,12 @@
 #include "ConditionBase.h"
 #include "ConditionsFactory.h"
 #include "SingleCondition.h"
-#include <stdexcept>
-#include <fstream>
 #include <QMessageBox>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QString>
+#include <QPushButton>
+
 
 SingleCondition::SingleCondition()
 {
@@ -69,6 +72,14 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	std::string conditionType = _conditionType->currentText().toStdString();
 	std::string validationValue = _validationValue->text().toStdString();
 
+	bool inputHasError = input.empty();
+	bool conditionTypeHasError = conditionType.empty();
+	bool validationValueHasError = validationValue.empty();
+
+	setBorderColor(_inputSource, inputHasError);
+	setBorderColor(_conditionType, conditionTypeHasError);
+	setBorderColor(_validationValue, validationValueHasError);
+
 	if (input.empty() || conditionType.empty() || validationValue.empty()) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -80,4 +91,19 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	}
 
 	return ConditionsFactory().createCondition(input, conditionType, validationValue);
+}
+
+
+void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
+{
+	comboBox->setStyleSheet(
+		hasError
+		? "QComboBox { border: 2px solid red; } QComboBox::drop-down { border: none; }"
+		: "QComboBox { border: none; }"
+	);
+}
+
+void SingleCondition::setBorderColor(QLineEdit* lineEdit, bool hasError)
+{
+	lineEdit->setStyleSheet(hasError ? "border: 2px solid red;" : "");
 }
