@@ -60,8 +60,6 @@ SingleCondition::~SingleCondition()
 		delete _conditionType;
 	if (_validationValue != nullptr)
 		delete _validationValue;
-	if (_messageFrom != nullptr)
-		delete _messageFrom;
 	if (_deleteButton != nullptr)
 		delete _deleteButton;
 	if (_layout != nullptr)

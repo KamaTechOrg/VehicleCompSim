@@ -10,6 +10,8 @@ Window::Window()
 	_layout->addWidget(_explorer);
 	_layout->addWidget(_editor);
 	setLayout(_layout);
+	resize(700, 200);
+
 }
 
 Window::~Window()

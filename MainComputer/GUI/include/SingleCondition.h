@@ -26,7 +26,9 @@ private:
 	QComboBox*		_inputSource;
 	QComboBox*		_conditionType;
 	QLineEdit*		_validationValue;
+	QLineEdit*      _messageFrom;
 	QPushButton*	_deleteButton;
+
 
 	void setBorderColor(QComboBox* comboBox, bool hasError);
 	void setBorderColor(QLineEdit* lineEdit, bool hasError);
