@@ -163,16 +163,7 @@ void Socket::connect(const std::string host, const int port)
 
     int status = inet_pton(AF_INET, host.c_str(), &m_addr.sin_addr);
 
-    // if use in ip = localost , this section no relevant information
 
-//     if (status <= 0) {
-// #ifdef _WIN32
-//         std::cerr << "Invalid address/ Address not supported: " << WSAGetLastError() << "\n";
-// #else
-//         std::cerr << "Invalid address/ Address not supported: " << errno << "\n";
-// #endif
-//         // throw...
-//     }
 
     status = ::connect(m_sock, (sockaddr*)&m_addr, sizeof(m_addr));
 
