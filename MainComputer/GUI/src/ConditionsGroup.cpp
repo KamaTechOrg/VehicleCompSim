@@ -81,7 +81,7 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
 		elapsedTime->setRange(0, MAX_ELAPSED_TIME);
 		elapsedTime->setSuffix(" ms");
 		defaultHeight = elapsedTime->sizeHint().height();
-		elapsedTime->setFixedSize(defaultHeight * 3, defaultHeight);
+		elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);
 
 		// push the both to a horizontal layout
 		QHBoxLayout* operationLayout = new QHBoxLayout;
