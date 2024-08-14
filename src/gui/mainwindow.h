@@ -15,6 +15,7 @@
 #include "SimulationReplayer.h"
 #include "LiveUpdate.h"
 #include "LogReader.h"
+#include "SimulationControlPanel.h"
 #include <bson/bson.h>
 
 
@@ -36,7 +37,7 @@ private:
     void setupRunService();
     void onRunStart();
     void onRunEnd();
-    void play();
+    void start_and_record();
     void replayer();
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void onConnectionStatusChanged(bool connected);
@@ -55,4 +56,14 @@ private:
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
+    SimulationControlPanel* controlPanel;
+    QVBoxLayout *m_mainLayout;
+    QHBoxLayout *m_topLayout;
+//    QPushButton* startBtn;
+//    std::function<void()> startLambda; // Member variable to store the lambda
+//    RunService runService; // Assuming you have a RunService class
+//private slots:
+//    void onRunStart();
+//    void onRunEnd();
+//    void triggerRun(); // New function to trigger the lambda
 };

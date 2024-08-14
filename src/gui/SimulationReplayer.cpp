@@ -14,25 +14,22 @@ SimulationReplayer::SimulationReplayer(const QString &filePath, std::unique_ptr<
 
 void SimulationReplayer::startReplay() {
     if (m_logFile.isOpen()) {
-        m_logFile.seek(m_lastPosition); // Move to the last read position
+        m_logFile.seek(m_lastPosition);
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
-
             QString line = in.readLine();
             if(first_line){
-                start = QDateTime::fromString(line, Qt::ISODate);
+                m_startTime = QDateTime::fromString(line, Qt::ISODate);
                 first_line = false;
                 continue;
             }
             QStringList parts = line.split(',');
             if (parts.size() == 4) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
-                QString event = parts.mid(1, 3).join(',');
-                QStringList communication_data = event.split(',');
-                int delay = qMax(0, start.msecsTo(timestamp));
-                scheduleEvent(event, delay);
-            }else{
+                int delay = qMax(0, m_startTime.msecsTo(timestamp));
+                scheduleEvent(line, delay);
+                m_totalTime = timestamp;
             }
         }
     }
@@ -45,18 +42,21 @@ void SimulationReplayer::scheduleEvent(const QString &event, int delay) {
     connect(timer, &QTimer::timeout, this, &SimulationReplayer::processEvent);
     timer->start(delay);
     m_timers.append(timer);
+
 }
 
 void SimulationReplayer::processEvent() {
     if (!m_eventQueue.isEmpty()) {
         QString event = m_eventQueue.dequeue();
-        m_LiveUpdate->parse_new_line(event);
+        QStringList parts = event.split(',');
+        m_currentTime = QDateTime::fromString(parts[0], Qt::ISODate);
+        QString event_without_time = parts.mid(1, 3).join(',');
+        m_LiveUpdate->parse_new_line(event_without_time);
+
     } else {
         qWarning() << "processEvent: Event queue is empty";
     }
 }
-
-
 
 void SimulationReplayer::clear_current_events(){
     m_eventQueue.clear();
@@ -66,8 +66,18 @@ void SimulationReplayer::clear_current_events(){
     }
     m_timers.clear();
 }
-
-void SimulationReplayer::jumpToTime(const QDateTime &targetTime) {
+void SimulationReplayer::pauseSimulation() {
+    for(auto timer : m_timers){
+        timer->stop();
+    }
+}
+void SimulationReplayer::playSimulation() {
+    for(auto timer : m_timers){
+        timer->start();
+    }
+}
+void SimulationReplayer::jumpToTime(const QTime &targetTime) {
+    int secondsToAdd = targetTime.hour() * 3600 + targetTime.minute() * 60 + targetTime.second();
     clear_current_events();
     if (m_logFile.isOpen()) {
         m_logFile.seek(0);
@@ -80,12 +90,14 @@ void SimulationReplayer::jumpToTime(const QDateTime &targetTime) {
                 continue;
             }
             QStringList parts = line.split(',');
-            if (parts.size() == 2) {
+            if (parts.size() == 4) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
-                if (timestamp > targetTime) {
-                    QString event = parts.mid(1, 3).join(',');
-                    int delay = qMax(0, start.msecsTo(timestamp));
-                    scheduleEvent(event, delay);
+                if (timestamp > m_startTime.addSecs(secondsToAdd)) {
+                    int delay = qMax(0, m_startTime.addSecs(secondsToAdd).msecsTo(timestamp));
+                    scheduleEvent(line, delay);
+                }else{
+                    QString event_without_time = parts.mid(1, 3).join(',');
+                    m_LiveUpdate->parse_new_line(event_without_time);
                 }
             }
         }

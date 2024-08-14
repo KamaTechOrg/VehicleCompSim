@@ -6,7 +6,8 @@
 #include <QDebug>
 
 LogReader::LogReader(const QString &logFilePath, std::unique_ptr<LiveUpdate> liveUpdate, std::unique_ptr<SimulationRecorder> simulationRecorder, QObject *parent)
-        : QObject(parent), m_logFile(logFilePath), m_LiveUpdate(std::move(liveUpdate)), m_simulationRecorder(std::move(simulationRecorder)), m_lastPosition(0) {
+        : QObject(parent), m_logFile(logFilePath), m_lastPosition(0), m_timer(new QTimer(this)), m_LiveUpdate(std::move(liveUpdate)), m_simulationRecorder(std::move(simulationRecorder)) {
+
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Cannot open log file for reading:" << m_logFile.errorString();
         return;

@@ -82,6 +82,8 @@ set(CLIENT_SOURCES
         src/gui/LogReader.cpp
         src/gui/SimulationRecorder.cpp
         src/gui/SimulationReplayer.cpp
+        src/gui/SimulationControlPanel.h
+        src/gui/SimulationControlPanel.cpp
 )
 
 # Define server source files

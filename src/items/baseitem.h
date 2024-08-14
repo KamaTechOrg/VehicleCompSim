@@ -6,6 +6,11 @@
 #include <QGraphicsProxyWidget>
 #include "serializableitem.h"
 #include "edgeitem.h"
+#include <QGraphicsItem>
+#include <QGraphicsSceneHoverEvent>
+#include <QToolTip>
+#include <QWidget>
+
 
 class EdgeItem;
 
@@ -43,9 +48,6 @@ public:
     void set_m_color(int R, int G, int B){ this->m_color.setRed(R), this->m_color.setGreen(G),this->m_color.setBlue(B); }
     void set_unique_id(qreal id){ this->unique_id = id; }
 //    void set_nodeType(NodeType type) { this->m_type = type; }
-
-
-
     void set_m_hoveredPoint(){ this->m_hoveredPoint; }
 
 
@@ -59,6 +61,9 @@ protected:
 
     void showButtons();
     void hideButtons();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+
 
     QColor m_color;
     qreal m_width = 25;
@@ -71,4 +76,7 @@ protected:
     QGraphicsProxyWidget* m_closeProxy;
 
     static constexpr qreal DotRadius = 5.0;
+    static qreal my_id;
+
 };
+

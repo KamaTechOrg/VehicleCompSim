@@ -1,19 +1,17 @@
 #include "mainwindow.h"
 #include "customwidget.h"
-//#include "qpushbutton.h"
 #include <QGraphicsView>
 #include <QToolBar>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include <QJsonObject>
 #include <QFile>
 #include <QFileDialog>
-//#include <QHBoxLayout>
-#include <QUuid>
-#include "customwidget.h"
 #include "client/websocketclient.h"
-
-//#include <QTimeEdit>
+#include <QGraphicsItem>
+#include <QWidget>
+#include <QPushButton>
+#include <QRandomGenerator>
+#include "SimulationControlPanel.h"
 #include <QRect>
 #include <bson/bson.h>
 #include <QHBoxLayout>
@@ -25,17 +23,18 @@ MainWindow::MainWindow(QWidget* parent)
     setupToolBar();
 
     auto mainWidget = new QWidget(this);
-    auto layout = new QHBoxLayout(mainWidget);
-    layout->addWidget(m_toolBar);
-    layout->addWidget(m_view);
-
+    m_mainLayout = new QVBoxLayout(mainWidget);
+    m_topLayout = new QHBoxLayout();
+    m_topLayout->addWidget(m_toolBar);
+    m_topLayout->addWidget(m_view);
+    m_mainLayout->addLayout(m_topLayout);
     setCentralWidget(mainWidget);
 
     auto toolBar = addToolBar("Tools");
     toolBar->addAction("background", [this]() { background_Layout(); });
     toolBar->addAction("Save", [this]() { saveLayout(); });
     toolBar->addAction("Load", [this]() { loadLayout(); });
-    toolBar->addAction("play", [this]() { play(); });
+    toolBar->addAction("Record", [this]() { start_and_record(); });
     toolBar->addAction("Replay", [this]() { replayer(); });
 
     WebSocketClient& client = WebSocketClient::getInstance();
@@ -44,9 +43,6 @@ MainWindow::MainWindow(QWidget* parent)
       
     setupRunService();
 }
-
-
-
 
 void MainWindow::setupToolBar() {
     m_toolBar = new QToolBar("Shapes", this);
@@ -79,12 +75,13 @@ void MainWindow::setupRunService()
     timer->setFixedSize(120, 30);
     timer->setCurrentSection(QDateTimeEdit::MinuteSection);
     m_toolBar->addWidget(timer);
-
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
-    onRunEnd();
+    m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
+    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), nullptr, this);
 
+    onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this](){
         this->onRunStart();
         this->runService.start([this](){this->onRunEnd();});
@@ -133,20 +130,26 @@ void MainWindow::background_Layout() {
         m_scene->addItem(pixmapItem);
     }
 }
-void MainWindow::play() {
-    m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
-    m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
-    m_simulationRecorder = std::make_unique<SimulationRecorder>(R"(C:\Users\OWNER\Downloads\record.log)");
-    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), std::move(m_simulationRecorder), this);
+void MainWindow::start_and_record() {
+    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
+    if (!logFilePath.isEmpty()) {
+        m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
+        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
+    }
+    saveLayout();
 }
 void MainWindow::replayer() {
     loadLayout();
     QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
+        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
         m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, std::move(m_liveUpdate_forReplyer), this);
         m_simulationReplayer->startReplay();
+        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
+        m_mainLayout->addWidget(controlPanel);
     }
 }
+
 
 bson_t* sensor_to_bson_obj(SensorItem* sensor){
     bson_t* base_BSON = bson_new();

@@ -16,15 +16,14 @@ void LiveUpdate::parse_new_line(QString &line){
         num_of_packets = communication_data[2].toInt();
         for (auto item: m_scene->items()) {
             if (auto *base = dynamic_cast<SensorItem *>(item)) {
-                if (base->getID() == src) {
+                if (base->get_unique_id() == src.toDouble()) {
                     this->src_item = base;
                 }
-                if (base->getID() == dest) {
+                if (base->get_unique_id() == dest.toDouble()) {
                     dest_item = base;
                 }
             }
         }
-
         if(src_item != nullptr && dest_item != nullptr){
             change_view();
         }

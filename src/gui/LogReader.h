@@ -21,12 +21,13 @@ public:
 
 private slots:
     void readNewLogEntries();
+public:
+    std::unique_ptr<SimulationRecorder> m_simulationRecorder;
 
 private:
     QFile m_logFile;
     qint64 m_lastPosition;
     QTimer *m_timer;
-    std::unique_ptr<SimulationRecorder> m_simulationRecorder;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
 };
 

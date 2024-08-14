@@ -19,19 +19,18 @@ Q_OBJECT
 
 public:
     SimulationReplayer(const QString &filePath, std::unique_ptr<LiveUpdate> liveUpdate, QObject *parent = nullptr);
-
-    void jumpToTime(const QDateTime &targetTime);
+    void pauseSimulation();
+    void playSimulation();
+    void jumpToTime(const QTime &targetTime);
     void startReplay();
+    QDateTime start() const { return m_startTime; }
 
 private:
     void clear_current_events();
     void scheduleEvent(const QString &event, int delay);
 
 private slots:
-
     void processEvent();
-
-
 
 private:
     QFile m_logFile;
@@ -39,9 +38,11 @@ private:
     QQueue<QString> m_eventQueue;
     QList<QTimer *> m_timers;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
-    QDateTime start;
+    QDateTime m_currentTime;
+public:
+    QDateTime m_startTime;
+    QDateTime m_totalTime;
 };
-
 
 
 
