@@ -17,7 +17,6 @@ link_directories(library_to_user/lib)
 include_directories(library_to_user/server)
 include_directories(library_to_user/utilities)
 
-
-# Create the client executable
-add_executable(client_exec client_main.cpp)
-target_link_libraries(client_exec client_lib server_lib)
+# Create the server executable
+add_executable(server_exec server_main.cpp)
+target_link_libraries(server_exec client_lib server_lib)
