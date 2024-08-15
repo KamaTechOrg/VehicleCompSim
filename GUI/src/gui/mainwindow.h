@@ -7,7 +7,8 @@
 #include "qdatetimeedit.h"
 #include "qpushbutton.h"
 #include "services/runservice.h"
-#include "../../MainComputer/src/maincomputer.h"
+
+#include "include/gui.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -39,5 +40,7 @@ private:
     QPushButton *stopBtn ;
     QTimeEdit *timer;
     RunService runService;
-
+    
+    // main computer
+    Gui gui;
 };

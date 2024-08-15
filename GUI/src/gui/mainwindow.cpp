@@ -102,6 +102,9 @@ void MainWindow::setupRunService()
     QPushButton* mainComuterConfigureBtn = new QPushButton("configure\nmain computer", m_toolBar);
     m_toolBar->addWidget(mainComuterConfigureBtn);
 
+    QObject::connect(mainComuterConfigureBtn, &QPushButton::clicked, [this](){
+        gui.show();
+    });
 }
 
 
