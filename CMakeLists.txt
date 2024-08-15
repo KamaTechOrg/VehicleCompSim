@@ -22,12 +22,20 @@ set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
 
 # Add the include directory for the bson headers
 include_directories(${BSON_ROOT}/include)
+# 1
+# Include directories for your library headers
+include_directories(library_to_user/client)
+include_directories(library_to_user/server)
+include_directories(library_to_user/utilities)
+
 
 # Add the library directories for the bson library
 #link_directories(${BSON_ROOT}/lib)
 link_directories(${BSON_ROOT}/lib/Debug)
 link_directories(${BSON_ROOT}/lib/Relese)
-
+#2
+# Specify the path to your library
+link_directories(library_to_user/lib)
 
 # Define source files
 set(COMMON_SOURCES
@@ -112,6 +120,14 @@ else()
         ${SERVER_SOURCES}
     )
 endif()
+# 3
+# Create the server executable
+add_executable(server_exec server_main.cpp)
+target_link_libraries(server_exec client_lib server_lib)
+# Create the client executable
+add_executable(client_exec client_main.cpp)
+target_link_libraries(client_exec client_lib server_lib)
+
 
 # Set include directories
 target_include_directories(ClientApp PRIVATE
@@ -211,3 +227,4 @@ endif()
 
 # # Add the test
 # add_test(NAME VehicleCompSimTests COMMAND VehicleCompSimTests)
+
