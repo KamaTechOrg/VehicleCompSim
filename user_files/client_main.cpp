@@ -24,14 +24,14 @@ int main()
     while (true)
     {
 
-        client.listen(buffer, sizeof(buffer));
-        std::cout << buffer << std::endl;
         memset(buffer, 0, sizeof(buffer));
         std::cout << "enter your d_id" << std::endl;
         cin >> d_id;
         std::cout << "enter your buffer" << std::endl;
         cin >> m;
         client.send((void *)m.c_str(), m.size(), id, d_id);
+        client.listen(buffer, sizeof(buffer));
+        std::cout << buffer << std::endl;
     }
 }
 

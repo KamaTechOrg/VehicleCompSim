@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <string.h>
-#include <unistd.h> // For close()
-#include <mutex>
 #include <cstring>
+#include <unistd.h>
+#include <mutex>
 
 static void insert_fd(fd_set &set, int &max_fd, std::vector<int> &vec_fd)
 {
@@ -27,6 +27,24 @@ static void reset_in_loop(fd_set &set, int &fd, char *buf, int size)
     memset(buf, 0, size);
     FD_ZERO(&set);
     fd = 0;
+}
+
+static int cress_read(int sd, char *buf, int flags)
+{
+#ifdef _WIN32
+    return ::recv(sd, buf, MAXRECV, 0);
+#else
+    return ::recv(sd, buf, MAXRECV, 0);
+#endif
+}
+
+static int cress_send(std::shared_ptr<Socket> d_s, char * buf, size_t size )
+{
+#ifdef _WIN32
+   return ::send(d_s->get_FD(), static_cast<const char *>(buf), static_cast<int>(size), 0);
+#else
+    return ::send(d_s->get_FD(), buf, size + 1, MSG_NOSIGNAL);
+#endif
 }
 
 static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, int len)
@@ -85,50 +103,37 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, i
     return result;
 }
 
-static void add_fd_to_vect(std::vector<int> &clientSocket, int new_socket)
-{
-    clientSocket.push_back(new_socket);
-}
-
-Receive_manger::Receive_manger()
-{
-    // m_my_socket.create();
-    // m_my_socket.connect(IPSERVER, PORTSERVER);
-    // add_fd_to_vect(m_client_fd, m_my_socket.get_FD());
-}
-
 void Receive_manger::add_socket(int new_socket)
 {
     auto pair = create(new_socket);
 
     std::unique_lock<std::mutex> lock(m_vec_client_mutex);
-    add_fd_to_vect(m_client_fd, new_socket);
+    m_client_fd.push_back(new_socket);
     add_to_map(pair);
     lock.unlock();
+
     std::cout << "Adding new socket with FD: " << new_socket << std::endl;
 }
 
 void Receive_manger::print_arr()
 {
-     for (auto &fd : m_client_fd)
-            {
-                std::cout << fd << "," << std::flush;
-            }
-            
+    for (auto &fd : m_client_fd)
+    {
+        std::cout << fd << "," << std::flush;
+    }
 }
 
 std::pair<int, std::shared_ptr<Socket>> Receive_manger::create(int fd)
 {
+    char data[MAXRECVID];
+
     auto new_socket = std::make_shared<Socket>();
     new_socket->set_FD(fd);
-
-    char data[MAXRECVID];
-    int a = new_socket->recv(data, MAXRECVID);
-    data[a] = '\0';
-    new_socket->send(data, MAXRECVID);
+    int size_recved = new_socket->recv(data, MAXRECVID);
+    data[size_recved] = '\0';
     int id = atoi(data);
-
     std::cout << "received " << id << std::endl;
+
     return std::make_pair(id, new_socket);
 }
 
@@ -151,13 +156,13 @@ void Receive_manger::select_menger()
     char buffer[MAXRECV];
     struct timeval tv;
     tv.tv_sec = 5;
-    // tv.tv_usec = 0;
+
     while (true)
     {
 
         if (!m_client_fd.empty())
         {
-            reset_in_loop(readfds,max_sd ,buffer,sizeof(buffer));
+            reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
 
             std::unique_lock<std::mutex> lock(m_vec_client_mutex);
             insert_fd(readfds, max_sd, m_client_fd);
@@ -178,12 +183,7 @@ void Receive_manger::select_menger()
                 sd = m_client_fd[i];
                 if (FD_ISSET(sd, &readfds))
                 {
-
-#ifdef _WIN32
-                    valread = ::recv(sd, buffer, static_cast<int> sizeof(buffer), 0);
-#else
-                    valread = ::recv(sd, buffer, sizeof(buffer), 0);
-#endif
+                    valread = cress_read(sd, buffer, 0);
 
                     std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer, valread);
 
@@ -198,17 +198,13 @@ void Receive_manger::select_menger()
                     {
                         for (auto pair : result)
                         {
+                            std::cout << pair.second << std::endl;
+                            auto d_s = get_sock(pair.first);
 
                             char dataCopy[pair.second.size() + 1];
                             std::strcpy(dataCopy, pair.second.c_str());
-                            int localdestid = pair.first;
-                            std::cout << " " << pair.second << std::endl;
-                            auto d_s = get_sock(localdestid);
-#ifdef _WIN32
-                            int status = ::send(d_s->get_FD(), static_cast<const char *>(dataCopy), static_cast<int>(pair.second.size()) + 1, 0);
-#else
-                            int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
-#endif
+
+                            int status = cress_send(d_s , dataCopy, sizeof(dataCopy));
 
                             if (status == -1)
                             {

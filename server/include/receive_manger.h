@@ -6,15 +6,14 @@
 
 class Receive_manger {
 public:
-    Receive_manger();
+   
     void add_socket(int new_socket);
     std::shared_ptr<Socket> get_sock(int id);
     void select_menger();
 
 private:
     
-
-   
+    void print_arr();
     std::pair<int, std::shared_ptr<Socket>> create(int fd);
     void add_to_map(std::pair<int, std::shared_ptr<Socket>> pair);
 
