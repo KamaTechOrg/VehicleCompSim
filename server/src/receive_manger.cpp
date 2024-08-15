@@ -7,6 +7,28 @@
 #include <mutex>
 #include <cstring>
 
+static void insert_fd(fd_set &set, int &max_fd, std::vector<int> &vec_fd)
+{
+    for (const auto &fd : vec_fd)
+    {
+        if (fd > 0)
+        {
+            FD_SET(fd, &set);
+        }
+        if (fd > max_fd)
+        {
+            max_fd = fd;
+        }
+    }
+}
+
+static void reset_in_loop(fd_set &set, int &fd, char *buf, int size)
+{
+    memset(buf, 0, size);
+    FD_ZERO(&set);
+    fd = 0;
+}
+
 static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, int len)
 {
     std::vector<std::pair<int, std::string>> result;
@@ -86,6 +108,15 @@ void Receive_manger::add_socket(int new_socket)
     std::cout << "Adding new socket with FD: " << new_socket << std::endl;
 }
 
+void Receive_manger::print_arr()
+{
+     for (auto &fd : m_client_fd)
+            {
+                std::cout << fd << "," << std::flush;
+            }
+            
+}
+
 std::pair<int, std::shared_ptr<Socket>> Receive_manger::create(int fd)
 {
     auto new_socket = std::make_shared<Socket>();
@@ -120,36 +151,20 @@ void Receive_manger::select_menger()
     char buffer[MAXRECV];
     struct timeval tv;
     tv.tv_sec = 5;
-    tv.tv_usec = 0;
+    // tv.tv_usec = 0;
     while (true)
     {
-        std::cout << "Inside select loop66" << std::endl;
-        sleep(2);
 
         if (!m_client_fd.empty())
         {
-            memset(buffer, 0, sizeof(buffer));
-            FD_ZERO(&readfds);
-
-            max_sd = 0;
+            reset_in_loop(readfds,max_sd ,buffer,sizeof(buffer));
 
             std::unique_lock<std::mutex> lock(m_vec_client_mutex);
-            for (const auto &fd : m_client_fd)
-            {
-                if (fd > 0)
-                {
-                    FD_SET(fd, &readfds);
-                }
-                if (fd > max_sd)
-                {
-                    max_sd = fd;
-                }
-            }
+            insert_fd(readfds, max_sd, m_client_fd);
             lock.unlock();
-            for (auto &fd : m_client_fd)
-            {
-                std::cout << fd << "," << std::flush;
-            }
+
+            print_arr();
+
             activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
             if ((activity < 0) && (errno != EINTR))
             {
@@ -163,7 +178,7 @@ void Receive_manger::select_menger()
                 sd = m_client_fd[i];
                 if (FD_ISSET(sd, &readfds))
                 {
-                   
+
 #ifdef _WIN32
                     valread = ::recv(sd, buffer, static_cast<int> sizeof(buffer), 0);
 #else
