@@ -5,9 +5,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 qt_standard_project_setup()
 
-qt_add_executable(MainComputer
-    src/main.cpp
-    src/maincomputer.h src/maincomputer.cpp
+add_library(MainComputer
+    src/maincomputer.h
+    src/maincomputer.cpp
 )
 
 add_subdirectory(src)
@@ -35,8 +35,12 @@ qt_generate_deploy_app_script(
 )
 install(SCRIPT ${deploy_script})
 
-target_include_directories(MainComputer PRIVATE ${CMAKE_SOURCE_DIR}/resources)
-
+target_include_directories(MainComputer 
+    PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/GUI/include
+)
 
 target_link_libraries(MainComputer PRIVATE
     Qt6::Core

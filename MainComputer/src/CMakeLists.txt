@@ -15,4 +15,4 @@ target_sources(MainComputer PRIVATE
     Gui.cpp
 )
 
-include_directories(${CMAKE_SOURCE_DIR}/resources)
+include_directories(${CMAKE_SOURCE_DIR}/MainComputer/resources)
