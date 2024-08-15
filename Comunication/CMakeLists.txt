@@ -14,15 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 link_directories(library_to_user/lib)
 
 # Include directories for your library headers
-include_directories(library_to_user/client)
 include_directories(library_to_user/server)
 include_directories(library_to_user/utilities)
-
 
 # Create the server executable
 add_executable(server_exec server_main.cpp)
 target_link_libraries(server_exec client_lib server_lib)
-
-# Create the client executable
-add_executable(client_exec client_main.cpp)
-target_link_libraries(client_exec client_lib server_lib)

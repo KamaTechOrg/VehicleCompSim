@@ -1,7 +1,5 @@
 #include <iostream>
-
-
-#include "manger.h"
+#include "../Comunication/library_to_user/server/manger.h"
 
 using namespace std;
 
