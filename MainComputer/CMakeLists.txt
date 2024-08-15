@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MainComputer LANGUAGES CXX)
+project(MainComputer)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
@@ -7,6 +7,7 @@ qt_standard_project_setup()
 
 qt_add_executable(MainComputer
     src/main.cpp
+    src/maincomputer.h src/maincomputer.cpp
 )
 
 add_subdirectory(src)
