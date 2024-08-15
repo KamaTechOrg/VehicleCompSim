@@ -10,7 +10,7 @@ public:
     int add_socket(int new_socket);
     std::shared_ptr<Socket> get_sock(int id);
     void select_menger();
-    void print_arr();
+   
 
 private:
     
