@@ -113,6 +113,8 @@ void Receive_manger::add_socket(int new_socket)
     lock.unlock();
 
     std::cout << "Adding new socket with FD: " << new_socket << std::endl;
+
+    return pair.first;
 }
 
 void Receive_manger::print_arr()
@@ -154,9 +156,9 @@ void Receive_manger::select_menger()
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
-    struct timeval tv;
-    tv.tv_sec = 5;
-
+    // struct timeval tv;
+    // tv.tv_sec = 50;
+    // tv.tv_usec = 0;
     while (true)
     {
 
@@ -169,8 +171,9 @@ void Receive_manger::select_menger()
             lock.unlock();
 
             print_arr();
+            std::cout << " loop " << std::endl;
 
-            activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
+            activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
             if ((activity < 0) && (errno != EINTR))
             {
                 perror("Select error");
@@ -196,6 +199,7 @@ void Receive_manger::select_menger()
                     }
                     else if (valread > 0)
                     {
+                        
                         for (auto pair : result)
                         {
                             std::cout << pair.second << std::endl;
@@ -204,13 +208,28 @@ void Receive_manger::select_menger()
                             char dataCopy[pair.second.size() + 1];
                             std::strcpy(dataCopy, pair.second.c_str());
 
-                            int status = cress_send(d_s , dataCopy, sizeof(dataCopy));
+                            if(dataCopy != "msg"){
+                                  int localdestid = pair.first;
+                            std::cout << " " << pair.second << std::endl;
+                            auto d_s = get_sock(localdestid);
+#ifdef _WIN32
+                            int status = ::send(d_s->get_FD(), static_cast<const char *>(dataCopy), static_cast<int>(pair.second.size()) + 1, 0);
+#else
+                            int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
+#endif
 
                             if (status == -1)
                             {
                                 std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
                                 // throw...
                             }
+                            }
+
+
+
+
+
+                          
                         }
                     }
                     else
