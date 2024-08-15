@@ -103,7 +103,7 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, i
     return result;
 }
 
-void Receive_manger::add_socket(int new_socket)
+int Receive_manger::add_socket(int new_socket)
 {
     auto pair = create(new_socket);
 
@@ -212,11 +212,9 @@ void Receive_manger::select_menger()
                                   int localdestid = pair.first;
                             std::cout << " " << pair.second << std::endl;
                             auto d_s = get_sock(localdestid);
-#ifdef _WIN32
-                            int status = ::send(d_s->get_FD(), static_cast<const char *>(dataCopy), static_cast<int>(pair.second.size()) + 1, 0);
-#else
-                            int status = ::send(d_s->get_FD(), dataCopy, pair.second.size() + 1, MSG_NOSIGNAL);
-#endif
+
+                            int status = cress_send(d_s , dataCopy , sizeof(dataCopy));
+
 
                             if (status == -1)
                             {
