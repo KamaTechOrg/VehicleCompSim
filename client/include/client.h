@@ -21,7 +21,6 @@ private:
     void shut_down();
 
     Socket m_clientSocket;
-    
     int my_id;
     
 };

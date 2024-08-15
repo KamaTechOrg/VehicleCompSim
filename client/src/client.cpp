@@ -1,4 +1,3 @@
-#include "client.h"
 
 #include <string>
 #include <sstream>
@@ -6,16 +5,18 @@
 #include <string.h>
 #include <algorithm>
 
+#include "client.h"
 #include "constants.h"
+#include "data_manipulator.h"
+
 
 ClientSocket::ClientSocket(int id)
   : my_id(id)
 {
     m_clientSocket.create();
     m_clientSocket.connect(IPSERVER , PORTSERVER);
-    std::stringstream ss;
-    ss << id;
-    std::string idStr = ss.str();
+    
+    std::string idStr = Data_manipulator::int_to_str(id);
 
     m_clientSocket.send((char *)idStr.c_str() ,idStr.size());
    
