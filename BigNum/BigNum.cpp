@@ -390,6 +390,8 @@ uint64_t BigNum::to_ulong() const {
 }
 
 
-
+uint64_t BigNum::toChar() const {
+	return static_cast<char>(data[0]);
+}
 
 
