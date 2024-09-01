@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QGraphicsItem>
+//#include <QGraphicsItem>
 #include <QJsonObject>
 #include "client/observer.h"
 

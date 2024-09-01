@@ -16,6 +16,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 find_package(Qt6 REQUIRED COMPONENTS WebSockets)
 find_package(Qt6 REQUIRED COMPONENTS Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 # Specify the path to the bson library
 set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
@@ -53,6 +55,18 @@ set(COMMON_SOURCES
     src/gui/popupdialog.cpp
     src/gui/popupdialog.h
     src/gui/popupdialog.ui
+    include/VehicleCompSim/utils/runCommand/runCommand.cpp
+    include/VehicleCompSim/utils/runCommand/runCommand.h
+    include/VehicleCompSim/utils/network.hpp
+
+    src/services/runservice.cpp
+    src/services/runservice.h
+    include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.cpp
+    include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h
+    src/items/actionsblocker.h
+    src/items/actionsblocker.cpp
+    include/VehicleCompSim/utils/processControls.cpp
+    include/VehicleCompSim/utils/processControls.h
     
     src/items/actionsblocker.h
     src/items/actionsblocker.cpp
@@ -71,6 +85,12 @@ set(CLIENT_SOURCES
     src/gui/customwidget.h
     src/gui/customscene.cpp
     src/gui/customscene.h
+        src/gui/LiveUpdate.cpp
+        src/gui/LogReader.cpp
+        src/gui/SimulationRecorder.cpp
+        src/gui/SimulationReplayer.cpp
+        src/gui/SimulationControlPanel.h
+        src/gui/SimulationControlPanel.cpp
 )
 
 # Define server source files

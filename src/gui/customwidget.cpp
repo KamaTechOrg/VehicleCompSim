@@ -1,6 +1,6 @@
 #include "customwidget.h"
 #include <QPainter>
-#include <QMouseEvent>
+//#include <QMouseEvent>
 #include <QApplication>
 
 CustomWidget::CustomWidget(const QString& type, QWidget* parent)

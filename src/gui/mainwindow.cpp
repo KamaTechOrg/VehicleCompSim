@@ -1,48 +1,48 @@
 #include "mainwindow.h"
 #include "customwidget.h"
-#include "qpushbutton.h"
 #include <QGraphicsView>
 #include <QToolBar>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include <QJsonObject>
 #include <QFile>
 #include <QFileDialog>
-#include <QHBoxLayout>
-#include <QUuid>
-#include "customwidget.h"
 #include "client/websocketclient.h"
-
-#include <QTimeEdit>
+#include <QGraphicsItem>
+#include <QWidget>
+#include <QPushButton>
+#include <QRandomGenerator>
+#include "SimulationControlPanel.h"
 #include <QRect>
 #include <bson/bson.h>
+#include <QHBoxLayout>
+
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), m_scene(new CustomScene()) {
+        : QMainWindow(parent), m_scene(new CustomScene()) {
     m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
 
     auto mainWidget = new QWidget(this);
-    auto layout = new QHBoxLayout(mainWidget);
-    layout->addWidget(m_toolBar);
-    layout->addWidget(m_view);
-
+    m_mainLayout = new QVBoxLayout(mainWidget);
+    m_topLayout = new QHBoxLayout();
+    m_topLayout->addWidget(m_toolBar);
+    m_topLayout->addWidget(m_view);
+    m_mainLayout->addLayout(m_topLayout);
     setCentralWidget(mainWidget);
 
     auto toolBar = addToolBar("Tools");
-    toolBar->addAction("background", [this]() { background_Layout(); });
-    toolBar->addAction("Save", [this]() { saveLayout(); });
-    toolBar->addAction("Load", [this]() { loadLayout(); });
+    toolBar->addAction( "Background", [this] { background_Layout(); });
+    toolBar->addAction( "Save", [this] { saveLayout(); });
+    toolBar->addAction("Load", [this] { loadLayout(); });
+    toolBar->addAction("Record", [this] { record(); });
+    toolBar->addAction("Replay", [this] { replayer(); });
 
     WebSocketClient& client = WebSocketClient::getInstance();
     client.setScene(m_scene);
     connect(&client, &WebSocketClient::connectionStatusChanged, this, &MainWindow::onConnectionStatusChanged);
-      
+
     setupRunService();
 }
-
-
-
 
 void MainWindow::setupToolBar() {
     m_toolBar = new QToolBar("Shapes", this);
@@ -57,46 +57,49 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
 
-void MainWindow::onConnectionStatusChanged(bool connected)
-{
-  
-}
-
 void MainWindow::setupRunService()
 {
     runService.setScene(m_scene);
 
-    startBtn = new QPushButton("start", m_toolBar);
-    m_toolBar->addWidget(startBtn);
-    stopBtn = new QPushButton("stop", m_toolBar);
-    m_toolBar->addWidget(stopBtn);
+    startBtn = new QPushButton("Start", m_toolBar);
+    stopBtn = new QPushButton("Stop", m_toolBar);
     timer = new QTimeEdit(m_toolBar);
     timer->setDisplayFormat("hh:mm:ss");
     timer->setFixedSize(120, 30);
     timer->setCurrentSection(QDateTimeEdit::MinuteSection);
+
+    m_toolBar->addWidget(startBtn);
+    m_toolBar->addWidget(stopBtn);
     m_toolBar->addWidget(timer);
 
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
-    onRunEnd();
+    m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
+    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), nullptr, this);
 
-    QObject::connect(startBtn, &QPushButton::clicked, [this](){
+    onRunEnd();
+    QObject::connect(startBtn, &QPushButton::clicked, [this] {
         this->onRunStart();
-        this->runService.start([this](){this->onRunEnd();});
+        this->runService.start([this] { this->onRunEnd(); });
     });
 
-    QObject::connect(stopBtn, &QPushButton::clicked, [this](){
+    QObject::connect(stopBtn, &QPushButton::clicked, [this] {
         this->runService.stop();
     });
 
-    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this](){
+    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
         int t = timer->time().hour();
-        t = t*60 + timer->time().minute();
-        t = t*60 + timer->time().second();
+        t = t * 60 + timer->time().minute();
+        t = t * 60 + timer->time().second();
 
         this->runService.setTimer(t);
     });
+}
+
+void MainWindow::onConnectionStatusChanged(bool connected)
+{
+  
 }
 
 void MainWindow::onRunStart()
@@ -129,55 +132,131 @@ void MainWindow::background_Layout() {
         m_scene->addItem(pixmapItem);
     }
 }
+void MainWindow::record() {
+    QString defaultFileName = "record.log";
+    QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
+    if (!logFilePath.isEmpty()) {
+        m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
+        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
+    }
+    saveLayout();
+}
+
+void MainWindow::replayer() {
+    close_previous_replay();
+    loadLayout();
+    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
+    if (!logFilePath.isEmpty()) {
+        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
+        m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, std::move(m_liveUpdate_forReplyer), this);
+        m_simulationReplayer->startReplay();
+        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
+        m_mainLayout->addWidget(controlPanel);
+    }
+}
+void MainWindow::close_previous_replay(){
+    if (controlPanel != nullptr) {
+        m_simulationReplayer->clear_current_events();
+        controlPanel->close();
+        delete controlPanel;
+        controlPanel = nullptr;
+    }
+}
+
+
+bson_t* sensor_to_bson_obj(SensorItem* sensor){
+    bson_t* base_BSON = bson_new();
+    BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
+    BSON_APPEND_DOUBLE(base_BSON, "unique_id", sensor->get_unique_id());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
+    BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
+    BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
+    BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
+//    BSON_APPEND_UTF8(base_BSON, "id", sensor->getID().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
+    return base_BSON;
+}
+
+void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
+    QString defaultFileName = "layout.bson";
+    QString selectedFileName = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
+    if (!selectedFileName.isEmpty()) {
+        QFile outputFile(selectedFileName);
+        if (outputFile.open(QIODevice::WriteOnly)) {
+            for(bson_t * bson_obj : bson_obj_vector) {
+                const uint8_t *bsonData = bson_get_data(bson_obj);
+                outputFile.write(reinterpret_cast<const char *>(bsonData), bson_obj->len);
+            }
+            outputFile.close();
+        }
+    }
+}
 
 void MainWindow::saveLayout() {
-    // QString fileName = QFileDialog::getSaveFileName(this, "Save Layout", "", "JSON Files (*.json)");
-    // if (fileName.isEmpty()) return;
+    std::vector<bson_t*> base_BSON_vector;
+    for (auto item : m_scene->items()) {
+        if (BaseItem* base = dynamic_cast<SensorItem*>(item)) {
+            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorItem*>(item)));
+        }
+    }
+    SaveBsonToFile(base_BSON_vector);
+}
+void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
+    auto *new_sensor = new SensorItem();
+    bson_iter_t iter;
+    bson_iter_init(&iter, bsonDocument);
+    bson_iter_next(&iter);
+    bson_iter_next(&iter);
 
-    // QJsonArray itemsArray;
-    // for (auto item : m_scene->items()) {
-    //     if (auto customItem = dynamic_cast<CustomItem*>(item)) {
-    //         QJsonObject itemObject;
-    //         itemObject["type"] = customItem->type();
-    //         itemObject["id"] = customItem->id();
-    //         itemObject["x"] = customItem->x();
-    //         itemObject["y"] = customItem->y();
-    //         itemsArray.append(itemObject);
-    //     }
-    // }
+    new_sensor->set_unique_id(bson_iter_double(&iter));
+    bson_iter_next(&iter);
 
-    // QJsonDocument doc(itemsArray);
-    // QFile file(fileName);
-    // if (file.open(QIODevice::WriteOnly)) {
-    //     file.write(doc.toJson());
-    // }
+    // location
+    double x = bson_iter_double(&iter);
+    bson_iter_next(&iter);
+    double y = bson_iter_double(&iter);
+    new_sensor->setPos(x, y);
+
+    // color
+    bson_iter_next(&iter);
+    int r = bson_iter_int32(&iter);
+    bson_iter_next(&iter);
+    int g = bson_iter_int32(&iter);
+    bson_iter_next(&iter);
+    int b = bson_iter_int32(&iter);
+    new_sensor->set_m_color(r,g,b);
+//    bson_iter_next(&iter);
+
+    // sensor info
+//    new_sensor->setID(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setName(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setBuildCommand(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
+
+    m_scene->addItem(new_sensor);
+    new_sensor->update();
 }
 
 void MainWindow::loadLayout() {
-    // QString fileName = QFileDialog::getOpenFileName(this, "Load Layout", "", "JSON Files (*.json)");
-    // if (fileName.isEmpty()) return;
-
-    // QFile file(fileName);
-    // if (file.open(QIODevice::ReadOnly)) {
-    //     QByteArray data = file.readAll();
-    //     QJsonDocument doc(QJsonDocument::fromJson(data));
-    //     QJsonArray itemsArray = doc.array();
-
-    //     m_scene->clear();
-    //     for (const auto& value : itemsArray) {
-    //         QJsonObject obj = value.toObject();
-    //         QString type = obj["type"].toString();
-    //         QString id = obj["id"].toString();
-    //         qreal x = obj["x"].toDouble();
-    //         qreal y = obj["y"].toDouble();
-
-    //         auto item = std::make_unique<CustomItem>(type, id);
-    //         item->setPos(x, y);
-
-    //         m_scene->addItem(item.release());
-    //     }
-
-    //     // Update the entire scene to ensure items are rendered
-    //     m_scene->update();
-    // }
+    m_scene->clear();
+    QString selectedFileName = QFileDialog::getOpenFileName(this, tr("Select BSON File"), QString(),
+                                                            tr("BSON Files (*.bson);;All Files (*)"));
+    if (!selectedFileName.isEmpty()) {
+        bson_reader_t* reader = bson_reader_new_from_file(selectedFileName.toUtf8().constData(), NULL);
+        const bson_t* bsonDocument;
+        while ((bsonDocument = bson_reader_read(reader, NULL))) {
+            create_sensor_from_bson_obj(bsonDocument);
+        }
+        bson_reader_destroy(reader);
+    } else {
+        qInfo() << "File selection canceled by the user.";
+    }
 }
+
+

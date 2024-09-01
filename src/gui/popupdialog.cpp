@@ -16,8 +16,8 @@ PopupDialog::PopupDialog(SensorItem* oldSensorItem, QWidget *parent)
     ui->RunCommand->setText(oldSensorItem->getRunCommand());
     ui->cmakePath->setText(oldSensorItem->getCmakePath());
     ui->isDefaultCommands->setCheckState((oldSensorItem->isUseCmakePath() ? Qt::Checked : Qt::Unchecked));
-
     on_isDefaultCommands_stateChanged(ui->isDefaultCommands->checkState());
+    this->setWindowTitle("Sensor Data");
 }
 
 PopupDialog::~PopupDialog()

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+qreal BaseItem::my_id = 0;
 
 BaseItem::BaseItem(QGraphicsItem* parent){
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -28,6 +29,9 @@ BaseItem::BaseItem(QGraphicsItem* parent){
 
     // Store proxies for visibility management
     m_closeProxy = closeProxy;
+
+    unique_id = my_id;
+    my_id++;
 }
 
 QRectF BaseItem::boundingRect() const {
@@ -81,7 +85,16 @@ void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
+
+    // Create a string with the private fields' information
+    QString tooltipText = QString("Color: %1\nHovered Point: (%2, %3)")
+            .arg(m_color.name())
+            .arg(m_hoveredPoint.x())
+            .arg(m_hoveredPoint.y());
+
+    QToolTip::showText(event->screenPos(), tooltipText, nullptr);
     QGraphicsItem::hoverEnterEvent(event);
+
 }
 
 void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
@@ -103,7 +116,13 @@ void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
 void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     m_hoveredPoint = QPointF();
     update(); // Trigger a repaint
+    QToolTip::hideText();
     QGraphicsItem::hoverLeaveEvent(event);
+}
+
+void BaseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->setBrush(m_color);
+    painter->drawRect(boundingRect());
 }
 
 QPointF BaseItem::connectionPoint(const QPointF& otherPoint) const {
@@ -212,3 +231,6 @@ void BaseItem::deserialize(const QJsonObject &itemData) {
     m_type = static_cast<ItemType>(itemData["type"].toInt());
     setPos(itemData["x"].toDouble(), itemData["y"].toDouble());
 }
+
+
+
