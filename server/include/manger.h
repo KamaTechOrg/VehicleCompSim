@@ -18,6 +18,7 @@ private:
 
     void run_server();
     void run_connect();
+    void init_inner();
    
 
     Server m_server;

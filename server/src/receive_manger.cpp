@@ -1,11 +1,11 @@
-#include "receive_manger.h"
-#include "constants.h"
-
 #include <iostream>
 #include <string.h>
 #include <cstring>
 #include <unistd.h>
 #include <mutex>
+
+#include "receive_manger.h"
+#include "constants.h"
 
 static void insert_fd(fd_set &set, int &max_fd, std::vector<int> &vec_fd)
 {
@@ -210,7 +210,7 @@ void Receive_manger::select_menger()
 
                             if(dataCopy != "msg"){
                                   int localdestid = pair.first;
-                            std::cout << " " << pair.second << std::endl;
+                            std::cout << pair.second << std::endl;
                             auto d_s = get_sock(localdestid);
 
                             int status = cress_send(d_s , dataCopy , sizeof(dataCopy));

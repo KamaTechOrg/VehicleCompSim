@@ -1,7 +1,8 @@
 #include <mutex>
 #include <vector>
-#include <map>
 #include <memory>
+#include <map>
+
 #include "socket.h"
 
 class Receive_manger {
