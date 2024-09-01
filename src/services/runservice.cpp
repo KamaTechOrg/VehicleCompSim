@@ -1,7 +1,7 @@
 #include "runservice.h"
 #include <thread>
-#include "../include/VehicleCompSim/utils/processControls.h"
-#include "../include/VehicleCompSim/utils/createDump.h"
+#include "processControls.h"
+#include "createDump.h"
 
 
 int RunService::RunControllData::RunControllCounter = 0;

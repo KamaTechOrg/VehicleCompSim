@@ -49,7 +49,7 @@ private:
     QString m_clientId;
     QUrl m_url;
     QWebSocket m_webSocket;
-    QSslConfiguration m_sslConfiguration;
+    // QSslConfiguration m_sslConfiguration;
     CustomScene* m_scene;
     bool m_debug;
     QTimer *m_reconnectTimer;

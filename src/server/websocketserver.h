@@ -32,7 +32,7 @@ private slots:
 private:
     bool m_debug;
     QWebSocketServer *m_pWebSocketServer;
-    QSslConfiguration m_sslConfiguration;
+    // QSslConfiguration m_sslConfiguration;
     QMap<QString, QWebSocket*> m_clientsIds;
 
     std::unordered_map<QString, std::unique_ptr<SerializableItem>> items;

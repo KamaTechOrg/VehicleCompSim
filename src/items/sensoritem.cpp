@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <cmath>
 #include "gui/popupdialog.h"
-#include "../include/VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 
     SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent){
         m_type = ItemType::Sensor;

@@ -18,9 +18,9 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) :
 }
 
 void WebSocketServer::setupSslConfiguration() {
-    m_sslConfiguration = QSslConfiguration::defaultConfiguration();
-    m_sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
-    m_pWebSocketServer->setSslConfiguration(m_sslConfiguration);
+    // m_sslConfiguration = QSslConfiguration::defaultConfiguration();
+    // m_sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // m_pWebSocketServer->setSslConfiguration(m_sslConfiguration);
 }
 
 
