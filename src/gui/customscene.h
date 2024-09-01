@@ -2,7 +2,7 @@
 
 #include <QGraphicsScene>
 #include <memory>
-#include "VehicleCompSim/utils/network.hpp"
+#include "network.hpp"
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
 #include "items/edgeitem.h"

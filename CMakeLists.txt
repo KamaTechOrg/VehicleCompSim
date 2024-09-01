@@ -26,10 +26,15 @@ set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
 include_directories(${BSON_ROOT}/include)
 
 # Add the library directories for the bson library
-#link_directories(${BSON_ROOT}/lib)
 link_directories(${BSON_ROOT}/lib/Debug)
-link_directories(${BSON_ROOT}/lib/Relese)
+link_directories(${BSON_ROOT}/lib/Release)
 
+enable_testing()
+
+# Add the test subdirectories
+add_subdirectory(tests)
+add_subdirectory(include/VehicleCompSim/utils)
+add_subdirectory(src/services)
 
 # Define source files
 set(COMMON_SOURCES
@@ -38,7 +43,7 @@ set(COMMON_SOURCES
     src/client/observer.h
     src/client/observerconfig.h
     src/client/observerconfig.cpp
-
+    
     src/items/baseitem.cpp
     src/items/baseitem.h
     src/items/sensoritem.cpp
@@ -62,6 +67,9 @@ set(COMMON_SOURCES
     src/items/actionsblocker.cpp
     include/VehicleCompSim/utils/processControls.cpp
     include/VehicleCompSim/utils/processControls.h
+    
+    src/items/actionsblocker.h
+    src/items/actionsblocker.cpp
 )
 
 # Define client source files
@@ -69,7 +77,6 @@ set(CLIENT_SOURCES
     src/client/websocketclient.cpp
     src/client/websocketclient.h
     src/client/main_client.cpp
-
 
     src/gui/mainwindow.cpp
     src/gui/mainwindow.h
@@ -124,17 +131,17 @@ endif()
 # Set include directories
 target_include_directories(ClientApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
 )
 
 target_include_directories(ServerApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
 )
-# Link libraries
-target_link_libraries(ClientApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network)
-target_link_libraries(ServerApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network)
 
+# Link libraries
+target_link_libraries(ClientApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network VehicleCompSimUtils services)
+target_link_libraries(ServerApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network VehicleCompSimUtils services)
 
 # Link the BSON library
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -144,7 +151,6 @@ else()
     target_link_libraries(ClientApp PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
     target_link_libraries(ServerApp PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
 endif()
-
 
 # Set properties for macOS and iOS
 if(${QT_VERSION} VERSION_LESS 6.1.0)
@@ -194,28 +200,13 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(ServerApp)
 endif()
 
-# # Enable testing
-# enable_testing()
-
-# # Find GTest package
-# find_package(GTest REQUIRED)
-
-# # Add test executable
-# add_executable(VehicleCompSimTests
-#     # Add test files here
-# )
-
-# # Set include directories for tests
-# target_include_directories(VehicleCompSimTests PRIVATE
-#     ${CMAKE_CURRENT_SOURCE_DIR}/src
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
-
-# # Link test executable with Google Test and Qt
-# target_link_libraries(VehicleCompSimTests PRIVATE
-#     GTest::gtest_main
-#     Qt${QT_VERSION_MAJOR}::Widgets
-# )
-
-# # Add the test
-# add_test(NAME VehicleCompSimTests COMMAND VehicleCompSimTests)
+# # Use windeployqt to deploy Qt dependencies
+# if(WIN32)
+#   add_custom_command(TARGET ClientApp POST_BUILD
+#       COMMAND ${Qt6_DIR}/../../../bin/windeployqt.exe --release $<TARGET_FILE:ClientApp>
+#   )
+  
+#   add_custom_command(TARGET ServerApp POST_BUILD
+#       COMMAND ${Qt6_DIR}/../../../bin/windeployqt.exe --release $<TARGET_FILE:ServerApp>
+#   )
+# endif()

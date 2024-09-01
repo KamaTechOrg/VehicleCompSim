@@ -1,5 +1,5 @@
 #include "popupdialog.h"
-#include "VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 #include "ui_popupdialog.h"
 
 PopupDialog::PopupDialog(SensorItem* oldSensorItem, QWidget *parent)

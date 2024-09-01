@@ -57,7 +57,8 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
 
-void MainWindow::setupRunService() {
+void MainWindow::setupRunService()
+{
     runService.setScene(m_scene);
 
     startBtn = new QPushButton("Start", m_toolBar);
