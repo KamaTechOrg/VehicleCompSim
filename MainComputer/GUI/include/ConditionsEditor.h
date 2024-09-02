@@ -18,6 +18,7 @@ public:
 
 private:
 	void showSaveFeedback(bool success);
+	void loadDataFromJson(const std::string& filename);
 
 
 	QVBoxLayout* _ConditionsEditorLayout;

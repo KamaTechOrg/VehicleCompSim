@@ -28,6 +28,8 @@ ConditionsEditor::ConditionsEditor()
 
     resize(350, 200);
 
+    // load from JSON file (if exists) the current conditions state
+    loadDataFromJson(CONDITIONS_JSON_FILE_NAME);
 }
 
 void ConditionsEditor::save()
@@ -54,6 +56,7 @@ void ConditionsEditor::save()
     file.close();
     showSaveFeedback(true);
 
+    // get the "backend" main computer to reload again the conditions from the saved JSON file
     ConditionsManager().loadFromJson(filename);
 }
 
@@ -69,4 +72,21 @@ void ConditionsEditor::showSaveFeedback(bool success)
     QTimer::singleShot(3000, [this]() {
         _saveButton->setStyleSheet("");
         });
+}
+
+void ConditionsEditor::loadDataFromJson(const std::string& filename)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+        return; // in this case, we just don't load anything
+
+    nlohmann::json jsonData;
+    file >> jsonData;
+    file.close();
+
+    /*
+    * TODO: If we did found an existing JSON file.
+    * then we need to load it's data,
+    * and set the initial input in the conditins GUI to be the data from the file
+    */
 }
