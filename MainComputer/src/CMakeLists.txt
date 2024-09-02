@@ -13,6 +13,7 @@ target_sources(MainComputer PRIVATE
     ConditionsFactory.cpp
     ConditionsManager.cpp
     Gui.cpp
+    Communication.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/resources)

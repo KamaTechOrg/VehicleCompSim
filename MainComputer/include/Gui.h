@@ -21,7 +21,7 @@ public:
 
 private slots:
 	void onOpenEditor();
-	void onStartStopEditor();
+	void onStartStopComputer();
 
 private:
 	QHBoxLayout* _mainLayout;

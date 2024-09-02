@@ -1,11 +1,13 @@
 #ifndef CONDITIONS_MANAGER_H
 #define CONDITIONS_MANAGER_H
 
-#include "ConditionBase.h"
 #include <vector>
 #include <string>
 #include <memory>
+
 #include "json.hpp"
+#include "ConditionBase.h"
+#include "Communication.h"
 
 class ConditionsManager {
 private:

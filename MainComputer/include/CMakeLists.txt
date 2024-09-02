@@ -22,6 +22,7 @@ set(HEADER_FILES
     ConditionsFactory.h
     ConditionsManager.h
     Gui.h
+    Communication.h
 
 )
 
