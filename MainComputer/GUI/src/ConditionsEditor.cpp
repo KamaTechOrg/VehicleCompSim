@@ -3,6 +3,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "constants.h"
+#include "conditionsManager.h"
+
 ConditionsEditor::ConditionsEditor()
     : QGroupBox("Editor")
 {
@@ -35,8 +38,7 @@ void ConditionsEditor::save()
         return;
     }
 
-    std::string filename = "conditions.json";
-   // std::string filename = "C:/Windows/conditions.json"; 
+    std::string filename = CONDITIONS_JSON_FILE_NAME;
 
     std::ofstream file(filename);
     if (!file.is_open()) {
@@ -47,11 +49,12 @@ void ConditionsEditor::save()
 
     nlohmann::json j;
     j = conditionsTree->toJson();
-    
-   
+
     file << j.dump(4);
     file.close();
     showSaveFeedback(true);
+
+    ConditionsManager().loadFromJson(filename);
 }
 
 void ConditionsEditor::showSaveFeedback(bool success)
@@ -67,7 +70,3 @@ void ConditionsEditor::showSaveFeedback(bool success)
         _saveButton->setStyleSheet("");
         });
 }
-
-    /*
-    * TODO: ConditionsManager.loadFromJson();
-    */

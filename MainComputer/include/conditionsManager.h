@@ -9,11 +9,11 @@
 
 class ConditionsManager {
 private:
-    std::vector<std::shared_ptr<ConditionBase>> conditions;
+    static std::vector<std::shared_ptr<ConditionBase>> conditions;
+    // static becuase we want the save button from the UI to be able to reload the conditions from the saved JSON file
 
     void addCondition(std::shared_ptr<ConditionBase> condition);
     bool validateAll(const std::string& senderId, const std::string& value) const;
-    void loadFromJson(const std::string& filename);
     bool _isRunning;
 
 public:
@@ -21,6 +21,7 @@ public:
     void run();
     void stop();
     bool isRunning();
+    void loadFromJson(const std::string& filename);
 };
 
 #endif

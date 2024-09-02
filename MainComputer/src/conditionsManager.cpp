@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "ConditionsFactory.h"
 
+std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
 
 ConditionsManager::ConditionsManager()
     : _isRunning(false)
