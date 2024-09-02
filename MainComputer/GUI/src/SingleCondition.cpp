@@ -12,8 +12,7 @@ SingleCondition::SingleCondition()
 {
 	_layout = new QHBoxLayout;
 
-	_messageFrom = new QLineEdit();
-	_messageFrom->setPlaceholderText("message from");
+	_messageFrom = new QLabel(QString("message from"));
 	_layout->addWidget(_messageFrom);
 
 	_inputSource = new QComboBox();
