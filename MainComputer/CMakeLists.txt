@@ -1,47 +1,56 @@
 cmake_minimum_required(VERSION 3.16)
-project(MainComputer)
+project(MainComputer VERSION 1.0 LANGUAGES CXX)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-qt_standard_project_setup()
+# Define source files
+file(GLOB_RECURSE SOURCES 
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/GUI/src/*.cpp"
+)
+
+# Define header files
+file(GLOB_RECURSE HEADERS 
+    "${CMAKE_SOURCE_DIR}/include/*.h"
+    "${CMAKE_SOURCE_DIR}/GUI/include/*.h"
+)
 
 qt_add_executable(MainComputer
-    src/main.cpp
-    include/MainComputer.h src/MainComputer.cpp
+    ${SOURCES}
+    ${HEADERS}
 )
 
-add_subdirectory(src)
-add_subdirectory(include)
-add_subdirectory(GUI/src)
-add_subdirectory(GUI/include)
-add_subdirectory(tests)
-
-
-set_target_properties(MainComputer PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    MACOSX_BUNDLE TRUE
+target_include_directories(MainComputer PRIVATE 
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/GUI/include
+    ${CMAKE_SOURCE_DIR}/resources
 )
-
-install(TARGETS MainComputer
-    BUNDLE  DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-qt_generate_deploy_app_script(
-    TARGET MainComputer
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})
-
-target_include_directories(MainComputer PRIVATE ${CMAKE_SOURCE_DIR}/resources)
-
 
 target_link_libraries(MainComputer PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
-    MainComputerHeaders  
-    GuiHeaders
+)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(MainComputer PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        MACOSX_BUNDLE FALSE
+    )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set_target_properties(MainComputer PROPERTIES
+        WIN32_EXECUTABLE FALSE
+        MACOSX_BUNDLE FALSE
+    )
+endif()
+
+install(TARGETS MainComputer
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
