@@ -1,6 +1,6 @@
-#include "Window.h"
+#include "Editor.h"
 
-Window::Window()
+Editor::Editor()
 {
 	setWindowTitle("Conditions Editor");
 
@@ -14,7 +14,7 @@ Window::Window()
 
 }
 
-Window::~Window()
+Editor::~Editor()
 {
 	if (_layout != nullptr)
 		delete _layout;

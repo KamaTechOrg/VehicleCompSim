@@ -11,7 +11,7 @@ set(HEADER_FILES
     ThenGroupBox.h
     ConditionsGroup.h
     ConditionLayoutBase.h
-    Window.h
+    Editor.h
     ExplorerBox.h
 )
 

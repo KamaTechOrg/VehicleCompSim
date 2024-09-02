@@ -10,6 +10,6 @@ target_sources(MainComputer PRIVATE
     ThenWidgetsLayout.cpp
     ThenGroupBox.cpp
     ConditionsGroup.cpp
-    Window.cpp
+    Editor.cpp
     ExplorerBox.cpp
 )

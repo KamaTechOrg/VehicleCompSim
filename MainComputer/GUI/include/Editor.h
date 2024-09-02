@@ -6,11 +6,11 @@
 #include "ConditionsEditor.h"
 #include "ExplorerBox.h"
 
-class Window : public QWidget
+class Editor : public QWidget
 {
 public:
-	Window();
-	~Window();
+	Editor();
+	~Editor();
 
 private:
 	QHBoxLayout* _layout;

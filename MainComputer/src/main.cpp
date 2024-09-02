@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "Window.h"
+#include "Editor.h"
 #include "Gui.h"
 
 
