@@ -7,7 +7,7 @@ qt_standard_project_setup()
 
 qt_add_executable(MainComputer
     src/main.cpp
-    src/maincomputer.h src/maincomputer.cpp
+    include/MainComputer.h src/MainComputer.cpp
 )
 
 add_subdirectory(src)
