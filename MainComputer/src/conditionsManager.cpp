@@ -1,12 +1,16 @@
 #include "ConditionsManager.h"
+
 #include <stdexcept>
 #include <fstream>
 #include <iostream>
 #include <windows.h>
 #include <thread>
+#include <QtDebug>
+
 #include "json.hpp"
 #include "constants.h"
-#include <QtDebug>
+#include "ConditionsFactory.h"
+
 
 ConditionsManager::ConditionsManager()
     : _isRunning(false)
@@ -53,16 +57,16 @@ void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
     conditions.push_back(condition);
 }
 
-bool ConditionsManager::validateAll(const std::string &senderId, const std::string &value) const
+bool ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
 {
-    for (const auto &condition : conditions) {
+    for (const auto& condition : conditions) {
         if (!condition->validate(senderId, value))
             return false;
     }
     return true;
 }
 
-void ConditionsManager::loadFromJson(const std::string &filename) const
+void ConditionsManager::loadFromJson(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -74,7 +78,6 @@ void ConditionsManager::loadFromJson(const std::string &filename) const
 
     qInfo() << "JSON file ----- ----- ----- ----- -----\n" << j.dump(4) << "\n----- ----- ----- ----- -----\n";
 
-    /*
-    * TODO: create compsite conditions and push them into "conditions" member vector
-    */
+    conditions.clear();
+    addCondition(ConditionsFactory().createConditionsFromJson(j));
 }
