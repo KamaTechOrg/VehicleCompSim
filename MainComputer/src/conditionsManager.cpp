@@ -21,10 +21,7 @@ ConditionsManager::ConditionsManager()
 
 void ConditionsManager::run()
 {
-    const int PORT_NUMBER = 1234;
-    Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
-
-    //_isRunning = true;
+    _isRunning = true;
     //std::thread([this]() {
     //    std::string count;
     //    while (_isRunning)
@@ -43,6 +40,9 @@ void ConditionsManager::run()
     //        */
     //    }
     //    }).detach(); // Detach the thread so it runs independently
+
+    const int PORT_NUMBER = 1234;
+    Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
 }
 
 void ConditionsManager::stop()
