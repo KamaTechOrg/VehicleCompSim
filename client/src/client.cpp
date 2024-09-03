@@ -19,6 +19,11 @@ ClientSocket::ClientSocket(int id)
     std::string idStr = Data_manipulator::int_to_str(id);
 
     m_clientSocket.send((char *)idStr.c_str() ,idStr.size());
+    char buffer[20];
+    listen(buffer, sizeof(buffer));
+    if (strcmp(buffer, "OK") != 0){
+        throw std::runtime_error(buffer);
+    }
    
 }
 

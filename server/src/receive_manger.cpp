@@ -8,10 +8,11 @@
 #include "constants.h"
 #include "canbus.h"
 
-static void insert_fd(fd_set &set, int &max_fd, std::vector<int> &vec_fd)
+static void insert_fd(fd_set &set, int &max_fd, std::map<int, FD> map_fd)
 {
-    for (const auto &fd : vec_fd)
+    for (const auto &pair : map_fd)
     {
+        int fd = pair.second;
         if (fd > 0)
         {
             FD_SET(fd, &set);
@@ -39,12 +40,12 @@ static int cress_read(int sd, char *buf, int flags)
 #endif
 }
 
-static int cress_send(std::shared_ptr<Socket> d_s, char * buf, size_t size )
+static int cress_send(FD d_s, char *buf, size_t size)
 {
 #ifdef _WIN32
-   return ::send(d_s->get_FD(), static_cast<const char *>(buf), static_cast<int>(size), 0);
+    return ::send(d_s, static_cast<const char *>(buf), static_cast<int>(size), 0);
 #else
-    return ::send(d_s->get_FD(), buf, size + 1, MSG_NOSIGNAL);
+    return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
 #endif
 }
 
@@ -106,50 +107,57 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, i
 
 int Receive_manger::add_socket(int new_socket)
 {
-    auto pair = create(new_socket);
+    auto pair = create_kay_value_id(new_socket);
 
-    std::unique_lock<std::mutex> lock(m_vec_client_mutex);
-    m_client_fd.push_back(new_socket);
-    add_to_map(pair);
+    std::unique_lock<std::mutex> lock(m_map_mutex);
+    auto it = m_connections.find(pair.first);
+    if (it == m_connections.end())
+    {
+        m_connections[pair.first] = pair.second;
+        cress_send(pair.second, "OK", 3);
+        std::cout << "Adding new socket with FD: " << new_socket << std::endl;
+    }
+    else
+    {
+        cress_send(pair.second, "id_in use", 10);
+        ::close(new_socket);
+    }
     lock.unlock();
-
-    std::cout << "Adding new socket with FD: " << new_socket << std::endl;
 
     return pair.first;
 }
 
 void Receive_manger::print_arr()
 {
-    for (auto &fd : m_client_fd)
+    for (auto &fd : m_connections)
     {
-        std::cout << fd << "," << std::flush;
+        std::cout << fd.second << "," << std::flush;
     }
 }
 
-std::pair<int, std::shared_ptr<Socket>> Receive_manger::create(int fd)
+std::pair<int, FD> Receive_manger::create_kay_value_id(int fd)
 {
     char data[MAXRECVID];
 
-    auto new_socket = std::make_shared<Socket>();
-    new_socket->set_FD(fd);
-    int size_recved = new_socket->recv(data, MAXRECVID);
+    int size_recved = cress_read(fd, data, 0);
     data[size_recved] = '\0';
     int id = atoi(data);
     std::cout << "received " << id << std::endl;
 
-    return std::make_pair(id, new_socket);
+    return std::make_pair(id, fd);
 }
 
-void Receive_manger::add_to_map(std::pair<int, std::shared_ptr<Socket>> pair)
+FD Receive_manger::get_sock(int id)
 {
-    std::unique_lock<std::mutex> lock(m_map_mutex);
-    m_connections[pair.first] = pair.second;
-}
-
-std::shared_ptr<Socket> Receive_manger::get_sock(int id)
-{
-    std::unique_lock<std::mutex> lock(m_map_mutex);
-    return m_connections[id];
+    auto it = m_connections.find(id);
+    if (it != m_connections.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus> , CompareCanBus>& min_heap)
@@ -157,22 +165,18 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
-    // struct timeval tv;
-    // tv.tv_sec = 50;
-    // tv.tv_usec = 0;
+
     while (true)
     {
-
-        if (!m_client_fd.empty())
+        if (!m_connections.empty())
         {
             reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
 
-            std::unique_lock<std::mutex> lock(m_vec_client_mutex);
-            insert_fd(readfds, max_sd, m_client_fd);
+            std::unique_lock<std::mutex> lock(m_map_mutex);
+            insert_fd(readfds, max_sd, m_connections);
             lock.unlock();
 
             print_arr();
-            std::cout << " loop " << std::endl;
 
             activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
             if ((activity < 0) && (errno != EINTR))
@@ -182,9 +186,9 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             }
 
             lock.lock();
-            for (size_t i = 0; i < m_client_fd.size(); ++i)
+            for (auto it = m_connections.begin(); it != m_connections.end();)
             {
-                sd = m_client_fd[i];
+                sd = it->second;
                 if (FD_ISSET(sd, &readfds))
                 {
                     valread = cress_read(sd, buffer, 0);
@@ -194,42 +198,37 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
 
                     if (valread == 0)
                     {
-                        // Connection closed
                         close(sd);
-                        m_client_fd.erase(m_client_fd.begin() + i);
                         std::cout << "Client disconnected, FD: " << sd << std::endl;
+
+                       
+                        it = m_connections.erase(it);
                     }
                     else if (valread > 0)
                     {
-                        
-                        for (auto pair : result)
+                        for (auto& pair : result)
                         {
                             std::cout << pair.second << std::endl;
-                            auto d_s = get_sock(pair.first);
 
                             char dataCopy[pair.second.size() + 1];
                             std::strcpy(dataCopy, pair.second.c_str());
 
-                            if(dataCopy != "msg"){
-                                  int localdestid = pair.first;
-                            std::cout << pair.second << std::endl;
-                            auto d_s = get_sock(localdestid);
-
-                            int status = cress_send(d_s , dataCopy , sizeof(dataCopy));
-
-
-                            if (status == -1)
+                            if (dataCopy != "msg")
                             {
-                                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-                                // throw...
+                                int localdestid = pair.first;
+                                std::cout << pair.second << std::endl;
+                                auto d_s = get_sock(localdestid);
+                                if (d_s)
+                                {
+                                    int status = cress_send(d_s, dataCopy, sizeof(dataCopy));
+
+                                    if (status == -1)
+                                    {
+                                        std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                                        // throw...
+                                    }
+                                }
                             }
-                            }
-
-
-
-
-
-                          
                         }
                     }
                     else
@@ -237,6 +236,9 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                         perror("recv error");
                     }
                 }
+                
+                ++it;
+                
             }
             lock.unlock();
         }
