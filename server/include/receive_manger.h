@@ -2,7 +2,9 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include "compercanbus.h"
 
+#include <queue>
 #include "socket.h"
 
 class Receive_manger {
@@ -10,7 +12,7 @@ public:
     
     int add_socket(int new_socket);
     std::shared_ptr<Socket> get_sock(int id);
-    void select_menger();
+    void select_menger(std::priority_queue<CanBus, std::vector<CanBus> , CompareCanBus>& min_heap);
    
 
 private:

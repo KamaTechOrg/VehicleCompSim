@@ -6,6 +6,7 @@
 
 #include "receive_manger.h"
 #include "constants.h"
+#include "canbus.h"
 
 static void insert_fd(fd_set &set, int &max_fd, std::vector<int> &vec_fd)
 {
@@ -47,7 +48,7 @@ static int cress_send(std::shared_ptr<Socket> d_s, char * buf, size_t size )
 #endif
 }
 
-static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, int len)
+static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, int len , std::priority_queue<CanBus, std::vector<CanBus> , CompareCanBus>& min_heap)
 {
     std::vector<std::pair<int, std::string>> result;
     std::string datatosend;
@@ -66,31 +67,24 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, i
             // Process the current datatosend based on identify
             if (identify == 0)
             {
-                if (!datatosend.empty())
-                {
-                    std::cout << "Source ID: " << datatosend << std::endl;
+                
+                
+                    std::cout << "Source ID1111111: " << datatosend << std::endl;
                     sourceid = std::stoi(datatosend);
-                }
+                
             }
-            else if (identify == 1)
+            else 
             {
-                if (!datatosend.empty())
-                {
-                    std::cout << "Destination ID: " << datatosend << std::endl;
+              
+                
+                    std::cout << "Destination ID222222222: " << datatosend << std::endl;
                     destid = std::stoi(datatosend);
-                }
+                
             }
-            else if (identify == 2)
-            {
-                if (!datatosend.empty())
-                {
-                    std::cout << "Data: " << datatosend << std::endl;
-                    result.emplace_back(destid, datatosend);
-                }
-            }
+          
 
             datatosend.clear();
-            identify = (identify + 1) % 3; // Reset after processing 3 segments
+            identify += 1; // Reset after processing 3 segments
         }
     }
 
@@ -98,7 +92,14 @@ static std::vector<std::pair<int, std::string>> extractid_and_data(char *data, i
     if (identify == 2 && !datatosend.empty())
     {
         result.emplace_back(destid, datatosend);
+        CanBus cb (sourceid , destid , datatosend , datatosend.size());
+        min_heap.push(cb);
+        CanBus ff = min_heap.top();
+        std::cout << "Top element in min heap: " << ff.getSourceId() << std::endl;
+
     }
+
+    
 
     return result;
 }
@@ -151,7 +152,7 @@ std::shared_ptr<Socket> Receive_manger::get_sock(int id)
     return m_connections[id];
 }
 
-void Receive_manger::select_menger()
+void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus> , CompareCanBus>& min_heap)
 {
     int max_sd, activity, sd, valread;
     fd_set readfds;
@@ -188,7 +189,8 @@ void Receive_manger::select_menger()
                 {
                     valread = cress_read(sd, buffer, 0);
 
-                    std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer, valread);
+                    std::vector<std::pair<int, std::string>> result = extractid_and_data(buffer, valread , min_heap);
+                    
 
                     if (valread == 0)
                     {

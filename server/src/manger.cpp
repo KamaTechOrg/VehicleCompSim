@@ -22,7 +22,9 @@ void MangServer::init()
 }
 
 void MangServer::run_server()
-{
+{   
+
+
     while (true)
     {
         int fd = m_server.wait_next_client();
@@ -41,7 +43,8 @@ void MangServer::run_server()
 
 void MangServer::run_connect()
 {
-    m_connect.select_menger();
+    m_connect.select_menger(m_min_heap);
+    
 }
 
 void MangServer::init_inner()
