@@ -22,27 +22,31 @@ ConditionsManager::ConditionsManager()
 void ConditionsManager::run()
 {
     _isRunning = true;
-    //std::thread([this]() {
-    //    std::string count;
-    //    while (_isRunning)
-    //    {
-    //        count.push_back('.');
-    //        qInfo() << "running " << count.c_str();
-    //        
-    //        if (count.size() == 10)
-    //            count.clear();
+    std::thread([this]() {
+        std::string count;
+        while (_isRunning)
+        {
+            count.push_back('.');
+            qInfo() << "running " << count.c_str();
+            
+            if (count.size() == 10)
+                count.clear();
 
-    //        // Sleep for 1 second to avoid busy waiting
-    //        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            // Sleep for 1 second to avoid busy waiting
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    //        /*
-    //        * TODO: listen to camera/sensors and validateAll() for each message.
-    //        */
-    //    }
-    //    }).detach(); // Detach the thread so it runs independently
+            /*
+            * TODO: listen to camera/sensors and validateAll() for each message.
+            */
 
-    const int PORT_NUMBER = 1234;
-    Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
+            const int SENSOR_PORT_NUMBER = 8101;
+            Communication communication;
+            communication.connectTo(SENSOR_PORT_NUMBER);
+        }
+        }).detach(); // Detach the thread so it runs independently
+
+    //const int PORT_NUMBER = 8101;
+    //Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
 }
 
 void ConditionsManager::stop()
