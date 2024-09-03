@@ -47,6 +47,8 @@ void ConditionsManager::run()
 
     //const int PORT_NUMBER = 8101;
     //Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
+    
+    Communication().sendTo(PORT_NUMBER, "BEEP 2000 100 128");
 }
 
 void ConditionsManager::stop()
@@ -57,7 +59,10 @@ void ConditionsManager::stop()
 
 bool ConditionsManager::isRunning()
 {
+    qInfo() << "Running" << "\n----- ----- ----- ----- -----\n";
+
     return _isRunning;
+
 }
 
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
