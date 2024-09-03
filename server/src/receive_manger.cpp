@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <mutex>
 
+#include "data_manipulator.h"
 #include "receive_manger.h"
 #include "constants.h"
 #include "canbus.h"
@@ -47,47 +48,6 @@ static int cress_send(FD d_s, char *buf, size_t size)
 #else
     return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
 #endif
-}
-
-static std::pair<int, std::string> extractid_and_data(char *data, int len, std::priority_queue<CanBus, std::vector<CanBus>, CompareCanBus> &min_heap)
-{
-    std::vector<std::pair<int, std::string>> result;
-    std::string datatosend;
-    int sourceid = 0;
-    int destid = 0;
-    int identify = 0;
-
-    for (int i = 0; i < len; ++i)
-    {
-        if (data[i] != '!')
-        {
-            datatosend += data[i];
-        }
-        else
-        {
-            if (identify == 0)
-            {
-                sourceid = std::stoi(datatosend);
-            }
-            else
-            {
-                destid = std::stoi(datatosend);
-            }
-
-            datatosend.clear();
-            identify += 1;
-        }
-    }
-
-    if (identify == 2 && !datatosend.empty())
-    {
-        result.emplace_back(destid, datatosend);
-        CanBus cb(sourceid, destid, datatosend, datatosend.size());
-        min_heap.push(cb);
-        CanBus ff = min_heap.top();
-    }
-
-    return result[0];
 }
 
 int Receive_manger::add_socket(int new_socket)
@@ -183,16 +143,16 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                     }
                     else if (valread > 0)
                     {
-                        std::pair<int, std::string> result = extractid_and_data(buffer, valread, min_heap);
-                        auto pair = result;
+                        auto result = Data_manipulator::extract_id_and_data(buffer, valread);
 
-                        char dataCopy[pair.second.size() + 1];
-                        std::strcpy(dataCopy, pair.second.c_str());
+                        CanBus cb = result.value();
+                        min_heap.push(cb);
+                        std::cout << min_heap.size() << std::endl;
 
-                        auto d_s = get_sock(pair.first);
+                        auto d_s = get_sock(cb.destId);
                         if (d_s)
                         {
-                            int status = cress_send(d_s, dataCopy, sizeof(dataCopy));
+                            int status = cress_send(d_s, (char *)cb.message.c_str(), cb.message.size());
 
                             if (status == -1)
                             {

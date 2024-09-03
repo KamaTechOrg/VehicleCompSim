@@ -2,17 +2,6 @@
 #include <string>
 
 class CanBus {
-    
-private:
-    int sourceId;
-    int destId;
-    std::string message;
-    int messageLength;
-    bool rtr;
-    int crc;
-
-    
-    
 
 public:
     
@@ -21,5 +10,12 @@ public:
       int getSourceId() const {
         return sourceId;
     }
+    int destId;
+    std::string message;
+    int messageLength;
+    int sourceId;
   
+private:
+    bool rtr;
+    int crc;
 };
