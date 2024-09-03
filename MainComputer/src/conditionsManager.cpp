@@ -48,7 +48,7 @@ void ConditionsManager::run()
     //const int PORT_NUMBER = 8101;
     //Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
     
-    Communication().sendTo(PORT_NUMBER, "BEEP 2000 100 128");
+    //Communication().sendTo(PORT_NUMBER, "BEEP 2000 100 128");
 }
 
 void ConditionsManager::stop()
