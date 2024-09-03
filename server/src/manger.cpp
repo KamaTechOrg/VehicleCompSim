@@ -34,7 +34,7 @@ void MangServer::run_server()
             int id = m_connect.add_socket(fd);
             if (id != IDINNER)
             {
-                char buf[4] = "msg";
+                char buf[10] = "msg";
                 m_server_socket.send(buf, sizeof(buf));
             }
         }
