@@ -92,5 +92,5 @@ void ConditionsManager::loadFromJson(const std::string& filename)
     qInfo() << "JSON file ----- ----- ----- ----- -----\n" << j.dump(4) << "\n----- ----- ----- ----- -----\n";
 
     conditions.clear();
-    addCondition(ConditionsFactory().createConditionsFromJson(j));
+    addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
 }

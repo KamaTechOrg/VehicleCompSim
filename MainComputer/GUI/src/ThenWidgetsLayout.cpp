@@ -1,5 +1,7 @@
 #include "ThenWidgetsLayout.h"
 
+#include <QDebug>
+
 ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	: QHBoxLayout(parent)
 {
@@ -26,4 +28,39 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	addWidget(_operation);
 
 	addStretch(1);
+}
+
+std::shared_ptr<Action> ThenWidgetsLayout::data()
+{
+	unsigned targetUnit;
+	std::string message;
+
+	try {
+		targetUnit = extractIdFromString(_targetUnit->currentText().toStdString());
+	}
+	catch (const std::exception& e) {
+		qWarning() << "Error: " << e.what();
+	}
+
+	message = _operation->currentText().toStdString();
+
+	std::shared_ptr<Action> action = std::make_shared<Action>(targetUnit, message);
+	return action;
+}
+
+unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
+{
+	// Find the last space in the string
+	size_t pos = str.find_last_of(' ');
+	if (pos == std::string::npos) {
+		throw std::invalid_argument("String format is incorrect.");
+	}
+
+	// Extract the substring after the last space
+	std::string idStr = str.substr(pos + 1);
+
+	// Convert the extracted substring to an unsigned integer
+	unsigned id = std::stoul(idStr);
+
+	return id;
 }

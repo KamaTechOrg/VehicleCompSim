@@ -23,6 +23,7 @@ set(HEADER_FILES
     ConditionsManager.h
     Gui.h
     Communication.h
+    Action.h
 
 )
 

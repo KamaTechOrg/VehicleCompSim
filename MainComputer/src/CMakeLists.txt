@@ -14,6 +14,7 @@ target_sources(MainComputer PRIVATE
     ConditionsManager.cpp
     Gui.cpp
     Communication.cpp
+    Action.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/resources)
