@@ -9,8 +9,11 @@ class Action
 {
 public:
 	Action(unsigned targetUnit, std::string messageToSend);
+	Action() = default;
 	~Action() = default;
 
+	unsigned getTargetUnit() const;     
+	std::string getMessageToSend() const;
 	nlohmann::json toJson() const;
 
 private:
