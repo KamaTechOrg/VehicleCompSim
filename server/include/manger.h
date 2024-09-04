@@ -18,6 +18,7 @@ class MangServer
 public:
     MangServer();
     void init();
+    void sender();
 
  
 
@@ -34,5 +35,6 @@ private:
     Receive_manger m_connect;
     Socket m_server_socket;
     std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> m_min_heap;
+    std::mutex m_heap_mutex;  
   
 };

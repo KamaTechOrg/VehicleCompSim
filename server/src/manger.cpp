@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string.h>
 #include <sstream>
+#include <cstring> 
+#include <chrono>    
+#include <thread> 
 
 #include "manger.h"
 #include "constants.h"
@@ -15,10 +18,12 @@ void MangServer::init()
 
     std::thread t_s(&MangServer::run_server, this);
     std::thread t_select(&MangServer::run_connect, this);
+    std::thread t_sender(&MangServer::sender, this);
     init_inner();
     
     t_s.join();
     t_select.join();
+    t_sender.join();
 }
 
 void MangServer::run_server()
@@ -46,7 +51,7 @@ void MangServer::run_server()
 
 void MangServer::run_connect()
 {
-    m_connect.select_menger(m_min_heap);
+    m_connect.select_menger(m_min_heap , m_heap_mutex);
     
 }
 
@@ -58,4 +63,51 @@ void MangServer::init_inner()
     std::string idStr = Data_manipulator::int_to_str(IDINNER);
 
     m_server_socket.send((char *)idStr.c_str(), idStr.size());
+}
+
+
+
+static int cross_send(FD d_s, char *buf, size_t size)
+{
+#ifdef _WIN32
+    return ::send(d_s, static_cast<const char *>(buf), static_cast<int>(size), 0);
+#else
+    return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
+#endif
+}
+
+
+
+void MangServer::sender() {
+    while (true) {
+        std::unique_lock<std::mutex> lock(m_heap_mutex);
+
+        while (!m_min_heap.empty()) {
+            
+            
+            CanBus topElement = m_min_heap.top();
+
+            std::unique_lock<std::mutex> lock(m_connect.m_map_mutex);
+            auto d_s = m_connect.get_sock(topElement.getDestinationId());
+            lock.unlock();
+            char dataCopy[topElement.getMessageSize() + 1];
+            std::strcpy(dataCopy, topElement.getMessage().c_str());
+
+            if (d_s) {
+                int status = cross_send(d_s, dataCopy, sizeof(dataCopy));
+
+                if (status == -1) {
+                    std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                    // throw...
+                }
+            }
+
+            m_min_heap.pop();
+        }
+
+        lock.unlock();
+        
+        // Wait for 1 second before continuing
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+    }
 }

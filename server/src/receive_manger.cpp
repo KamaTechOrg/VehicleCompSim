@@ -103,7 +103,7 @@ FD Receive_manger::get_sock(int id)
     }
 }
 
-void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap)
+void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap , std::mutex &heap_mutex)
 {
     int max_sd, activity, sd, valread;
     fd_set readfds;
@@ -151,20 +151,15 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                     auto result = Data_manipulator::extract_id_and_data(buffer, valread);
 
                     CanBus cb = result.value();
+                    std::unique_lock<std::mutex> lock(heap_mutex);
                     min_heap.push(cb);
+                    CanBus cc = min_heap.top();
+                    std::cout << "top = " << cc.getSourceId()  << std::endl;
+                    std::cout << " sizeheap = " << min_heap.size() << std::endl;
+                    lock.unlock();
                     std::cout << min_heap.size() << std::endl;
 
-                    auto d_s = get_sock(cb.destId);
-                    if (d_s)
-                    {
-                        int status = cress_send(d_s, (char *)cb.message.c_str(), cb.message.size());
-
-                        if (status == -1)
-                        {
-                            std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-                            // throw...
-                        }
-                    }
+                  
                 }
                 else
                 {
