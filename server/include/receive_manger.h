@@ -1,18 +1,21 @@
+#pragma once
+
+#include <condition_variable>
 #include <mutex>
 #include <vector>
 #include <memory>
 #include <map>
-#include "compercanbus.h"
-
 #include <queue>
+
 #include "socket.h"
+#include "canbus.h"
 
 class Receive_manger {
 public:
     
     int add_socket(int new_socket);
-    void select_menger(std::priority_queue<CanBus, std::vector<CanBus> , CompareCanBus>& min_heap);
-   
+    void select_menger(std::priority_queue<CanBus, std::vector<CanBus> , std::greater<CanBus>>& min_heap);
+    std::condition_variable m_condition;
 
 private:
     

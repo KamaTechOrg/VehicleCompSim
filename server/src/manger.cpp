@@ -25,17 +25,20 @@ void MangServer::run_server()
 {   
 
 
-    while (true)
+     while (true)
     {
         int fd = m_server.wait_next_client();
 
         if (fd > 0)
         {
+
             int id = m_connect.add_socket(fd);
             if (id != IDINNER)
             {
                 char buf[10] = "msg";
                 m_server_socket.send(buf, sizeof(buf));
+
+                m_connect.m_condition.notify_one();
             }
         }
     }

@@ -103,76 +103,80 @@ FD Receive_manger::get_sock(int id)
     }
 }
 
-void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, CompareCanBus> &min_heap)
+void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap)
 {
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
 
+    std::unique_lock<std::mutex> lock(m_map_mutex);
+
+    while (m_connections.empty())
+    {
+        m_condition.wait(lock);
+    }
+    lock.unlock();
+
     while (true)
     {
-        if (!m_connections.empty())
+        reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
+        print_arr();
+
+        lock.lock();
+        insert_fd(readfds, max_sd, m_connections);
+        lock.unlock();
+
+        activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
+        if ((activity < 0) && (errno != EINTR))
         {
-            reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
+            perror("Select error");
+            break;
+        }
 
-            std::unique_lock<std::mutex> lock(m_map_mutex);
-            insert_fd(readfds, max_sd, m_connections);
-            lock.unlock();
-
-            print_arr();
-
-            activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
-            if ((activity < 0) && (errno != EINTR))
+        lock.lock();
+        for (auto it = m_connections.begin(); it != m_connections.end();)
+        {
+            sd = it->second;
+            if (FD_ISSET(sd, &readfds) && it->first != IDINNER)
             {
-                perror("Select error");
-                break;
-            }
+                valread = cress_read(sd, buffer, 0);
 
-            lock.lock();
-            for (auto it = m_connections.begin(); it != m_connections.end();)
-            {
-                sd = it->second;
-                if (FD_ISSET(sd, &readfds) && it->first != IDINNER)
+                if (valread == 0)
                 {
-                    valread = cress_read(sd, buffer, 0);
+                    close(sd);
+                    it = m_connections.erase(it);
+                }
+                else if (valread > 0)
+                {
+                    auto result = Data_manipulator::extract_id_and_data(buffer, valread);
 
-                    if (valread == 0)
+                    CanBus cb = result.value();
+                    min_heap.push(cb);
+                    std::cout << min_heap.size() << std::endl;
+
+                    auto d_s = get_sock(cb.destId);
+                    if (d_s)
                     {
-                        close(sd);
-                        it = m_connections.erase(it);
-                    }
-                    else if (valread > 0)
-                    {
-                        auto result = Data_manipulator::extract_id_and_data(buffer, valread);
+                        int status = cress_send(d_s, (char *)cb.message.c_str(), cb.message.size());
 
-                        CanBus cb = result.value();
-                        min_heap.push(cb);
-                        std::cout << min_heap.size() << std::endl;
-
-                        auto d_s = get_sock(cb.destId);
-                        if (d_s)
+                        if (status == -1)
                         {
-                            int status = cress_send(d_s, (char *)cb.message.c_str(), cb.message.size());
-
-                            if (status == -1)
-                            {
-                                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-                                // throw...
-                            }
+                            std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                            // throw...
                         }
                     }
-                    else
-                    {
-                        perror("recv error");
-                    }
                 }
-                else if (FD_ISSET(sd, &readfds) && it->first == IDINNER)
+                else
                 {
-                    cress_read(it->second, buffer, 0);
+                    perror("recv error");
                 }
-                ++it;
             }
-            lock.unlock();
+            else if (FD_ISSET(sd, &readfds) && it->first == IDINNER)
+            {
+                cress_read(it->second, buffer, 0);
+            }
+            ++it;
         }
+        lock.unlock();
     }
 }

@@ -33,3 +33,14 @@ std::optional<CanBus> Data_manipulator::extract_id_and_data(const char *data, in
 
     return std::nullopt; 
 }
+
+std::string Data_manipulator::data_and_id_to_str(void *data, size_t size, int source_id, int dest_id)
+{
+    std::ostringstream oss;
+    oss << source_id << '!' << dest_id << '!';
+    std::string id_data = oss.str();
+    id_data.append((char *)(data), size);
+
+    return id_data;
+
+}
