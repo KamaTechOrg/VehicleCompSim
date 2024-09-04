@@ -64,7 +64,7 @@ void ConditionsManager::run()
             Communication communication;
             communication.connectTo(SENSOR_PORT_NUMBER);
 
-            std::string message = "ID:Vogue1,VALUE:some_value";
+            std::string message = "ID:some_id,VALUE:some_value";
 
             try {
                 auto [id, value] = parseMessage(message);
