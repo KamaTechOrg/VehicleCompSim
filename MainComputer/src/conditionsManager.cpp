@@ -16,7 +16,7 @@ std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
 ConditionsManager::ConditionsManager()
     : _isRunning(false)
 {
-    loadFromJson(CONDITIONS_JSON_FILE_NAME);
+    loadFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
 void ConditionsManager::run()

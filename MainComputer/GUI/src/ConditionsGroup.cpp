@@ -78,7 +78,7 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
 
 		// create elapsedTime edit line
 		QSpinBox* elapsedTime = new QSpinBox;
-		elapsedTime->setRange(0, MAX_ELAPSED_TIME);
+		elapsedTime->setRange(0, constants::MAX_ELAPSED_TIME);
 		elapsedTime->setSuffix(" ms");
 		defaultHeight = elapsedTime->sizeHint().height();
 		elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);

@@ -29,7 +29,7 @@ ConditionsEditor::ConditionsEditor()
     resize(350, 200);
 
     // load from JSON file (if exists) the current conditions state
-    loadDataFromJson(CONDITIONS_JSON_FILE_NAME);
+    loadDataFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
 void ConditionsEditor::save()
@@ -40,7 +40,7 @@ void ConditionsEditor::save()
         return;
     }
 
-    std::string filename = CONDITIONS_JSON_FILE_NAME;
+    std::string filename = constants::CONDITIONS_JSON_FILE_NAME;
 
     std::ofstream file(filename);
     if (!file.is_open()) {
