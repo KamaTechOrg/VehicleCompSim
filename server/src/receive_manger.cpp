@@ -31,29 +31,7 @@ static void reset_in_loop(fd_set &set, int &fd, char *buf, int size)
 }
 
 
-int Receive_manger::add_socket(int new_socket)
-{
-    auto pair = create_kay_value_id(new_socket);
-
-    std::unique_lock<std::mutex> lock(m_map_mutex);
-    auto it = m_connections.find(pair.first);
-    if (it == m_connections.end())
-    {
-        m_connections[pair.first] = pair.second;
-        Cross_platform::cress_send(pair.second, "OK", 3);
-        std::cout << "Adding new socket with FD: " << new_socket << std::endl;
-    }
-    else
-    {
-        Cross_platform::cress_send(pair.second, "id_in use", 10);
-        ::close(new_socket);
-    }
-    lock.unlock();
-
-    return pair.first;
-}
-
-void Receive_manger::print_arr()
+void Receive_manger::print_arr(std::map<int, FD> m_connections)
 {
     for (auto &fd : m_connections)
     {
@@ -61,37 +39,14 @@ void Receive_manger::print_arr()
     }
 }
 
-std::pair<int, FD> Receive_manger::create_kay_value_id(int fd)
-{
-    char data[MAXRECVID];
-    int size_recved = Cross_platform::cress_read(fd, data, 0);
-    data[size_recved] = '\0';
-    int id = atoi(data);
-
-    return std::make_pair(id, fd);
-}
-
-FD Receive_manger::get_sock(int id)
-{
-    auto it = m_connections.find(id);
-    if (it != m_connections.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap , std::mutex &heap_mutex)
+void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap , std::mutex &heap_mutex , std::mutex & map_mutex, std::map<int, FD> & m_connections  )
 {
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
 
-    std::unique_lock<std::mutex> map_lock(m_map_mutex);
-
+    std::unique_lock<std::mutex> map_lock(map_mutex);
+   
     while (m_connections.empty())
     {
         m_condition.wait(map_lock);
@@ -101,7 +56,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
     while (true)
     {
         reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
-        print_arr();
+        print_arr(m_connections);
 
         map_lock.lock();
         insert_fd(readfds, max_sd, m_connections);

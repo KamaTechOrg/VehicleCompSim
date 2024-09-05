@@ -13,20 +13,12 @@
 #include "data_manipulator.h"
 #include "socket_cross_platform.h"
 
-class Receive_manger {
+class Receive_manger
+{
 public:
-    
-    int add_socket(int new_socket);
-    void select_menger(std::priority_queue<CanBus, std::vector<CanBus> , std::greater<CanBus>>& min_heap , std::mutex &heap_mutex );
-    FD get_sock(int id);
+    void select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap, std::mutex &heap_mutex, std::mutex &map_mutex, std::map<int, FD> &m_connections);
     std::condition_variable m_condition;
-    std::mutex m_map_mutex;   
 
 private:
-    
-    std::pair<int, FD> create_kay_value_id(int fd);
-    void print_arr();
-   
-    std::map<int, FD> m_connections; 
-     
+    void print_arr(std::map<int, FD> m_connections);
 };
