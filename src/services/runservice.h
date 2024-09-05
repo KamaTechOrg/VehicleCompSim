@@ -41,6 +41,8 @@ class RunService
     void compile();
     void run();
     void dump(unsigned long long pid);
+    void runAndBuildServer();
+
 
 
 public:

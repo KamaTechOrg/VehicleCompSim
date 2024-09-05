@@ -1,11 +1,9 @@
 #pragma once
 #include <QtWidgets/QMainWindow>
-
 #include <QMainWindow>
 #include <memory>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
-
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
@@ -16,7 +14,9 @@
 #include "LiveUpdate.h"
 #include "LogReader.h"
 #include "SimulationControlPanel.h"
+#include "popupdialog.h"
 #include <bson/bson.h>
+#include <QLineEdit>
 
 
 class QGraphicsView;
@@ -44,8 +44,10 @@ private:
     void close_previous_replay();
 
     CustomScene* m_scene;
-    QGraphicsView* m_view;  // Owned by QMainWindow
-    QToolBar* m_toolBar;  // ToolBar for draggable items
+    QGraphicsView* m_view;
+    QToolBar* m_toolBar;
+    QToolBar* rightToolBar;
+    PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QPushButton *startBtn;

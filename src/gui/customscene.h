@@ -2,11 +2,13 @@
 
 #include <QGraphicsScene>
 #include <memory>
+#include <QToolBar>
 #include "VehicleCompSim/utils/network.hpp"
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
 #include "items/edgeitem.h"
 #include "items/serializableitem.h"
+#include "popupdialog.h"
 
 
 class CustomScene : public QGraphicsScene {
@@ -14,7 +16,11 @@ class CustomScene : public QGraphicsScene {
 public:
     CustomScene(QObject* parent = nullptr);
     void modifyItem(QGraphicsItem *item);
-    
+    QToolBar* rightToolBar;  // ToolBar for draggable items
+    PopupDialog* popupDialog;
+
+
+
 private:
     void addItemToScene(SerializableItem* item);
     void removeItemFromScene(SerializableItem* item);
@@ -40,5 +46,8 @@ private:
     EdgeItem* m_currentEdge = nullptr;
     BaseItem* m_startItem = nullptr;
     QPointF m_startPoint;
+
+
+
 
 };
