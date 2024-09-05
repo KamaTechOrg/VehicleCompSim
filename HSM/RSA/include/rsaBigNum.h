@@ -9,8 +9,8 @@
 #include <vector>
 #include <iomanip>
 #include <stdexcept>
-#include "../BigNum/BigNum.h"
-#include "../BigNum/BigNumWithMinus.h"
+#include "../../BigNum/include/BigNum.h"
+#include "../../BigNum/include/BigNumWithMinus.h"
 
 class RSABigNum
 {

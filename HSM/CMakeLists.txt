@@ -1,6 +1,16 @@
 
 cmake_minimum_required(VERSION 3.4)
-project(hsm)
+project(HSM)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/releases/download/v1.15.0/googletest-1.15.0.tar.gz
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,15 +37,14 @@ target_compile_options(sycl_flags INTERFACE "-fsycl")
 
 
 enable_testing()
-add_subdirectory(aes)
+add_subdirectory(AES)
 add_subdirectory(BigNum)
 add_subdirectory(SHA-256)
-add_subdirectory(rsa)
+add_subdirectory(RSA)
 # add_subdirectory(API)
 add_subdirectory(KeyStorage)
 
-add_subdirectory(test)
-add_subdirectory(benchmark)
+# add_subdirectory(Benchmark)
 
 
 # add_executable(main main.cpp)
