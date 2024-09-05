@@ -44,6 +44,10 @@ void ConditionsManager::run()
 {
     _isRunning = true;
     std::thread([this]() {
+        const int SENSOR_PORT_NUMBER = 8101;
+        Communication communication;
+        communication.connectToSensor(SENSOR_PORT_NUMBER);
+
         std::string count;
         while (_isRunning)
         {
@@ -53,18 +57,9 @@ void ConditionsManager::run()
             if (count.size() == 10)
                 count.clear();
 
-            // Sleep for 1 second to avoid busy waiting
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //std::string message = "ID:some_id,VALUE:some_value";
 
-            /*
-           * TODO: listen to camera/sensors and validateAll() for each message.
-           */
-
-            const int SENSOR_PORT_NUMBER = 8101;
-            Communication communication;
-            communication.connectTo(SENSOR_PORT_NUMBER);
-
-            std::string message = "ID:some_id,VALUE:some_value";
+            std::string message = communication.getMessageFromQueue();
 
             try {
                 auto [id, value] = parseMessage(message);
@@ -81,12 +76,7 @@ void ConditionsManager::run()
                 qWarning() << "Failed to parse message:" << e.what();
             }
         }
-        }).detach(); // Detach the thread so it runs independently 
-
-        //const int PORT_NUMBER = 8101;
-    //Communication().sendTo(PORT_NUMBER, "Hello From Main Computer!");
-
-    //Communication().sendTo(PORT_NUMBER, "BEEP 2000 100 128");
+        }).detach(); // Detach the thread so it runs independently*/
 }
 
 void ConditionsManager::executeAction(const std::string &id)

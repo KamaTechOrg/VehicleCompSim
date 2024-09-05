@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <QDebug>
+#include <thread>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -107,54 +108,83 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     cleanupWinsock();
 }
 
-void Communication::connectTo(const int portNumber)
+void Communication::connectToSensor(const int portNumber)
 {
     initializeWinsock();
-    int clientSock = createSocket();
-    struct sockaddr_in serverAddr;
-    char buffer[1024] = { 0 };
+    int sensorSock = createSocket();
+    struct sockaddr_in sensorAddr;
 
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(portNumber);
+    sensorAddr.sin_family = AF_INET;
+    sensorAddr.sin_port = htons(portNumber);
 
     // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, "127.0.0.1", &sensorAddr.sin_addr) <= 0) {
         qWarning() << "Invalid address/ Address not supported";
-        closesocket(clientSock);
+        closesocket(sensorSock);
         cleanupWinsock();
         return;
     }
 
     // Connect to the server
-    if (connect(clientSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+    if (connect(sensorSock, (struct sockaddr*)&sensorAddr, sizeof(sensorAddr)) < 0) {
         qWarning() << "Connection Failed: " << WSAGetLastError();
-        closesocket(clientSock);
+        closesocket(sensorSock);
         cleanupWinsock();
         return;
     }
 
-    // Send initial message
-    std::string initMessage = "INIT";
-    send(clientSock, initMessage.c_str(), initMessage.length(), 0);
-
     // Continuously receive messages from the server
-    while (true) {
-        int valread = recv(clientSock, buffer, sizeof(buffer) - 1, 0);
-        if (valread > 0) {
-            buffer[valread] = '\0'; // Null-terminate the received data
-            qInfo() << "Received: " << buffer;
+    std::thread([this, sensorSock]() {
+
+        // Send initial message
+        std::string initMessage = "INIT";
+        send(sensorSock, initMessage.c_str(), initMessage.length(), 0);
+
+        while (true) {
+            char buffer[1024] = { 0 };
+            int valread = recv(sensorSock, buffer, sizeof(buffer), 0);
+            if (valread > 0) {
+                qInfo() << "recived: " << buffer;
+
+                std::lock_guard<std::mutex> lock(queueMutex);
+                _messagesQueue.push(std::string(buffer, valread));
+                messageAvailable.notify_one(); // Signal new message arrival
+            }
+            else {
+                break;
+            }
         }
-        else if (valread == 0) {
-            qInfo() << "Connection closed by server.";
-            break;
-        }
-        else {
-            qWarning() << "Receive failed: " << WSAGetLastError();
-            break;
-        }
-    }
+        closesocket(sensorSock);
+        cleanupWinsock();
+    }).detach();
+
+
+    //while (true) {
+    //    int valread = recv(sensorSock, buffer, sizeof(buffer) - 1, 0);
+    //    if (valread > 0) {
+    //        buffer[valread] = '\0'; // Null-terminate the received data
+    //        qInfo() << "Received: " << buffer;
+    //    }
+    //    else if (valread == 0) {
+    //        qInfo() << "Connection closed by server.";
+    //        break;
+    //    }
+    //    else {
+    //        qWarning() << "Receive failed: " << WSAGetLastError();
+    //        break;
+    //    }
+    //}
 
     // Cleanup
-    closesocket(clientSock);
-    cleanupWinsock();
+   // closesocket(sensorSock);
+   // cleanupWinsock();
+}
+
+std::string Communication::getMessageFromQueue()
+{
+    std::unique_lock<std::mutex> lock(queueMutex);
+    messageAvailable.wait(lock, [this] { return !_messagesQueue.empty(); }); // Wait for a message
+    std::string message = _messagesQueue.front();
+    _messagesQueue.pop();
+    return message;
 }
