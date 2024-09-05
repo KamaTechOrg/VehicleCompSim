@@ -6,8 +6,7 @@
 #include <thread> 
 
 #include "manger.h"
-#include "constants.h"
-#include "data_manipulator.h"
+
 
 MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{}
 {
@@ -66,18 +65,6 @@ void MangServer::init_inner()
 }
 
 
-
-static int cross_send(FD d_s, char *buf, size_t size)
-{
-#ifdef _WIN32
-    return ::send(d_s, static_cast<const char *>(buf), static_cast<int>(size), 0);
-#else
-    return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
-#endif
-}
-
-
-
 void MangServer::sender() {
     while (true) {
         std::unique_lock<std::mutex> lock(m_heap_mutex);
@@ -94,7 +81,7 @@ void MangServer::sender() {
             std::strcpy(dataCopy, topElement.getMessage().c_str());
 
             if (d_s) {
-                int status = cross_send(d_s, dataCopy, sizeof(dataCopy));
+                int status = Cross_platform::cress_send(d_s, dataCopy, sizeof(dataCopy));
 
                 if (status == -1) {
                     std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
@@ -108,6 +95,6 @@ void MangServer::sender() {
         lock.unlock();
         
         // Wait for 1 second before continuing
-        std::this_thread::sleep_for(std::chrono::seconds(20));
+        std::this_thread::sleep_for(std::chrono::seconds(40));
     }
 }

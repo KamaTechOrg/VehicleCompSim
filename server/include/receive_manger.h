@@ -9,6 +9,9 @@
 
 #include "socket.h"
 #include "canbus.h"
+#include "constants.h"
+#include "data_manipulator.h"
+#include "socket_cross_platform.h"
 
 class Receive_manger {
 public:

@@ -2,6 +2,7 @@
 
 #include "socket.h"
 #include "constants.h"
+#include "data_manipulator.h"
 
 
 class ClientSocket

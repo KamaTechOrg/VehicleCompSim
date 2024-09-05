@@ -1,14 +1,13 @@
 #pragma once
 
-#include "server.h"
-#include "receive_manger.h"
-#include "mang_req.h"
-#include "canbus.h"
-
 
 #include <queue>
 #include <thread>
 #include <mutex>
+
+#include "server.h"
+#include "mang_req.h"
+#include "receive_manger.h"
 
 
 

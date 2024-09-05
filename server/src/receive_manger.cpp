@@ -4,10 +4,8 @@
 #include <unistd.h>
 #include <mutex>
 
-#include "data_manipulator.h"
 #include "receive_manger.h"
-#include "constants.h"
-#include "canbus.h"
+
 
 static void insert_fd(fd_set &set, int &max_fd, std::map<int, FD> map_fd)
 {
@@ -32,23 +30,6 @@ static void reset_in_loop(fd_set &set, int &fd, char *buf, int size)
     fd = 0;
 }
 
-static int cress_read(int sd, char *buf, int flags)
-{
-#ifdef _WIN32
-    return ::recv(sd, buf, MAXRECV, 0);
-#else
-    return ::recv(sd, buf, MAXRECV, 0);
-#endif
-}
-
-static int cress_send(FD d_s, char *buf, size_t size)
-{
-#ifdef _WIN32
-    return ::send(d_s, static_cast<const char *>(buf), static_cast<int>(size), 0);
-#else
-    return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
-#endif
-}
 
 int Receive_manger::add_socket(int new_socket)
 {
@@ -59,12 +40,12 @@ int Receive_manger::add_socket(int new_socket)
     if (it == m_connections.end())
     {
         m_connections[pair.first] = pair.second;
-        cress_send(pair.second, "OK", 3);
+        Cross_platform::cress_send(pair.second, "OK", 3);
         std::cout << "Adding new socket with FD: " << new_socket << std::endl;
     }
     else
     {
-        cress_send(pair.second, "id_in use", 10);
+        Cross_platform::cress_send(pair.second, "id_in use", 10);
         ::close(new_socket);
     }
     lock.unlock();
@@ -83,7 +64,7 @@ void Receive_manger::print_arr()
 std::pair<int, FD> Receive_manger::create_kay_value_id(int fd)
 {
     char data[MAXRECVID];
-    int size_recved = cress_read(fd, data, 0);
+    int size_recved = Cross_platform::cress_read(fd, data, 0);
     data[size_recved] = '\0';
     int id = atoi(data);
 
@@ -139,7 +120,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             sd = it->second;
             if (FD_ISSET(sd, &readfds) && it->first != IDINNER)
             {
-                valread = cress_read(sd, buffer, 0);
+                valread = Cross_platform::cress_read(sd, buffer, 0);
 
                 if (valread == 0)
                 {
@@ -168,7 +149,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             }
             else if (FD_ISSET(sd, &readfds) && it->first == IDINNER)
             {
-                cress_read(it->second, buffer, 0);
+                Cross_platform::cress_read(it->second, buffer, 0);
             }
             ++it;
         }

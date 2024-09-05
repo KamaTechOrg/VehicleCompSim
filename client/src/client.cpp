@@ -6,8 +6,7 @@
 #include <algorithm>
 
 #include "client.h"
-#include "constants.h"
-#include "data_manipulator.h"
+
 
 ClientSocket::ClientSocket(int id)
     : my_id(id)
