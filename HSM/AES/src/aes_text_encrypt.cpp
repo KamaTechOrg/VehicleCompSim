@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <cstdint>
-#include <execution>
+#include <algorithm>
+// #include <execution> 
 
 // for htonl
 #ifdef _WIN32
@@ -33,7 +34,7 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ecb(Aes<Aes_var> const& aes, std::s
   encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
   using State = typename Aes<Aes_var>::State;
   auto* states_buf = reinterpret_cast<State*>(encrypted_message.data());
-  std::for_each_n(std::execution::seq, states_buf, encrypted_message.size()/16, [&](auto& state){
+  std::for_each_n(/* std::execution::par,  */states_buf, encrypted_message.size()/16, [&](auto& state){
     aes.encrypt(state);
   });
   return encrypted_message;
@@ -48,7 +49,7 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(Aes<Aes_var> const& aes, std::s
   std::string message = encrypted_message;
   using State = typename Aes<Aes_var>::State;
   State* states_buf = reinterpret_cast<State*>(message.data());
-  std::for_each_n(std::execution::seq, states_buf, message.size()/16, [&](auto& state){
+  std::for_each_n(/* std::execution::par, */ states_buf, message.size()/16, [&](auto& state){
     aes.decrypt(state);
   });
 

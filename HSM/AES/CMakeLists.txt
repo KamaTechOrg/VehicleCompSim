@@ -7,5 +7,10 @@ if(DEFINED SYCL_ENABLED AND (NOT(SYCL_ENABLED EQUAL 0)))
     target_link_libraries(AES PRIVATE sycl_flags)
 endif()
 
+add_executable(aes_test test/aes_test.cpp)
+target_link_libraries(aes_test AES GTest::gtest_main)
+gtest_discover_tests(aes_test)
+
+
 # find_package(TBB REQUIRED) # std::execution::par
-# target_link_libraries(aes PRIVATE TBB::tbb)
+# target_link_libraries(AES PRIVATE TBB::tbb)

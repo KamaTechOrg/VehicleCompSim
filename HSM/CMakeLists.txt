@@ -44,7 +44,7 @@ add_subdirectory(RSA)
 # add_subdirectory(API)
 add_subdirectory(KeyStorage)
 
-# add_subdirectory(Benchmark)
+add_subdirectory(Benchmark)
 
 
 # add_executable(main main.cpp)
