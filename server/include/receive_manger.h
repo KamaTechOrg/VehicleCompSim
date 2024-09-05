@@ -18,8 +18,8 @@ public:
     
     int add_socket(int new_socket);
     void select_menger(std::priority_queue<CanBus, std::vector<CanBus> , std::greater<CanBus>>& min_heap , std::mutex &heap_mutex );
-    std::condition_variable m_condition;
     FD get_sock(int id);
+    std::condition_variable m_condition;
     std::mutex m_map_mutex;   
 
 private:

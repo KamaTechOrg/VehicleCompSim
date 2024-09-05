@@ -1,14 +1,10 @@
-#include <iostream>
-#include <string.h>
-#include <sstream>
-#include <cstring> 
 #include <chrono>    
-#include <thread> 
+
 
 #include "manger.h"
 
 
-MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{}
+MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{},m_send_manager{}
 {
 }
 
@@ -17,7 +13,7 @@ void MangServer::init()
 
     std::thread t_s(&MangServer::run_server, this);
     std::thread t_select(&MangServer::run_connect, this);
-    std::thread t_sender(&MangServer::sender, this);
+    std::thread t_sender(&MangServer::run_sender, this);
     init_inner();
     
     t_s.join();
@@ -65,36 +61,12 @@ void MangServer::init_inner()
 }
 
 
-void MangServer::sender() {
+void MangServer::run_sender() {
+    auto get_sock_func = [this](int id) { return m_connect.get_sock(id); };
+    
     while (true) {
-        std::unique_lock<std::mutex> lock(m_heap_mutex);
 
-        while (!m_min_heap.empty()) {
-            
-            
-            CanBus topElement = m_min_heap.top();
-
-            std::unique_lock<std::mutex> lock(m_connect.m_map_mutex);
-            auto d_s = m_connect.get_sock(topElement.getDestinationId());
-            lock.unlock();
-            char dataCopy[topElement.getMessageSize() + 1];
-            std::strcpy(dataCopy, topElement.getMessage().c_str());
-
-            if (d_s) {
-                int status = Cross_platform::cress_send(d_s, dataCopy, sizeof(dataCopy));
-
-                if (status == -1) {
-                    std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
-                    // throw...
-                }
-            }
-
-            m_min_heap.pop();
-        }
-
-        lock.unlock();
-        
-        // Wait for 1 second before continuing
-        std::this_thread::sleep_for(std::chrono::seconds(40));
+        m_send_manager(m_min_heap,m_heap_mutex,m_connect.m_map_mutex ,get_sock_func);
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
 }

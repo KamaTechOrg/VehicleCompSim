@@ -158,11 +158,7 @@ int Socket::recv(void *data, size_t len) const
     }
     else
     {
-        memcpy(data, buf, std::min(len, static_cast<size_t>(status)));
-        if (status < static_cast<int>(len))
-        {
-            static_cast<char *>(data)[status] = '!';
-        }
+        memcpy(data, buf, len);
     }
     return status;
 }

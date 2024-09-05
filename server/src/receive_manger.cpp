@@ -90,22 +90,22 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
     fd_set readfds;
     char buffer[MAXRECV];
 
-    std::unique_lock<std::mutex> lock(m_map_mutex);
+    std::unique_lock<std::mutex> map_lock(m_map_mutex);
 
     while (m_connections.empty())
     {
-        m_condition.wait(lock);
+        m_condition.wait(map_lock);
     }
-    lock.unlock();
+    map_lock.unlock();
 
     while (true)
     {
         reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
         print_arr();
 
-        lock.lock();
+        map_lock.lock();
         insert_fd(readfds, max_sd, m_connections);
-        lock.unlock();
+        map_lock.unlock();
 
         activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
         if ((activity < 0) && (errno != EINTR))
@@ -114,7 +114,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             break;
         }
 
-        lock.lock();
+        map_lock.lock();
         for (auto it = m_connections.begin(); it != m_connections.end();)
         {
             sd = it->second;
@@ -153,6 +153,6 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             }
             ++it;
         }
-        lock.unlock();
+        map_lock.unlock();
     }
 }
