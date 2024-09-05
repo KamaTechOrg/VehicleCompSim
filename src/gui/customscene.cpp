@@ -6,7 +6,6 @@
 #include <QJsonDocument>
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
-#include "popupdialog.h"
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
