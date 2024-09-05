@@ -30,6 +30,14 @@ MainWindow::MainWindow(QWidget* parent)
     m_mainLayout->addLayout(m_topLayout);
     setCentralWidget(mainWidget);
 
+    // Create a new toolbar for the right side
+    rightToolBar = new QToolBar("popup", this);
+    rightToolBar->setFixedWidth(150);
+    addToolBar(Qt::RightToolBarArea, rightToolBar);
+    m_scene->rightToolBar = rightToolBar;
+    m_popupDialog = new PopupDialog(rightToolBar);
+    m_scene->popupDialog = m_popupDialog;
+
     auto toolBar = addToolBar("Tools");
     toolBar->addAction( "Background", [this] { background_Layout(); });
     toolBar->addAction( "Save", [this] { saveLayout(); });
@@ -57,11 +65,14 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
 
-void MainWindow::setupRunService() {
+void MainWindow::setupRunService()
+{
     runService.setScene(m_scene);
 
-    startBtn = new QPushButton("Start", m_toolBar);
-    stopBtn = new QPushButton("Stop", m_toolBar);
+    startBtn = new QPushButton("start", m_toolBar);
+    m_toolBar->addWidget(startBtn);
+    stopBtn = new QPushButton("stop", m_toolBar);
+    m_toolBar->addWidget(stopBtn);
     timer = new QTimeEdit(m_toolBar);
     timer->setDisplayFormat("hh:mm:ss");
     timer->setFixedSize(120, 30);

@@ -4,8 +4,10 @@
 #include "../gui/customscene.h"
 #include <QProcess>
 #include <future>
-#include <minwindef.h>
 
+#ifdef _WIN32
+#include <minwindef.h>
+#endif
 
 class RunService
 {

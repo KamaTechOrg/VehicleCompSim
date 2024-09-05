@@ -33,16 +33,16 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
 }
 
 void WebSocketClient::setupSslConfiguration() {
-    m_sslConfiguration = QSslConfiguration::defaultConfiguration();
-    m_sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
-    m_webSocket.setSslConfiguration(m_sslConfiguration);
+    // m_sslConfiguration = QSslConfiguration::defaultConfiguration();
+    // m_sslConfiguration.setPeerVerifyMode(QSslSocket::VerifyNone);
+    // m_webSocket.setSslConfiguration(m_sslConfiguration);
 }
 void WebSocketClient::connectToServer()
 {
     if (m_debug)
         std::cout << "Attempting to connect to server..." << std::endl;
 
-    m_webSocket.setSslConfiguration(m_sslConfiguration);
+    // m_webSocket.setSslConfiguration(m_sslConfiguration);
     m_webSocket.open(m_url);
 }
 

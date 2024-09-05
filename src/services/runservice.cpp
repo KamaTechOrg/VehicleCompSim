@@ -1,8 +1,7 @@
 #include "runservice.h"
 #include <thread>
-//#include <direct.h>
-#include "../include/VehicleCompSim/utils/processControls.h"
-#include "../include/VehicleCompSim/utils/createDump.h"
+#include "processControls.h"
+#include "createDump.h"
 
 
 int RunService::RunControllData::RunControllCounter = 0;
@@ -24,8 +23,6 @@ void RunService::setScene(CustomScene *_scene)
 void RunService::start()
 {
     isRunning = true;
-//    runBuildAndExecute();
-
     extarctSensorsFromScene();
 
     compile();
@@ -114,34 +111,12 @@ void RunService::extarctSensorsFromScene()
         }
     }
 }
-void RunService::runAndBuildServer() {
-    auto process = processInit("");
-    auto process_ptr = process.get();
-
-    QObject::connect(process_ptr, &QProcess::errorOccurred, [process_ptr, this](QProcess::ProcessError error){
-        this->runControl.isErrorAccure = true;
-    });
-
-    QObject::connect(process_ptr, &QProcess::finished, [process_ptr, this](int exitCode, QProcess::ExitStatus exitStatus){
-        if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-            qDebug() << "Command finished successfully";
-        } else {
-            qDebug() << "Command failed with exit code" << exitCode;
-        }
-    });
-    runControl.sensorsProcesses.push_back(process);
-
-//    process->start();
-//    process->waitForFinished();
-}
-
 
 void RunService::compile()
 {
     if (runControl.isRunning || sensors.empty()) return;
 
     runControl = RunControllData();
-    runAndBuildServer();
 
     for (auto sensor: sensors)
     {

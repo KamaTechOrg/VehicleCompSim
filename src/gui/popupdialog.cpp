@@ -1,6 +1,6 @@
 #include <QHBoxLayout>
 #include "popupdialog.h"
-#include "VehicleCompSim/utils/CMakeUtils/getBuildAndRunCommands.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 #include "ui_popupdialog.h"
 #include "popupdialog.h"
 #include "items/sensoritem.h" // Include the full definition
