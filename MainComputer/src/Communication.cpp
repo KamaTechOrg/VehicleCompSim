@@ -157,27 +157,6 @@ void Communication::connectToSensor(const int portNumber)
         closesocket(sensorSock);
         cleanupWinsock();
     }).detach();
-
-
-    //while (true) {
-    //    int valread = recv(sensorSock, buffer, sizeof(buffer) - 1, 0);
-    //    if (valread > 0) {
-    //        buffer[valread] = '\0'; // Null-terminate the received data
-    //        qInfo() << "Received: " << buffer;
-    //    }
-    //    else if (valread == 0) {
-    //        qInfo() << "Connection closed by server.";
-    //        break;
-    //    }
-    //    else {
-    //        qWarning() << "Receive failed: " << WSAGetLastError();
-    //        break;
-    //    }
-    //}
-
-    // Cleanup
-   // closesocket(sensorSock);
-   // cleanupWinsock();
 }
 
 std::string Communication::getMessageFromQueue()
