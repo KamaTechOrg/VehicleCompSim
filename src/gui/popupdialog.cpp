@@ -19,48 +19,70 @@ void PopupDialog::showContentInRightToolbar() {
 
     Button1 = new QPushButton("ID", rightToolBar);
     Button1->setFixedSize(150, 50);
+    Button1->setStyleSheet("background-color: #DDDDDD;");
+
 
     Button2 = new QPushButton("NAME", rightToolBar);
     Button2->setFixedSize(150, 50);
+    Button2->setStyleSheet("background-color: #DDDDDD;");
+
 
     Button3 = new QPushButton("CMAKE PATH", rightToolBar);
     Button3->setFixedSize(150, 50);
+    Button3->setStyleSheet("background-color: #DDDDDD;");
 
-    Button6 = new QPushButton("BuildCommand", rightToolBar);
+    Button6 = new QPushButton("BUILD COMMAND", rightToolBar);
     Button6->setFixedSize(150, 50);
+    Button6->setStyleSheet("background-color: #DDDDDD;");
 
-    Button7 = new QPushButton("RunCommand", rightToolBar);
+    Button7 = new QPushButton("RUN COMMAND", rightToolBar);
     Button7->setFixedSize(150, 50);
+    Button7->setStyleSheet("background-color: #DDDDDD;");
 
-    Button8 = new QPushButton("change", rightToolBar);
+    Button8 = new QPushButton("CHANGE", rightToolBar);
     Button8->setFixedSize(150, 25);
-    Button8->setStyleSheet("background-color: #FF5733;");
+    Button8->setStyleSheet("background-color: #FF5F44;");
 
     inputBox1 = new QLineEdit(this);
     inputBox1->setFixedSize(150, 25);
-    inputBox1->setStyleSheet("background-color: #D3D3D3;");
+    inputBox1->setStyleSheet("background-color: #EEEEEE;");
+    inputBox1->setContentsMargins(3, 0, 0, 0); // Adjust the left margin as needed
+
+
+//    inputBox1->setAlignment(Qt::AlignRight); // You can also use Qt::AlignHCenter for center alignment
+
 
     inputBox2 = new QLineEdit(this);
     inputBox2->setFixedSize(150, 25);
-    inputBox2->setStyleSheet("background-color: #D3D3D3;");
+    inputBox2->setStyleSheet("background-color: #EEEEEE;");
+    inputBox2->setContentsMargins(3, 0, 0, 0);
+
 
     inputBox3 = new QLineEdit(this);
     inputBox3->setFixedSize(150, 25);
-    inputBox3->setStyleSheet("background-color: #D3D3D3;");
+    inputBox3->setStyleSheet("background-color: #EEEEEE;");
+    inputBox3->setContentsMargins(3, 0, 0, 0);
+
 
     inputBox4 = new QLineEdit(this);
     inputBox4->setFixedSize(150, 25);
-    inputBox4->setStyleSheet("background-color: #D3D3D3;");
+    inputBox4->setStyleSheet("background-color: #EEEEEE;");
+    inputBox4->setContentsMargins(3, 0, 0, 0);
+
 
     inputBox5 = new QLineEdit(this);
     inputBox5->setFixedSize(150, 25);
-    inputBox5->setStyleSheet("background-color: #D3D3D3;");
+    inputBox5->setStyleSheet("background-color: #EEEEEE;");
+    inputBox5->setContentsMargins(3, 0, 0, 0);
+
 
     Button4 = new QPushButton("SAVE", rightToolBar);
     Button4->setFixedSize(67, 67);
+    Button4->setStyleSheet("background-color: #DDDDDD;");
 
     Button5 = new QPushButton("CANCEL", rightToolBar);
     Button5->setFixedSize(67, 67);
+    Button5->setStyleSheet("background-color: #DDDDDD;");
 
     buttonContainer = new QWidget(rightToolBar);
     QHBoxLayout* buttonLayout = new QHBoxLayout(buttonContainer);

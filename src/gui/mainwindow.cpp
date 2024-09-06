@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_scene->popupDialog = m_popupDialog;
 
     auto toolBar = addToolBar("Tools");
-    toolBar->addAction( "Background", [this] { background_Layout(); });
+    toolBar->addAction("Background", [this] { background_Layout(); });
     toolBar->addAction( "Save", [this] { saveLayout(); });
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
