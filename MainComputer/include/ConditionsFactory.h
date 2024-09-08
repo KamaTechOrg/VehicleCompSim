@@ -17,7 +17,7 @@
 class ConditionsFactory
 {
 public:
-	std::shared_ptr<ConditionBase> createSimpleCondition(std::string input, std::string conditionType, std::string validationValue);
+	std::shared_ptr<ConditionBase> createSimpleCondition(std::string senderID, std::string conditionType, std::string validationValue);
 	std::shared_ptr<ConditionBase> createCompositeCondition(const std::string& conditionType, const std::shared_ptr<ConditionBase>& lhs, const std::shared_ptr<ConditionBase>& rhs);
 	std::shared_ptr<ConditionBase> createConditionsFromJson(nlohmann::json j);
 

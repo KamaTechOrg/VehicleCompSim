@@ -207,9 +207,21 @@ TEST_CASE("ConditionsFactory Test") {
 
     std::vector<std::string> conditionsTypes = conditionsFactory.getSimpleConditionTypes();
 
-    /*for (const auto& type : conditionsTypes) {
-        std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition("id", type, "value");
-    }*/
+    for (const auto& type : conditionsTypes) {
+
+        std::string senderID = "some_id";
+        std::string validationValue = "some_value";
+
+        std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition(senderID, type, validationValue);
+
+        nlohmann::json expectedJson = {
+            {"type", type},
+            {"senderId", senderID},
+            {"validationValue", validationValue}
+        };
+
+        CHECK(condition->toJson() == expectedJson);
+    }
 }
 
 TEST_CASE("Simple Conditions ToJson Test") {
