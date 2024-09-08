@@ -12,7 +12,7 @@ bool StartsWithCondition::validate(const std::string &senderId, const std::strin
 
 nlohmann::json StartsWithCondition::toJson() const {
     return {
-        {"type", "StartsWithCondition"},
+        {"type", "Starts With"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };

@@ -14,7 +14,7 @@ bool EndsWithCondition::validate(const std::string &senderId, const std::string 
 
 nlohmann::json EndsWithCondition::toJson() const {
     return {
-        {"type", "EndsWithCondition"},
+        {"type", "Ends With"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };

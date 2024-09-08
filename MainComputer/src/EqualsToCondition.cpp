@@ -12,7 +12,7 @@ bool EqualsToCondition::validate(const std::string &senderId, const std::string 
 
 nlohmann::json EqualsToCondition::toJson() const {
     return {
-        {"type", "EqualsToCondition"},
+        {"type", "Equals To"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };

@@ -4,11 +4,11 @@
 #include <QDebug>
 
 std::shared_ptr<ConditionBase> ConditionsFactory::createSimpleCondition(
-	std::string input, std::string conditionType, std::string validationValue)
+	std::string senderID, std::string conditionType, std::string validationValue)
 {
 	auto it = _simpleConditionsMap.find(conditionType);
 	if (it != _simpleConditionsMap.end()) {
-		return it->second(input, validationValue);
+		return it->second(senderID, validationValue);
 	}
 	else {
 		throw std::invalid_argument("condition type: " + conditionType + " is not an option");
@@ -22,14 +22,14 @@ std::shared_ptr<ConditionBase> ConditionsFactory::createCompositeCondition(const
 		return it->second(lhs, rhs);
 	}
 	else {
-		return nullptr;
+		throw std::invalid_argument("condition type: " + conditionType + " is not an option");
 	}
 }
 
 std::shared_ptr<ConditionBase> ConditionsFactory::createConditionsFromJson(nlohmann::json j)
 {
 	try {
-		if (j["type"] == "AndCondition" || j["type"] == "OrCondition") {
+		if (j["type"] == "And" || j["type"] == "Or") {
 			return createCompositeCondition(j["type"], createConditionsFromJson(j["lhs"]), createConditionsFromJson(j["rhs"]));
 		}
 		else {
@@ -46,6 +46,16 @@ std::vector<std::string> ConditionsFactory::getSimpleConditionTypes()
 	std::vector<std::string> types;
 
 	for (const auto& pair : _simpleConditionsMap)
+		types.push_back(pair.first);
+
+	return types;
+}
+
+std::vector<std::string> ConditionsFactory::getCompositeConditionTypes()
+{
+	std::vector<std::string> types;
+
+	for (const auto& pair : _compositeConditionsMap)
 		types.push_back(pair.first);
 
 	return types;

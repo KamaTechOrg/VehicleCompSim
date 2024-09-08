@@ -16,7 +16,7 @@ bool AndCondition::validate(const std::string &senderId,
 
 nlohmann::json AndCondition::toJson() const {
     return {
-        {"type", "AndCondition"},
+        {"type", "And"},
         {"lhs", LHS->toJson()},
         {"rhs", RHS->toJson()},
         {"elapsedTime", _elapsedTime.count()}

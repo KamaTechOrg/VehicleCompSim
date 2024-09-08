@@ -11,7 +11,7 @@ public:
     virtual ~SimpleCondition() = default;
 
     virtual bool validate(const std::string &senderId, const std::string &value) const override = 0;
-    nlohmann::json toJson() const override;
+    nlohmann::json toJson() const = 0;
 
 protected:
     std::string senderId;
