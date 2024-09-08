@@ -12,7 +12,7 @@ Gui::Gui() : _editorRunning(false)
 	_statusButton = new QPushButton("Not Running", this);
 
 	connect(_openEditorButton, &QPushButton::clicked, this, &Gui::onOpenEditor);
-	connect(_startStopButton, &QPushButton::clicked, this, &Gui::onStartStopEditor);
+	connect(_startStopButton, &QPushButton::clicked, this, &Gui::onStartStopComputer);
 
 	_buttonLayout->addWidget(_openEditorButton);
 	_buttonLayout->addWidget(_startStopButton);
@@ -42,7 +42,7 @@ void Gui::onOpenEditor()
 	editor.show();
 }
 
-void Gui::onStartStopEditor()
+void Gui::onStartStopComputer()
 {
 	if (manager.isRunning())
 	{

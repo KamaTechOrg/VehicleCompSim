@@ -1,8 +1,9 @@
 #include <QApplication>
 
-#include "Window.h"
+#include "Editor.h"
 #include "Gui.h"
 
+#define MAIN_CPP
 
 int main(int argv, char* args[])
 {

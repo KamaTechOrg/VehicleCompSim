@@ -5,6 +5,8 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QLabel>
+
 
 #include "ConditionLayoutBase.h"
 
@@ -22,12 +24,12 @@ signals:
 	void requestDelete(ConditionLayoutBase* layout);
 
 private:
-	QHBoxLayout*	_layout;
-	QComboBox*		_inputSource;
-	QComboBox*		_conditionType;
-	QLineEdit*		_validationValue;
-	QLineEdit*      _messageFrom;
-	QPushButton*	_deleteButton;
+	QHBoxLayout* _layout;
+	QComboBox* _inputSource;
+	QComboBox* _conditionType;
+	QLineEdit* _validationValue;
+	QLabel* _messageFrom;
+	QPushButton* _deleteButton;
 
 
 	void setBorderColor(QComboBox* comboBox, bool hasError);

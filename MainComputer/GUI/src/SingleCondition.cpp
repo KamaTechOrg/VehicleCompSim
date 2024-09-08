@@ -12,8 +12,7 @@ SingleCondition::SingleCondition()
 {
 	_layout = new QHBoxLayout;
 
-	_messageFrom = new QLineEdit();
-	_messageFrom->setPlaceholderText("message from");
+	_messageFrom = new QLabel(QString("message from"));
 	_layout->addWidget(_messageFrom);
 
 	_inputSource = new QComboBox();
@@ -27,7 +26,7 @@ SingleCondition::SingleCondition()
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
-	std::vector<std::string> conditionTypes = ConditionsFactory().getConditionTypes();
+	std::vector<std::string> conditionTypes = ConditionsFactory().getSimpleConditionTypes();
 	for (const auto& type : conditionTypes)
 		_conditionType->addItem(QString(type.c_str()));
 
@@ -41,10 +40,10 @@ SingleCondition::SingleCondition()
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
 	_layout->addWidget(_deleteButton);
-	
+
 	connect(_deleteButton, &QPushButton::clicked, this, [this]() {
 		emit requestDelete(this);
-	});
+		});
 
 	_layout->addStretch(1);
 	addLayout(_layout);
@@ -68,7 +67,7 @@ SingleCondition::~SingleCondition()
 		delete _layout;
 }
 
-std::string to_string(const QString &qstr) {
+std::string to_string(const QString& qstr) {
 	return qstr.toStdString();
 }
 
@@ -96,7 +95,7 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 		return nullptr;
 	}
 
-	return ConditionsFactory().createCondition(input, conditionType, validationValue);
+	return ConditionsFactory().createSimpleCondition(input, conditionType, validationValue);
 }
 
 

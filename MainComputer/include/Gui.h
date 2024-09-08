@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include "ConditionsEditor.h"
 #include "ExplorerBox.h"
-#include "Window.h"
+#include "Editor.h"
 #include "ConditionsManager.h"
 
 
@@ -21,7 +21,7 @@ public:
 
 private slots:
 	void onOpenEditor();
-	void onStartStopEditor();
+	void onStartStopComputer();
 
 private:
 	QHBoxLayout* _mainLayout;
@@ -30,6 +30,6 @@ private:
 	QPushButton* _startStopButton;
 	QPushButton* _statusButton;
 	bool _editorRunning;
-	Window editor;
+	Editor editor;
 	ConditionsManager manager;
 };

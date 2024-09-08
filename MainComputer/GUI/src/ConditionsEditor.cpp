@@ -3,6 +3,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "constants.h"
+#include "conditionsManager.h"
+
 ConditionsEditor::ConditionsEditor()
     : QGroupBox("Editor")
 {
@@ -25,33 +28,46 @@ ConditionsEditor::ConditionsEditor()
 
     resize(350, 200);
 
+    // load from JSON file (if exists) the current conditions state
+    loadDataFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
 void ConditionsEditor::save()
 {
+    // get conditions from _conditionGroup
     std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->data();
 
-    if (conditionsTree == nullptr) {
+    if (conditionsTree == nullptr)
         return;
     }
 
-    std::string filename = "conditions.json";
-   // std::string filename = "C:/Windows/conditions.json"; 
+    // get action (that will be executed if conditon were validated at some point)
+    std::shared_ptr<Action> action = _thenGroupBox->data();
 
-    std::ofstream file(filename);
-    if (!file.is_open()) {
+    if (action == nullptr)
+        return;
+
+    // save both conditions and action to a json file
+    std::string jsonFileName = constants::CONDITIONS_JSON_FILE_NAME;
+
+    std::ofstream jsonFile(jsonFileName);
+    if (!jsonFile.is_open()) {
         showSaveFeedback(false);
-        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(filename));
+        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(jsonFileName));
         return;
     }
 
-    nlohmann::json j;
-    j = conditionsTree->toJson();
-    
-   
-    file << j.dump(4);
-    file.close();
+    nlohmann::json jsonData;
+
+    jsonData["conditions"] = conditionsTree->toJson();
+    jsonData["action"] = action->toJson();
+
+    jsonFile << jsonData.dump(4);
+    jsonFile.close();
     showSaveFeedback(true);
+
+    // get the "backend" main computer to reload again the conditions from the saved JSON file
+    ConditionsManager().loadFromJson(jsonFileName);
 }
 
 void ConditionsEditor::showSaveFeedback(bool success)
@@ -68,6 +84,19 @@ void ConditionsEditor::showSaveFeedback(bool success)
         });
 }
 
+void ConditionsEditor::loadDataFromJson(const std::string& filename)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+        return; // in this case, we just don't load anything
+
+    nlohmann::json jsonData;
+    file >> jsonData;
+    file.close();
+
     /*
-    * TODO: ConditionsManager.loadFromJson();
+    * TODO: If we did found an existing JSON file.
+    * then we need to load it's data,
+    * and set the initial input in the conditins GUI to be the data from the file
     */
+}
