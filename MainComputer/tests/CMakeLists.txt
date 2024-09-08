@@ -44,3 +44,5 @@ set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 target_link_libraries(tests PRIVATE
     Qt6::Core
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")

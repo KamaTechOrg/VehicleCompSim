@@ -1,5 +1,3 @@
-#define DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS 
-
 #include <memory>
 #include <chrono>
 
@@ -341,6 +339,63 @@ TEST_CASE("ConditionsFactory Test") {
 
                     CHECK(compositeCondition->toJson() == expectedJson);
                 }
+            }
+        }
+    }
+}
+
+TEST_CASE("ConditionsFactory Failure Test") {
+    ConditionsFactory conditionsFactory;
+
+    SUBCASE("Simple Conditions") {
+        std::string invalidConditionType = "ABC invalid type XYZ";
+        std::string senderID = "some_id";
+        std::string validationValue = "some_value";
+
+        try {
+            conditionsFactory.createSimpleCondition(senderID, invalidConditionType, validationValue);
+            FAIL("Expected exception was not thrown");  // If no exception, fail the test
+        }
+        catch (const std::invalid_argument& e) {
+            // Assert the exception message
+            CHECK(std::string(e.what()) == "condition type: " + invalidConditionType + " is not an option");
+        }
+    }
+
+    SUBCASE("Composite Conditions") {
+        std::string invalidConditionType = "ABC invalid type XYZ";
+
+        std::vector<std::string> simpleConditionsTypes = conditionsFactory.getSimpleConditionTypes();
+        std::string senderID = "some_id";
+        std::string validationValue = "some_value";
+
+        std::shared_ptr<ConditionBase> simpleCondition_1 =
+            conditionsFactory.createSimpleCondition(senderID, simpleConditionsTypes.at(0), validationValue);
+        std::shared_ptr<ConditionBase> simpleCondition_2 =
+            conditionsFactory.createSimpleCondition(senderID, simpleConditionsTypes.at(1), validationValue);;
+
+        try {
+            conditionsFactory.createCompositeCondition(invalidConditionType, simpleCondition_1, simpleCondition_2);
+            FAIL("Expected exception was not thrown");  // If no exception, fail the test
+        }
+        catch (const std::invalid_argument& e) {
+            // Assert the exception message
+            CHECK(std::string(e.what()) == "condition type: " + invalidConditionType + " is not an option");
+        }
+    }
+
+    SUBCASE("Check Composite Condition With nullptr Sub-conditions") {
+        std::shared_ptr<ConditionBase> nullCondition = nullptr;
+        std::vector<std::string> compositeConditionsTypes = conditionsFactory.getCompositeConditionTypes();
+
+        for (const auto& compositeConditionType : compositeConditionsTypes) {
+            try {
+                conditionsFactory.createCompositeCondition(compositeConditionType, nullCondition, nullCondition);
+                FAIL("Expected exception was not thrown");  // If no exception, fail the test
+            }
+            catch (const std::runtime_error& e) {
+                // Assert the exception message
+                CHECK(std::string(e.what()) == "One or more arguments were nullptr");
             }
         }
     }

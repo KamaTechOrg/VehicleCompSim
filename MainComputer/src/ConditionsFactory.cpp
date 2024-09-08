@@ -22,7 +22,7 @@ std::shared_ptr<ConditionBase> ConditionsFactory::createCompositeCondition(const
 		return it->second(lhs, rhs);
 	}
 	else {
-		return nullptr;
+		throw std::invalid_argument("condition type: " + conditionType + " is not an option");
 	}
 }
 
