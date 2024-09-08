@@ -169,10 +169,10 @@ TEST_CASE("Nested Composite Conditions") {
 TEST_CASE("Performance Test") {
     const std::string senderId = "testSender";
     const std::chrono::milliseconds elapsedTime(1);
-    const int NUM_CONDITIONS = 1000;
+    const int NUM_OF_CONDITIONS = 1000;
     std::vector<std::shared_ptr<ConditionBase>> conditions;
 
-    for (int i = 0; i < NUM_CONDITIONS; ++i) {
+    for (int i = 0; i < NUM_OF_CONDITIONS; ++i) {
         conditions.push_back(std::make_shared<ContainsCondition>(
             senderId, std::to_string(i)));
     }
@@ -197,4 +197,8 @@ TEST_CASE("Performance Test") {
         CHECK(duration.count() < 1000);
         CHECK(result);
     }
+}
+
+TEST_CASE("ConditionsFactory test") {
+
 }

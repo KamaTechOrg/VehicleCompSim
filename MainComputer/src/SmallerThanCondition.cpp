@@ -20,7 +20,7 @@ bool SmallerThanCondition::validate(const std::string &senderId, const std::stri
 
 nlohmann::json SmallerThanCondition::toJson() const {
     return {
-        {"type", "SmallerThanCondition"},
+        {"type", "Smaller Than"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };

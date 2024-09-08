@@ -25,22 +25,22 @@ public:
 
 private:
 	inline static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>(const std::string&, const std::string&)>> _simpleConditionsMap = {
-		{"GreaterThanCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Greater Than", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<GreaterThanCondition>(input, validationValue);
 		}},
-		{"SmallerThanCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Smaller Than", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<SmallerThanCondition>(input, validationValue);
 		}},
-		{"EqualsToCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Equals To", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<EqualsToCondition>(input, validationValue);
 		}},
-		{"StartsWithCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Starts With", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<StartsWithCondition>(input, validationValue);
 		}},
-		{"EndsWithCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Ends With", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<EndsWithCondition>(input, validationValue);
 		}},
-		{"ContainsCondition", [](const std::string& input, const std::string& validationValue) {
+		{"Contains", [](const std::string& input, const std::string& validationValue) {
 			return std::make_shared<ContainsCondition>(input, validationValue);
 		}}
 	};

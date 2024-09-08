@@ -12,7 +12,7 @@ bool ContainsCondition::validate(const std::string &senderId, const std::string 
 
 nlohmann::json ContainsCondition::toJson() const {
     return {
-        {"type", "ContainsCondition"},
+        {"type", "Contains"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };
