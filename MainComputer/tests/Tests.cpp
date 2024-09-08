@@ -207,7 +207,7 @@ TEST_CASE("Simple Conditions ToJson Test") {
 
     SUBCASE("Equals To toJson() method") {
         EqualsToCondition cond(senderID, validationValue);
-        
+
         nlohmann::json expectedJson = {
             {"type", "Equals To"},
             {"senderId", senderID},
@@ -219,7 +219,7 @@ TEST_CASE("Simple Conditions ToJson Test") {
 
     SUBCASE("Greater Than toJson() method") {
         GreaterThanCondition cond(senderID, validationValue);
-        
+
         nlohmann::json expectedJson = {
             {"type", "Greater Than"},
             {"senderId", senderID},
@@ -267,7 +267,7 @@ TEST_CASE("Simple Conditions ToJson Test") {
 
     SUBCASE("Contains toJson() method") {
         ContainsCondition cond(senderID, validationValue);
-        
+
         nlohmann::json expectedJson = {
         {"type", "Contains"},
         {"senderId", senderID},

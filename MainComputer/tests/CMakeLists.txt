@@ -12,8 +12,8 @@ add_executable(tests ${TEST_FILES})
 
 # Set include directories
 target_include_directories(tests PRIVATE 
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/resources
+    ${CMAKE_SOURCE_DIR}/MainComputer/include
+    ${CMAKE_SOURCE_DIR}/MainComputer/resources
     ${CMAKE_CURRENT_SOURCE_DIR} 
 )
 
