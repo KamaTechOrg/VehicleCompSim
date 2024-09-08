@@ -22,6 +22,8 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     connect(&m_webSocket, &QWebSocket::connected, this, &WebSocketClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &WebSocketClient::onDisconnected);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
+    connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::errorOccurred),
+            this, &WebSocketClient::onError);
 
     m_reconnectTimer = new QTimer(this);
     connect(m_reconnectTimer, &QTimer::timeout, this, &WebSocketClient::attemptReconnection);
@@ -33,20 +35,30 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     connectToServer();
 }
 
-
 void WebSocketClient::connectToServer()
 {
     if (m_debug)
         qDebug() << "Attempting to connect to server...";
 
-    // m_webSocket.setSslConfiguration(m_sslConfiguration);
     m_webSocket.open(m_url);
 }
 
-void WebSocketClient::onConnected() {
-    if (m_debug)
-        qDebug() << "WebSocket connected.";
+void WebSocketClient::onError(QAbstractSocket::SocketError error)
+{
+    if (m_debug) {
+        qDebug() << "WebSocket error:" << error << m_webSocket.errorString();
+        qDebug() << "Current URL:" << m_webSocket.requestUrl().toString();
+        qDebug() << "Current state:" << m_webSocket.state();        
+    }
 
+    emit errorOccurred(m_webSocket.errorString());
+}
+
+void WebSocketClient::onConnected() {
+    if (m_debug){
+        qDebug() << "WebSocket connected successfully";
+        qDebug() << "Connected URL:" << m_webSocket.requestUrl().toString();
+    }
     // Ensure the signal is connected only once
     disconnect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
@@ -59,11 +71,11 @@ void WebSocketClient::onDisconnected()
     if (m_debug)
         qDebug() << "WebSocket disconnected.";
 
-    emit connectionStatusChanged(false);
     emit closed();
 
     // Start reconnection attempts
-    m_reconnectTimer->start(5000);  // Try to reconnect every 5 seconds
+    m_reconnectTimer->start(10000);  // Try to reconnect every 10 seconds
+    emit connectionStatusChanged(false);
 }
 
 void WebSocketClient::attemptReconnection()

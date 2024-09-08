@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QWebSocket>
+#include <QNetworkReply>
 #include <QSettings>
 #include <QUrl>
 #include <QTimer>
@@ -25,7 +26,7 @@ class WebSocketClient : public QObject, public Observer
 {
     Q_OBJECT
 public:
-    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://localhost:8765")), bool debug = true);
+    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://165.232.123.144:8080")), bool debug = true);
 
     WebSocketClient(const WebSocketClient&) = delete;
     WebSocketClient& operator=(const WebSocketClient&) = delete;
@@ -40,21 +41,22 @@ public:
 
     void sendMessage(const QJsonObject &message);
     void addActionHandler(const QString& action, std::unique_ptr<IActionHandler> handler);
-    
+
 Q_SIGNALS:
     void closed();
     void connectionStatusChanged(bool connected);
-
+    void errorOccurred(const QString &errorString);
 
 private Q_SLOTS:
     void onConnected();
     void onDisconnected();
     void onTextMessageReceived(const QString &message);
     void attemptReconnection();
+    void onError(QAbstractSocket::SocketError error);
 
 private:
     explicit WebSocketClient(const QUrl &url, bool debug, QObject *parent = nullptr);
-    
+
     void connectToServer();
 
     std::unordered_map<QString, std::unique_ptr<IActionHandler>> m_actionHandlers;
