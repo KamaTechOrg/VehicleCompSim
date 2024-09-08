@@ -7,6 +7,7 @@
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
 #include "popupdialog.h"
+#include "client/websocketclient.h"
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
@@ -250,9 +251,10 @@ void CustomScene::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
 void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
     if (event->mimeData()->hasText()) {
         QString itemType = event->mimeData()->text();
-        BaseItem* item = nullptr;
+        SerializableItem* item = nullptr;
         if (itemType == "SensorItem") {
             SensorItem* sensorItem = new SensorItem();
+            sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
             PopupDialog popup(sensorItem);
             popup.exec();
             if(popup.result() == QDialog::Accepted && sensorItem->isInitialized()){
@@ -267,9 +269,10 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             item = new ConnectorItem();
             m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
         }
-        if (item) {
-            item->setPos(event->scenePos());
-            addItemToScene(item);
+        if (item && dynamic_cast<BaseItem*>(item)) {
+            BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
+            baseItem->setPos(event->scenePos());
+            addItemToScene(baseItem);
             event->setAccepted(true);
         } else {
             event->setAccepted(false);
