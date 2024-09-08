@@ -1,12 +1,10 @@
 #include "mainwindow.h"
-#include "customwidget.h"
 #include <QGraphicsView>
 #include <QToolBar>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
 #include <QFileDialog>
-#include "client/websocketclient.h"
 #include <QGraphicsItem>
 #include <QWidget>
 #include <QPushButton>
@@ -16,18 +14,36 @@
 #include <bson/bson.h>
 #include <QHBoxLayout>
 
+#include "customwidget.h"
+#include "client/websocketclient.h"
+#include "client/RunHandler.h"
+
 MainWindow::MainWindow(QWidget* parent)
-        : QMainWindow(parent), m_scene(new CustomScene()) {
+        : QMainWindow(parent), 
+        m_scene(new CustomScene()),
+        m_runService(std::make_shared<RunService>()) {
     m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
 
     auto mainWidget = new QWidget(this);
-    m_mainLayout = new QVBoxLayout(mainWidget);
+    m_mainLayout = new QVBoxLayout();
     m_topLayout = new QHBoxLayout();
     m_topLayout->addWidget(m_toolBar);
     m_topLayout->addWidget(m_view);
     m_mainLayout->addLayout(m_topLayout);
+
+    // Create a frame to wrap the main layout
+    mainFrame = new QFrame(this);
+    mainFrame->setFrameShape(QFrame::Box);
+    mainFrame->setLineWidth(2);
+    mainFrame->setStyleSheet("QFrame { border: 2px solid black; }");
+    mainFrame->setLayout(m_mainLayout);
+
+    // Set the frame as the central widget
+    auto centralWidgetLayout = new QVBoxLayout(mainWidget);
+    centralWidgetLayout->addWidget(mainFrame);
+    mainWidget->setLayout(centralWidgetLayout);
     setCentralWidget(mainWidget);
 
     auto toolBar = addToolBar("Tools");
@@ -54,12 +70,24 @@ void MainWindow::setupToolBar() {
     auto busWidget = new CustomWidget("ConnectorItem", this);
     m_toolBar->addWidget(busWidget);
 
+    // Initialize the connection status label
+    m_connectionStatusLabel = new QLabel("Disconnected", this);
+    m_connectionStatusLabel->setStyleSheet("QLabel { color : red; }");
+    m_connectionStatusLabel->setAlignment(Qt::AlignCenter);
+
+    // Create a layout for the connection status
+    QVBoxLayout* connectionStatusLayout = new QVBoxLayout();
+    connectionStatusLayout->addWidget(m_connectionStatusLabel);
+
+    // Add the connection status label to the toolbar
+    m_toolBar->addWidget(m_connectionStatusLabel);
+
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
 
 void MainWindow::setupRunService()
 {
-    runService.setScene(m_scene);
+    m_runService->setScene(m_scene);
 
     startBtn = new QPushButton("Start", m_toolBar);
     stopBtn = new QPushButton("Stop", m_toolBar);
@@ -81,11 +109,19 @@ void MainWindow::setupRunService()
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
         this->onRunStart();
-        this->runService.start([this] { this->onRunEnd(); });
+        this->m_runService->start([this] { this->onRunEnd(); });
+        WebSocketClient::getInstance().sendMessage(QJsonObject{
+            {"action", "run"},
+            {"command", "start"}
+        });
     });
 
     QObject::connect(stopBtn, &QPushButton::clicked, [this] {
-        this->runService.stop();
+        this->m_runService->stop();
+        WebSocketClient::getInstance().sendMessage(QJsonObject{
+            {"action", "run"},
+            {"command", "stop"}
+        });
     });
 
     QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
@@ -93,14 +129,30 @@ void MainWindow::setupRunService()
         t = t * 60 + timer->time().minute();
         t = t * 60 + timer->time().second();
 
-        this->runService.setTimer(t);
+        this->m_runService->setTimer(t);
     });
+
+    WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
+        [this] { 
+            this->onRunStart();
+            this->m_runService->start([this] { this->onRunEnd(); });
+         },
+        [this] { this->m_runService->stop(); }
+    ));
 }
 
-void MainWindow::onConnectionStatusChanged(bool connected)
-{
-  
+void MainWindow::onConnectionStatusChanged(bool connected) {
+    if (connected) {
+        m_connectionStatusLabel->setText("Connected");
+        m_connectionStatusLabel->setStyleSheet("QLabel { color : green; }");
+        mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
+    } else {
+        m_connectionStatusLabel->setText("Disconnected");
+        m_connectionStatusLabel->setStyleSheet("QLabel { color : red; }");
+        mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
+    }
 }
+
 
 void MainWindow::onRunStart()
 {

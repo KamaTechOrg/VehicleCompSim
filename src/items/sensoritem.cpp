@@ -84,6 +84,11 @@ QString SensorItem::getName() const {
     return name;
 }
 
+QString SensorItem::getOwnerID() const
+{
+    return ownerID;
+}
+
 QString SensorItem::getBuildCommand() const {
     return buildCommand;
 }
@@ -108,6 +113,11 @@ bool SensorItem::isUseCmakePath() const
 
 void SensorItem::setName(const QString& name) {
     this->name = name;
+}
+
+void SensorItem::setOwnerID(const QString& ownerID)
+{
+    this->ownerID = ownerID;
 }
 
 void SensorItem::setBuildCommand(const QString& buildCommand) {
@@ -148,10 +158,12 @@ void SensorItem::updateItem()
         if(tempSensorItem->isInitialized()){
             priority = tempSensorItem->getPriority();
             name = tempSensorItem->getName();
+            ownerID = tempSensorItem->getOwnerID();
             buildCommand = tempSensorItem->getBuildCommand();
             runCommand = tempSensorItem->getRunCommand();
             cmakePath = tempSensorItem->getCmakePath();
             useCmakePath = tempSensorItem->isUseCmakePath();
+            notifyItemModified();
         }
         else{
             QMessageBox::StandardButton reply;
@@ -160,6 +172,7 @@ void SensorItem::updateItem()
                 QMessageBox::Yes|QMessageBox::No);
             if (reply == QMessageBox::Yes) {
                 removeItem();
+                notifyItemDeleted();
             }
         }
     }
@@ -176,4 +189,29 @@ void SensorItem::hideButtons()
 {
     m_closeProxy->setVisible(false);
     m_updateProxy->setVisible(false);
+}
+
+QJsonObject SensorItem::serialize() const {
+    QJsonObject itemData = BaseItem::serialize();
+    itemData["priority"] = priority;
+    itemData["name"] = name;
+    itemData["ownerID"] = ownerID;
+    itemData["buildCommand"] = buildCommand;
+    itemData["runCommand"] = runCommand;
+    itemData["cmakePath"] = cmakePath;
+    itemData["useCmakePath"] = useCmakePath;
+    itemData["excludeFromProject"] = excludeFromProject;
+    return itemData;
+}
+
+void SensorItem::deserialize(const QJsonObject &itemData) {
+    BaseItem::deserialize(itemData);
+    priority = itemData["priority"].toString();
+    name = itemData["name"].toString();
+    ownerID = itemData["ownerID"].toString();
+    buildCommand = itemData["buildCommand"].toString();
+    runCommand = itemData["runCommand"].toString();
+    cmakePath = itemData["cmakePath"].toString();
+    useCmakePath = itemData["useCmakePath"].toBool();
+    excludeFromProject = itemData["excludeFromProject"].toBool();
 }
