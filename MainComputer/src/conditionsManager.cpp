@@ -10,8 +10,6 @@
 #include <QtDebug>
 #include <regex> 
 #include "json.hpp"
-#include "constants.h"
-#include <QtDebug>
 
 std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
 std::unordered_map<std::string, Action> ConditionsManager::actions;
@@ -22,13 +20,13 @@ ConditionsManager::ConditionsManager()
     loadFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
-void ConditionsManager::addAction(const std::string &id, const Action &action)
+void ConditionsManager::addAction(const std::string& id, const Action& action)
 {
     actions[id] = action;
 }
 
 // Helper function to parse messages
-std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string &message)
+std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string& message)
 {
     // Assuming the message format is "ID:<ID_VALUE>,VALUE:<VALUE>"
     std::regex messageRegex(R"(ID:(\w+),VALUE:(\w+))");
@@ -81,7 +79,7 @@ void ConditionsManager::run()
         }).detach(); // Detach the thread so it runs independently*/
 }
 
-void ConditionsManager::executeAction(const std::string &id)
+void ConditionsManager::executeAction(const std::string& id)
 {
     auto it = actions.find(id);
     if (it != actions.end()) {
@@ -93,7 +91,6 @@ void ConditionsManager::executeAction(const std::string &id)
     else {
         qWarning() << "No action found for ID:" << id.c_str();
     }
-        }).detach(); // Detach the thread so it runs independently
 }
 
 
@@ -114,7 +111,7 @@ void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
     conditions.push_back(condition);
 }
 
-bool ConditionsManager::validateAll(const std::string &senderId, const std::string &value) const
+bool ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
 {
     for (const auto& condition : conditions) {
         if (condition == nullptr || !condition->validate(senderId, value))
@@ -124,7 +121,7 @@ bool ConditionsManager::validateAll(const std::string &senderId, const std::stri
 }
 
 
-void ConditionsManager::loadFromJson(const std::string &filename)
+void ConditionsManager::loadFromJson(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -137,7 +134,7 @@ void ConditionsManager::loadFromJson(const std::string &filename)
     qInfo() << "JSON file ----- ----- ----- ----- -----\n" << j.dump(4) << "\n----- ----- ----- ----- -----\n";
 
     conditions.clear();
-    actions.clear(); 
+    actions.clear();
 
     addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
 

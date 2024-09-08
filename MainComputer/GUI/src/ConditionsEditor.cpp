@@ -39,7 +39,6 @@ void ConditionsEditor::save()
 
     if (conditionsTree == nullptr)
         return;
-    }
 
     // get action (that will be executed if conditon were validated at some point)
     std::shared_ptr<Action> action = _thenGroupBox->data();
