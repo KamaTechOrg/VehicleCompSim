@@ -11,21 +11,16 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets WebSockets)
 
 qt_standard_project_setup()
 
-# find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-# find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-
-# find_package(Qt6 REQUIRED COMPONENTS WebSockets)
-# find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-# find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+# Define a variable to identify the OS
+if(WIN32)
+    set(OS_NAME "WIN")
+else()
+    set(OS_NAME "LINUX")
+endif()
 
 # Specify the path to the bson library
 set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
-
-# Add the include directory for the bson headers
-include_directories(${BSON_ROOT}/include)
-
-# Add the library directories for the bson library
-link_directories(${BSON_ROOT}/lib/$<IF:$<CONFIG:Debug>,Debug,Release>)
+set(BSON_BUILD "${BSON_ROOT}/lib/${OS_NAME}")
 
 enable_testing()
 
@@ -46,8 +41,11 @@ target_include_directories(ClientApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
 )
 
-# set(BSON_DLL_DEBUG "${BSON_ROOT}/lib/Debug/libbson-1.0.dll")
-# set(BSON_DLL_RELEASE "${BSON_ROOT}/lib/Release/libbson-1.0.dll")
+# Add the include directory for the bson headers
+include_directories(${BSON_ROOT}/include)
+
+# Add the library directories for the bson library
+link_directories(${BSON_BUILD})
 
 # Link libraries
 target_link_libraries(ClientApp PRIVATE
@@ -56,7 +54,7 @@ target_link_libraries(ClientApp PRIVATE
     VehicleCompSimUtils
     VehicleCompSimCore
     services
-    $<IF:$<CONFIG:Debug>,${BSON_ROOT}/lib/Debug/bson-1.0.lib,${BSON_ROOT}/lib/Release/bson-1.0.lib>
+    bson-1.0
 )
 
 # Set properties for Windows
@@ -67,13 +65,6 @@ if(WIN32)
         # VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()
-
-# # Copy BSON DLL to output directory
-# add_custom_command(TARGET ClientApp POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E echo "Attempting to copy BSON DLL..."
-#     COMMAND ${CMAKE_COMMAND} -E copy $<IF:$<CONFIG:Debug>,${BSON_DLL_DEBUG},${BSON_DLL_RELEASE}> $<TARGET_FILE_DIR:ClientApp>
-#     COMMAND ${CMAKE_COMMAND} -E echo "BSON DLL copy command completed."
-# )
 
 # Installation
 include(GNUInstallDirs)
