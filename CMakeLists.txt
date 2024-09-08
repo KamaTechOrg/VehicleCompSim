@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(VehicleCompSim VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -22,6 +26,11 @@ endif()
 set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
 set(BSON_BUILD "${BSON_ROOT}/lib/${OS_NAME}")
 
+# Add the include directory for the bson headers
+include_directories(${BSON_ROOT}/include)
+# Add the library directories for the bson library
+link_directories("${BSON_BUILD}")
+
 enable_testing()
 
 # Add subdirectories
@@ -41,11 +50,8 @@ target_include_directories(ClientApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
 )
 
-# Add the include directory for the bson headers
-include_directories(${BSON_ROOT}/include)
 
-# Add the library directories for the bson library
-link_directories(${BSON_BUILD})
+
 
 # Link libraries
 target_link_libraries(ClientApp PRIVATE
@@ -55,6 +61,7 @@ target_link_libraries(ClientApp PRIVATE
     VehicleCompSimCore
     services
     bson-1.0
+    #bson-static-1.0
 )
 
 # Set properties for Windows
@@ -75,9 +82,9 @@ install(TARGETS ClientApp
 )
 
 # Copy BSON DLL during installation
-install(FILES $<IF:$<CONFIG:Debug>,${BSON_ROOT}/lib/Debug/libbson-1.0.dll,${BSON_ROOT}/lib/Release/libbson-1.0.dll>
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+#install(FILES $<IF:$<CONFIG:Debug>,${BSON_ROOT}/lib/Debug/libbson-1.0.dll,${BSON_ROOT}/lib/Release/libbson-1.0.dll>
+#    DESTINATION ${CMAKE_INSTALL_BINDIR}
+#)
 
 # Generate deploy script
 qt_generate_deploy_app_script(
