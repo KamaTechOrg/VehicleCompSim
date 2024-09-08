@@ -22,6 +22,7 @@ public:
 	std::shared_ptr<ConditionBase> createConditionsFromJson(nlohmann::json j);
 
 	std::vector<std::string> getSimpleConditionTypes();
+	std::vector<std::string> getCompositeConditionTypes();
 
 private:
 	inline static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>(const std::string&, const std::string&)>> _simpleConditionsMap = {

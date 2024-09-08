@@ -5,6 +5,7 @@
 
 #include "doctest.h"
 
+#include "constants.h"
 #include "EqualsToCondition.h"
 #include "AndCondition.h"
 #include "OrCondition.h"
@@ -74,7 +75,7 @@ TEST_CASE("AndCondition Tests") {
         CHECK_FALSE(andCond.validate("wrongSender", "value"));
 
         nlohmann::json expectedJson = {
-            {"type", "AndCondition"},
+            {"type", "And"},
             {"lhs", trueCond1->toJson()},
             {"rhs", trueCond2->toJson()},
             {"elapsedTime", elapsedTime.count()}
@@ -102,7 +103,7 @@ TEST_CASE("OrCondition Tests") {
         CHECK_FALSE(orCond.validate("wrongSender", "hello world"));
 
         nlohmann::json expectedJson = {
-            {"type", "OrCondition"},
+            {"type", "Or"},
             {"lhs", trueCond1->toJson()},
             {"rhs", trueCond2->toJson()},
             {"elapsedTime", elapsedTime.count()}
@@ -282,21 +283,65 @@ TEST_CASE("Simple Conditions ToJson Test") {
 TEST_CASE("ConditionsFactory Test") {
     ConditionsFactory conditionsFactory;
 
-    std::vector<std::string> conditionsTypes = conditionsFactory.getSimpleConditionTypes();
+    SUBCASE("Simple Conditions") {
+        std::vector<std::string> conditionsTypes = conditionsFactory.getSimpleConditionTypes();
 
-    for (const auto& type : conditionsTypes) {
+        for (const auto& type : conditionsTypes) {
 
-        std::string senderID = "some_id";
-        std::string validationValue = "some_value";
+            std::string senderID = "some_id";
+            std::string validationValue = "some_value";
 
-        std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition(senderID, type, validationValue);
+            std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition(senderID, type, validationValue);
 
-        nlohmann::json expectedJson = {
-            {"type", type},
-            {"senderId", senderID},
-            {"validationValue", validationValue}
-        };
+            CHECK(condition != nullptr);
 
-        CHECK(condition->toJson() == expectedJson);
+            nlohmann::json expectedJson = {
+                {"type", type},
+                {"senderId", senderID},
+                {"validationValue", validationValue}
+            };
+
+            CHECK(condition->toJson() == expectedJson);
+        }
+    }
+
+    SUBCASE("Composite Conditions") {
+        std::vector<std::string> compositeConditionsTypes = conditionsFactory.getCompositeConditionTypes();
+        std::vector<std::string> simpleConditionsTypes = conditionsFactory.getSimpleConditionTypes();
+
+        // for all kinds of composite-conditions, create all possible pairs of simple-conditions that it will contain
+        for (const auto& compositeType : compositeConditionsTypes) {
+
+            std::string senderID = "some_id";
+            std::string validationValue = "some_value";
+
+            for (const auto& simpleType_1 : simpleConditionsTypes) {
+
+                auto simpleCondition_1 =
+                    conditionsFactory.createSimpleCondition(senderID, simpleType_1, validationValue);
+
+                for (const auto& simpleType_2 : simpleConditionsTypes) {
+                    auto simpleCondition_2 =
+                        conditionsFactory.createSimpleCondition(senderID, simpleType_2, validationValue);
+
+                    CHECK(simpleCondition_1 != nullptr);
+                    CHECK(simpleCondition_2 != nullptr);
+
+                    auto compositeCondition =
+                        conditionsFactory.createCompositeCondition(compositeType, simpleCondition_1, simpleCondition_2);
+
+                    CHECK(compositeCondition != nullptr);
+
+                    nlohmann::json expectedJson = {
+                    {"type", compositeType},
+                    {"lhs", simpleCondition_1->toJson()},
+                    {"rhs", simpleCondition_2->toJson()},
+                    {"elapsedTime", constants::MAX_ELAPSED_TIME}
+                    };
+
+                    CHECK(compositeCondition->toJson() == expectedJson);
+                }
+            }
+        }
     }
 }

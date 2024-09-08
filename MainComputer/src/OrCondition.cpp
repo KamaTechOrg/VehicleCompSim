@@ -11,7 +11,7 @@ bool OrCondition::validate(const std::string &senderId, const std::string &value
 
 nlohmann::json OrCondition::toJson() const {
     return {
-        {"type", "OrCondition"},
+        {"type", "Or"},
         {"lhs", LHS->toJson()},
         {"rhs", RHS->toJson()},
         {"elapsedTime", _elapsedTime.count()}

@@ -50,3 +50,13 @@ std::vector<std::string> ConditionsFactory::getSimpleConditionTypes()
 
 	return types;
 }
+
+std::vector<std::string> ConditionsFactory::getCompositeConditionTypes()
+{
+	std::vector<std::string> types;
+
+	for (const auto& pair : _compositeConditionsMap)
+		types.push_back(pair.first);
+
+	return types;
+}
