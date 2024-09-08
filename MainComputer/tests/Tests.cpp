@@ -354,10 +354,9 @@ TEST_CASE("ConditionsFactory Failure Test") {
 
         try {
             conditionsFactory.createSimpleCondition(senderID, invalidConditionType, validationValue);
-            FAIL("Expected exception was not thrown");  // If no exception, fail the test
+            FAIL("Expected exception was not thrown");
         }
         catch (const std::invalid_argument& e) {
-            // Assert the exception message
             CHECK(std::string(e.what()) == "condition type: " + invalidConditionType + " is not an option");
         }
     }
@@ -376,7 +375,7 @@ TEST_CASE("ConditionsFactory Failure Test") {
 
         try {
             conditionsFactory.createCompositeCondition(invalidConditionType, simpleCondition_1, simpleCondition_2);
-            FAIL("Expected exception was not thrown");  // If no exception, fail the test
+            FAIL("Expected exception was not thrown");
         }
         catch (const std::invalid_argument& e) {
             // Assert the exception message
@@ -391,10 +390,9 @@ TEST_CASE("ConditionsFactory Failure Test") {
         for (const auto& compositeConditionType : compositeConditionsTypes) {
             try {
                 conditionsFactory.createCompositeCondition(compositeConditionType, nullCondition, nullCondition);
-                FAIL("Expected exception was not thrown");  // If no exception, fail the test
+                FAIL("Expected exception was not thrown");
             }
             catch (const std::runtime_error& e) {
-                // Assert the exception message
                 CHECK(std::string(e.what()) == "One or more arguments were nullptr");
             }
         }
