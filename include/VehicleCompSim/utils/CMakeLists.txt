@@ -21,7 +21,7 @@ target_link_libraries(VehicleCompSimUtils PRIVATE Qt6::Core)
 
 # Link the BSON library to the library target
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(VehicleCompSimUtils PRIVATE "${BSON_ROOT}/lib/Debug/bson-1.0.lib")
+    #target_link_libraries(VehicleCompSimUtils PRIVATE "${BSON_ROOT}/lib/Debug/bson-1.0.lib")
 else()
-    target_link_libraries(VehicleCompSimUtils PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
+    #target_link_libraries(VehicleCompSimUtils PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
 endif()
