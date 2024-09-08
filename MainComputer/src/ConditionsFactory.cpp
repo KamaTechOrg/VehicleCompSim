@@ -29,7 +29,7 @@ std::shared_ptr<ConditionBase> ConditionsFactory::createCompositeCondition(const
 std::shared_ptr<ConditionBase> ConditionsFactory::createConditionsFromJson(nlohmann::json j)
 {
 	try {
-		if (j["type"] == "AndCondition" || j["type"] == "OrCondition") {
+		if (j["type"] == "And" || j["type"] == "Or") {
 			return createCompositeCondition(j["type"], createConditionsFromJson(j["lhs"]), createConditionsFromJson(j["rhs"]));
 		}
 		else {

@@ -1,6 +1,11 @@
 #define DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS 
 
+#include <memory>
+#include <chrono>
+
 #include "doctest.h"
+
+#include "EqualsToCondition.h"
 #include "AndCondition.h"
 #include "OrCondition.h"
 #include "SimpleCondition.h"
@@ -9,9 +14,7 @@
 #include "SmallerThanCondition.h"
 #include "StartsWithCondition.h"
 #include "EndsWithCondition.h"
-#include "EqualsToCondition.h"
-#include <memory>
-#include <chrono>
+#include "ConditionsFactory.h"
 
 TEST_CASE("SimpleCondition Tests") {
     const std::string senderId = "testSender";
@@ -199,6 +202,16 @@ TEST_CASE("Performance Test") {
     }
 }
 
-TEST_CASE("ConditionsFactory test") {
+TEST_CASE("ConditionsFactory Test") {
+    /*ConditionsFactory conditionsFactory;
+
+    std::vector<std::string> conditionsTypes = conditionsFactory.getSimpleConditionTypes();
+
+    for (const auto&type : conditionsTypes) {
+        std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition("id", type, "value");
+    }*/
+}
+
+TEST_CASE("Simple Conditions ToJson Test") {
 
 }

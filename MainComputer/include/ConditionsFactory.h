@@ -46,10 +46,10 @@ private:
 	};
 
 	inline static const std::unordered_map<std::string, std::function<std::shared_ptr<ConditionBase>(const std::shared_ptr<ConditionBase>&, const std::shared_ptr<ConditionBase>&)>> _compositeConditionsMap = {
-		{"AndCondition", [](const std::shared_ptr<ConditionBase>& lhs, const std::shared_ptr<ConditionBase>& rhs) {
+		{"And", [](const std::shared_ptr<ConditionBase>& lhs, const std::shared_ptr<ConditionBase>& rhs) {
 			return std::make_shared<AndCondition>(lhs, rhs);
 		}},
-		{"AndCondition", [](const std::shared_ptr<ConditionBase>& lhs, const std::shared_ptr<ConditionBase>& rhs) {
+		{"Or", [](const std::shared_ptr<ConditionBase>& lhs, const std::shared_ptr<ConditionBase>& rhs) {
 			return std::make_shared<OrCondition>(lhs, rhs);
 		}}
 	};

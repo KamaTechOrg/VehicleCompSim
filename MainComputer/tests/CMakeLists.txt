@@ -1,6 +1,9 @@
 # Define the project name and version
 project(TESTS VERSION 1.0)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Find the test files
 file(GLOB TEST_FILES "*.cpp")
 
