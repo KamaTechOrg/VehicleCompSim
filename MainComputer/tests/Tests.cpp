@@ -203,11 +203,11 @@ TEST_CASE("Performance Test") {
 }
 
 TEST_CASE("ConditionsFactory Test") {
-    /*ConditionsFactory conditionsFactory;
+    ConditionsFactory conditionsFactory;
 
     std::vector<std::string> conditionsTypes = conditionsFactory.getSimpleConditionTypes();
 
-    for (const auto&type : conditionsTypes) {
+    /*for (const auto& type : conditionsTypes) {
         std::shared_ptr<ConditionBase> condition = conditionsFactory.createSimpleCondition("id", type, "value");
     }*/
 }

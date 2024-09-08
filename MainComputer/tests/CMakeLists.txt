@@ -27,7 +27,8 @@ target_sources(tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src/SmallerThanCondition.cpp
     ${CMAKE_SOURCE_DIR}/src/StartsWithCondition.cpp
     ${CMAKE_SOURCE_DIR}/src/EndsWithCondition.cpp
-    ${CMAKE_SOURCE_DIR}/src/EqualsToCondition.cpp)
+    ${CMAKE_SOURCE_DIR}/src/EqualsToCondition.cpp
+    ${CMAKE_SOURCE_DIR}/src/ConditionsFactory.cpp)
 # Set compile definitions for Doctest
 target_compile_definitions(tests PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
 
@@ -40,3 +41,6 @@ add_test(NAME tests COMMAND tests)
 # Set CTest arguments
 set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 
+target_link_libraries(tests PRIVATE
+    Qt6::Core
+)
