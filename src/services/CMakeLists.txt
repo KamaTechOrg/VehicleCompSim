@@ -9,8 +9,8 @@ add_library(services STATIC
 target_include_directories(services PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link external libraries (e.g., Qt)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
-target_link_libraries(services PUBLIC Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets VehicleCompSimUtils)
+find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
+target_link_libraries(services PUBLIC Qt6::Core Qt6::Widgets VehicleCompSimUtils)
 
 # Set include directories
 target_include_directories(services PRIVATE
