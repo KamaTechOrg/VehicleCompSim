@@ -11,6 +11,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Debug)
 
+# Define a variable to identify the OS
+if(WIN32)
+    set(OS_NAME "WIN")
+else()
+    set(OS_NAME "LINUX")
+endif()
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
@@ -21,13 +28,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 # Specify the path to the bson library
 set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
+set(BSON_BUILD "${BSON_ROOT}/lib/${OS_NAME}")
 
 # Add the include directory for the bson headers
 include_directories(${BSON_ROOT}/include)
-
-# Add the library directories for the bson library
-link_directories(${BSON_ROOT}/lib/Debug)
-link_directories(${BSON_ROOT}/lib/Release)
+link_directories(${BSON_BUILD})
 
 enable_testing()
 
@@ -144,13 +149,18 @@ target_link_libraries(ClientApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VE
 target_link_libraries(ServerApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::Network VehicleCompSimUtils services)
 
 # Link the BSON library
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(ClientApp PRIVATE "${BSON_ROOT}/lib/Debug/bson-1.0.lib")
-    target_link_libraries(ServerApp PRIVATE "${BSON_ROOT}/lib/Debug/bson-1.0.lib")
+if(WIN32)
+    target_link_libraries(ClientApp PRIVATE bson-1.0)
+    target_link_libraries(ServerApp PRIVATE bson-1.0)
 else()
-    target_link_libraries(ClientApp PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
-    target_link_libraries(ServerApp PRIVATE "${BSON_ROOT}/lib/Release/bson-1.0.lib")
+    # On Linux, link the shared library or the static library depending on your needs
+    target_link_libraries(ClientApp PRIVATE bson-1.0)  # For shared library
+    target_link_libraries(ServerApp PRIVATE bson-1.0)  # For shared library
+    # or
+    # target_link_libraries(ClientApp PRIVATE bson-static-1.0)  # For static library
+    # target_link_libraries(ServerApp PRIVATE bson-static-1.0)  # For static library
 endif()
+
 
 # Set properties for macOS and iOS
 if(${QT_VERSION} VERSION_LESS 6.1.0)
