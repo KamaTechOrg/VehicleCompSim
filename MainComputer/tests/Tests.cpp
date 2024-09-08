@@ -202,6 +202,83 @@ TEST_CASE("Performance Test") {
     }
 }
 
+TEST_CASE("Simple Conditions ToJson Test") {
+    std::string senderID = "1";
+    std::string validationValue = "some_value";
+
+    SUBCASE("Equals To toJson() method") {
+        EqualsToCondition cond(senderID, validationValue);
+        
+        nlohmann::json expectedJson = {
+            {"type", "Equals To"},
+            {"senderId", senderID},
+            {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+
+    SUBCASE("Greater Than toJson() method") {
+        GreaterThanCondition cond(senderID, validationValue);
+        
+        nlohmann::json expectedJson = {
+            {"type", "Greater Than"},
+            {"senderId", senderID},
+            {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+
+    SUBCASE("Smaller Than toJson() method") {
+        SmallerThanCondition cond(senderID, validationValue);
+
+        nlohmann::json expectedJson = {
+        {"type", "Smaller Than"},
+        {"senderId", senderID},
+        {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+
+    SUBCASE("Starts With toJson() method") {
+        StartsWithCondition cond(senderID, validationValue);
+
+        nlohmann::json expectedJson = {
+        {"type", "Starts With"},
+        {"senderId", senderID},
+        {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+
+    SUBCASE("Ends With toJson() method") {
+        EndsWithCondition cond(senderID, validationValue);
+
+        nlohmann::json expectedJson = {
+        {"type", "Ends With"},
+        {"senderId", senderID},
+        {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+
+    SUBCASE("Contains toJson() method") {
+        ContainsCondition cond(senderID, validationValue);
+        
+        nlohmann::json expectedJson = {
+        {"type", "Contains"},
+        {"senderId", senderID},
+        {"validationValue", validationValue}
+        };
+
+        CHECK(cond.toJson() == expectedJson);
+    }
+}
+
 TEST_CASE("ConditionsFactory Test") {
     ConditionsFactory conditionsFactory;
 
@@ -222,8 +299,4 @@ TEST_CASE("ConditionsFactory Test") {
 
         CHECK(condition->toJson() == expectedJson);
     }
-}
-
-TEST_CASE("Simple Conditions ToJson Test") {
-
 }
