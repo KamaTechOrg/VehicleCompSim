@@ -1,6 +1,7 @@
 #include "sensoritem.h"
 #include <QPainter>
 // #include <QIcon>
+#include <QCheckBox>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
@@ -8,7 +9,10 @@
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 
-    SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent){
+    SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent)
+    , m_updateProxy(new QGraphicsProxyWidget(this))
+    , m_checkBoxProxy(new QGraphicsProxyWidget(this))
+    {
         m_type = ItemType::Sensor;
         m_width = 160;
         m_height = 90;
@@ -21,17 +25,27 @@
         updateButton->setFixedSize(20, 20);
         updateButton->setToolTip("Update Item");
 
-        QGraphicsProxyWidget* updateProxy = new QGraphicsProxyWidget(this);
-        updateProxy->setWidget(updateButton);
-        updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
+        m_updateProxy->setWidget(updateButton);
+        m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
 
         // Connect buttons to their respective slots
         connect(updateButton, &QPushButton::clicked, this, &SensorItem::updateItem);
 
-        m_updateProxy = updateProxy;
-
         hideButtons();
 
+
+        // Create checkbox for excluding from project
+        QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
+        excludeCheckBox->setToolTip("Exclude this sensor from the project");
+        excludeCheckBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
+        excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
+        connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
+            excludeFromProject = state == Qt::Checked;
+            notifyItemModified();
+        });
+
+        m_checkBoxProxy->setWidget(excludeCheckBox);
+        m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
     }
 
     SensorItem::SensorItem(const SensorItem& other)

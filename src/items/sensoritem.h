@@ -45,4 +45,5 @@ private:
     void hideButtons();
 
     QGraphicsProxyWidget* m_updateProxy;
+    QGraphicsProxyWidget* m_checkBoxProxy;
 };
