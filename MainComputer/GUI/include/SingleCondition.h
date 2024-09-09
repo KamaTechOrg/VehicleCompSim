@@ -18,7 +18,8 @@ public:
 	SingleCondition();
 	~SingleCondition();
 
-	std::shared_ptr<ConditionBase> data() override;
+	std::shared_ptr<ConditionBase> logicData() override;
+	nlohmann::json GuiData() override;
 
 signals:
 	void requestDelete(ConditionLayoutBase* layout);

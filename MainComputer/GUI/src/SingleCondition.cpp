@@ -71,7 +71,7 @@ std::string to_string(const QString& qstr) {
 	return qstr.toStdString();
 }
 
-std::shared_ptr<ConditionBase> SingleCondition::data()
+std::shared_ptr<ConditionBase> SingleCondition::logicData()
 {
 	std::string input = _inputSource->currentText().toStdString();
 	std::string conditionType = _conditionType->currentText().toStdString();
@@ -98,6 +98,10 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	return ConditionsFactory().createSimpleCondition(input, conditionType, validationValue);
 }
 
+nlohmann::json SingleCondition::GuiData()
+{
+	return {};
+}
 
 void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
 {

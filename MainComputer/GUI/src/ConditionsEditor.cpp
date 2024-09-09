@@ -34,39 +34,8 @@ ConditionsEditor::ConditionsEditor()
 
 void ConditionsEditor::save()
 {
-    // get conditions from _conditionGroup
-    std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->data();
-
-    if (conditionsTree == nullptr)
-        return;
-
-    // get action (that will be executed if conditon were validated at some point)
-    std::shared_ptr<Action> action = _thenGroupBox->data();
-
-    if (action == nullptr)
-        return;
-
-    // save both conditions and action to a json file
-    std::string jsonFileName = constants::CONDITIONS_JSON_FILE_NAME;
-
-    std::ofstream jsonFile(jsonFileName);
-    if (!jsonFile.is_open()) {
-        showSaveFeedback(false);
-        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(jsonFileName));
-        return;
-    }
-
-    nlohmann::json jsonData;
-
-    jsonData["conditions"] = conditionsTree->toJson();
-    jsonData["action"] = action->toJson();
-
-    jsonFile << jsonData.dump(4);
-    jsonFile.close();
-    showSaveFeedback(true);
-
-    // get the "backend" main computer to reload again the conditions from the saved JSON file
-    ConditionsManager().loadFromJson(jsonFileName);
+    saveLogicDataToJson();
+    saveGuiDataToJson();
 }
 
 void ConditionsEditor::showSaveFeedback(bool success)
@@ -98,4 +67,42 @@ void ConditionsEditor::loadDataFromJson(const std::string& filename)
     * then we need to load it's data,
     * and set the initial input in the conditins GUI to be the data from the file
     */
+}
+
+void ConditionsEditor::saveLogicDataToJson() {
+    std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->logicData();
+
+    if (conditionsTree == nullptr)
+        return;
+
+    // get action (that will be executed if conditon were validated at some point)
+    std::shared_ptr<Action> action = _thenGroupBox->data();
+
+    if (action == nullptr)
+        return;
+
+    // save both conditions and action to a json file
+    std::string jsonFileName = constants::CONDITIONS_JSON_FILE_NAME;
+
+    std::ofstream jsonFile(jsonFileName);
+    if (!jsonFile.is_open()) {
+        showSaveFeedback(false);
+        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(jsonFileName));
+        return;
+    }
+
+    nlohmann::json jsonData;
+    jsonData["conditions"] = conditionsTree->toJson();
+    jsonData["action"] = action->toJson();
+    jsonFile << jsonData.dump(4);
+    jsonFile.close();
+
+    showSaveFeedback(true);
+
+    // get the "backend" main computer to reload again the conditions from the saved JSON file
+    ConditionsManager().loadFromJson(jsonFileName);
+}
+
+void ConditionsEditor::saveGuiDataToJson() {
+
 }

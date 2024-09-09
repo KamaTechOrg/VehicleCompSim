@@ -17,7 +17,8 @@ public:
 	void unableDelete(); // unable the option to delete *this group
 	void setBoxTitle(const char* title);
 
-	std::shared_ptr<ConditionBase> data() override;
+	std::shared_ptr<ConditionBase> logicData() override;
+	nlohmann::json GuiData() override;
 
 private:
 	std::vector<ConditionLayoutBase*> _conditions;

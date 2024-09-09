@@ -198,14 +198,20 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 
 	return root;
 }
-std::shared_ptr<ConditionBase> ConditionsGroup::data()
+
+std::shared_ptr<ConditionBase> ConditionsGroup::logicData()
 {
 	std::vector<std::shared_ptr<ConditionBase>> conditions;
 	for (auto it : _conditions)
 	{
-		std::shared_ptr<ConditionBase> condition = it->data();
+		std::shared_ptr<ConditionBase> condition = it->logicData();
 		if (condition == nullptr) return nullptr;
 		conditions.push_back(condition);
 	}
 	return buildTree(conditions);
+}
+
+nlohmann::json ConditionsGroup::GuiData()
+{
+	return {};
 }
