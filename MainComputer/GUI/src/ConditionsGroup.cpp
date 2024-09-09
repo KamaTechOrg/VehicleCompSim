@@ -213,5 +213,11 @@ std::shared_ptr<ConditionBase> ConditionsGroup::logicData()
 
 nlohmann::json ConditionsGroup::GuiData()
 {
-	return {};
+	nlohmann::json jsonArray = nlohmann::json::array();
+
+	for (const auto& condition : _conditions) {
+		jsonArray.push_back(condition->GuiData());
+	}
+
+	return jsonArray;
 }

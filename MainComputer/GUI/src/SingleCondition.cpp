@@ -100,7 +100,11 @@ std::shared_ptr<ConditionBase> SingleCondition::logicData()
 
 nlohmann::json SingleCondition::GuiData()
 {
-	return {};
+	return {
+		{"inputSource", _inputSource->currentIndex()},
+		{"conditionType", _conditionType->currentIndex()},
+		{"validationValue", _validationValue->text().toStdString()}
+	};
 }
 
 void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
