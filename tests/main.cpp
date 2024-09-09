@@ -1,4 +1,5 @@
 #include "test_client.h"
+#include "test_socket.h"
 
 
 int main(int argc, char **argv){

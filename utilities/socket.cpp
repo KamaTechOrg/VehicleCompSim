@@ -66,10 +66,11 @@ void Socket::bind(const int port)
 #ifdef _WIN32
         std::cerr << "bind failed with error: " << WSAGetLastError() << "\n";
 #else
-        std::cerr << "bind failed with errno: " << errno << "\n";
+        std::cout << "bind failed with errno: " << errno << "\n";
 #endif
         // throw...
     }
+ 
 }
 
 void Socket::listen() const
