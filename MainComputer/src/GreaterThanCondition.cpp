@@ -20,7 +20,7 @@ bool GreaterThanCondition::validate(const std::string &senderId, const std::stri
 
 nlohmann::json GreaterThanCondition::toJson() const {
     return {
-        {"type", "GreaterThanCondition"},
+        {"type", "Greater Than"},
         {"senderId", senderId},
         {"validationValue", validationValue}
     };

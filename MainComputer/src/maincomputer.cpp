@@ -1,4 +1,4 @@
-#include "maincomputer.h"
+#include "MainComputer.h"
 
 MainComputer::MainComputer() {}
 

@@ -7,7 +7,7 @@
 
 class CompositeCondition : public ConditionBase {
 public:
-    CompositeCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime = std::chrono::milliseconds(MAX_ELAPSED_TIME));
+    CompositeCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime = std::chrono::milliseconds(constants::MAX_ELAPSED_TIME));
     virtual ~CompositeCondition() = default;
     bool validate(const std::string &senderId, const std::string &value) const override = 0;
     const std::shared_ptr<ConditionBase>& getLHS() const;
