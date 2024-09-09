@@ -16,6 +16,7 @@ class SingleCondition : public ConditionLayoutBase
 
 public:
 	SingleCondition();
+	SingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string &currentValidationValue);
 	~SingleCondition();
 
 	std::shared_ptr<ConditionBase> logicData() override;
@@ -32,7 +33,7 @@ private:
 	QLabel* _messageFrom;
 	QPushButton* _deleteButton;
 
-
+	void initializeFields();
 	void setBorderColor(QComboBox* comboBox, bool hasError);
 	void setBorderColor(QLineEdit* lineEdit, bool hasError);
 };

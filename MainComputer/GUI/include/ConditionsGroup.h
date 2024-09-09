@@ -3,6 +3,8 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 
+#include "json.hpp"
+#include "constants.h"
 #include "SingleCondition.h"
 #include "ConditionLayoutBase.h"
 
@@ -14,8 +16,10 @@ public:
 	ConditionsGroup();
 	~ConditionsGroup();
 
-	void unableDelete(); // unable the option to delete *this group
+	void unableDelete();
 	void setBoxTitle(const char* title);
+	void addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue);
+	void addConditionsGroup(nlohmann::json jsonData);
 
 	std::shared_ptr<ConditionBase> logicData() override;
 	nlohmann::json GuiData() override;
@@ -26,7 +30,6 @@ private:
 	// contains the "and" / "or" operations between every two conditions in _conditions.
 	// and also the elapsed time allowed between every two conditions
 	std::vector<QHBoxLayout*> _operations;
-	//std::vector<std::pair<std::unique_ptr<QPushButton>, std::unique_ptr<QLineEdit>>> _operations; // with safe pointers. we will later try using this instead.
 	
 	QHBoxLayout* _layout;
 	QVBoxLayout* _boxLayout;
@@ -35,9 +38,9 @@ private:
 	QPushButton* _addConditionButton;
 	QPushButton* _deleteButton; // delete *this group button
 	
-	void addSingleCondition();
-	void addConditionsGroup();
-	void addGenericCondition(ConditionLayoutBase* condition);
+	void addEmptySingleCondition();
+	void addEmptyConditionsGroup();
+	void addGenericCondition(ConditionLayoutBase* condition, const std::string& andOrValue = "And", const int elapsedTime = 0);
 	void createAddConditionButton();
 	void createDeleteButton();
 	void deleteCondition(ConditionLayoutBase* layout);

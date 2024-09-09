@@ -1,14 +1,45 @@
-#include "ConditionBase.h"
-#include "ConditionsFactory.h"
-#include "SingleCondition.h"
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QString>
 #include <QPushButton>
 
+#include "ConditionBase.h"
+#include "ConditionsFactory.h"
+#include "SingleCondition.h"
+
 
 SingleCondition::SingleCondition()
+{
+	initializeFields();
+}
+
+SingleCondition::SingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue)
+{
+	initializeFields();
+
+	_inputSource->setCurrentIndex(currentSourceIndex);
+	_conditionType->setCurrentIndex(currentTypeIndex);
+	_validationValue->setText(currentValidationValue.c_str());
+}
+
+SingleCondition::~SingleCondition()
+{
+	if (_inputSource != nullptr)
+		delete _inputSource;
+	if (_conditionType != nullptr)
+		delete _conditionType;
+	if (_validationValue != nullptr)
+		delete _validationValue;
+	if (_messageFrom != nullptr)
+		delete _messageFrom;
+	if (_deleteButton != nullptr)
+		delete _deleteButton;
+	if (_layout != nullptr)
+		delete _layout;
+}
+
+void SingleCondition::initializeFields()
 {
 	_layout = new QHBoxLayout;
 
@@ -17,19 +48,18 @@ SingleCondition::SingleCondition()
 
 	_inputSource = new QComboBox();
 	_inputSource->setPlaceholderText("input source");
-	_inputSource->addItem("id 1");
-	_inputSource->addItem("id 2");
-	_inputSource->addItem("id 3");
-	_inputSource->addItem("id 4");
-	_inputSource->addItem("id 5");
+	for (int i = 1; i < 6; i++) {
+		std::string option = "id " + std::to_string(i);
+		_inputSource->addItem(option.c_str());
+	}
 	_layout->addWidget(_inputSource);
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
 	std::vector<std::string> conditionTypes = ConditionsFactory().getSimpleConditionTypes();
-	for (const auto& type : conditionTypes)
+	for (const auto& type : conditionTypes) {
 		_conditionType->addItem(QString(type.c_str()));
-
+	}
 	_layout->addWidget(_conditionType);
 
 	_validationValue = new QLineEdit();
@@ -49,22 +79,6 @@ SingleCondition::SingleCondition()
 	addLayout(_layout);
 
 	addStretch(1);
-}
-
-SingleCondition::~SingleCondition()
-{
-	if (_inputSource != nullptr)
-		delete _inputSource;
-	if (_conditionType != nullptr)
-		delete _conditionType;
-	if (_validationValue != nullptr)
-		delete _validationValue;
-	if (_messageFrom != nullptr)
-		delete _messageFrom;
-	if (_deleteButton != nullptr)
-		delete _deleteButton;
-	if (_layout != nullptr)
-		delete _layout;
 }
 
 std::string to_string(const QString& qstr) {

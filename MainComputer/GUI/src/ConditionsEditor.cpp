@@ -29,7 +29,7 @@ ConditionsEditor::ConditionsEditor()
     resize(350, 200);
 
     // load from JSON file (if exists) the current conditions state
-    loadDataFromJson(constants::CONDITIONS_JSON_FILE_NAME);
+    loadGuiDataFromJson(constants::GUI_DATA_JSON_FILE_NAME);
 }
 
 void ConditionsEditor::save()
@@ -52,7 +52,7 @@ void ConditionsEditor::showSaveFeedback(bool success)
         });
 }
 
-void ConditionsEditor::loadDataFromJson(const std::string& filename)
+void ConditionsEditor::loadGuiDataFromJson(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -62,11 +62,7 @@ void ConditionsEditor::loadDataFromJson(const std::string& filename)
     file >> jsonData;
     file.close();
 
-    /*
-    * TODO: If we did found an existing JSON file.
-    * then we need to load it's data,
-    * and set the initial input in the conditins GUI to be the data from the file
-    */
+    _conditionsGroup->addConditionsGroup(jsonData);
 }
 
 void ConditionsEditor::saveLogicDataToJson() {
