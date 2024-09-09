@@ -15,21 +15,11 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets WebSockets)
 
 qt_standard_project_setup()
 
-# Define a variable to identify the OS
-if(WIN32)
-    set(OS_NAME "WIN")
-else()
-    set(OS_NAME "LINUX")
-endif()
+# Include the FetchDependencies.cmake file
+include(${CMAKE_CURRENT_SOURCE_DIR}/FetchDependencies.cmake)
 
-# Specify the path to the bson library
-set(BSON_ROOT "${PROJECT_SOURCE_DIR}/externalLibraries/bson")
-set(BSON_BUILD "${BSON_ROOT}/lib/${OS_NAME}")
-
-# Add the include directory for the bson headers
-include_directories(${BSON_ROOT}/include)
-# Add the library directories for the bson library
-link_directories("${BSON_BUILD}")
+include_directories(${mongo-c-driver_SOURCE_DIR}/src/libbson/src)
+include_directories(${mongo-c-driver_BINARY_DIR}/src/libbson/src)
 
 enable_testing()
 
@@ -50,9 +40,6 @@ target_include_directories(ClientApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
 )
 
-
-
-
 # Link libraries
 target_link_libraries(ClientApp PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
@@ -60,8 +47,7 @@ target_link_libraries(ClientApp PRIVATE
     VehicleCompSimUtils
     VehicleCompSimCore
     services
-    bson-1.0
-    #bson-static-1.0
+    bson_static
 )
 
 # Set properties for Windows
@@ -81,10 +67,11 @@ install(TARGETS ClientApp
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# Copy BSON DLL during installation
-#install(FILES $<IF:$<CONFIG:Debug>,${BSON_ROOT}/lib/Debug/libbson-1.0.dll,${BSON_ROOT}/lib/Release/libbson-1.0.dll>
-#    DESTINATION ${CMAKE_INSTALL_BINDIR}
-#)
+# # Deploy Qt dependencies
+# set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+# include(InstallRequiredSystemLibraries)
+# set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
+
 
 # Generate deploy script
 qt_generate_deploy_app_script(
