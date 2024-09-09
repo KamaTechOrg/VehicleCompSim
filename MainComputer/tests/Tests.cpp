@@ -398,3 +398,47 @@ TEST_CASE("ConditionsFactory Failure Test") {
         }
     }
 }
+
+TEST_CASE("Extended Failing AndCondition Test Cases") {
+    const std::string senderId = "testSender";
+
+    SUBCASE("Both Conditions True") {
+        auto trueCond1 = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto trueCond2 = std::make_shared<EndsWithCondition>(senderId, "world");
+        AndCondition andCond(trueCond1, trueCond2, std::chrono::milliseconds(100));
+        CHECK(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Both Conditions False") {
+        auto falseCond1 = std::make_shared<StartsWithCondition>(senderId, "world");
+        auto falseCond2 = std::make_shared<EndsWithCondition>(senderId, "hello");
+        AndCondition andCond(falseCond1, falseCond2, std::chrono::milliseconds(100));
+        CHECK_FALSE(andCond.validate(senderId, "hello world"));
+    }
+
+    SUBCASE("One Condition True, One False") {
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "unknown");
+        AndCondition andCond(trueCond, falseCond, std::chrono::milliseconds(100));
+        CHECK_FALSE(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Elapsed Time Exceeds") {
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "unknown");
+        AndCondition andCond(trueCond, falseCond, std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        CHECK_FALSE(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Conditions with Empty Strings") {
+        auto emptyCond1 = std::make_shared<StartsWithCondition>(senderId, "");
+        auto emptyCond2 = std::make_shared<EndsWithCondition>(senderId, "");
+        AndCondition andCond(emptyCond1, emptyCond2, std::chrono::milliseconds(100));
+
+        CHECK(andCond.validate(senderId, ""));
+
+        CHECK_FALSE(andCond.validate(senderId, "non-empty"));
+    }
+
+    }

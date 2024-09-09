@@ -6,7 +6,8 @@ ContainsCondition::ContainsCondition(const std::string &senderId, const std::str
 
 bool ContainsCondition::validate(const std::string &senderId, const std::string &value) const {
     if (senderId != this->senderId) return false;
-    
+    if (validationValue.empty()) return true;
+
     return value.find(validationValue) != std::string::npos;
 }
 

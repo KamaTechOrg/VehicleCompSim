@@ -7,6 +7,9 @@ StartsWithCondition::StartsWithCondition(const std::string &senderId, const std:
 bool StartsWithCondition::validate(const std::string &senderId, const std::string &value) const {
     if (senderId != this->senderId) return false;
     
+    if (validationValue.empty()) return value.empty();
+    if (value.length() < validationValue.length()) return false;
+
     return value.compare(0, validationValue.length(), validationValue) == 0;
 }
 
