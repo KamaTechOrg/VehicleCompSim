@@ -215,8 +215,22 @@ nlohmann::json ConditionsGroup::GuiData()
 {
 	nlohmann::json jsonArray = nlohmann::json::array();
 
-	for (const auto& condition : _conditions) {
-		jsonArray.push_back(condition->GuiData());
+	for (int i = 0; i < _conditions.size(); i++) {
+		jsonArray.push_back(_conditions[i]->GuiData());
+
+		if (i == _operations.size()) {
+			continue;
+		}
+		
+		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i]->itemAt(0)->widget());
+		QSpinBox* elapsedTime = qobject_cast<QSpinBox*>(_operations[i]->itemAt(1)->widget());
+
+		nlohmann::json operation = {
+			{"type", andOrButton->text().toStdString()},
+			{"elapsedTime", elapsedTime->value()}
+		};
+
+		jsonArray.push_back(operation);
 	}
 
 	return jsonArray;

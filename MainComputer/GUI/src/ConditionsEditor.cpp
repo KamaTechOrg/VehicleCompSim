@@ -104,5 +104,18 @@ void ConditionsEditor::saveLogicDataToJson() {
 }
 
 void ConditionsEditor::saveGuiDataToJson() {
+    nlohmann::json jsonData;
 
+    jsonData = _conditionsGroup->GuiData();
+
+    // save both conditions and action to a json file
+    std::string jsonFileName = constants::GUI_DATA_JSON_FILE_NAME;
+
+    std::ofstream jsonFile(jsonFileName);
+    if (!jsonFile.is_open()) {
+        return;
+    }
+
+    jsonFile << jsonData.dump(4);
+    jsonFile.close();
 }
