@@ -107,6 +107,7 @@ project.fragment.lock.json
 artifacts/
 
 # CMake
+CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
