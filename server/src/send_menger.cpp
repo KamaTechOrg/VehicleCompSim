@@ -17,7 +17,9 @@ void Send_manager::operator ()(std::priority_queue<CanBus, std::vector<CanBus>,s
         // std::unique_lock<std::mutex> lock(map_mutex);
         auto d_s = get_sock(topElement.getDestinationId());
         // lock.unlock();
-        char dataCopy[topElement.getMessageSize() + 1];
+        int size = topElement.getMessageSize() + 1;
+        std::vector<char> buffer(size);
+        char* dataCopy = buffer.data();
         std::strcpy(dataCopy, topElement.getMessage().c_str());
 
         if (d_s)

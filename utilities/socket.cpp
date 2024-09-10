@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 Socket::Socket() : m_sock(-1)
 {
@@ -136,7 +137,8 @@ void Socket::send(void *data, size_t size) const
 
 int Socket::recv(void *data, size_t len) const
 {
-    char buf[len];
+    std::vector<char> buffer(len);
+    char* buf = buffer.data();
     memset(buf, 0, len);
 
 #ifdef _WIN32

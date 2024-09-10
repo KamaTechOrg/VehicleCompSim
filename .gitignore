@@ -25,3 +25,6 @@ Makefile
 *.lib
 *.lo
 *.la
+.vs/
+.vscode/
+CMakeSettings.json

@@ -1,6 +1,11 @@
 #include <chrono>
 
 #include "manger.h"
+#ifdef _WIN32
+#define close_socket closesocket
+#else
+#define close_socket ::close
+#endif
 
 MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{}, m_send_manager{}
 {
@@ -84,7 +89,7 @@ int MangServer::add_socket(int new_socket)
     else
     {
         Cross_platform::cress_send(pair.second, "id_in use", 10);
-        ::close(new_socket);
+        close_socket(new_socket);
     }
     lock.unlock();
 

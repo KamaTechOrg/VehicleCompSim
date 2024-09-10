@@ -1,7 +1,20 @@
 #include <iostream>
 #include <string.h>
 #include <cstring>
+#ifdef _WIN32
+// Windows-specific includes
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#define close_socket closesocket
+
+#else
+// Unix-like specific includes
 #include <unistd.h>
+#define close_socket close
+
+#endif
+
 #include <mutex>
 
 #include "receive_manger.h"
@@ -79,7 +92,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
 
                 if (valread == 0)
                 {
-                    close(sd);
+                    close_socket(sd);
                     it = m_connections.erase(it);
                 }
                 else if (valread > 0)
