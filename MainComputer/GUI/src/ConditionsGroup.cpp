@@ -70,14 +70,14 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 			int typeIndex = item["conditionType"];
 			std::string validationValue = item["validationValue"];
 
-			if (i + 1 < jsonData.size())
+			if (i == 0)
 			{
-				addSingleCondition(sourceIndex, typeIndex, validationValue,
-					jsonData[i + 1]["type"], jsonData[i + 1]["elapsedTime"]);
+				addSingleCondition(sourceIndex, typeIndex, validationValue);
 			}
 			else
 			{
-				addSingleCondition(sourceIndex, typeIndex, validationValue);
+				addSingleCondition(sourceIndex, typeIndex, validationValue,
+					jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
 			}
 		}
 		// If the item is a list (group of conditions)
@@ -85,15 +85,15 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 		{
 			ConditionsGroup* newGroup = new ConditionsGroup();
 			newGroup->addConditionsGroup(item);
-			addGenericCondition(newGroup);
+			connect(newGroup, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
 
-			if (i + 1 < jsonData.size())
+			if (i == 0)
 			{
-				addGenericCondition(newGroup, jsonData[i + 1]["type"], jsonData[i + 1]["elapsedTime"]);
+				addGenericCondition(newGroup);
 			}
 			else
 			{
-				addGenericCondition(newGroup);
+				addGenericCondition(newGroup, jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
 			}
 		}
 	}
@@ -275,10 +275,10 @@ QSpinBox* ConditionsGroup::createElapsedTimeWidget(const int value)
 
 nlohmann::json ConditionsGroup::GuiData()
 {
-	nlohmann::json jsonArray = nlohmann::json::array();
+	nlohmann::json conditionsArray = nlohmann::json::array();
 
 	for (int i = 0; i < _conditions.size(); i++) {
-		jsonArray.push_back(_conditions[i]->GuiData());
+		conditionsArray.push_back(_conditions[i]->GuiData());
 
 		if (i == _operations.size()) {
 			continue;
@@ -292,8 +292,8 @@ nlohmann::json ConditionsGroup::GuiData()
 			{"elapsedTime", elapsedTime->value()}
 		};
 
-		jsonArray.push_back(operation);
+		conditionsArray.push_back(operation);
 	}
 
-	return jsonArray;
+	return conditionsArray;
 }
