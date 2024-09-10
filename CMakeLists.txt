@@ -12,6 +12,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # Include directories
 include_directories(client/include)
 include_directories(server/include)
+include_directories(tests/test_server)
 include_directories(utilities)
 
 # Gather all .cpp files for client, server, utilities, and tests

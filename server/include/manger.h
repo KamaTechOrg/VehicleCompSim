@@ -13,7 +13,7 @@ public:
     MangServer();
     void init();
     
-    std::map<int, FD> m_connections;
+    std::unordered_map<int, FD> m_connections;
 
 private:
     void run_server();

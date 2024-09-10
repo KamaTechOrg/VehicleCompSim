@@ -4,7 +4,7 @@
 #include <mutex>
 #include <vector>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <queue>
 
 #include "socket.h"
@@ -16,9 +16,9 @@
 class Receive_manger
 {
 public:
-    void select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap, std::mutex &heap_mutex, std::mutex &map_mutex, std::map<int, FD> &m_connections);
+    void select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap, std::mutex &heap_mutex, std::mutex &map_mutex, std::unordered_map<int, FD> &m_connections);
     std::condition_variable m_condition;
 
 private:
-    void print_arr(std::map<int, FD> m_connections);
+    void print_arr(std::unordered_map<int, FD> m_connections);
 };

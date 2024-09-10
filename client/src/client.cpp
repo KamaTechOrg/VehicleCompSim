@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string.h>
 #include <algorithm>
+#include <future>
 
 #include "client.h"
 
@@ -46,6 +47,28 @@ void ClientSocket::listen(void *data, size_t size)
     }
     int len = m_clientSocket.recv(data, size);
 }
+
+std::future<void> ClientSocket::listenAsync(void *data, size_t size, std::function<void()> callback)
+{
+    if (!is_valid_ptr(data) || !is_valid_size(size))
+    {
+        throw std::runtime_error("Invalid to receive");
+    }
+
+    return std::async(std::launch::async, [this, data, size, callback](){
+      
+            int len = m_clientSocket.recv(data, size);
+            if (callback) {
+                callback(); 
+            }
+          
+    });
+
+   
+
+   
+}
+
 
 bool ClientSocket::is_valid_ptr(void *ptr)
 {

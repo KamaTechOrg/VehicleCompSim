@@ -1,5 +1,7 @@
 #pragma once
 
+#include <future>
+
 #include "socket.h"
 #include "constants.h"
 #include "data_manipulator.h"
@@ -13,9 +15,7 @@ public:
 
     void send(void *data, size_t size, int source_id, int dest_id);
     void listen(void *data, size_t size);
-    void listen_async(void *data, size_t size) const;
-
-   
+    std::future<void> listenAsync(void *data, size_t size, std::function<void()> callback);
 
 private:
     bool is_valid_ptr(void *ptr);
