@@ -120,21 +120,8 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition,
 	_conditions.push_back(condition);
 	if (_conditions.size() > 1) // it's not the first condition added
 	{
-		// create and/or button
-		QPushButton* andOrButton = new QPushButton(andOrValue.c_str());
-		connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
-			andOrButton->setText(andOrButton->text() == "And" ? "Or" : "And");
-			});
-		int defaultHeight = andOrButton->sizeHint().height();
-		andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
-
-		// create elapsedTime edit line
-		QSpinBox* elapsedTime = new QSpinBox;
-		elapsedTime->setRange(0, constants::MAX_ELAPSED_TIME);
-		elapsedTime->setValue(elapsedTimeValue);
-		elapsedTime->setSuffix(" ms");
-		defaultHeight = elapsedTime->sizeHint().height();
-		elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);
+		QPushButton* andOrButton = createAndOrButton(andOrValue);
+		QSpinBox* elapsedTime = createElapsedTimeWidget(elapsedTimeValue);
 
 		// push the both to a horizontal layout
 		QHBoxLayout* operationLayout = new QHBoxLayout;
@@ -262,6 +249,30 @@ std::shared_ptr<ConditionBase> ConditionsGroup::logicData()
 		conditions.push_back(condition);
 	}
 	return buildTree(conditions);
+}
+
+QPushButton* ConditionsGroup::createAndOrButton(const std::string& buttonValue)
+{
+	QPushButton* andOrButton = new QPushButton(buttonValue.c_str());
+	connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
+		andOrButton->setText(andOrButton->text() == "And" ? "Or" : "And");
+		});
+	int defaultHeight = andOrButton->sizeHint().height();
+	andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
+
+	return andOrButton;
+}
+
+QSpinBox* ConditionsGroup::createElapsedTimeWidget(const int value)
+{
+	QSpinBox* elapsedTime = new QSpinBox;
+	elapsedTime->setRange(0, constants::MAX_ELAPSED_TIME);
+	elapsedTime->setValue(value);
+	elapsedTime->setSuffix(" ms");
+	int defaultHeight = elapsedTime->sizeHint().height();
+	elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);
+
+	return elapsedTime;
 }
 
 nlohmann::json ConditionsGroup::GuiData()

@@ -2,6 +2,7 @@
 
 #include <QVBoxLayout>
 #include <QGroupBox>
+#include <QSpinBox>
 
 #include "json.hpp"
 #include "constants.h"
@@ -40,12 +41,14 @@ private:
 	
 	void addEmptySingleCondition();
 	void addEmptyConditionsGroup();
-	void addGenericCondition(ConditionLayoutBase* condition, const std::string& andOrValue = "And", const int elapsedTime = 0);
+	void addGenericCondition(ConditionLayoutBase* condition, const std::string &andOrValue = "And", const int elapsedTime = 0);
 	void createAddConditionButton();
 	void createDeleteButton();
 	void deleteCondition(ConditionLayoutBase* layout);
 	void addSingleButtonClicked();
 	void addGroupButtonClicked();
+	QPushButton* createAndOrButton(const std::string &buttonValue);
+	QSpinBox* createElapsedTimeWidget(const int value);
 	std::shared_ptr<ConditionBase> buildTree(const std::vector<std::shared_ptr<ConditionBase>> &conditions);
 	
 signals:
