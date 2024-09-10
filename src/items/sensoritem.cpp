@@ -9,86 +9,95 @@
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 
-    SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent)
-    , m_updateProxy(new QGraphicsProxyWidget(this))
-    , m_checkBoxProxy(new QGraphicsProxyWidget(this))
-    {
-        m_type = ItemType::Sensor;
-        m_width = 160;
-        m_height = 90;
+SensorItem::SensorItem(QGraphicsItem *parent)
+    : BaseItem(parent),
+      m_updateProxy(new QGraphicsProxyWidget(this)),
+      m_checkBoxProxy(new QGraphicsProxyWidget(this))
+{
+    m_type = ItemType::Sensor;
+    m_width = 160;
+    m_height = 90;
 
-        m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
+    m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
 
-        // Create update button
-        QPushButton* updateButton = new QPushButton("↻");
-        //updateButton->setIcon(QIcon(":/icons/update.png"));
-        updateButton->setFixedSize(20, 20);
-        updateButton->setToolTip("Update Item");
+    setupUpdateButtonProxy();
+    setupCheckBoxProxy();
 
-        m_updateProxy->setWidget(updateButton);
-        m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
+    hideButtons();
+}
 
-        // Connect buttons to their respective slots
-        connect(updateButton, &QPushButton::clicked, this, &SensorItem::updateItem);
+void SensorItem::setupUpdateButtonProxy()
+{
+    // Create update button
+    QPushButton* updateButton = new QPushButton("↻");
+    //updateButton->setIcon(QIcon(":/icons/update.png"));
+    updateButton->setFixedSize(20, 20);
+    updateButton->setToolTip("Update Item");
 
-        hideButtons();
+    m_updateProxy->setWidget(updateButton);
+    m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
 
+    // Connect button to its respective slot
+    connect(updateButton, &QPushButton::clicked, this, &SensorItem::updateItem);
+}
 
-        // Create checkbox for excluding from project
-        QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
-        excludeCheckBox->setToolTip("Exclude this sensor from the project");
-        excludeCheckBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
-        excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
-        connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
-            excludeFromProject = state == Qt::Checked;
-            notifyItemModified();
-        });
+void SensorItem::setupCheckBoxProxy()
+{
+    // Create checkbox for excluding from project
+    QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
+    excludeCheckBox->setToolTip("Exclude this sensor from the project");
+    excludeCheckBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
+    excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
+    connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
+        excludeFromProject = state == Qt::Checked;
+        notifyItemModified();
+    });
 
-        m_checkBoxProxy->setWidget(excludeCheckBox);
-        m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
-    }
+    m_checkBoxProxy->setWidget(excludeCheckBox);
+    m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
+}
 
-    SensorItem::SensorItem(const SensorItem& other)
-    {
-        priority = other.priority;
-        name = other.name;
-        buildCommand = other.buildCommand;
-        runCommand = other.runCommand;
-        cmakePath = other.cmakePath;
-        useCmakePath = other.useCmakePath;
-    }
+SensorItem::SensorItem(const SensorItem& other)
+{
+    priority = other.priority;
+    name = other.name;
+    buildCommand = other.buildCommand;
+    runCommand = other.runCommand;
+    cmakePath = other.cmakePath;
+    useCmakePath = other.useCmakePath;
+}
 
-    void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-    {
+void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
 //        painter->setBrush(Qt::green);
-        painter->setPen(Qt::NoPen);
-        painter->drawRect(boundingRect());
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(boundingRect());
 
-        painter->setRenderHint(QPainter::Antialiasing);
-        painter->setBrush(m_color);
-        painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setBrush(m_color);
+    painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
 
-        painter->setPen(Qt::black);
-        painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + priority);
-        painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + name);
+    painter->setPen(Qt::black);
+    painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + priority);
+    painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + name);
 
-        if (isSelected() || !m_hoveredPoint.isNull())
+    if (isSelected() || !m_hoveredPoint.isNull())
+    {
+        painter->setBrush(Qt::darkGray);
+        for (const QPointF &point : connectionPoints())
         {
-            painter->setBrush(Qt::darkGray);
-            for (const QPointF &point : connectionPoints())
+            if (isSelected() || point == m_hoveredPoint)
             {
-                if (isSelected() || point == m_hoveredPoint)
-                {
-                    painter->drawEllipse(point, DotRadius, DotRadius);
-                }
+                painter->drawEllipse(point, DotRadius, DotRadius);
             }
         }
-        if (isSelected()){
-            showButtons();
-        } else{
-            hideButtons();
-        }
     }
+    if (isSelected()){
+        showButtons();
+    } else{
+        hideButtons();
+    }
+}
 
 QString SensorItem::getPriority() const {
     return priority;
@@ -186,7 +195,6 @@ void SensorItem::updateItem()
                 QMessageBox::Yes|QMessageBox::No);
             if (reply == QMessageBox::Yes) {
                 removeItem();
-                notifyItemDeleted();
             }
         }
     }

@@ -72,6 +72,7 @@ protected:
     QPointF m_hoveredPoint;
     QList<EdgeItem*> m_edges;
     qreal unique_id;
+    bool m_positionChanged = false;
 
 
     QGraphicsProxyWidget* m_closeProxy;

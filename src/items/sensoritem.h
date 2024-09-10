@@ -40,6 +40,9 @@ private:
     QString cmakePath = "";
     bool useCmakePath = true;
     bool excludeFromProject = false;
+
+    void setupUpdateButtonProxy();
+    void setupCheckBoxProxy();
     void updateItem();
     void showButtons();
     void hideButtons();

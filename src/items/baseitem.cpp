@@ -70,6 +70,7 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
 
             edge->setPath(path);
         }
+        m_positionChanged = true;
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -80,7 +81,10 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 }
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
-    notifyItemModified();
+    if (m_positionChanged) {
+        m_positionChanged = false;
+        notifyItemModified();
+    }
 }
 
 void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
