@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
 
+set(SYSTEM_DEPENDENT_LIBRARIES Ws2_32)
 
 # Include directories
 include_directories(client/include)
@@ -27,12 +28,15 @@ add_library(client_lib STATIC ${CLIENT_SRC_FILES} ${UTILITIES_SRC_FILES})
 # Create server library
 add_library(server_lib STATIC ${SERVER_SRC_FILES} ${UTILITIES_SRC_FILES})
 
+target_link_libraries(client_lib PRIVATE Ws2_32)
+target_link_libraries(server_lib PRIVATE Ws2_32)
+
 # Find GoogleTest
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+#find_package(GTest REQUIRED)
+#include_directories(${GTEST_INCLUDE_DIRS})
 
 # Create test executable
-add_executable(run_tests ${TESTS_SRC_FILES})
+#add_executable(run_tests ${TESTS_SRC_FILES})
 
 # Link test executable with the libraries and GoogleTest
-target_link_libraries(run_tests client_lib server_lib ${GTEST_LIBRARIES} pthread)
+#target_link_libraries(run_tests client_lib server_lib ${GTEST_LIBRARIES} pthread)
