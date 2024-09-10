@@ -43,6 +43,13 @@ void SensorItem::setupUpdateButtonProxy()
 
 void SensorItem::setupCheckBoxProxy()
 {
+    if (m_checkBoxProxy->widget() != nullptr) {
+        // just update the checkbox state
+        QCheckBox* checkBox = static_cast<QCheckBox*>(m_checkBoxProxy->widget());
+        checkBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
+        return;
+    }
+
     // Create checkbox for excluding from project
     QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
     excludeCheckBox->setToolTip("Exclude this sensor from the project");
@@ -56,7 +63,6 @@ void SensorItem::setupCheckBoxProxy()
     m_checkBoxProxy->setWidget(excludeCheckBox);
     m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
 }
-
 SensorItem::SensorItem(const SensorItem& other)
 {
     priority = other.priority;
@@ -236,4 +242,6 @@ void SensorItem::deserialize(const QJsonObject &itemData) {
     cmakePath = itemData["cmakePath"].toString();
     useCmakePath = itemData["useCmakePath"].toBool();
     excludeFromProject = itemData["excludeFromProject"].toBool();
+
+    setupCheckBoxProxy();
 }
