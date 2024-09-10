@@ -5,7 +5,7 @@
 
 
 const int PORTSERVER = 50000;
-const std::string IPSERVER = "localhost";
+const std::string IPSERVER = "127.0.0.1";
 const int MAXHOSTNAME = 200;
 const int MAXCONNECTIONS = 20;
 const int MAXRECV = 500;
