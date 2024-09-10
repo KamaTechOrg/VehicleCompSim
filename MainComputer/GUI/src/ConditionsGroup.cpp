@@ -49,16 +49,17 @@ void ConditionsGroup::setBoxTitle(const char* title)
 	_conditionsBox->setTitle(title);
 }
 
-void ConditionsGroup::addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue)
+void ConditionsGroup::addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue,
+	const std::string& conditionType, const int elapsedTime)
 {
 	SingleCondition* conditionLayout = new SingleCondition(currentSourceIndex, currentTypeIndex, currentValidationValue);
 	connect(conditionLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
-	addGenericCondition(conditionLayout);
+	addGenericCondition(conditionLayout, conditionType, elapsedTime);
 }
 
 void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 {
-	for (size_t i = 0; i < jsonData.size(); i+=2)
+	for (size_t i = 0; i < jsonData.size(); i += 2)
 	{
 		const auto& item = jsonData[i];
 
@@ -69,15 +70,14 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 			int typeIndex = item["conditionType"];
 			std::string validationValue = item["validationValue"];
 
-			SingleCondition* newCondition = new SingleCondition(sourceIndex, typeIndex, validationValue);
-
 			if (i + 1 < jsonData.size())
 			{
-				addGenericCondition(newCondition, jsonData[i + 1]["type"], jsonData[i + 1]["elapsedTime"]);
+				addSingleCondition(sourceIndex, typeIndex, validationValue,
+					jsonData[i + 1]["type"], jsonData[i + 1]["elapsedTime"]);
 			}
 			else
 			{
-				addGenericCondition(newCondition);
+				addSingleCondition(sourceIndex, typeIndex, validationValue);
 			}
 		}
 		// If the item is a list (group of conditions)
@@ -123,15 +123,13 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition,
 		QPushButton* andOrButton = createAndOrButton(andOrValue);
 		QSpinBox* elapsedTime = createElapsedTimeWidget(elapsedTimeValue);
 
-		// push the both to a horizontal layout
 		QHBoxLayout* operationLayout = new QHBoxLayout;
 		operationLayout->addWidget(andOrButton);
 		operationLayout->addWidget(elapsedTime);
 		operationLayout->addStretch(1);
-
-		// instert the layout to the _operations vector and to the _conditionsLayout
-		_operations.push_back(operationLayout);
 		_conditionsLayout->addLayout(operationLayout);
+
+		_operations.push_back(operationLayout);
 	}
 	_conditionsLayout->addLayout(condition);
 }

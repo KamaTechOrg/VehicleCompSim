@@ -19,7 +19,8 @@ public:
 
 	void unableDelete();
 	void setBoxTitle(const char* title);
-	void addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue);
+	void addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue,
+		const std::string& andOrValue = "And", const int elapsedTime = 0);
 	void addConditionsGroup(nlohmann::json jsonData);
 
 	std::shared_ptr<ConditionBase> logicData() override;
