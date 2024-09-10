@@ -62,6 +62,7 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 	for (size_t i = 0; i < jsonData.size(); i += 2)
 	{
 		const auto& item = jsonData[i];
+		ConditionLayoutBase* newCondition;
 
 		// If the item is a single condition
 		if (item.is_object())
@@ -70,31 +71,30 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 			int typeIndex = item["conditionType"];
 			std::string validationValue = item["validationValue"];
 
-			if (i == 0)
-			{
-				addSingleCondition(sourceIndex, typeIndex, validationValue);
-			}
-			else
-			{
-				addSingleCondition(sourceIndex, typeIndex, validationValue,
-					jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
-			}
+			newCondition = new SingleCondition(sourceIndex, typeIndex, validationValue);
+			connect(dynamic_cast<SingleCondition*>(newCondition), &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
+
 		}
 		// If the item is a list (group of conditions)
 		else if (item.is_array())
 		{
-			ConditionsGroup* newGroup = new ConditionsGroup();
-			newGroup->addConditionsGroup(item);
-			connect(newGroup, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
+			newCondition = new ConditionsGroup();
+			dynamic_cast<ConditionsGroup*>(newCondition)->addConditionsGroup(item);
+			connect(dynamic_cast<ConditionsGroup*>(newCondition), &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
+		}
+		else
+		{
+			throw std::runtime_error("invalid JSON GUI file");
+		}
 
-			if (i == 0)
-			{
-				addGenericCondition(newGroup);
-			}
-			else
-			{
-				addGenericCondition(newGroup, jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
-			}
+		// Add the operation between two conditons (And/Or, elapsedTime)
+		if (i == 0)
+		{
+			addGenericCondition(newCondition);
+		}
+		else
+		{
+			addGenericCondition(newCondition, jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
 		}
 	}
 }
