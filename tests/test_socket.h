@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <condition_variable>
 #include <mutex>
+#include <thread>
 
 #include "socket.h"
 
