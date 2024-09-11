@@ -61,3 +61,4 @@ packages/
 
 # Other IDE specific files
 .idea/
+/lane_detection.vcxproj
