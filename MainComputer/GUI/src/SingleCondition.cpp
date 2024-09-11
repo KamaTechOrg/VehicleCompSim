@@ -50,10 +50,10 @@ void SingleCondition::initializeFields()
 	_inputSource->setPlaceholderText("input source");
 
 	_inputSource->addItem("Temperature Sensor");
-	_inputSource->addItem("Gear State");
+	//_inputSource->addItem("Gear State");
 	_inputSource->addItem("Reverse Distance Sensor");
-	_inputSource->addItem("Front Distance Sensor");
-	_inputSource->addItem("Buckle Sensor");
+	//_inputSource->addItem("Front Distance Sensor");
+	//_inputSource->addItem("Buckle Sensor");
 
 	_layout->addWidget(_inputSource);
 
