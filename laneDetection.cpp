@@ -1,6 +1,12 @@
 #include "laneDetction.h"
 #include <numeric>  // For std::accumulate
 
+// Constants
+// The height of every frame is 720, so 690 is 30 px above the bottom
+const cv::Point POINT1(200, 690);  
+const cv::Point POINT2(610, 530);
+const cv::Point POINT3(1200, 690);
+
 
 // Function to perform polynomial fit (linear regression)
 std::pair<float, float> polyfit(const std::vector<float>& x, const std::vector<float>& y) {
@@ -108,7 +114,7 @@ cv::Mat display_lines(cv::Mat& img, const std::vector<std::vector<int>>& lines) 
 cv::Mat region_of_interest(const cv::Mat& img) {
 	cv::Mat mask = cv::Mat::zeros(img.size(), img.type());
 	int height = img.rows;
-	std::vector<cv::Point> points = { cv::Point(200, height - 30), cv::Point(610, 530), cv::Point(1200, height - 30) };
+	std::vector<cv::Point> points = { POINT1, POINT2, POINT3 };
 	fillPoly(mask, std::vector<std::vector<cv::Point>>{points}, cv::Scalar(255, 255, 255));
 	cv::Mat masked_image;
 	bitwise_and(img, mask, masked_image);
