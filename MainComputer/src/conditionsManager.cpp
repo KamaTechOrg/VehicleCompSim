@@ -25,11 +25,10 @@ void ConditionsManager::addAction(const std::string& id, const Action& action)
     actions[id] = action;
 }
 
-// Helper function to parse messages
+// Helper function to parse messages with spaces in ID and VALUE
 std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string& message)
 {
-    // Assuming the message format is "ID:<ID_VALUE>,VALUE:<VALUE>"
-    std::regex messageRegex(R"(ID:(\w+),VALUE:(\w+))");
+    std::regex messageRegex(R"(ID:([^,]+),VALUE:(.+))");
     std::smatch matches;
 
     if (std::regex_search(message, matches, messageRegex) && matches.size() == 3) {

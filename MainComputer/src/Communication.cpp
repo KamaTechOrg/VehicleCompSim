@@ -35,14 +35,12 @@ int Communication::createSocket() {
     int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
         qWarning() << "Could not create socket: " << WSAGetLastError();
-        //cleanupWinsock();
         exit(EXIT_FAILURE);
     }
     return sock;
 }
 
 std::string Communication::listenTo(int portNumber) {
-    //initializeWinsock();
     int serverSock = createSocket();
     struct sockaddr_in serverAddr;
     char buffer[1024] = { 0 };
@@ -55,7 +53,6 @@ std::string Communication::listenTo(int portNumber) {
     if (bind(serverSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
         qWarning() << "Bind failed: " << WSAGetLastError();
         closesocket(serverSock);
-        //cleanupWinsock();
         return "ERROR";
     }
 
@@ -70,7 +67,6 @@ std::string Communication::listenTo(int portNumber) {
     if (clientSock == INVALID_SOCKET) {
         qWarning() << "Accept failed: " << WSAGetLastError();
         closesocket(serverSock);
-        //cleanupWinsock();
         return "ERROR";
     }
 
@@ -82,13 +78,11 @@ std::string Communication::listenTo(int portNumber) {
 
     closesocket(clientSock);
     closesocket(serverSock);
-    //cleanupWinsock();
 
     return std::string(buffer);
 }
 
 void Communication::sendTo(int portNumber, const std::string& message) {
-    //initializeWinsock();
     int clientSock = createSocket();
     struct sockaddr_in serverAddr;
 
@@ -99,7 +93,6 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     if (inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr) <= 0) {
         qWarning() << "Invalid address/ Address not supported";
         closesocket(clientSock);
-        //cleanupWinsock();
         return;
     }
 
@@ -107,7 +100,6 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     if (connect(clientSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         qWarning() << "Connection Failed: " << WSAGetLastError();
         closesocket(clientSock);
-        //cleanupWinsock();
         return;
     }
 
@@ -115,13 +107,10 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     send(clientSock, message.c_str(), message.length(), 0);
 
     closesocket(clientSock);
-    //cleanupWinsock();
 }
 
 void Communication::connectToSensors()
 {
-    //initializeWinsock();
-
     std::vector<int> sensorsPortNumbers = SensorsManager().getPortNumbers();
     for (const int portNumber : sensorsPortNumbers) {
         int sensorSock = createSocket();
@@ -134,7 +123,6 @@ void Communication::connectToSensors()
         if (inet_pton(AF_INET, "127.0.0.1", &sensorAddr.sin_addr) <= 0) {
             qWarning() << "Invalid address/ Address not supported";
             closesocket(sensorSock);
-            //cleanupWinsock();
             return;
         }
 
@@ -142,7 +130,6 @@ void Communication::connectToSensors()
         if (connect(sensorSock, (struct sockaddr*)&sensorAddr, sizeof(sensorAddr)) < 0) {
             qWarning() << "Connection Failed: " << WSAGetLastError();
             closesocket(sensorSock);
-            //cleanupWinsock();
             return;
         }
 
@@ -168,7 +155,6 @@ void Communication::connectToSensors()
                 }
             }
             closesocket(sensorSock);
-            //cleanupWinsock();
             }).detach();
     }
 }
