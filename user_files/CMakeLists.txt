@@ -18,8 +18,16 @@ include_directories(../utilities)
 
 # Create the server executable
 add_executable(server_exec server_main.cpp)
+if(WIN32)
 target_link_libraries(server_exec client_lib server_lib Ws2_32)
+else()
+target_link_libraries(server_exec client_lib server_lib )
+endif()
 
 # Create the client executable
 add_executable(client_exec client_main.cpp)
+if(WIN32)
 target_link_libraries(client_exec client_lib server_lib Ws2_32)
+else()
+target_link_libraries(client_exec client_lib server_lib )
+endif()
