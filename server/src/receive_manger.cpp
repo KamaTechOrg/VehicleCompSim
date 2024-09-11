@@ -90,7 +90,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             if (FD_ISSET(sd, &readfds) && it->first != IDINNER)
             {
                 valread = Cross_platform::cress_read(sd, buffer, 0);
-
+                
                 if (valread == 0)
                 {
                     close_socket(sd);
@@ -99,18 +99,9 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                 else if (valread > 0)
                 {
                     auto result = Data_manipulator::extract_id_and_data(buffer, valread);
-
                     CanBus cb = result.value();
+                    writeCanMessageToLog(cb ,LOGFILE);
                     vec_canbus.push_back(cb);
-                    // std::unique_lock<std::mutex> lock(heap_mutex);
-                    // min_heap.push(cb);
-                    // CanBus cc = min_heap.top();
-                    // std::cout << "top = " << cc.getSourceId()  << std::endl;
-                    // std::cout << " sizeheap = " << min_heap.size() << std::endl;
-                    // lock.unlock();
-                    // std::cout << min_heap.size() << std::endl;
-
-                  
                 }
                 else
                 {
