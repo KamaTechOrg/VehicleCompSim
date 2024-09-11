@@ -160,7 +160,9 @@ int Socket::recv(void *data, size_t len) const
         std::cerr << "Client disconnected\n";
     }
     else
-    {
+    {   
+        std::cout << "Received === " << buf << std::endl;
+  
         memcpy(data, buf, len);
     }
     return status;

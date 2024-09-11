@@ -57,6 +57,7 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
     int max_sd, activity, sd, valread;
     fd_set readfds;
     char buffer[MAXRECV];
+    std::vector <CanBus> vec_canbus;
 
     std::unique_lock<std::mutex> unordered_map_lock(map_mutex);
    
@@ -100,14 +101,14 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                     auto result = Data_manipulator::extract_id_and_data(buffer, valread);
 
                     CanBus cb = result.value();
-                    writeCanMessageToLog(cb , LOGFILE);
-                    std::unique_lock<std::mutex> lock(heap_mutex);
-                    min_heap.push(cb);
-                    CanBus cc = min_heap.top();
-                    std::cout << "top = " << cc.getSourceId()  << std::endl;
-                    std::cout << " sizeheap = " << min_heap.size() << std::endl;
-                    std::cout << min_heap.size() << std::endl;
-                    lock.unlock();
+                    vec_canbus.push_back(cb);
+                    // std::unique_lock<std::mutex> lock(heap_mutex);
+                    // min_heap.push(cb);
+                    // CanBus cc = min_heap.top();
+                    // std::cout << "top = " << cc.getSourceId()  << std::endl;
+                    // std::cout << " sizeheap = " << min_heap.size() << std::endl;
+                    // lock.unlock();
+                    // std::cout << min_heap.size() << std::endl;
 
                   
                 }
@@ -123,5 +124,17 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
             ++it;
         }
         unordered_map_lock.unlock();
+
+        std::unique_lock<std::mutex> lock(heap_mutex);
+
+        for (auto canbus : vec_canbus) {
+            min_heap.push(canbus);
+        }
+
+        vec_canbus.clear();
+        
+        lock.unlock();
+       
+
     }
 }

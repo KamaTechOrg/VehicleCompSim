@@ -34,7 +34,6 @@ void listen_thread(ClientSocket &client) {
     while (true) {
         memset(buffer, 0, sizeof(buffer));
         client.listen(buffer, sizeof(buffer));
-        cout << "Received: " << buffer << endl;
     }
 }
 

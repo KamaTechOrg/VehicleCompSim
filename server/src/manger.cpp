@@ -67,10 +67,14 @@ void MangServer::run_sender()
         return get_sock(id);
     };
 
+    std::vector<CanBus> vec_canbus;
+
     while (true)
     {
-        m_send_manager(m_min_heap, m_heap_mutex, m_map_mutex, get_sock_func);
-        std::this_thread::sleep_for(std::chrono::seconds(30));
+        m_send_manager.extract_heap(m_min_heap, m_heap_mutex , vec_canbus);
+        m_send_manager.send_vector(m_map_mutex , get_sock_func , vec_canbus);
+        vec_canbus.clear();
+        std::this_thread::sleep_for(std::chrono::seconds(15));
     }
 }
 
