@@ -2,68 +2,24 @@
 
 #include <string>
 #include <utility>
-
+#include "rsaBigNum.h"
+#include "aes.hpp"
 
 class HSM
 {
 public:
-    std::pair<std::string, std::string> generateAsymmetricKeys(std::string type, int bits);
+    static std::pair<std::string, std::string> generateAsymmetricKeys(std::string type);
 
-    std::string generateSymmetricKey(std::string type);
+    static std::string generateSymmetricKey(std::string type);
 
+    static std::string encrypt(std::string message, std::string type, std::string key);
 
-    std::string encrypt(std::string message, std::string type, std::string key);
+    static std::string decrypt(std::string message, std::string type, std::string key);
 
-    std::string decrypt(std::string message, std::string type, std::string key);
+    static std::string sign(std::string message, std::string type, std::string key);
 
-    std::string sign(std::string message, std::string type, std::string key);
-
-    std::string verify(std::string message, std::string signature, std::string type, std::string key);
-
-
-    
+    static bool verify(std::string message, std::string signature, std::string type, std::string key);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 egarding interfaces - we will need the low-level interfaces anyway, in order to do the job internally. If we decide to add something on top of this as more high-level, we can always do this afterwards, and hide the specific keys definitions and work with predefined configurations only
@@ -76,7 +32,7 @@ So, let's assume we have a notation of crypto key
 class CryptoKey {
 };
 
-and derivative 
+and derivative
 class EncryptionKey : public CryptoKey {};
 class DecryptionKey : public CryptoKey {};
 
@@ -93,7 +49,7 @@ and defivatives
 class EncryptionAlgorithm : public CryptoAlgorithm {};
 class SigningAlgorithm : public CryptoAlgorithm {};
 class SymmetricEncryptionAlgorithm : public EnryptionAlgorithm
-class AES: public SymmetricEncryptionAlgorithm 
+class AES: public SymmetricEncryptionAlgorithm
 class AES128: public AES
 
 we will also need the same for hashes. Since all hashes have the same interface, this shoul be easy
