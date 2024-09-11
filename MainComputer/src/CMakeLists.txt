@@ -15,6 +15,7 @@ target_sources(MainComputer PRIVATE
     Gui.cpp
     Communication.cpp
     Action.cpp
+    SensorsManager.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/MainComputer/resources)

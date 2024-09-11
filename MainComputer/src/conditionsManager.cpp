@@ -44,9 +44,8 @@ void ConditionsManager::run()
 {
     _isRunning = true;
     std::thread([this]() {
-        const int SENSOR_PORT_NUMBER = 8101;
         Communication communication;
-        communication.connectToSensor(SENSOR_PORT_NUMBER);
+        communication.connectToSensors();
 
         std::string count;
         while (_isRunning)
@@ -57,7 +56,7 @@ void ConditionsManager::run()
             if (count.size() == 10)
                 count.clear();
 
-            //std::string message = "ID:some_id,VALUE:some_value";
+            //std::string message = "ID:Temperature Sensor,VALUE:some_value";
 
             std::string message = communication.getMessageFromQueue();
 

@@ -8,9 +8,12 @@
 
 class Communication {
 public:
+    Communication();
+    ~Communication();
+
     std::string listenTo(int portNumber);
     void sendTo(int portNumber, const std::string& message);
-    void connectToSensor(int portNumber);
+    void connectToSensors();
     std::string getMessageFromQueue();
 
 private:

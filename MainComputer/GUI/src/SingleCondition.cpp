@@ -7,6 +7,7 @@
 #include "ConditionBase.h"
 #include "ConditionsFactory.h"
 #include "SingleCondition.h"
+#include "SensorsManager.h"
 
 
 SingleCondition::SingleCondition()
@@ -48,13 +49,9 @@ void SingleCondition::initializeFields()
 
 	_inputSource = new QComboBox();
 	_inputSource->setPlaceholderText("input source");
-
-	_inputSource->addItem("Temperature Sensor");
-	//_inputSource->addItem("Gear State");
-	_inputSource->addItem("Reverse Distance Sensor");
-	//_inputSource->addItem("Front Distance Sensor");
-	//_inputSource->addItem("Buckle Sensor");
-
+	std::vector<std::string> sensorsList = SensorsManager().getSensorsIDS();
+	for (const auto& sensor : sensorsList)
+		_inputSource->addItem(sensor.c_str());
 	_layout->addWidget(_inputSource);
 
 	_conditionType = new QComboBox();

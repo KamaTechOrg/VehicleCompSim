@@ -8,6 +8,16 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
+#include "SensorsManager.h"
+
+Communication::Communication() {
+    initializeWinsock();
+}
+
+Communication::~Communication() {
+    cleanupWinsock();
+}
+
 void Communication::initializeWinsock() {
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -25,14 +35,14 @@ int Communication::createSocket() {
     int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
         qWarning() << "Could not create socket: " << WSAGetLastError();
-        cleanupWinsock();
+        //cleanupWinsock();
         exit(EXIT_FAILURE);
     }
     return sock;
 }
 
 std::string Communication::listenTo(int portNumber) {
-    initializeWinsock();
+    //initializeWinsock();
     int serverSock = createSocket();
     struct sockaddr_in serverAddr;
     char buffer[1024] = { 0 };
@@ -45,7 +55,7 @@ std::string Communication::listenTo(int portNumber) {
     if (bind(serverSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
         qWarning() << "Bind failed: " << WSAGetLastError();
         closesocket(serverSock);
-        cleanupWinsock();
+        //cleanupWinsock();
         return "ERROR";
     }
 
@@ -60,7 +70,7 @@ std::string Communication::listenTo(int portNumber) {
     if (clientSock == INVALID_SOCKET) {
         qWarning() << "Accept failed: " << WSAGetLastError();
         closesocket(serverSock);
-        cleanupWinsock();
+        //cleanupWinsock();
         return "ERROR";
     }
 
@@ -72,13 +82,13 @@ std::string Communication::listenTo(int portNumber) {
 
     closesocket(clientSock);
     closesocket(serverSock);
-    cleanupWinsock();
+    //cleanupWinsock();
 
     return std::string(buffer);
 }
 
 void Communication::sendTo(int portNumber, const std::string& message) {
-    initializeWinsock();
+    //initializeWinsock();
     int clientSock = createSocket();
     struct sockaddr_in serverAddr;
 
@@ -89,7 +99,7 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     if (inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr) <= 0) {
         qWarning() << "Invalid address/ Address not supported";
         closesocket(clientSock);
-        cleanupWinsock();
+        //cleanupWinsock();
         return;
     }
 
@@ -97,7 +107,7 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     if (connect(clientSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         qWarning() << "Connection Failed: " << WSAGetLastError();
         closesocket(clientSock);
-        cleanupWinsock();
+        //cleanupWinsock();
         return;
     }
 
@@ -105,58 +115,62 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     send(clientSock, message.c_str(), message.length(), 0);
 
     closesocket(clientSock);
-    cleanupWinsock();
+    //cleanupWinsock();
 }
 
-void Communication::connectToSensor(const int portNumber)
+void Communication::connectToSensors()
 {
-    initializeWinsock();
-    int sensorSock = createSocket();
-    struct sockaddr_in sensorAddr;
+    //initializeWinsock();
 
-    sensorAddr.sin_family = AF_INET;
-    sensorAddr.sin_port = htons(portNumber);
+    std::vector<int> sensorsPortNumbers = SensorsManager().getPortNumbers();
+    for (const int portNumber : sensorsPortNumbers) {
+        int sensorSock = createSocket();
+        struct sockaddr_in sensorAddr;
 
-    // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, "127.0.0.1", &sensorAddr.sin_addr) <= 0) {
-        qWarning() << "Invalid address/ Address not supported";
-        closesocket(sensorSock);
-        cleanupWinsock();
-        return;
-    }
+        sensorAddr.sin_family = AF_INET;
+        sensorAddr.sin_port = htons(portNumber);
 
-    // Connect to the server
-    if (connect(sensorSock, (struct sockaddr*)&sensorAddr, sizeof(sensorAddr)) < 0) {
-        qWarning() << "Connection Failed: " << WSAGetLastError();
-        closesocket(sensorSock);
-        cleanupWinsock();
-        return;
-    }
-
-    // Continuously receive messages from the server
-    std::thread([this, sensorSock]() {
-
-        // Send initial message
-        std::string initMessage = "INIT";
-        send(sensorSock, initMessage.c_str(), initMessage.length(), 0);
-
-        while (true) {
-            char buffer[1024] = { 0 };
-            int valread = recv(sensorSock, buffer, sizeof(buffer), 0);
-            if (valread > 0) {
-                qInfo() << "recived: " << buffer;
-
-                std::lock_guard<std::mutex> lock(queueMutex);
-                _messagesQueue.push(std::string(buffer, valread));
-                messageAvailable.notify_one(); // Signal new message arrival
-            }
-            else {
-                break;
-            }
+        // Convert IPv4 and IPv6 addresses from text to binary form
+        if (inet_pton(AF_INET, "127.0.0.1", &sensorAddr.sin_addr) <= 0) {
+            qWarning() << "Invalid address/ Address not supported";
+            closesocket(sensorSock);
+            //cleanupWinsock();
+            return;
         }
-        closesocket(sensorSock);
-        cleanupWinsock();
-    }).detach();
+
+        // Connect to the server
+        if (connect(sensorSock, (struct sockaddr*)&sensorAddr, sizeof(sensorAddr)) < 0) {
+            qWarning() << "Connection Failed: " << WSAGetLastError();
+            closesocket(sensorSock);
+            //cleanupWinsock();
+            return;
+        }
+
+        // Continuously receive messages from the server
+        std::thread([this, sensorSock]() {
+
+            // Send initial message
+            std::string initMessage = "INIT";
+            send(sensorSock, initMessage.c_str(), initMessage.length(), 0);
+
+            while (true) {
+                char buffer[1024] = { 0 };
+                int valread = recv(sensorSock, buffer, sizeof(buffer), 0);
+                if (valread > 0) {
+                    qInfo() << "recived: " << buffer;
+
+                    std::lock_guard<std::mutex> lock(queueMutex);
+                    _messagesQueue.push(std::string(buffer, valread));
+                    messageAvailable.notify_one(); // Signal new message arrival
+                }
+                else {
+                    break;
+                }
+            }
+            closesocket(sensorSock);
+            //cleanupWinsock();
+            }).detach();
+    }
 }
 
 std::string Communication::getMessageFromQueue()
