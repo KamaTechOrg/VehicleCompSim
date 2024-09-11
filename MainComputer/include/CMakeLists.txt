@@ -25,6 +25,7 @@ set(HEADER_FILES
     Communication.h
     Action.h
     SensorsManager.h
+    ControllersManager.h
 )
 
 add_library(MainComputerHeaders INTERFACE)

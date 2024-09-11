@@ -8,7 +8,7 @@ std::vector<std::string> SensorsManager::getSensorsIDS() const
     return ids;
 }
 
-std::vector<int> SensorsManager::getPortNumbers() const
+std::vector<int> SensorsManager::getSensorsPortNumbers() const
 {
     std::vector<int> ports;
     for (const auto& sensor : _sensors)

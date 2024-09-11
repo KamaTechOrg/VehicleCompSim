@@ -111,7 +111,7 @@ void Communication::sendTo(int portNumber, const std::string& message) {
 
 void Communication::connectToSensors()
 {
-    std::vector<int> sensorsPortNumbers = SensorsManager().getPortNumbers();
+    std::vector<int> sensorsPortNumbers = SensorsManager().getSensorsPortNumbers();
     for (const int portNumber : sensorsPortNumbers) {
         int sensorSock = createSocket();
         struct sockaddr_in sensorAddr;

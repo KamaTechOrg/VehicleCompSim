@@ -8,7 +8,7 @@ class SensorsManager
 {
 public:
 	std::vector<std::string> getSensorsIDS() const;
-	std::vector<int> getPortNumbers() const;
+	std::vector<int> getSensorsPortNumbers() const;
 
 private:
 

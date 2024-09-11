@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include "ControllersManager.h"
+
 ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	: QHBoxLayout(parent)
 {
@@ -11,8 +13,9 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 
 	_targetUnit = new QComboBox(parent);
 	_targetUnit->setPlaceholderText("target unit");
-	_targetUnit->addItem("target 1");
-	_targetUnit->addItem("target 2");
+	std::vector<std::string> controllers = ControllersManager().getControllersIDS();
+	for (const auto& constroller : controllers)
+		_targetUnit->addItem(constroller.c_str());
 	addWidget(_targetUnit);
 
 	_messagePart2 = new QLabel;
