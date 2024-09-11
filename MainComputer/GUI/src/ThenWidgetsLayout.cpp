@@ -35,11 +35,11 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 
 std::shared_ptr<Action> ThenWidgetsLayout::data()
 {
-	unsigned targetUnit;
+	std::string targetUnit;
 	std::string message;
 
 	try {
-		targetUnit = extractIdFromString(_targetUnit->currentText().toStdString());
+		targetUnit = _targetUnit->currentText().toStdString();
 	}
 	catch (const std::exception& e) {
 		qWarning() << "Error: " << e.what();

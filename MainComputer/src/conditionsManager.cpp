@@ -20,13 +20,13 @@ ConditionsManager::ConditionsManager()
     loadFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
-void ConditionsManager::addAction(const std::string& id, const Action& action)
+void ConditionsManager::addAction(const std::string &id, const Action &action)
 {
     actions[id] = action;
 }
 
 // Helper function to parse messages with spaces in ID and VALUE
-std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string& message)
+std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string &message)
 {
     std::regex messageRegex(R"(ID:([^,]+),VALUE:(.+))");
     std::smatch matches;
@@ -77,13 +77,15 @@ void ConditionsManager::run()
         }).detach(); // Detach the thread so it runs independently*/
 }
 
-void ConditionsManager::executeAction(const std::string& id)
+void ConditionsManager::executeAction(const std::string &id)
 {
     auto it = actions.find(id);
     if (it != actions.end()) {
         const Action& action = it->second;
         Communication communication;
-        communication.sendTo(action.getTargetUnit(), action.getMessageToSend());
+        int targetUnitAsInt = std::stoi(action.getTargetUnit());
+
+        communication.sendTo(targetUnitAsInt, action.getMessageToSend());
         qInfo() << "Action executed: Sent message to ID:" << id.c_str();
     }
     else {

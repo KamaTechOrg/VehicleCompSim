@@ -8,6 +8,7 @@ class ControllersManager
 public:
 	std::vector<std::string> getControllersIDS() const;
 	std::vector<int> getControllersPortNumbers() const;
+	int getPortByID(const std::string& id) const;
 
 private:
 	// <"id", port number>

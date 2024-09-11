@@ -1,4 +1,5 @@
 #include "Communication.h"
+#include "SensorsManager.h"
 #include <iostream>
 #include <cstring>
 #include <winsock2.h>
@@ -8,7 +9,6 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
-#include "SensorsManager.h"
 
 Communication::Communication() {
     initializeWinsock();

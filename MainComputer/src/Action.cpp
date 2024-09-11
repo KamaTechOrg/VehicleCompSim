@@ -1,9 +1,9 @@
 #include "Action.h"
 
-Action::Action(unsigned targetUnit, std::string messageToSend)
+Action::Action(std::string targetUnit, std::string messageToSend)
     : _targetUnit(targetUnit), _messageToSend(messageToSend) {}
 
-unsigned Action::getTargetUnit() const {
+std::string Action::getTargetUnit() const {
     return _targetUnit;
 }
 

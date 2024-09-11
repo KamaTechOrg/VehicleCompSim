@@ -15,3 +15,12 @@ std::vector<int> ControllersManager::getControllersPortNumbers() const
         ports.push_back(controller.second);
     return ports;
 }
+
+int ControllersManager::getPortByID(const std::string& id) const
+{
+    auto it = _controllers.find(id);
+    if (it != _controllers.end()) {
+        return it->second; 
+    }
+    return -1; 
+}
