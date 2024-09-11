@@ -19,6 +19,7 @@
 using namespace std;
 using namespace cv;
 
+
 const int LANE_CENTER_SMOOTHING_FRAMES = 5;  // Number of frames to smooth lane center calculation
 std::vector<int> lane_center_history;  // History of lane centers for smoothing
 
