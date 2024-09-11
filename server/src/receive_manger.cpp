@@ -1,8 +1,4 @@
-#include <iostream>
-#include <string.h>
-#include <cstring>
-#include <unistd.h>
-#include <mutex>
+
 
 #include "receive_manger.h"
 

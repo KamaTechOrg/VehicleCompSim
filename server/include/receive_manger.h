@@ -4,8 +4,12 @@
 #include <mutex>
 #include <vector>
 #include <memory>
-#include <map>
+#include <iostream>
+#include <string.h>
+#include <cstring>
 #include <queue>
+#include <map>
+
 
 #include "socket.h"
 #include "canbus.h"
