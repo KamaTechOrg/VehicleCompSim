@@ -44,3 +44,21 @@ std::string Data_manipulator::data_and_id_to_str(void *data, size_t size, int so
     return id_data;
 
 }
+
+
+std::string Data_manipulator:: getCurrentTime() {
+    // Get current time point
+    auto now = std::chrono::system_clock::now();
+    
+    // Convert to time_t to extract calendar time
+    std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+    
+    // Convert to tm structure for local time
+    std::tm now_tm = *std::localtime(&now_time_t);
+    
+    // Format time as a string
+    std::ostringstream oss;
+    oss << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+    
+    return oss.str();
+}

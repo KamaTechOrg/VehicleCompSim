@@ -100,13 +100,14 @@ void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBu
                     auto result = Data_manipulator::extract_id_and_data(buffer, valread);
 
                     CanBus cb = result.value();
+                    writeCanMessageToLog(cb , LOGFILE);
                     std::unique_lock<std::mutex> lock(heap_mutex);
                     min_heap.push(cb);
                     CanBus cc = min_heap.top();
                     std::cout << "top = " << cc.getSourceId()  << std::endl;
                     std::cout << " sizeheap = " << min_heap.size() << std::endl;
-                    lock.unlock();
                     std::cout << min_heap.size() << std::endl;
+                    lock.unlock();
 
                   
                 }

@@ -1,11 +1,9 @@
 
 #include "send_menger.h"
 
-
-void Send_manager::operator ()(std::priority_queue<CanBus, std::vector<CanBus>,std::greater<CanBus>> &min_heap, 
-        std::mutex &heap_mutex,std::mutex & map_mutex, 
-        std::function<FD(int)> get_sock
-        )
+void Send_manager::operator()(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap,
+                              std::mutex &heap_mutex, std::mutex &map_mutex,
+                              std::function<FD(int)> get_sock)
 {
     std::unique_lock<std::mutex> heap_lock(heap_mutex);
 
@@ -32,12 +30,7 @@ void Send_manager::operator ()(std::priority_queue<CanBus, std::vector<CanBus>,s
                 // throw...
             }
         }
-
         min_heap.pop();
     }
-
     heap_lock.unlock();
-
-    
-   
 }

@@ -1,6 +1,11 @@
 #pragma once
 
 #include <string>
+#include <string>
+#include <fstream>
+#include <iostream>
+
+#include "data_manipulator.h"
 
 class CanBus {
 
@@ -26,7 +31,7 @@ public:
     std::string getMessage() const {
         return message;
     }
-
+    std::string getFormattedMessage() const;
     
 private:
     int destId;
@@ -37,3 +42,5 @@ private:
     bool rtr;
     int crc;
 };
+
+void writeCanMessageToLog(CanBus & message , const std::string & filename);
