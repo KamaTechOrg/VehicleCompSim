@@ -48,10 +48,13 @@ void SingleCondition::initializeFields()
 
 	_inputSource = new QComboBox();
 	_inputSource->setPlaceholderText("input source");
-	for (int i = 1; i < 6; i++) {
-		std::string option = "id " + std::to_string(i);
-		_inputSource->addItem(option.c_str());
-	}
+
+	_inputSource->addItem("Temperature Sensor");
+	_inputSource->addItem("Gear State");
+	_inputSource->addItem("Reverse Distance Sensor");
+	_inputSource->addItem("Front Distance Sensor");
+	_inputSource->addItem("Buckle Sensor");
+
 	_layout->addWidget(_inputSource);
 
 	_conditionType = new QComboBox();
