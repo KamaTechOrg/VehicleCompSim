@@ -1,10 +1,8 @@
 #include "lane_departure.h"
 
-using namespace cv;
-using namespace std;
 
 // Lane departure detection logic
-bool is_lane_departure(const Mat& image, const vector<vector<int>>& lanes) {
+bool is_lane_departure(const cv::Mat& image, const std::vector<std::vector<int>>& lanes) {
 	int frame_width = image.cols;
 
 	if (lanes.size() != 2) {
