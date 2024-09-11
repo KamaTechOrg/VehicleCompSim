@@ -30,3 +30,5 @@ target_link_libraries(client_exec client_lib server_lib Ws2_32)
 else()
 target_link_libraries(client_exec client_lib server_lib )
 endif()
+
+add_executable(run_progrum runfiles.cpp)
