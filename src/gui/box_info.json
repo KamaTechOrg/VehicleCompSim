@@ -1,0 +1,33 @@
+{
+  "items": [
+    {
+      "id": 00,
+      "data": [
+        { "name": "id", "numBits": "7", "type": "wint_t" },
+
+        { "name": "message", "numBits": "128", "type": "QString" },
+        { "name": "dest_id", "numBits": "7", "type": "wint_t" },
+
+        { "name": "time_stamp", "numBits": "24", "type": "QString" }
+      ]
+    },
+    {
+      "id": 1,
+      "data": [
+        { "name": "Widget A", "numBits": "7", "type": "wint_t" },
+        { "name": "Gizmo B", "numBits": "16", "type": "QString" },
+        { "name": "Doodad C", "numBits": "64", "type": "QString" },
+        { "name": "time_stamp", "numBits": "24", "type": "QString" }
+      ]
+    },
+    {
+      "id": 2,
+      "data": [
+        { "name": "Thingamajig X", "numBits": "7", "type": "wint_t" },
+        { "name": "Doohickey Y", "numBits": "128", "type": "QString" },
+        { "name": "Whatchamacallit Z", "numBits": "24", "type": "QString" },
+        { "name": "time_stamp", "numBits": "24", "type": "QString" }
+      ]
+    }
+  ]
+}

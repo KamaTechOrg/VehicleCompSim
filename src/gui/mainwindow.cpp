@@ -86,7 +86,13 @@ void MainWindow::setupRunService()
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
-    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), nullptr, this);
+    m_DB_handler = new DB_handler();
+    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
+
+    // timer for tooltip update
+    tooltip_timer = new QTimer(this);
+    connect(tooltip_timer, &QTimer::timeout, this, &MainWindow::update_tooltips);
+    tooltip_timer->start(3000); // Start the timer with a 1000 ms (1 second) interval
 
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
@@ -111,9 +117,86 @@ void MainWindow::onConnectionStatusChanged(bool connected)
 {
   
 }
+void MainWindow::fill_box_data() {
+    QMap<wint_t, QList<QString>> json_names;
+    for (const QJsonValue &value: itemsArray) {
+        QJsonObject obj = value.toObject();
+        wint_t id = obj["id"].toInt();
+        QJsonArray dataArray = obj["data"].toArray();
+
+        QList<QString> namesList;
+        for (const QJsonValue &dataValue: dataArray) {
+            QJsonObject dataObj = dataValue.toObject();
+            namesList << dataObj["name"].toString();
+        }
+        json_names[id] = namesList;
+    }
+    for (auto item: m_scene->items()) {
+        if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
+            auto *sensor = dynamic_cast<SensorItem *>(item);
+            QString sensorId = sensor->getPriority();
+            int intValue = sensorId.toInt();
+            auto wideIntValue = static_cast<wint_t>(intValue);
+            if (json_names.contains(wideIntValue)) {
+                base->names = json_names.value(wideIntValue);
+            } else {
+                base->names = json_names.value(00);
+            }
+        }
+    }
+}
+
+void MainWindow::read_from_json() {
+    const QString& filePath = "box_info.json";
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Couldn't open file" << filePath;
+        return;
+    }
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    if (document.isNull()) {
+        qWarning() << "Failed to create JSON doc.";
+        return;
+    }
+
+    if (!document.isObject()) {
+        qWarning() << "JSON is not an object.";
+        return;
+    }
+    QJsonObject jsonObj = document.object();
+    itemsArray = jsonObj["items"].toArray();
+}
+
+void MainWindow::fill_db_data()
+{
+    for (const auto &value : itemsArray) {
+        QJsonObject obj = value.toObject();
+        wint_t id = obj["id"].toInt();
+        QJsonArray dataArray = obj["data"].toArray();
+
+        QList<QList<QString>> itemData;
+        for (const auto &dataValue : dataArray) {
+            QJsonObject dataObj = dataValue.toObject();
+            QList<QString> row;
+            row << dataObj["name"].toString()
+                << dataObj["numBits"].toString()
+                << dataObj["type"].toString();
+            itemData.append(row);
+        }
+        m_DB_handler->data_of_sensors[id] = itemData;
+    }
+}
 
 void MainWindow::onRunStart()
 {
+    read_from_json();
+    fill_db_data();
+    fill_box_data();
+
+
     startBtn->hide();
     timer->hide();
 
@@ -164,6 +247,17 @@ void MainWindow::replayer() {
         m_mainLayout->addWidget(controlPanel);
     }
 }
+
+void MainWindow::update_tooltips() {
+    for (auto item: m_scene->items()) {
+        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+            QString sensorId = sensor->getName();
+            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
+            sensor->update_db_data(data);
+        }
+    }
+}
+
 void MainWindow::close_previous_replay(){
     if (controlPanel != nullptr) {
         m_simulationReplayer->clear_current_events();

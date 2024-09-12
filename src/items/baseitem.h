@@ -6,6 +6,7 @@
 #include <QGraphicsProxyWidget>
 #include "serializableitem.h"
 #include "edgeitem.h"
+#include "PersistentTootip.h"
 #include <QGraphicsItem>
 #include <QGraphicsSceneHoverEvent>
 #include <QToolTip>
@@ -16,9 +17,13 @@ class EdgeItem;
 
 class BaseItem : public QObject, public SerializableItem, public QGraphicsItem {
     Q_OBJECT
-    public:
+public:
 
     BaseItem(QGraphicsItem* parent = nullptr);
+
+    ~BaseItem() {
+        delete m_persistentTooltip;
+    }
 
     QRectF boundingRect() const override;
 
@@ -50,6 +55,9 @@ public:
 //    void set_nodeType(NodeType type) { this->m_type = type; }
     void set_m_hoveredPoint(){ this->m_hoveredPoint; }
 
+    void update_db_data(QList<QVariant> &new_data);
+
+
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
@@ -72,11 +80,14 @@ protected:
     QList<EdgeItem*> m_edges;
     qreal unique_id;
 
-
     QGraphicsProxyWidget* m_closeProxy;
 
     static constexpr qreal DotRadius = 5.0;
     static qreal my_id;
 
+    PersistentTooltip* m_persistentTooltip;
+    QList<QVariant> Db_data;
+public:
+    QList<QString> names;
 };
 

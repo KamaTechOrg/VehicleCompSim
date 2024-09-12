@@ -15,6 +15,7 @@
 #include "LogReader.h"
 #include "SimulationControlPanel.h"
 #include "popupdialog.h"
+#include "DB_handler.h"
 #include <bson/bson.h>
 #include <QLineEdit>
 
@@ -29,7 +30,6 @@ public:
     MainWindow(QWidget* parent = nullptr);
 
 private:
-
     void background_Layout();
     void saveLayout();
     void loadLayout();
@@ -42,6 +42,10 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
+    void update_tooltips();
+    void fill_db_data();
+    void read_from_json();
+    void fill_box_data();
 
     CustomScene* m_scene;
     QGraphicsView* m_view;
@@ -62,4 +66,7 @@ private:
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_topLayout;
+    DB_handler *m_DB_handler;
+    QTimer *tooltip_timer;
+    QJsonArray itemsArray;
 };
