@@ -2,7 +2,7 @@
 #include <thread>
 #include "processControls.h"
 #include "createDump.h"
-
+#include <QSettings>
 
 int RunService::RunControllData::RunControllCounter = 0;
 
@@ -101,11 +101,13 @@ std::shared_ptr<QProcess> RunService::processInit(const QString &command)
 
 void RunService::extarctSensorsFromScene()
 {
+    QSettings settings("VehicleCompSim", "GUI");
+    QString clientId = settings.value("clientId").toString();
     sensors.clear();
     for (auto & item: scene->items())
     {
         SensorItem* sensor = dynamic_cast<SensorItem*>(item);
-        if (sensor && !sensor->isExludeFromProject())
+        if (sensor && !sensor->isExludeFromProject() && sensor->getOwnerID() == clientId)
         {
             sensors.push_back(sensor);
         }

@@ -10,7 +10,7 @@
 #include <QFile>
 #include <QTimer>
 #include <memory>
-#include "CustomScene.h"
+#include "customscene.h"
 #include "SimulationRecorder.h"
 #include "LiveUpdate.h"
 #include "DB_handler.h"

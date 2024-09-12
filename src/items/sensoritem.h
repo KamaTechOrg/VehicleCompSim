@@ -16,6 +16,7 @@ public:
 
     QString getPriority() const;
     QString getName() const;
+    QString getOwnerID() const;
     QString getBuildCommand() const;
     QString getRunCommand() const;
     QString getCmakePath() const;
@@ -23,6 +24,7 @@ public:
 
     void setPriority(const QString& priority);
     void setName(const QString& name);
+    void setOwnerID(const QString& ownerID);
     void setBuildCommand(const QString& buildCommand);
     void setRunCommand(const QString& runCommand);
     void setCmakePath(const QString& path);
@@ -30,10 +32,13 @@ public:
     bool isInitialized() const;
     bool isExludeFromProject() const;
 
+    QJsonObject serialize() const override;
+    void deserialize(const QJsonObject &itemData) override;
 
 private:
     QString priority = "";
     QString name = "";
+    QString ownerID = "";
     QString buildCommand = "";
     QString runCommand = "";
     QString cmakePath = "";
@@ -44,4 +49,5 @@ private:
     void hideButtons();
 
     QGraphicsProxyWidget* m_updateProxy;
+    QGraphicsProxyWidget* m_checkBoxProxy;
 };

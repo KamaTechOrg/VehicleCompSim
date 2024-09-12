@@ -57,7 +57,7 @@ private:
     QPushButton *startBtn;
     QPushButton *stopBtn ;
     QTimeEdit *timer;
-    RunService runService;
+    std::shared_ptr<RunService> m_runService;
     std::unique_ptr<LogReader> m_logReader;
     std::unique_ptr<SimulationRecorder> m_simulationRecorder;
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
@@ -69,4 +69,6 @@ private:
     DB_handler *m_DB_handler;
     QTimer *tooltip_timer;
     QJsonArray itemsArray;
+    QLabel* m_connectionStatusLabel;
+    QFrame* mainFrame;
 };

@@ -7,8 +7,8 @@
 
 qreal BaseItem::my_id = 0;
 
-BaseItem::BaseItem(QGraphicsItem* parent) : m_persistentTooltip(nullptr)
-{
+
+BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -76,7 +76,6 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
             path.cubicTo(controlPoint1, controlPoint2, destPos);
 
             edge->setPath(path);
-            //Todo: send update to server
         }
     }
     return QGraphicsItem::itemChange(change, value);
@@ -90,7 +89,13 @@ void BaseItem::update_db_data(QList<QVariant> &new_data){
     Db_data.clear();
     Db_data = new_data;
 }
-void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
+
+void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsItem::mouseReleaseEvent(event);
+    notifyItemModified();
+}
+
+void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     QPointF nearestPoint;
     if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
         m_hoveredPoint = nearestPoint;
@@ -219,11 +224,13 @@ void BaseItem::removeItem() {
                 else{
                     connectedItem->removeEdge(edge);
                     scene()->removeItem(edge);
+                    edge->notifyItemDeleted();
                     delete edge;
                 }
             }
             else{
                 scene()->removeItem(edge);
+                edge->notifyItemDeleted();
                 delete edge;                    
             }
         }
@@ -231,6 +238,7 @@ void BaseItem::removeItem() {
 
         // Remove this item
         scene()->removeItem(this);
+        notifyItemDeleted();
         deleteLater();
     }
 }

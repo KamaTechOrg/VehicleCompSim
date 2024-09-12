@@ -1,7 +1,11 @@
 #pragma once
 
+#include <unordered_map>
+#include <memory>
+
 #include <QObject>
 #include <QWebSocket>
+#include <QNetworkReply>
 #include <QSettings>
 #include <QUrl>
 #include <QTimer>
@@ -9,47 +13,56 @@
 #include "items/serializableitem.h"
 #include "gui/customscene.h"
 
+#include "IActionHandler.h"
+#include "IdentifyHandler.h"
+#include "AddItemHandler.h"
+#include "ModifyItemHandler.h"
+#include "DeleteItemHandler.h"
+
+
 class SerializableItem;
 
 class WebSocketClient : public QObject, public Observer
 {
     Q_OBJECT
 public:
-    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://104.131.73.137:28770")), bool debug = false);
+    static WebSocketClient& getInstance(const QUrl &url = QUrl(QStringLiteral("ws://165.232.123.144:8080")), bool debug = true);
 
     WebSocketClient(const WebSocketClient&) = delete;
     WebSocketClient& operator=(const WebSocketClient&) = delete;
-
-    void setupSslConfiguration();
 
     void onItemModified(const SerializableItem& item) override;
     void onItemAdded(const SerializableItem& item) override;
     void onItemDeleted(const SerializableItem& item) override;
 
     const QString& getClientId() const { return m_clientId; }
-    void setScene(CustomScene* scene) { m_scene = scene; }
+    void setClientId(const QString& clientId) { m_clientId = clientId; }
+    void setScene(CustomScene* scene);
+
+    void sendMessage(const QJsonObject &message);
+    void addActionHandler(const QString& action, std::unique_ptr<IActionHandler> handler);
 
 Q_SIGNALS:
     void closed();
     void connectionStatusChanged(bool connected);
-
+    void errorOccurred(const QString &errorString);
 
 private Q_SLOTS:
     void onConnected();
     void onDisconnected();
     void onTextMessageReceived(const QString &message);
     void attemptReconnection();
+    void onError(QAbstractSocket::SocketError error);
 
 private:
     explicit WebSocketClient(const QUrl &url, bool debug, QObject *parent = nullptr);
-    
-    void connectToServer();
-    void sendMessage(const QJsonObject &message);
 
+    void connectToServer();
+
+    std::unordered_map<QString, std::unique_ptr<IActionHandler>> m_actionHandlers;
     QString m_clientId;
     QUrl m_url;
     QWebSocket m_webSocket;
-    // QSslConfiguration m_sslConfiguration;
     CustomScene* m_scene;
     bool m_debug;
     QTimer *m_reconnectTimer;
