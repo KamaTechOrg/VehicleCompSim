@@ -15,6 +15,8 @@
 class RSA
 {
 public:
+    static std::pair<std::string, std::string> generateKeys(const std::string& type);
+
     static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 1024);
     static bool isPrime(const BigNum &n, int k);
     static BigNum power(const BigNum &x, const BigNum &y, const BigNum &p);

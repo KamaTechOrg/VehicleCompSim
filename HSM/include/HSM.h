@@ -2,23 +2,23 @@
 
 #include <string>
 #include <utility>
-#include "rsaBigNum.h"
+#include "RSA.h"
 #include "aes.hpp"
 
 class HSM
 {
 public:
-    static std::pair<std::string, std::string> generateAsymmetricKeys(std::string type);
+    static std::pair<std::string, std::string> generateAsymmetricKeys(const std::string& type);
 
-    static std::string generateSymmetricKey(std::string type);
+    static std::string generateSymmetricKey(const std::string& type);
 
-    static std::string encrypt(std::string message, std::string type, std::string key);
+    static std::string encrypt(const std::string& message, const std::string& type, const std::string& key);
 
-    static std::string decrypt(std::string message, std::string type, std::string key);
+    static std::string decrypt(const std::string& message, const std::string& type, const std::string& key);
 
-    static std::string sign(std::string message, std::string type, std::string key);
+    static std::string sign(const std::string& message, const std::string& type, const std::string& key);
 
-    static bool verify(std::string message, std::string signature, std::string type, std::string key);
+    static bool verify(const std::string& message, const std::string& signature, const std::string& type, const std::string& key);
 };
 
 /*

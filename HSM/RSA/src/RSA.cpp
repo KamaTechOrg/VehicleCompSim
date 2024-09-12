@@ -2,24 +2,33 @@
 #include <random>
 #include <iostream>
 
+std::pair<std::string, std::string> RSA::generateKeys(const std::string &type)
+{
+    BigNum publicKey, privateKey, modulus;
+	int bits = std::stoi(type.substr(type.find('_') + 1)); 
+	generate_keys(publicKey, privateKey, modulus, bits / 2);
+	std::string public_key = publicKey.toString();
+	std::string private_key = privateKey.toString();
+	std::string modulus_str = modulus.toString();
+	return std::pair<std::string, std::string>(modulus_str + 'P' + public_key, modulus_str + 'P' + private_key);
+}
+
 void RSA::generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits)
 {
-	std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
-	std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
-	BigNum p(num1);
+	// std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
+	// std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
+	BigNum p = generateLargePrime(bits);
 	// std::cout << "Prime p: " << p << std::endl;
-	BigNum q(num2);
+	BigNum q = generateLargePrime(bits);
 	// std::cout << "Prime q: " << q << std::endl;
 
 	BigNum n = p * q;
 	BigNum phi = (p - 1) * (q - 1);
 	BigNum e("10001"); // Common choice for e
 
-	// Ensure e is coprime with phi
 	while (gcd(e, phi) != 1)
 	{
 		e = generateLargePrime(16);
-		std::cout << "New e: " << e << std::endl;
 	}
 
 	BigNum d = modInverse(e, phi);
