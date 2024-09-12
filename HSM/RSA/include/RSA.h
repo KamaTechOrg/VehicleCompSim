@@ -33,8 +33,11 @@ public:
     static BigNum decrypt(const BigNum &message, const BigNum &privateKey, const BigNum &modulus);
 
     static std::string encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus);
+    static std::string encrypt(const std::string &message, const std::string& key);
 
     static std::string decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus);
+
+    static std::string decrypt(const std::string &encrypted_message, const std::string& key);
 };
 
 

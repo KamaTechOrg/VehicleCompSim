@@ -247,6 +247,15 @@ std::string RSA::encrypt(const std::string &message, const BigNum &publicKey, co
     return result;
 }
 
+std::string RSA::encrypt(const std::string &message, const std::string &key)
+{
+    std::string  modulus = key.substr(0, key.find('P'));
+	std::string publicKey = key.substr(key.find('P') + 1);
+	BigNum bigPublicKey(publicKey);
+	BigNum bigModulus(modulus);
+	return RSA::encrypt(message, bigPublicKey, bigModulus);
+}
+
 std::string RSA::decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus) {
     std::string result;
     std::stringstream ss(encrypted_message);
@@ -267,7 +276,14 @@ std::string RSA::decrypt(const std::string &encrypted_message, const BigNum &pri
     return result;
 }
 
-
+std::string RSA::decrypt(const std::string &encrypted_message, const std::string &key)
+{
+	std::string  modulus = key.substr(0, key.find('P'));
+	std::string privateKey = key.substr(key.find('P') + 1);
+	BigNum bigPrivateKey(privateKey);
+	BigNum bigModulus(modulus);
+	return RSA::decrypt(encrypted_message, bigPrivateKey, bigModulus);
+}
 
 // void RSA::generate_keys(unsigned long long int& publicKey, unsigned long long int& privateKey, unsigned long long int& modulus, int bits) {
 //     unsigned long long int p = generateLargePrime(bits / 2);

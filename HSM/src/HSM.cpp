@@ -32,7 +32,7 @@ std::string HSM::decrypt(const std::string& message, const std::string& type,con
 std::string HSM::sign(const std::string& message, const std::string& type, const std::string& key)
 {
     if(type.find("ECC") != std::string::npos) return ECC::sign(message, type, key);
-    if(type.find("RSA") != std::string::npos) return RSA::sign(message, type, key);
+    // if(type.find("RSA") != std::string::npos) return RSA::sign(message, type, key);
     if(type.find("ECC") != std::string::npos) return ECC::sign(message, type, key);
     if(type.find("AES") != std::string::npos) return AES::sign(message, type, key);
     if(type.find("SHA2") != std::string::npos) return SHA2::sign(message, type, key);
@@ -43,7 +43,7 @@ std::string HSM::sign(const std::string& message, const std::string& type, const
 bool HSM::verify(const std::string& message, const std::string& signature, const std::string& type, const std::string& key)
 {
     if(type.find("ECC") != std::string::npos) return ECC::verify(message, signature, type, key);
-    if(type.find("RSA") != std::string::npos) return RSA::verify(message, signature, type, key);
+    // if(type.find("RSA") != std::string::npos) return RSA::verify(message, signature, type, key);
     if(type.find("ECC") != std::string::npos) return ECC::verify(message, signature, type, key);
     if(type.find("AES") != std::string::npos) return AES::verify(message, signature, type, key);
     if(type.find("SHA2") != std::string::npos) return SHA2::verify(message, signature, type, key);
