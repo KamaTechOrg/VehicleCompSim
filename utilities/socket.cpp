@@ -1,8 +1,10 @@
-#include "socket.h"
 
 #include <iostream>
 #include <cstring>
 #include <vector>
+
+#include "socket.h"
+
 
 Socket::Socket() : m_sock(-1)
 {
@@ -71,7 +73,6 @@ void Socket::bind(const int port)
 #endif
         // throw...
     }
- 
 }
 
 void Socket::listen() const
@@ -116,8 +117,9 @@ FD Socket::accept()
     return fd;
 }
 
-void Socket::send(void *data, size_t size) const
+sendErrorCode Socket::send(void *data, size_t size) const
 {
+    sendErrorCode code;
 #ifdef _WIN32
     int status = ::send(m_sock, static_cast<const char *>(data), static_cast<int>(size), 0);
 #else
@@ -128,17 +130,23 @@ void Socket::send(void *data, size_t size) const
     {
 #ifdef _WIN32
         std::cerr << "send failed with error: " << WSAGetLastError() << "\n";
+        code = sendErrorCode::SENDFAILED;
+        return code;
 #else
         std::cerr << "send failed with errno: " << errno << "\n";
+        code = sendErrorCode::SENDFAILED;
+        return code;
 #endif
-        // throw...
+      
     }
+    code = sendErrorCode::SUCCESS;
+        return code;
 }
 
-int Socket::recv(void *data, size_t len) const
+std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 {
-    std::vector<char> buffer(len);
-    char* buf = buffer.data();
+    ListenErrorCode errorCode;
+    char buf[len]; 
     memset(buf, 0, len);
 
 #ifdef _WIN32
@@ -151,21 +159,27 @@ int Socket::recv(void *data, size_t len) const
     {
 #ifdef _WIN32
         std::cerr << "recv failed with error: " << WSAGetLastError() << "\n";
+        errorCode = ListenErrorCode::RECEIVE_ERROR;
+        return std::make_pair(errorCode, status);
 #else
         std::cerr << "recv failed with errno: " << errno << "\n";
+        errorCode = ListenErrorCode::RECEIVE_ERROR;
+        return std::make_pair(errorCode, status);
 #endif
     }
     else if (status == 0)
     {
-        std::cerr << "Client disconnected\n";
+        errorCode = ListenErrorCode::SERVER_DISCONNECTED;
+        return std::make_pair(errorCode, status);
     }
     else
-    {   
+    {
         std::cout << "Received === " << buf << std::endl;
-  
+
         memcpy(data, buf, len);
     }
-    return status;
+    errorCode = ListenErrorCode::SUCCESS;
+    return std::make_pair(errorCode, status);
 }
 
 void Socket::set_FD(int fd)

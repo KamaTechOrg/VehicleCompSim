@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "constants.h"
+
 class Socket
 {
 public:
@@ -30,8 +32,8 @@ public:
 
     void connect(const std::string host, const int port);
 
-    void send(void *data, size_t size) const;
-    int recv(void *data, size_t len) const;
+    sendErrorCode send(void *data, size_t size) const;
+    std::pair<ListenErrorCode,int> recv(void *data, size_t len) const;
 
     void set_FD(int fd);
     int get_FD() const { return m_sock; }

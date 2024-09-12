@@ -8,7 +8,6 @@
 
 #include "client.h"
 
-
 ClientSocket::ClientSocket(int id)
     : my_id(id)
 {
@@ -26,49 +25,49 @@ ClientSocket::ClientSocket(int id)
     }
 }
 
-void ClientSocket::send(void *data, size_t size, int source_id, int dest_id)
+sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int dest_id)
 {
+    sendErrorCode code;
     if (!is_valid_ptr(data) || !is_valid_size(size))
     {
         throw std::runtime_error("Invalid input");
     }
 
-    std::string id_data = Data_manipulator::data_and_id_to_str(data ,size ,source_id ,dest_id);
+    std::string id_data = Data_manipulator::data_and_id_to_str(data, size, source_id, dest_id);
     size_t total_size = id_data.size();
 
-    m_clientSocket.send((void *)id_data.c_str(), total_size);
+    code = m_clientSocket.send((void *)id_data.c_str(), total_size);
+    return code;
 }
 
-void ClientSocket::listen(void *data, size_t size)
+std::pair<ListenErrorCode,int> ClientSocket::listen(void *data, size_t size)
 {
     if (!is_valid_ptr(data) || !is_valid_size(size))
     {
         throw std::runtime_error("Invalid to receive");
     }
-    int len = m_clientSocket.recv(data, size);
+    auto pair_recv = m_clientSocket.recv(data, size);
+
+    std::cout << "RECV: " << pair_recv.first << std::endl;
+    return pair_recv;
 }
 
-std::future<void> ClientSocket::listenAsync(void *data, size_t size, std::function<void()> callback)
+std::future<void> ClientSocket::listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback)
 {
     if (!is_valid_ptr(data) || !is_valid_size(size))
     {
         throw std::runtime_error("Invalid to receive");
     }
 
-    return std::async(std::launch::async, [this, data, size, callback](){
-      
-            int len = m_clientSocket.recv(data, size);
-            if (callback) {
-                callback(); 
-            }
-          
-    });
-
-   
-
-   
+    return std::async(std::launch::async, [this, data, size, callback]()
+        {                 
+            auto pair_recv = m_clientSocket.recv(data, size);
+            if (callback)
+            {
+                callback(pair_recv.first);
+            } 
+        });
 }
-
 
 bool ClientSocket::is_valid_ptr(void *ptr)
 {
@@ -78,4 +77,9 @@ bool ClientSocket::is_valid_ptr(void *ptr)
 bool ClientSocket::is_valid_size(size_t size)
 {
     return size <= MAXRECV;
+}
+
+void ClientSocket::shut_down()
+{
+    m_clientSocket.~Socket();
 }
