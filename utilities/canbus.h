@@ -32,6 +32,9 @@ public:
         return message;
     }
     std::string getFormattedMessage() const;
+
+    int crc;
+    
     
 private:
     int destId;
@@ -40,7 +43,7 @@ private:
     int sourceId;
   
     bool rtr;
-    int crc;
+    
 };
 
 void writeCanMessageToLog(CanBus & message , const std::string & filename);

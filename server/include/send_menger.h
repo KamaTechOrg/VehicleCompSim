@@ -21,4 +21,6 @@ public:
     );
 
     void send_vector(std::mutex &map_mutex,  std::function<FD(int)> get_sock , std::vector<CanBus>& vec_can);
+
+    bool check_crc(CanBus can);
 };

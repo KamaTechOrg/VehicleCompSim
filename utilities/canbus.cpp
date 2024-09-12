@@ -1,4 +1,5 @@
 
+#include <cstdint>
 #include "canbus.h"
 
 CanBus::CanBus(int srcId, int dstId, std::string msg, int msgLen)
@@ -19,6 +20,9 @@ std::string CanBus::getFormattedMessage() const {
                "Message Size: " + std::to_string(messageLength) + "\n" +
                "Message: " + message + "\n";
     }
+
+
+
 
 
 

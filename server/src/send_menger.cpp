@@ -11,7 +11,11 @@ void Send_manager::extract_heap(std::priority_queue<CanBus, std::vector<CanBus>,
     while (!min_heap.empty())
     {
         CanBus topElement = min_heap.top();
-        vec_can.push_back(topElement);
+
+        if(check_crc(topElement)){
+            vec_can.push_back(topElement);
+        }
+
         min_heap.pop();
     }
     heap_lock.unlock();
@@ -37,4 +41,13 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
         }
     }
     lock.unlock();
+}
+
+bool Send_manager::check_crc(CanBus can)
+{
+    
+    std::string myString(can.getMessage());
+    char *modifiableCharPtr = const_cast<char*>(myString.c_str());
+    int crc2 = Data_manipulator::CRCalgo(modifiableCharPtr);
+    return (crc2 == can.crc);
 }
