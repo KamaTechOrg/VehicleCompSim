@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets WebSockets)
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets WebSockets Sql)
 
 qt_standard_project_setup()
 
@@ -26,12 +27,14 @@ enable_testing()
 # Add subdirectories
 add_subdirectory(tests)
 add_subdirectory(include/VehicleCompSim/utils)
+
 add_subdirectory(src)
 
 # Create client executable
 qt_add_executable(ClientApp
     MANUAL_FINALIZATION
     src/client/main_client.cpp
+
 )
 
 # Set include directories
@@ -43,6 +46,7 @@ target_include_directories(ClientApp PRIVATE
 # Link libraries
 target_link_libraries(ClientApp PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::WebSockets
     VehicleCompSimUtils
     VehicleCompSimCore

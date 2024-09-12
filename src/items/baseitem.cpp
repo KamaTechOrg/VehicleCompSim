@@ -1,11 +1,12 @@
 #include "baseitem.h"
 #include <qrandom.h>
-//#include <QIcon>
 #include <QGraphicsSceneHoverEvent>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+
 qreal BaseItem::my_id = 0;
+
 
 BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -32,6 +33,12 @@ BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(pa
 
     unique_id = my_id;
     my_id++;
+
+    // for test only
+    names.emplace_back("name");
+    names.emplace_back("family");
+    names.emplace_back("msg");
+    // end test
 }
 
 QRectF BaseItem::boundingRect() const {
@@ -78,6 +85,11 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsItem::mouseMoveEvent(event);
     update();
 }
+void BaseItem::update_db_data(QList<QVariant> &new_data){
+    Db_data.clear();
+    Db_data = new_data;
+}
+
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
     notifyItemModified();
@@ -89,16 +101,29 @@ void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-
-    // Create a string with the private fields' information
-    QString tooltipText = QString("Color: %1\nHovered Point: (%2, %3)")
-            .arg(m_color.name())
-            .arg(m_hoveredPoint.x())
-            .arg(m_hoveredPoint.y());
-
-    QToolTip::showText(event->screenPos(), tooltipText, nullptr);
+    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+    for (const QString& name : names) {
+        tooltipHtml += QString("<th>%1</th>").arg(name);
+    }
+    tooltipHtml += "</tr><tr>";
+    for (int i = 0; i < Db_data.size(); ++i) {
+        QVariant value = Db_data.value(i);
+        tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+    }
+    tooltipHtml += "</tr></table>";
+    if (!m_persistentTooltip) {
+        m_persistentTooltip = new PersistentTooltip();
+    }
+    m_persistentTooltip->setText(tooltipHtml);
+    m_persistentTooltip->move(event->screenPos());
+    m_persistentTooltip->show();
     QGraphicsItem::hoverEnterEvent(event);
-
+}
+void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+    if (m_persistentTooltip) {
+        m_persistentTooltip->hide();
+    }
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
@@ -115,13 +140,6 @@ void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
         }
     }
     QGraphicsItem::hoverMoveEvent(event);
-}
-
-void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    m_hoveredPoint = QPointF();
-    update(); // Trigger a repaint
-    QToolTip::hideText();
-    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void BaseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -238,6 +256,3 @@ void BaseItem::deserialize(const QJsonObject &itemData) {
     m_type = static_cast<ItemType>(itemData["type"].toInt());
     setPos(itemData["x"].toDouble(), itemData["y"].toDouble());
 }
-
-
-

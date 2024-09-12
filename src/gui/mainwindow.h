@@ -1,11 +1,9 @@
 #pragma once
 #include <QtWidgets/QMainWindow>
-
 #include <QMainWindow>
 #include <memory>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
-
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
@@ -16,7 +14,10 @@
 #include "LiveUpdate.h"
 #include "LogReader.h"
 #include "SimulationControlPanel.h"
+#include "popupdialog.h"
+#include "DB_handler.h"
 #include <bson/bson.h>
+#include <QLineEdit>
 
 
 class QGraphicsView;
@@ -29,7 +30,6 @@ public:
     MainWindow(QWidget* parent = nullptr);
 
 private:
-
     void background_Layout();
     void saveLayout();
     void loadLayout();
@@ -42,10 +42,16 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
+    void update_tooltips();
+    void fill_db_data();
+    void read_from_json();
+    void fill_box_data();
 
     CustomScene* m_scene;
-    QGraphicsView* m_view;  // Owned by QMainWindow
-    QToolBar* m_toolBar;  // ToolBar for draggable items
+    QGraphicsView* m_view;
+    QToolBar* m_toolBar;
+    QToolBar* rightToolBar;
+    PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QPushButton *startBtn;
@@ -60,6 +66,9 @@ private:
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_topLayout;
+    DB_handler *m_DB_handler;
+    QTimer *tooltip_timer;
+    QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
 };

@@ -11,6 +11,7 @@
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
+
 }
 
 void CustomScene::addItemToScene(SerializableItem *item)
@@ -254,17 +255,19 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
         SerializableItem* item = nullptr;
         if (itemType == "SensorItem") {
             SensorItem* sensorItem = new SensorItem();
+            sensorItem->popupDialog = popupDialog;
+            item = sensorItem;
             sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
-            PopupDialog popup(sensorItem);
-            popup.exec();
-            if(popup.result() == QDialog::Accepted && sensorItem->isInitialized()){
-                item = sensorItem;
-                m_network->addElement(dynamic_cast<SensorItem*>(item));
-            } else{
-                delete item;
-                return;
-            }
             m_network->addElement(dynamic_cast<SensorItem*>(item));
+            popupDialog->oldSensorItem = sensorItem;
+            popupDialog->reset();
+            // Handle cancellation
+//            if (popupDialog->cancel) {
+//                // Remove the sensorItem from the network
+//                m_network->removeElement(sensorItem);
+//                delete sensorItem;
+//                return;
+//            }
         } else if (itemType == "ConnectorItem") {
             item = new ConnectorItem();
             m_network->addConnector(dynamic_cast<ConnectorItem*>(item));

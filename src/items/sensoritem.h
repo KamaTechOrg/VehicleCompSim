@@ -1,12 +1,16 @@
 #pragma once
 
 #include "baseitem.h"
+class PopupDialog;
 
 class SensorItem : public BaseItem {
 public:
     SensorItem(QGraphicsItem* parent = nullptr);
     //copy constructor
     SensorItem(const SensorItem& other);
+
+    PopupDialog* popupDialog;
+
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
