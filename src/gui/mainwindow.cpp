@@ -11,7 +11,7 @@
 #include <QRandomGenerator>
 #include "SimulationControlPanel.h"
 #include <QRect>
-#include <bson/bson.h>
+//#include <bson/bson.h>
 #include <QHBoxLayout>
 
 #include "customwidget.h"
@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_mainLayout->addLayout(m_topLayout);
 
     // Create a frame to wrap the main layout
-    mainFrame = new QFrame(this);
+    mainFrame = new QFrame();
     mainFrame->setFrameShape(QFrame::Box);
     mainFrame->setLineWidth(2);
     mainFrame->setStyleSheet("QFrame { border: 2px solid black; }");
@@ -53,6 +53,9 @@ MainWindow::MainWindow(QWidget* parent)
     m_scene->rightToolBar = rightToolBar;
     m_popupDialog = new PopupDialog(rightToolBar);
     m_scene->popupDialog = m_popupDialog;
+    qInfo() << "set popupDialog";
+
+
 
     auto toolBar = addToolBar("Tools");
     toolBar->addAction("Background", [this] { background_Layout(); });
@@ -98,9 +101,9 @@ void MainWindow::setupRunService()
     m_runService->setScene(m_scene);
 
     startBtn = new QPushButton("start", m_toolBar);
-    m_toolBar->addWidget(startBtn);
+    // m_toolBar->addWidget(startBtn);
     stopBtn = new QPushButton("stop", m_toolBar);
-    m_toolBar->addWidget(stopBtn);
+    // m_toolBar->addWidget(stopBtn);
     timer = new QTimeEdit(m_toolBar);
     timer->setDisplayFormat("hh:mm:ss");
     timer->setFixedSize(120, 30);
@@ -115,12 +118,15 @@ void MainWindow::setupRunService()
     m_scene_blocker->transparency(0.0);
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
-    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
+
+    const QString& filePath = QDir::currentPath() + "/A.log";
+    m_logReader = std::make_unique<LogReader>(filePath, std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
+    //    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
 
     // timer for tooltip update
     tooltip_timer = new QTimer(this);
     connect(tooltip_timer, &QTimer::timeout, this, &MainWindow::update_tooltips);
-    tooltip_timer->start(3000); // Start the timer with a 1000 ms (1 second) interval
+    tooltip_timer->start(7000); // Start the timer with a 1000 ms (1 second) interval
 
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
@@ -191,34 +197,44 @@ void MainWindow::fill_box_data() {
             if (json_names.contains(wideIntValue)) {
                 base->names = json_names.value(wideIntValue);
             } else {
-                base->names = json_names.value(00);
+                base->names = json_names.value(0);
             }
         }
     }
+    // for test
+//    for (auto item: m_scene->items()) {
+//        if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
+//            for(const auto& name : base->names){
+//                qInfo() << name;
+//            }
+//        }
+//    }
 }
-
 void MainWindow::read_from_json() {
-    const QString& filePath = "box_info.json";
+    const QString& filePath = QDir::currentPath() + "/box_info.json";
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Couldn't open file" << filePath;
+        qWarning() << "Couldn't open file" << filePath << ": " << file.errorString();
         return;
     }
     QByteArray jsonData = file.readAll();
     file.close();
 
-    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    QJsonParseError parseError;
+    QJsonDocument document = QJsonDocument::fromJson(jsonData, &parseError);
     if (document.isNull()) {
         qWarning() << "Failed to create JSON doc.";
+        qWarning() << "Error:" << parseError.errorString();
+        qWarning() << "Offset:" << parseError.offset;
         return;
     }
-
     if (!document.isObject()) {
         qWarning() << "JSON is not an object.";
         return;
     }
     QJsonObject jsonObj = document.object();
     itemsArray = jsonObj["items"].toArray();
+    qInfo() << "Successfully read from JSON. Number of items:" << itemsArray.size();
 }
 
 void MainWindow::fill_db_data()
@@ -239,6 +255,9 @@ void MainWindow::fill_db_data()
         }
         m_DB_handler->data_of_sensors[id] = itemData;
     }
+    int numKeys = m_DB_handler->data_of_sensors.size();
+    qDebug() << "Number of keys (sensors):" << numKeys;
+
 }
 
 
@@ -301,6 +320,16 @@ void MainWindow::replayer() {
 }
 
 void MainWindow::update_tooltips() {
+//    for (auto item: m_scene->items()) {
+//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            qInfo() << "before nullptr popupDialog";
+//            if(sensor->popupDialog == nullptr){
+//                qInfo() << "after nullptr popupDialog";
+//                sensor->popupDialog = m_popupDialog;
+//            }
+//        }
+//    }
+
     for (auto item: m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
             QString sensorId = sensor->getName();

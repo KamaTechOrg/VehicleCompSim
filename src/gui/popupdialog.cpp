@@ -219,6 +219,8 @@ void PopupDialog::on_Change_Button_clicked(){
     rightToolBar->addWidget(buttonContainer);
 }
 void PopupDialog::reset(){
+    qInfo() << "reset";
+
     first = true;
     change = true;
     id = oldSensorItem->getPriority();
@@ -226,6 +228,8 @@ void PopupDialog::reset(){
     cmake = oldSensorItem->getCmakePath();
     BuildCommand = oldSensorItem->getBuildCommand();
     RunCommand = oldSensorItem->getRunCommand();
+    qInfo() << "befor show";
+
     showContentInRightToolbar();
 }
 

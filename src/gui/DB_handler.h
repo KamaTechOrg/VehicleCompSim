@@ -6,7 +6,7 @@
 #define VEHICLECOMPSIM_DB_HANDLER_H
 
 #include <QtSql>
-#include <QSqlDatabase>
+#include <QtSql/QSqlDatabase>
 
 
 class DB_handler {

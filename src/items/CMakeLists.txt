@@ -11,6 +11,8 @@ set(CLIENT_SOURCES
     edgeitem.h
     actionsblocker.h
     actionsblocker.cpp
+    PersistentTootip.cpp
+    PersistentTootip.h
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

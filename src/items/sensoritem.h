@@ -9,7 +9,7 @@ public:
     //copy constructor
     SensorItem(const SensorItem& other);
 
-    PopupDialog* popupDialog;
+    PopupDialog* popupDialog = nullptr;
 
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

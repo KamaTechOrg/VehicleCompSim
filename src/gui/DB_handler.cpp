@@ -9,16 +9,16 @@ DB_handler::DB_handler() {
     sqlitedb = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     sqlitedb->setDatabaseName(R"(C:\Users\OWNER\Downloads\loginDetails.db)");
 
-    // for test only
-    QList<QString> data1 = {"A", "1", "wint_t"};
-    QList<QString> data2 = {"B", "128", "QString"};
-    QList<QString> data3 = {"C", "1", "wint_t"};
-    QList<QList<QString>> new_sensor_data;
-    new_sensor_data.emplace_back(data1);
-    new_sensor_data.emplace_back(data2);
-    new_sensor_data.emplace_back(data3);
-    wint_t id = 5; // 7-bit unsigned integer
-    data_of_sensors.insert(id ,new_sensor_data);
+//    // for test only
+//    QList<QString> data1 = {"A", "1", "wint_t"};
+//    QList<QString> data2 = {"B", "128", "QString"};
+//    QList<QString> data3 = {"C", "1", "wint_t"};
+//    QList<QList<QString>> new_sensor_data;
+//    new_sensor_data.emplace_back(data1);
+//    new_sensor_data.emplace_back(data2);
+//    new_sensor_data.emplace_back(data3);
+//    wint_t id = 5; // 7-bit unsigned integer
+//    data_of_sensors.insert(id ,new_sensor_data);
     // end test
 }
 

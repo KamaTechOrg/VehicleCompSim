@@ -25,6 +25,7 @@ private slots:
     void readNewLogEntries();
 public:
     std::unique_ptr<SimulationRecorder> m_simulationRecorder;
+    void generate_buffer();
 
 private:
     QFile m_logFile;
@@ -32,6 +33,8 @@ private:
     QTimer *m_timer;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
     DB_handler *dbHandler;
+    QList<QString> msg = {"yossi goldebrg", "naomi goldberg", "daniel goldebrg", "nechemia goldebrg", "avishay goldebrg"};
+    int msg_counter = 0;
 };
 
 

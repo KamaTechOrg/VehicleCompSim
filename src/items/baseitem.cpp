@@ -35,9 +35,9 @@ BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(pa
     my_id++;
 
     // for test only
-    names.emplace_back("name");
-    names.emplace_back("family");
-    names.emplace_back("msg");
+    // names.emplace_back("name");
+    // names.emplace_back("family");
+    // names.emplace_back("msg");
     // end test
 }
 
@@ -101,28 +101,28 @@ void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
-    for (const QString& name : names) {
-        tooltipHtml += QString("<th>%1</th>").arg(name);
-    }
-    tooltipHtml += "</tr><tr>";
-    for (int i = 0; i < Db_data.size(); ++i) {
-        QVariant value = Db_data.value(i);
-        tooltipHtml += QString("<td>%1</td>").arg(value.toString());
-    }
-    tooltipHtml += "</tr></table>";
-    if (!m_persistentTooltip) {
-        m_persistentTooltip = new PersistentTooltip();
-    }
-    m_persistentTooltip->setText(tooltipHtml);
-    m_persistentTooltip->move(event->screenPos());
-    m_persistentTooltip->show();
+//    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+//    for (const QString& name : names) {
+//        tooltipHtml += QString("<th>%1</th>").arg(name);
+//    }
+//    tooltipHtml += "</tr><tr>";
+//    for (int i = 0; i < Db_data.size(); ++i) {
+//        QVariant value = Db_data.value(i);
+//        tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+//    }
+//    tooltipHtml += "</tr></table>";
+//    if (!m_persistentTooltip) {
+//        m_persistentTooltip = new PersistentTooltip();
+//    }
+//    m_persistentTooltip->setText(tooltipHtml);
+//    m_persistentTooltip->move(event->screenPos());
+//    m_persistentTooltip->show();
     QGraphicsItem::hoverEnterEvent(event);
 }
 void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
-    if (m_persistentTooltip) {
-        m_persistentTooltip->hide();
-    }
+//    if (m_persistentTooltip) {
+//        m_persistentTooltip->hide();
+//    }
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
@@ -214,7 +214,8 @@ void BaseItem::confirmRemove() {
 
 void BaseItem::removeItem() {
     if (scene()) {
-        // Remove all connected edges
+        qInfo() << "remove";
+//         Remove all connected edges
         for (EdgeItem* edge : m_edges) {
             auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
             if(connectedItem->itemType() == ItemType::Connector){
@@ -231,10 +232,12 @@ void BaseItem::removeItem() {
             else{
                 scene()->removeItem(edge);
                 edge->notifyItemDeleted();
-                delete edge;                    
+                delete edge;
             }
         }
         m_edges.clear();
+        qInfo() << "after clear";
+
 
         // Remove this item
         scene()->removeItem(this);
