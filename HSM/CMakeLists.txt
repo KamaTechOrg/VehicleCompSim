@@ -43,6 +43,7 @@ add_subdirectory(SHA256)
 add_subdirectory(RSA)
 # add_subdirectory(API)
 add_subdirectory(KeyStorage)
+add_subdirectory(Signature)
 
 add_subdirectory(Benchmark)
 
