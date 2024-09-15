@@ -21,11 +21,11 @@ public slots:
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
     void onModelUpdated(SerializableItem* model);
-    QToolBar* rightToolBar;  // ToolBar for draggable items
-    PopupDialog* popupDialog;
 
     
 private:
+    QToolBar* rightToolBar;  // ToolBar for draggable items
+    PopupDialog* popupDialog;
     void addItemToScene(BaseItem* item);
     void removeItemFromScene(BaseItem* item);
     void clearScene();

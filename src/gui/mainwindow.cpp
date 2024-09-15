@@ -20,7 +20,7 @@
 #include "sensormodel.h"
 #include "globalstate.h"
 #include "items/qemusensoritem.h"
-#include "editors/QemuSensorItem_Editor.h"
+
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget* parent)
     rightToolBar->setParent(this);
     rightToolBar->setFixedWidth(150);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
-    m_scene->rightToolBar = rightToolBar;
+    //m_scene->rightToolBar = rightToolBar;
 
 
 
@@ -199,7 +199,7 @@ void MainWindow::fill_box_data() {
     for (auto item: m_scene->items()) {
         if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
             auto *sensor = dynamic_cast<SensorItem *>(item);
-            QString sensorId = sensor->getPriority();
+            QString sensorId = sensor->getModel().priority();
             int intValue = sensorId.toInt();
             auto wideIntValue = static_cast<wint_t>(intValue);
             if (json_names.contains(wideIntValue)) {
@@ -365,7 +365,7 @@ void MainWindow::update_tooltips() {
 
     for (auto item: m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();
+            QString sensorId = sensor->getModel().priority();
             QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
             sensor->update_db_data(data);
         }
@@ -390,7 +390,7 @@ bson_t* sensor_to_bson_obj(SensorModel* sensor) {
     BSON_APPEND_UTF8(base_BSON, "name", sensor->name().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->buildCommand().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->runCommand().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->getCmakePath().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->cmakePath().toUtf8().constData());
     return base_BSON;
 }
 

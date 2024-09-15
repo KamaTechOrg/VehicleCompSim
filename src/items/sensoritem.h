@@ -16,7 +16,7 @@ public:
 
     bool isInitialized() const;
     bool isExludeFromProject() const;
-
+    SensorModel& getModel();
 public slots:
     void onModelUpdated();
 

@@ -4,6 +4,8 @@
 
 class QemuSensorItem : public SensorItem
 {
+public:
+    QemuSensorItem();
 private:
 
    //parameters:
@@ -23,7 +25,7 @@ public:
    class Editor;
     void openEditor() override;
 
-    QString getRunCommand() const override;
+    QString getRunCommand() const ;
 
 
 };

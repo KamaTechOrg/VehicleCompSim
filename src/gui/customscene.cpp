@@ -250,7 +250,7 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
     if (event->mimeData()->hasText()) {
         QString itemType = event->mimeData()->text();
 
-        // SerializableItem* item = new SerializableItem();
+        SerializableItem* item; // = new SerializableItem();
 
         if (itemType == "SensorItem") {
 //             SensorModel* sensorModel = new SensorModel();
@@ -272,9 +272,9 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
             sensorItem->popupDialog = popupDialog;
-            item = sensorItem;
-            sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
-            m_network->addElement(dynamic_cast<SensorItem*>(item));
+            //item = sensorItem;
+            sensorItem->getModel().setOwnerID(WebSocketClient::getInstance().getClientId());
+            m_network->addElement(sensorItem);
             sensorItem->openEditor();
         } else if (itemType == "ConnectorItem") {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));

@@ -116,6 +116,11 @@ bool SensorItem::isExludeFromProject() const
     return m_model->isExcludeFromProject();
 }
 
+SensorModel &SensorItem::getModel()
+{
+    return *m_model;
+}
+
 void SensorItem::openEditor() {
     //popupDialog->oldSensorItem = this;
    // popupDialog->reset();

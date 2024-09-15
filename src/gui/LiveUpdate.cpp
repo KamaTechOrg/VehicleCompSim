@@ -16,10 +16,10 @@ void LiveUpdate::parse_new_line(QString &line){
         num_of_packets = communication_data[2].toInt();
         for (auto item: m_scene->items()) {
             if (auto *base = dynamic_cast<SensorItem *>(item)) {
-                if (base->getPriority() == src) {
+                if (base->getModel().priority() == src) {
                     this->src_item = base;
                 }
-                if (base->getPriority() == dest) {
+                if (base->getModel().priority() == dest) {
                     dest_item = base;
                 }
             }

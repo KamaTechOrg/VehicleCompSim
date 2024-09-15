@@ -3,6 +3,8 @@ set(MODELS_SOURCES
     sensormodel.h
     projectmodel.cpp
     projectmodel.h
+    qemusensormodel.h
+    qemusensormodel.cpp
 )
 
 set(SOURCES ${SOURCES} ${MODELS_SOURCES} PARENT_SCOPE)
