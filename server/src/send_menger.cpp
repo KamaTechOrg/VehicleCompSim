@@ -30,7 +30,7 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
         FD d_s = get_sock(canbus.getDestinationId());
         size_t message_len = canbus.getMessageSize();
         char data[message_len];
-        memcpy(data, canbus.getMessage().c_str() ,message_len-1);
+        memcpy(data, canbus.getMessage().c_str() ,message_len);
         if (d_s)
         {
             int status = Cross_platform::cress_send(d_s, data, message_len);
