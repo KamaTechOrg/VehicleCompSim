@@ -11,6 +11,6 @@ std::vector<std::vector<int>> average_slope_intercept(const cv::Mat& image, cons
 cv::Mat canny(const cv::Mat& img);
 cv::Mat display_lines(cv::Mat& img, const std::vector<std::vector<int>>& lines);
 cv::Mat region_of_interest(const cv::Mat& img);
-std::vector<std::vector<int>> detect_lanes(cv::Mat& image);
+std::vector<std::vector<int>> detect_lanes(cv::Mat& image, bool isImgShow = false);
 
 #endif // LANE_DETECTION_H

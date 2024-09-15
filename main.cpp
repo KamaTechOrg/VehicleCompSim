@@ -11,9 +11,10 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
+std::string videoPath = "lane_vid2.mp4";
 
 int main() {
-	cv::VideoCapture cap("lane_vid2.mp4");
+	cv::VideoCapture cap(videoPath);
 	if (!cap.isOpened()) {
 		std::cerr << "Error opening video file" << std::endl;
 		return -1;
@@ -28,7 +29,7 @@ int main() {
 		}
 
 		// Detect lanes and optionally display them on the frame
-		std::vector<std::vector<int>> lanes = detect_lanes(frame);
+		std::vector<std::vector<int>> lanes = detect_lanes(frame, true);
 
 		// Check for lane departure
 		if (is_lane_departure(frame, lanes)) {
