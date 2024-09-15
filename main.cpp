@@ -14,7 +14,7 @@
 std::string videoPath = "lane_vid2.mp4";
 
 
-void display_red_line(cv::Mat frame, cv::Vec4i line);
+void display_red_line(cv::Mat& frame, cv::Vec4i& line);
 
 
 int main() {
@@ -36,11 +36,22 @@ int main() {
 		std::vector<std::vector<int>> lanes = detect_lanes(frame, true);
 
 		// Check for lane departure
-		if (is_lane_departure(frame, lanes)) {
+		int lane_depatured = is_lane_departure(frame, lanes);
+		if (lane_depatured != 0) {
 			putText(frame, "Warning: Lane Departure Detected!", cv::Point(50, 50), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255), 8);
+		}
 		//	cv::line(frame, cv::Point(lanes[1][0], lanes[1][1]), cv::Point(lanes[1][2], lanes[1][3]), cv::Scalar(0, 0, 255), 10);
-			cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
-			display_red_line(frame, lane);
+		//	cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
+		
+		
+
+		if (lane_depatured == 1) {
+			cv::Vec4i lane1(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
+			display_red_line(frame, lane1);
+		}
+		if (lane_depatured == 2) {
+			cv::Vec4i lane2(lanes[0][0], lanes[0][1], lanes[0][2], lanes[0][3]);
+			display_red_line(frame, lane2);
 		}
 
 		imshow("Lane Departure", frame);
@@ -52,7 +63,7 @@ int main() {
 	return 0;
 }
 
-void display_red_line(cv::Mat frame, cv::Vec4i lane)
+void display_red_line(cv::Mat& frame, cv::Vec4i& lane)
 {
 	// Create a copy of the original frame for the mask
 	cv::Mat overlay;
