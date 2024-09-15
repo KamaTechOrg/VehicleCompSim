@@ -1,8 +1,9 @@
-#include "ThenWidgetsLayout.h"
-
 #include <QDebug>
-
+#include <QMessageBox>
+#include "ThenWidgetsLayout.h"
 #include "ControllersManager.h"
+
+
 
 ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	: QHBoxLayout(parent)
@@ -47,9 +48,26 @@ std::shared_ptr<Action> ThenWidgetsLayout::data()
 
 	message = _operation->currentText().toStdString();
 
+	bool targetUnitHasError = targetUnit.empty();
+	bool messageHasError = message.empty();
+
+	//setBorderColor(_targetUnit, targetUnitHasError);
+	//setBorderColor(_operation, messageHasError);
+
+	if (targetUnitHasError || messageHasError) {
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setWindowTitle(tr("Validation Error"));
+		msgBox.setText(tr("Please make sure all fields are filled out."));
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.exec();
+		return nullptr;
+	}
+
 	std::shared_ptr<Action> action = std::make_shared<Action>(targetUnit, message);
 	return action;
 }
+
 
 unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
 {
@@ -67,3 +85,4 @@ unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
 
 	return id;
 }
+

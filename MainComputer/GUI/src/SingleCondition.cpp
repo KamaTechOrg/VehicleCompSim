@@ -95,8 +95,8 @@ std::shared_ptr<ConditionBase> SingleCondition::logicData()
 	bool conditionTypeHasError = conditionType.empty();
 	bool validationValueHasError = validationValue.empty();
 
-	setBorderColor(_inputSource, inputHasError);
-	setBorderColor(_conditionType, conditionTypeHasError);
+	/*setBorderColor(_inputSource, inputHasError);
+	setBorderColor(_conditionType, conditionTypeHasError);*/
 	setBorderColor(_validationValue, validationValueHasError);
 
 	if (input.empty() || conditionType.empty() || validationValue.empty()) {
@@ -121,14 +121,14 @@ nlohmann::json SingleCondition::GuiData()
 	};
 }
 
-void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
-{
-	comboBox->setStyleSheet(
-		hasError
-		? "QComboBox { border: 2px solid red; } QComboBox::drop-down { border: none; }"
-		: "QComboBox { border: none; }"
-	);
-}
+//void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
+//{
+//	comboBox->setStyleSheet(
+//		hasError
+//		? "QComboBox { border: 2px solid red; } QComboBox::drop-down { border: none; }"
+//		: "QComboBox { border: none; }"
+//	);
+//}
 
 void SingleCondition::setBorderColor(QLineEdit* lineEdit, bool hasError)
 {

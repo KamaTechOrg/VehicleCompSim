@@ -34,6 +34,6 @@ private:
 	QPushButton* _deleteButton;
 
 	void initializeFields();
-	void setBorderColor(QComboBox* comboBox, bool hasError);
+	//void setBorderColor(QComboBox* comboBox, bool hasError);
 	void setBorderColor(QLineEdit* lineEdit, bool hasError);
 };
