@@ -57,10 +57,7 @@ int main()
     cout << "Enter id: ";
     cin >> id;
     cin.ignore();
-    if (!is_valid_id(id))
-    {
-        throw invalid_argument("Invalid id");
-    }
+ 
 
     ClientSocket client(id);
 

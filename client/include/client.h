@@ -21,6 +21,7 @@ public:
 private:
     bool is_valid_ptr(void *ptr);
     bool is_valid_size(size_t size);
+    bool is_valid_d_id(int id);
 
     Socket m_clientSocket;
     int my_id;

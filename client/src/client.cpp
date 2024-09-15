@@ -10,7 +10,14 @@
 
 ClientSocket::ClientSocket(int id)
     : my_id(id)
-{
+
+{   
+
+    if (id <= 0)
+    {
+        throw std::invalid_argument("Invalid ID: must be a positive integer.");
+    }
+
     m_clientSocket.create();
     m_clientSocket.connect(IPSERVER, PORTSERVER);
 
@@ -28,7 +35,7 @@ ClientSocket::ClientSocket(int id)
 sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int dest_id)
 {
     sendErrorCode code;
-    if (!is_valid_ptr(data) || !is_valid_size(size))
+    if (!is_valid_ptr(data) || !is_valid_size(size) || !is_valid_d_id(dest_id))
     {
         throw std::runtime_error("Invalid input");
     }
@@ -82,4 +89,9 @@ bool ClientSocket::is_valid_size(size_t size)
 void ClientSocket::shut_down()
 {
     m_clientSocket.~Socket();
+}
+
+bool ClientSocket::is_valid_d_id(int d_id)
+{
+    return d_id > 0 ;
 }
