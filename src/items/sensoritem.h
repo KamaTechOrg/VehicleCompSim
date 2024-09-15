@@ -1,6 +1,10 @@
 #pragma once
 
 #include "baseitem.h"
+#include "../gui/editpanel.h"
+#include "qlineedit.h"
+#include "qpushbutton.h"
+
 class PopupDialog;
 
 class SensorItem : public BaseItem {
@@ -31,6 +35,8 @@ public:
     bool isExludeFromProject() const;
 
 
+    class Editor;
+
 private:
     QString priority = "";
     QString name = "";
@@ -39,7 +45,7 @@ private:
     QString cmakePath = "";
     bool useCmakePath = true;
     bool excludeFromProject = false;
-    void updateItem();
+    virtual void updateItem();
     void showButtons();
     void hideButtons();
 

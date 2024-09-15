@@ -49,7 +49,7 @@ void PopupDialog::showContentInRightToolbar() {
     inputBox1->setContentsMargins(3, 0, 0, 0); // Adjust the left margin as needed
 
 
-//    inputBox1->setAlignment(Qt::AlignRight); // You can also use Qt::AlignHCenter for center alignment
+    //    inputBox1->setAlignment(Qt::AlignRight); // You can also use Qt::AlignHCenter for center alignment
 
 
     inputBox2 = new QLineEdit(this);

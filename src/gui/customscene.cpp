@@ -256,8 +256,8 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             sensorItem->popupDialog = popupDialog;
             item = sensorItem;
             m_network->addElement(dynamic_cast<SensorItem*>(item));
-            popupDialog->oldSensorItem = sensorItem;
-            popupDialog->reset();
+            //popupDialog->oldSensorItem = sensorItem;
+            //popupDialog->reset();
             // Handle cancellation
 //            if (popupDialog->cancel) {
 //                // Remove the sensorItem from the network

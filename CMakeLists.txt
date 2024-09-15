@@ -70,6 +70,16 @@ set(COMMON_SOURCES
     
     src/items/actionsblocker.h
     src/items/actionsblocker.cpp
+
+    src/items/qemusensoritem.h
+    src/items/qemusensoritem.cpp
+
+    src/gui/editpanel.cpp
+    src/gui/editpanel.h
+    src/items/editors/QemuSensorItem_Editor.h src/items/editors/QemuSensorItem_Editor.cpp
+    src/items/editors/SensorItem_Editor.h           src/items/editors/SensorItem_Editor.cpp
+
+
 )
 
 # Define client source files

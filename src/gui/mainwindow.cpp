@@ -12,6 +12,9 @@
 #include <QPushButton>
 #include <QRandomGenerator>
 #include "SimulationControlPanel.h"
+#include "gui/editpanel.h"
+#include "items/qemusensoritem.h"
+#include "items/editors/QemuSensorItem_Editor.h"
 #include <QRect>
 #include <bson/bson.h>
 #include <QHBoxLayout>
@@ -31,12 +34,24 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainWidget);
 
     // Create a new toolbar for the right side
-    rightToolBar = new QToolBar("popup", this);
+    rightToolBar = EditPanel::getPanel();
+    rightToolBar->setParent(this);
     rightToolBar->setFixedWidth(150);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
     m_scene->rightToolBar = rightToolBar;
-    m_popupDialog = new PopupDialog(rightToolBar);
+    //m_popupDialog = new PopupDialog(rightToolBar);
     m_scene->popupDialog = m_popupDialog;
+
+
+
+
+    //-------------------
+    QemuSensorItem* qemu = new QemuSensorItem;
+    m_scene->addItem(qemu);
+    EditPanel::loadNewEditor(new QemuSensorItem::Editor(qemu));
+
+
+    //-------------------
 
     auto toolBar = addToolBar("Tools");
     toolBar->addAction("Background", [this] { background_Layout(); });
