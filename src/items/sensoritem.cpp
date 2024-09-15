@@ -9,20 +9,25 @@
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 
-SensorItem::SensorItem(QGraphicsItem *parent)
-    : BaseItem(parent),
+SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
+    : BaseItem(model, parent), m_model(model),
       m_updateProxy(new QGraphicsProxyWidget(this)),
       m_checkBoxProxy(new QGraphicsProxyWidget(this))
 {
-    m_type = ItemType::Sensor;
     m_width = 160;
     m_height = 90;
+    
 
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
 
     setupUpdateButtonProxy();
     setupCheckBoxProxy();
 
+    // setPos(m_model->x(), m_model->y());
+
+    connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
+    
+    updateColor();
     hideButtons();
 }
 
@@ -46,36 +51,31 @@ void SensorItem::setupCheckBoxProxy()
     if (m_checkBoxProxy->widget() != nullptr) {
         // just update the checkbox state
         QCheckBox* checkBox = static_cast<QCheckBox*>(m_checkBoxProxy->widget());
-        checkBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
+        bool oldState = checkBox->blockSignals(true); // Block signals
+        checkBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
+        checkBox->setEnabled(isInitialized());
+        checkBox->blockSignals(oldState); // Restore previous state
         return;
     }
 
     // Create checkbox for excluding from project
     QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
     excludeCheckBox->setToolTip("Exclude this sensor from the project");
-    excludeCheckBox->setCheckState(excludeFromProject ? Qt::Checked : Qt::Unchecked);
+    excludeCheckBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
     excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
+    excludeCheckBox->setEnabled(isInitialized());
     connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        excludeFromProject = state == Qt::Checked;
-        notifyItemModified();
+        m_model->setisExcludeFromProject(state == Qt::Checked);
+        m_model->notifyItemModified();
+        updateColor();
     });
 
     m_checkBoxProxy->setWidget(excludeCheckBox);
     m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
 }
-SensorItem::SensorItem(const SensorItem& other)
-{
-    priority = other.priority;
-    name = other.name;
-    buildCommand = other.buildCommand;
-    runCommand = other.runCommand;
-    cmakePath = other.cmakePath;
-    useCmakePath = other.useCmakePath;
-}
 
 void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-//        painter->setBrush(Qt::green);
     painter->setPen(Qt::NoPen);
     painter->drawRect(boundingRect());
 
@@ -84,8 +84,8 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
 
     painter->setPen(Qt::black);
-    painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + priority);
-    painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + name);
+    painter->drawText(boundingRect().adjusted(10, 10, -10, -10), Qt::AlignLeft | Qt::AlignTop, "ID: " + m_model->priority());
+    painter->drawText(boundingRect().adjusted(10, 30, -10, -10), Qt::AlignLeft | Qt::AlignTop, "Name: " + m_model->name());
 
     if (isSelected() || !m_hoveredPoint.isNull())
     {
@@ -105,106 +105,44 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-QString SensorItem::getPriority() const {
-    return priority;
-}
-
-QString SensorItem::getName() const {
-    return name;
-}
-
-QString SensorItem::getOwnerID() const
-{
-    return ownerID;
-}
-
-QString SensorItem::getBuildCommand() const {
-    return buildCommand;
-}
-
-QString SensorItem::getRunCommand() const {
-    return runCommand;
-}
-
-void SensorItem::setPriority(const QString& priority) {
-    this->priority = priority;
-}
-
-QString SensorItem::getCmakePath() const
-{
-    return cmakePath;
-}
-
-bool SensorItem::isUseCmakePath() const
-{
-    return useCmakePath;
-}
-
-void SensorItem::setName(const QString& name) {
-    this->name = name;
-}
-
-void SensorItem::setOwnerID(const QString& ownerID)
-{
-    this->ownerID = ownerID;
-}
-
-void SensorItem::setBuildCommand(const QString& buildCommand) {
-    this->buildCommand = buildCommand;
-}
-
-void SensorItem::setRunCommand(const QString& runCommand) {
-    this->runCommand = runCommand;
-}
-
-void SensorItem::setCmakePath(const QString &path)
-{
-    cmakePath = path;
-}
-
-void SensorItem::setUseCmakePath(bool use)
-{
-    useCmakePath = use;
-}
-
 bool SensorItem::isInitialized() const
 {
-    return !priority.isEmpty() && !name.isEmpty() && !buildCommand.isEmpty() && !runCommand.isEmpty();
+    return !m_model->priority().isEmpty() && !m_model->name().isEmpty() && !m_model->buildCommand().isEmpty() && !m_model->runCommand().isEmpty();
 }
 
 bool SensorItem::isExludeFromProject() const
 {
-    return excludeFromProject;
+    return m_model->isExcludeFromProject();
 }
 
 void SensorItem::updateItem()
 {
-    //copy the current item
-    SensorItem* tempSensorItem = new SensorItem(*this);
-    PopupDialog popup(tempSensorItem);
-    popup.exec();
-    if(popup.result() == QDialog::Accepted){
-        if(tempSensorItem->isInitialized()){
-            priority = tempSensorItem->getPriority();
-            name = tempSensorItem->getName();
-            ownerID = tempSensorItem->getOwnerID();
-            buildCommand = tempSensorItem->getBuildCommand();
-            runCommand = tempSensorItem->getRunCommand();
-            cmakePath = tempSensorItem->getCmakePath();
-            useCmakePath = tempSensorItem->isUseCmakePath();
-            notifyItemModified();
-        }
-        else{
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(nullptr, "Attention", 
-                "Some fields are empty. Do you want to remove this item?",
-                QMessageBox::Yes|QMessageBox::No);
-            if (reply == QMessageBox::Yes) {
-                removeItem();
-            }
-        }
-    }
-    delete tempSensorItem;
+    // //copy the current item
+    // SensorItem* tempSensorItem = new SensorItem(*this);
+    // PopupDialog popup(tempSensorItem);
+    // popup.exec();
+    // if(popup.result() == QDialog::Accepted){
+    //     if(tempSensorItem->isInitialized()){
+    //         priority = tempSensorItem->getPriority();
+    //         name = tempSensorItem->getName();
+    //         ownerID = tempSensorItem->getOwnerID();
+    //         buildCommand = tempSensorItem->getBuildCommand();
+    //         runCommand = tempSensorItem->getRunCommand();
+    //         cmakePath = tempSensorItem->getCmakePath();
+    //         useCmakePath = tempSensorItem->isUseCmakePath();
+    //         notifyItemModified();
+    //     }
+    //     else{
+    //         QMessageBox::StandardButton reply;
+    //         reply = QMessageBox::question(nullptr, "Attention", 
+    //             "Some fields are empty. Do you want to remove this item?",
+    //             QMessageBox::Yes|QMessageBox::No);
+    //         if (reply == QMessageBox::Yes) {
+    //             removeItem();
+    //         }
+    //     }
+    // }
+    // delete tempSensorItem;
 }
 
 void SensorItem::showButtons()
@@ -219,29 +157,24 @@ void SensorItem::hideButtons()
     m_updateProxy->setVisible(false);
 }
 
-QJsonObject SensorItem::serialize() const {
-    QJsonObject itemData = BaseItem::serialize();
-    itemData["priority"] = priority;
-    itemData["name"] = name;
-    itemData["ownerID"] = ownerID;
-    itemData["buildCommand"] = buildCommand;
-    itemData["runCommand"] = runCommand;
-    itemData["cmakePath"] = cmakePath;
-    itemData["useCmakePath"] = useCmakePath;
-    itemData["excludeFromProject"] = excludeFromProject;
-    return itemData;
+void SensorItem::onModelUpdated()
+{
+    if(m_model->x() != x() || m_model->y() != y()){
+        setPos(m_model->x(), m_model->y());
+    }
+    setupCheckBoxProxy();
+    updateColor();
 }
 
-void SensorItem::deserialize(const QJsonObject &itemData) {
-    BaseItem::deserialize(itemData);
-    priority = itemData["priority"].toString();
-    name = itemData["name"].toString();
-    ownerID = itemData["ownerID"].toString();
-    buildCommand = itemData["buildCommand"].toString();
-    runCommand = itemData["runCommand"].toString();
-    cmakePath = itemData["cmakePath"].toString();
-    useCmakePath = itemData["useCmakePath"].toBool();
-    excludeFromProject = itemData["excludeFromProject"].toBool();
+void SensorItem::updateColor()
+{
+    if (!isInitialized()) {
+        m_color = m_disabledColor;
+    } else if (isExludeFromProject()) {
+        m_color = m_excludedColor;
+    } else {
+        m_color = m_availableColor;
+    }
 
-    setupCheckBoxProxy();
+    update(); // Trigger a repaint
 }
