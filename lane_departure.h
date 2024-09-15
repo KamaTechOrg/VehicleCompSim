@@ -5,6 +5,7 @@
 #include <vector>
 
 // Function declarations related to lane departure detection
-bool is_lane_departure(const cv::Mat& image, const std::vector<std::vector<int>>& lanes, int threshold = 20);
+// returns 1 for right departure, 2 for left departure, and 0 for not departure
+int is_lane_departure(const cv::Mat& image, const std::vector<std::vector<int>>& lanes, int threshold = 20);
 
 #endif // LANE_DEPARTURE_H
