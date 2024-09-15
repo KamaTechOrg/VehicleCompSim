@@ -246,7 +246,7 @@ void MainWindow::fill_db_data()
         m_DB_handler->data_of_sensors[id] = itemData;
     }
     int numKeys = m_DB_handler->data_of_sensors.size();
-    qDebug() << "Number of keys (sensors):" << numKeys;
+//    qDebug() << "Number of keys (sensors):" << numKeys;
 
 //    // Assuming data_of_sensors is already populated with some data
 //    for (const auto& key : m_DB_handler->data_of_sensors.keys()) {

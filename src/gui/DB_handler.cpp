@@ -50,7 +50,7 @@ QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>
 }
 
 void DB_handler::write_to_DB(const QByteArray& buffer) const {
-//    qInfo() << "enter write db";
+    qInfo() << "enter write db";
     wint_t table_name = buffer[0] & 0x7F;
     QString exit_message = QString::fromLatin1(buffer.mid(1, 128).constData());
 //    qInfo() << "exit_message" << exit_message;

@@ -15,6 +15,7 @@ buffer_test::buffer_test(QObject *parent) : QObject(parent), m_logFile(QDir::cur
         qWarning() << "Error opening the log file for reading and writing.";
         return;
     }
+//    qInfo() << "buffer test activate";
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &buffer_test::generate_buffer);
     m_timer->start(2000); // Check for new log entries every 5 seconds
@@ -27,6 +28,7 @@ buffer_test::~buffer_test() {
 }
 
 void buffer_test::generate_buffer() {
+//    qInfo() << "generate buffer";
     // Create a demo buffer
     QByteArray buffer;
     buffer.resize(200);
