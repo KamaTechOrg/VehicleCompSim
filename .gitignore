@@ -11,7 +11,7 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
-CMakeListsClient.txt
+CMakeLists.txt
 
 # # Ignore executable files
 # *.exe
