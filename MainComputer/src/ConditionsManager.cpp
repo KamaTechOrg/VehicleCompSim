@@ -28,6 +28,7 @@ void ConditionsManager::addAction(const std::string &id, const Action &action)
 // Helper function to parse messages with spaces in ID and VALUE
 std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::string &message)
 {
+    // message format: "ID:some id, VALUE:some value"
     std::regex messageRegex(R"(ID:([^,]+),VALUE:(.+))");
     std::smatch matches;
 
@@ -49,16 +50,8 @@ void ConditionsManager::run()
         std::string count;
         while (_isRunning)
         {
-            count.push_back('.');
-            qInfo() << "running " << count.c_str();
-
-            if (count.size() == 10)
-                count.clear();
-
-            //std::string message = "ID:Temperature Sensor,VALUE:some_value";
-
+            qInfo() << "running";
             std::string message = communication.getMessageFromQueue();
-
             try {
                 auto [id, value] = parseMessage(message);
 
@@ -67,13 +60,14 @@ void ConditionsManager::run()
                     executeAction(id);  // Execute the associated action
                 }
                 else {
-                    qWarning() << "Validation failed for ID:" << id.c_str() << " with value:" << value.c_str();
+                    qInfo() << "Validation failed for ID:" << id.c_str() << " with value:" << value.c_str();
                 }
             }
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();
             }
         }
+        qInfo() << "Conditions Manager thread stopping";
         }).detach(); // Detach the thread so it runs independently*/
 }
 
