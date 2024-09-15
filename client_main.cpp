@@ -1,39 +1,74 @@
+#include <iostream>
+#include <string>
+#include <thread>
+#include <cstring>
+#include <atomic>
+#include "client.h"
 
-// exemple for use with int main client
+using namespace std;
 
-// #include <iostream>
+bool is_valid_id(int id)
+{
+    return id > 0;
+}
 
-// #include "client.h"
-// #include <string.h>
+void send_thread(ClientSocket &client, int id)
+{
+    string m;
+    int d_id;
 
-// using namespace std;
+    while (true)
+    {
+        cout << "Enter your d_id: ";
+        cin >> d_id;
+        cin.ignore();
+        cout << "Enter your message: ";
+        std::getline(cin, m);
+        sendErrorCode code = client.send((void *)m.c_str(), m.size(), id, d_id);
+        if (code == sendErrorCode::SENDFAILED)
+        {
+            std::cout << code << std::endl;
+            return;
+        }
+       
+    }
+}
 
-// bool is_valid_id(int id) {
-//     return id > 0;
-// }
+void listen_thread(ClientSocket &client)
+{
+    char buffer[MAXRECV];
 
-// int main()
-// {
-//     int id = 0;
-//     std::cout << "enter id" << std::endl;
-//     cin >> id;
-//     if (!is_valid_id(id)){
-//         throw("Invalid id");
-//     }
-//     ClientSocket client(id);
-//     std::string m;
-//     char buffer[MAXRECV];
-//     int d_id;
-//     while (true)
-//     {
+    while (true)
+    {
+        memset(buffer, 0, sizeof(buffer));
+        auto pair_recv = client.listen(buffer, sizeof(buffer));
+        if (pair_recv.first != ListenErrorCode::SUCCESS)
+        {
+            client.shut_down();
+            return;
+        }
+    }
+}
 
-//         client.listen(buffer, sizeof(buffer));
-//         std::cout << buffer << std::endl;
-//         memset(buffer, 0, sizeof(buffer));
-//         std::cout << "enter your d_id" << std::endl;
-//         cin >> d_id;
-//         std::cout << "enter your buffer" << std::endl;
-//         cin >> m;
-//         client.send((void *)m.c_str(), m.size(), id, d_id);
-//     }
-// }
+int main()
+{
+    int id = 0;
+
+    cout << "Enter id: ";
+    cin >> id;
+    cin.ignore();
+    if (!is_valid_id(id))
+    {
+        throw invalid_argument("Invalid id");
+    }
+
+    ClientSocket client(id);
+
+    thread t1(send_thread, ref(client), id);
+    thread t2(listen_thread, ref(client));
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
