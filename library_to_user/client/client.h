@@ -1,5 +1,10 @@
 #pragma once
+
+#include <future>
+
 #include "socket.h"
+#include "constants.h"
+#include "data_manipulator.h"
 
 
 class ClientSocket
@@ -8,18 +13,16 @@ class ClientSocket
 public:
     ClientSocket( int id);
 
-    void send(void *data, size_t size, int source_id, int dest_id);
-
-    void listen(void *data, size_t size);
-    void listen_async(void *data, size_t size) const;
-
-   
-
-private:
+    sendErrorCode send(void *data, size_t size, int source_id, int dest_id);
+    std::pair<ListenErrorCode,int> listen(void *data, size_t size);
+    std::future<void> listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback);
     void shut_down();
 
+private:
+    bool is_valid_ptr(void *ptr);
+    bool is_valid_size(size_t size);
+
     Socket m_clientSocket;
-    
     int my_id;
     
 };
