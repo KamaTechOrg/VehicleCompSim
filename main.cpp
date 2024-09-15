@@ -13,6 +13,10 @@
 
 std::string videoPath = "lane_vid2.mp4";
 
+
+void display_red_line(cv::Mat frame, cv::Vec4i line);
+
+
 int main() {
 	cv::VideoCapture cap(videoPath);
 	if (!cap.isOpened()) {
@@ -34,6 +38,9 @@ int main() {
 		// Check for lane departure
 		if (is_lane_departure(frame, lanes)) {
 			putText(frame, "Warning: Lane Departure Detected!", cv::Point(50, 50), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255), 8);
+		//	cv::line(frame, cv::Point(lanes[1][0], lanes[1][1]), cv::Point(lanes[1][2], lanes[1][3]), cv::Scalar(0, 0, 255), 10);
+			cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
+			display_red_line(frame, lane);
 		}
 
 		imshow("Lane Departure", frame);
@@ -43,4 +50,19 @@ int main() {
 	cap.release();
 	cv::destroyAllWindows();
 	return 0;
+}
+
+void display_red_line(cv::Mat frame, cv::Vec4i lane)
+{
+	// Create a copy of the original frame for the mask
+	cv::Mat overlay;
+	frame.copyTo(overlay);
+
+	// Draw the red line on the overlay (mask)
+	cv::line(overlay, cv::Point(lane[0], lane[1]), cv::Point(lane[2], lane[3]), cv::Scalar(0, 0, 255), 10);
+
+	// Blend the overlay with the original frame using transparency
+	double alpha = 0.6;  // Transparency level (0 means fully transparent, 1 means fully opaque)
+	cv::addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame);
+
 }
