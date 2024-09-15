@@ -18,6 +18,9 @@
 #include "bson/bson.h"
 #include <QLineEdit>
 #include "DB_handler.h"
+#include "buffer_test.h"
+
+
 
 
 
@@ -72,4 +75,7 @@ private:
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
+
+    buffer_test *m_bufferTest;  // Add this line
+
 };

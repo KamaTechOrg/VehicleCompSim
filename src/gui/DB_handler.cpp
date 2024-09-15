@@ -7,34 +7,42 @@
 
 DB_handler::DB_handler() {
     sqlitedb = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
-    sqlitedb->setDatabaseName(R"(C:\Users\OWNER\Downloads\loginDetails.db)");
-
-//    // for test only
-//    QList<QString> data1 = {"A", "1", "wint_t"};
-//    QList<QString> data2 = {"B", "128", "QString"};
-//    QList<QString> data3 = {"C", "1", "wint_t"};
-//    QList<QList<QString>> new_sensor_data;
-//    new_sensor_data.emplace_back(data1);
-//    new_sensor_data.emplace_back(data2);
-//    new_sensor_data.emplace_back(data3);
-//    wint_t id = 5; // 7-bit unsigned integer
-//    data_of_sensors.insert(id ,new_sensor_data);
-    // end test
+    const QString filePath = QDir::currentPath() + "/data.db";
+    QFile file(filePath);
+    if (file.exists()) {
+        if (!file.remove()) {
+            qDebug() << "Could not delete existing database file:" << file.errorString();
+            return;
+        }
+    }
+    sqlitedb->setDatabaseName(filePath);
+    if (!sqlitedb->open()) {
+        qDebug() << "Could not open the database:" << sqlitedb->lastError().text();
+    }
 }
 
 QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>>& columnInfo) {
     QList<QVariant> parsedValues;
     int offset = 0;
     for (const QList<QString>& column : columnInfo) {
+        if(column == columnInfo[columnInfo.size()-1]){
+//            qInfo() << "QString";
+            QString time_stamp = QString::fromLatin1(buffer.mid(200 - 24, 200).constData());
+//            qInfo() << time_stamp;
+            parsedValues.append(QVariant(time_stamp));
+            break;
+        }
         int bitLength = column[1].toInt();
         if(column[2] == "wint_t"){
+//            qInfo() << "wint_t";
             wint_t exit_id = buffer[offset] & 0x7F;
-            qInfo() << exit_id;
+//            qInfo() << exit_id;
             parsedValues.append(QVariant(exit_id));
         }else if(column[2] == "QString"){
-            QString exit_message = QString::fromLatin1(buffer.mid(offset, offset + bitLength).constData());
-            qInfo() << exit_message;
-            parsedValues.append(QVariant(exit_message));
+//            qInfo() << "QString" << offset << " " << offset + bitLength;
+            QString exit_message2 = QString::fromLatin1(buffer.mid(offset, offset + bitLength).constData());
+//            qInfo() << "exit_message2" << exit_message2;
+            parsedValues.append(QVariant(exit_message2));
         }
         offset += bitLength;
     }
@@ -42,17 +50,22 @@ QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>
 }
 
 void DB_handler::write_to_DB(const QByteArray& buffer) const {
+//    qInfo() << "enter write db";
     wint_t table_name = buffer[0] & 0x7F;
+    QString exit_message = QString::fromLatin1(buffer.mid(1, 128).constData());
+//    qInfo() << "exit_message" << exit_message;
     if (sqlitedb->open()) {
         QSqlQuery query(*sqlitedb);
         QList<QList<QString>> columnInfo;
         if (data_of_sensors.contains(table_name)) {
             columnInfo = data_of_sensors.value(table_name);
         } else {
-            columnInfo = data_of_sensors.value(00);
+            columnInfo = data_of_sensors.value(0);
         }
-//        QList<QList<QString>> columnInfo = data_of_sensors.value(table_name);
         QList<QVariant> parsed = parseBuffer(buffer, columnInfo);
+        if(!parsed.empty()){
+//            qInfo() << "parsed[1]" << parsed[1];
+        }
         // Create the table if it doesn't exist
         QString createTableQuery = "CREATE TABLE IF NOT EXISTS '" + QString::number(table_name) + "' (";
         for (const QList<QString>& column : columnInfo) {
@@ -60,7 +73,7 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         }
         createTableQuery.chop(1);
         createTableQuery += ")";
-        qInfo() << createTableQuery;
+//        qInfo() << "createTableQuery" << createTableQuery;
 
         if (!query.exec(createTableQuery)) {
             qCritical() << "Failed to create table:" << query.lastError().text();
@@ -86,6 +99,7 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
             query.bindValue(names_for_bind[counter], parsed[counter]);
             counter++;
         }
+//        qInfo() << "insertQuery" << insertQuery;
         if (query.exec()) {
             qInfo() << "Data inserted successfully!";
         } else {

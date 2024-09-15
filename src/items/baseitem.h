@@ -86,7 +86,7 @@ protected:
     static constexpr qreal DotRadius = 5.0;
     static qreal my_id;
 
-    PersistentTooltip* m_persistentTooltip;
+    PersistentTooltip* m_persistentTooltip = nullptr;
     QList<QVariant> Db_data;
 public:
     QList<QString> names;

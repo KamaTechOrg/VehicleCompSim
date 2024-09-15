@@ -11,7 +11,6 @@
 #include <QRandomGenerator>
 #include "SimulationControlPanel.h"
 #include <QRect>
-//#include <bson/bson.h>
 #include <QHBoxLayout>
 #include "./editpanel.h"
 #include "customwidget.h"
@@ -23,7 +22,8 @@
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
         m_scene(new CustomScene()),
-        m_runService(std::make_shared<RunService>()) {
+        m_runService(std::make_shared<RunService>())
+{
     m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
@@ -126,15 +126,6 @@ void MainWindow::setupRunService()
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
 
-    const QString& filePath = QDir::currentPath() + "/A.log";
-    m_logReader = std::make_unique<LogReader>(filePath, std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
-    //    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
-
-    // timer for tooltip update
-    tooltip_timer = new QTimer(this);
-    connect(tooltip_timer, &QTimer::timeout, this, &MainWindow::update_tooltips);
-    tooltip_timer->start(7000); // Start the timer with a 1000 ms (1 second) interval
-
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
         this->onRunStart();
@@ -208,14 +199,6 @@ void MainWindow::fill_box_data() {
             }
         }
     }
-    // for test
-//    for (auto item: m_scene->items()) {
-//        if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
-//            for(const auto& name : base->names){
-//                qInfo() << name;
-//            }
-//        }
-//    }
 }
 void MainWindow::read_from_json() {
     const QString& filePath = QDir::currentPath() + "/box_info.json";
@@ -265,14 +248,47 @@ void MainWindow::fill_db_data()
     int numKeys = m_DB_handler->data_of_sensors.size();
     qDebug() << "Number of keys (sensors):" << numKeys;
 
+//    // Assuming data_of_sensors is already populated with some data
+//    for (const auto& key : m_DB_handler->data_of_sensors.keys()) {
+//        const QList<QList<QString>>& values = m_DB_handler->data_of_sensors.value(key);
+//        qInfo() << "Key:" << key;
+//        for (const QList<QString>& innerList : values) {
+//            for (const QString& item : innerList) {
+//                qInfo() << "  Item:" << item;
+//            }
+//        }
+//    }
+
+
 }
 
 
 void MainWindow::onRunStart()
 {
+    // read from json the sensors data
     read_from_json();
+    // insert the data to DB
     fill_db_data();
+    // inser tthe data to the sensors
     fill_box_data();
+
+    // activate buffer test
+    // this generate buffer every 2 seconds, and write then to A.log
+    m_bufferTest = new buffer_test(this);  // Add this line
+
+    // read from log
+    // this read from A.log every 5 seconds and write the buffers to DB
+    const QString& filePath = QDir::currentPath() + "/A.log";
+    m_logReader = std::make_unique<LogReader>(filePath, std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
+
+    // timer for tooltip update
+    // this update the tooltip every 7 seconed
+    tooltip_timer = new QTimer(this);
+    connect(tooltip_timer, &QTimer::timeout, this, &MainWindow::update_tooltips);
+    tooltip_timer->start(7000);
+
+
+
 
 
     startBtn->hide();
@@ -339,7 +355,7 @@ void MainWindow::update_tooltips() {
 
     for (auto item: m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getName();
+            QString sensorId = sensor->getPriority();
             QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
             sensor->update_db_data(data);
         }
@@ -355,20 +371,20 @@ void MainWindow::close_previous_replay(){
     }
 }
 
-
 bson_t* sensor_to_bson_obj(SensorItem* sensor){
     bson_t* base_BSON = bson_new();
     BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
-    BSON_APPEND_DOUBLE(base_BSON, "unique_id", sensor->get_unique_id());
     BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
     BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
     BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
     BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
     BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
-//    BSON_APPEND_UTF8(base_BSON, "id", sensor->getID().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "priority", sensor->getPriority().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "ownerID", sensor->getOwnerID().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->getCmakePath().toUtf8().constData());
     return base_BSON;
 }
 
@@ -396,17 +412,15 @@ void MainWindow::saveLayout() {
     }
     SaveBsonToFile(base_BSON_vector);
 }
+
 void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     auto *new_sensor = new SensorItem();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
-    bson_iter_next(&iter);
-
-    new_sensor->set_unique_id(bson_iter_double(&iter));
-    bson_iter_next(&iter);
 
     // location
+    bson_iter_next(&iter);
     double x = bson_iter_double(&iter);
     bson_iter_next(&iter);
     double y = bson_iter_double(&iter);
@@ -420,17 +434,20 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     bson_iter_next(&iter);
     int b = bson_iter_int32(&iter);
     new_sensor->set_m_color(r,g,b);
-//    bson_iter_next(&iter);
 
     // sensor info
-//    new_sensor->setID(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setPriority(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setName(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setOwnerID(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setBuildCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
-
+    bson_iter_next(&iter);
+    new_sensor->setCmakePath(bson_iter_utf8(&iter, nullptr));
     m_scene->addItem(new_sensor);
     new_sensor->update();
 }
@@ -448,6 +465,16 @@ void MainWindow::loadLayout() {
         bson_reader_destroy(reader);
     } else {
         qInfo() << "File selection canceled by the user.";
+    }
+    // add popup to the load sensors
+    for (auto item: m_scene->items()) {
+        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            qInfo() << "before nullptr popupDialog";
+            if(sensor->popupDialog == nullptr){
+//                qInfo() << "after nullptr popupDialog";
+                sensor->popupDialog = m_popupDialog;
+            }
+        }
     }
 }
 

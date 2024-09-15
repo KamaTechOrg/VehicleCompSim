@@ -25,7 +25,7 @@ private slots:
     void readNewLogEntries();
 public:
     std::unique_ptr<SimulationRecorder> m_simulationRecorder;
-    void generate_buffer();
+//    void generate_buffer();
 
 private:
     QFile m_logFile;
