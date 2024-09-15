@@ -2,21 +2,24 @@
 set(CLIENT_SOURCES
     websocketclient.cpp
     websocketclient.h
-    main_client.cpp
-    IActionHandler.h
-    IdentifyHandler.h
-    IdentifyHandler.cpp
-    AddItemHandler.h
-    AddItemHandler.cpp
-    DeleteItemHandler.h
-    DeleteItemHandler.cpp
-    ModifyItemHandler.h
-    ModifyItemHandler.cpp
-    RunHandler.h
-    RunHandler.cpp
     observer.h
     observerconfig.h
     observerconfig.cpp
+    clientconstants.h
+    handlers/IActionHandler.h
+    handlers/IdentifyHandler.h
+    handlers/IdentifyHandler.cpp
+    handlers/AddItemHandler.h
+    handlers/AddItemHandler.cpp
+    handlers/DeleteItemHandler.h
+    handlers/DeleteItemHandler.cpp
+    handlers/ModifyItemHandler.h
+    handlers/ModifyItemHandler.cpp
+    handlers/ProjectHandler.h
+    handlers/ProjectHandler.cpp
+    handlers/RunHandler.h
+    handlers/RunHandler.cpp
+
 )
 
 # Add these sources to the parent scope
