@@ -16,9 +16,20 @@ public:
 
     static std::string decrypt(const std::string& message, const std::string& type, const std::string& key);
 
-    static std::string sign(const std::string& message, const std::string& type, const std::string& key);
-
-    static bool verify(const std::string& message, const std::string& signature, const std::string& type, const std::string& key);
+    static std::string signMessage(
+        const std::string& message, 
+        const std::string& sigAlg, 
+        const std::string& hashAlg,
+        const std::string& key
+    );
+    
+    static bool verify(
+        const std::string& message,
+        const std::string& signature,
+        const std::string& sigAlg,
+        const std::string& hashAlg,
+        const std::string& key
+    );
 };
 
 /*

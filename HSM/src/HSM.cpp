@@ -1,5 +1,5 @@
 #include "HSM.h"
-
+#include "Signature.h"
 
 std::pair<std::string, std::string> HSM::generateAsymmetricKeys(const std::string& type)
 {
@@ -29,24 +29,25 @@ std::string HSM::decrypt(const std::string& message, const std::string& type,con
     return std::string();
 }
 
-std::string HSM::sign(const std::string& message, const std::string& type, const std::string& key)
-{
-    if(type.find("ECC") != std::string::npos) return ECC::sign(message, type, key);
-    // if(type.find("RSA") != std::string::npos) return RSA::sign(message, type, key);
-    if(type.find("ECC") != std::string::npos) return ECC::sign(message, type, key);
-    if(type.find("AES") != std::string::npos) return AES::sign(message, type, key);
-    if(type.find("SHA2") != std::string::npos) return SHA2::sign(message, type, key);
-    if(type.find("SHA3") != std::string::npos) return SHA3::sign(message, type, key);
+std::string HSM::signMessage(
+        const std::string& message, 
+        const std::string& sigAlg, 
+        const std::string& hashAlg,
+        const std::string& key
+){
+    if(hashAlg.find("SHA3_256") != std::string::npos) return Signature::sha3_256_sign(message, sigAlg, key);
+    if(hashAlg.find("SHA256") != std::string::npos) return Signature::sha256_sign(message, sigAlg, key);
     return std::string();
 }
 
-bool HSM::verify(const std::string& message, const std::string& signature, const std::string& type, const std::string& key)
-{
-    if(type.find("ECC") != std::string::npos) return ECC::verify(message, signature, type, key);
-    // if(type.find("RSA") != std::string::npos) return RSA::verify(message, signature, type, key);
-    if(type.find("ECC") != std::string::npos) return ECC::verify(message, signature, type, key);
-    if(type.find("AES") != std::string::npos) return AES::verify(message, signature, type, key);
-    if(type.find("SHA2") != std::string::npos) return SHA2::verify(message, signature, type, key);
-    if(type.find("SHA3") != std::string::npos) return SHA3::verify(message, signature, type, key);
+bool HSM::verify(
+        const std::string& message,
+        const std::string& signature,
+        const std::string& sigAlg,
+        const std::string& hashAlg,
+        const std::string& key
+){
+    if(hashAlg.find("SHA3_256") != std::string::npos) return Signature::sha3_256_verify(message, sigAlg, key);
+    if(hashAlg.find("SHA256") != std::string::npos) return Signature::sha256_verify(message, sigAlg, key);
     return false;
 }

@@ -1,5 +1,5 @@
 // SHA-256 implementation
-#include "SHA-256.h"
+#include "SHA256.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
