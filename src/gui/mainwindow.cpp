@@ -15,8 +15,11 @@
 #include <QHBoxLayout>
 
 #include "customwidget.h"
-#include "client/websocketclient.h"
-#include "client/RunHandler.h"
+#include "websocketclient.h"
+#include "handlers/RunHandler.h"
+
+#include "sensormodel.h"
+#include "globalstate.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -53,9 +56,16 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
 
-    WebSocketClient& client = WebSocketClient::getInstance();
-    client.setScene(m_scene);
-    connect(&client, &WebSocketClient::connectionStatusChanged, this, &MainWindow::onConnectionStatusChanged);
+    // Connect to GlobalState
+    GlobalState& globalState = GlobalState::getInstance();
+    connect(&globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onConnectionStatusChanged);
+
+    ProjectModel* startingProject = new ProjectModel("Project");
+    GlobalState::getInstance().addProject(startingProject);
+    GlobalState::getInstance().setCurrentProject(startingProject);
+
+    m_remoteInterface = new RemoteInterface(this);
+    addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
 
     setupRunService();
 }
@@ -87,7 +97,7 @@ void MainWindow::setupToolBar() {
 
 void MainWindow::setupRunService()
 {
-    m_runService->setScene(m_scene);
+    // m_runService->setScene(m_scene);
 
     startBtn = new QPushButton("Start", m_toolBar);
     stopBtn = new QPushButton("Stop", m_toolBar);
@@ -216,19 +226,15 @@ void MainWindow::close_previous_replay(){
 }
 
 
-bson_t* sensor_to_bson_obj(SensorItem* sensor){
+bson_t* sensor_to_bson_obj(SensorModel* sensor) {
     bson_t* base_BSON = bson_new();
     BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
-    BSON_APPEND_DOUBLE(base_BSON, "unique_id", sensor->get_unique_id());
-    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
-    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
-    BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
-    BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
-    BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
-//    BSON_APPEND_UTF8(base_BSON, "id", sensor->getID().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "id", sensor->getId().toUtf8().constData());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->x());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->y());
+    BSON_APPEND_UTF8(base_BSON, "name", sensor->name().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->buildCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->runCommand().toUtf8().constData());
     return base_BSON;
 }
 
@@ -250,37 +256,26 @@ void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
 void MainWindow::saveLayout() {
     std::vector<bson_t*> base_BSON_vector;
     for (auto item : m_scene->items()) {
-        if (BaseItem* base = dynamic_cast<SensorItem*>(item)) {
-            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorItem*>(item)));
+        if (SensorModel* base = dynamic_cast<SensorModel*>(item)) {
+            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorModel*>(item)));
         }
     }
     SaveBsonToFile(base_BSON_vector);
 }
 void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
-    auto *new_sensor = new SensorItem();
+    auto *new_sensor = new SensorModel();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
     bson_iter_next(&iter);
 
-    new_sensor->set_unique_id(bson_iter_double(&iter));
+    new_sensor->setId(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
 
     // location
     double x = bson_iter_double(&iter);
     bson_iter_next(&iter);
     double y = bson_iter_double(&iter);
-    new_sensor->setPos(x, y);
-
-    // color
-    bson_iter_next(&iter);
-    int r = bson_iter_int32(&iter);
-    bson_iter_next(&iter);
-    int g = bson_iter_int32(&iter);
-    bson_iter_next(&iter);
-    int b = bson_iter_int32(&iter);
-    new_sensor->set_m_color(r,g,b);
-//    bson_iter_next(&iter);
 
     // sensor info
 //    new_sensor->setID(bson_iter_utf8(&iter, nullptr));
@@ -291,8 +286,7 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     bson_iter_next(&iter);
     new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
 
-    m_scene->addItem(new_sensor);
-    new_sensor->update();
+    GlobalState::getInstance().currentProject()->addModel(new_sensor);
 }
 
 void MainWindow::loadLayout() {

@@ -15,6 +15,8 @@ set(CLIENT_SOURCES
     popupdialog.cpp
     popupdialog.h
     popupdialog.ui
+    remoteinterface.cpp
+    remoteinterface.h
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

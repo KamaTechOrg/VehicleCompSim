@@ -3,7 +3,7 @@
 //#include <QDialog>
 #include <QString>
 #include <QtWidgets/QDialog>
-#include "items/sensoritem.h"
+#include "sensormodel.h"
 
 namespace Ui {
 class PopupDialog;
@@ -14,7 +14,7 @@ class PopupDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PopupDialog(SensorItem* oldSensorItem, QWidget *parent = nullptr);
+    explicit PopupDialog(SensorModel* oldSensorModel, QWidget *parent = nullptr);
     ~PopupDialog();
 
 private slots:
@@ -26,5 +26,5 @@ private slots:
 
 private:
     Ui::PopupDialog *ui;
-    SensorItem* oldSensorItem;
+    SensorModel* oldSensorModel;
 };

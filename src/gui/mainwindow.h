@@ -16,6 +16,7 @@
 #include "LiveUpdate.h"
 #include "LogReader.h"
 #include "SimulationControlPanel.h"
+#include "remoteinterface.h"
 #include <bson/bson.h>
 
 
@@ -40,12 +41,15 @@ private:
     void record();
     void replayer();
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
+
+private slots:
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
 
+private:
     CustomScene* m_scene;
-    QGraphicsView* m_view;  // Owned by QMainWindow
-    QToolBar* m_toolBar;  // ToolBar for draggable items
+    QGraphicsView* m_view;
+    QToolBar* m_toolBar; 
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QPushButton *startBtn;
@@ -62,4 +66,5 @@ private:
     QHBoxLayout *m_topLayout;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
+    RemoteInterface* m_remoteInterface;
 };

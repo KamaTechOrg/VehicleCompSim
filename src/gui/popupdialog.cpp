@@ -2,20 +2,20 @@
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "ui_popupdialog.h"
 
-PopupDialog::PopupDialog(SensorItem* oldSensorItem, QWidget *parent)
+PopupDialog::PopupDialog(SensorModel* oldSensorModel, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::PopupDialog)
-    , oldSensorItem(oldSensorItem)
+    , oldSensorModel(oldSensorModel)
 
 {
     setModal(true);
     ui->setupUi(this);
-    ui->ID->setText(oldSensorItem->getPriority());
-    ui->Name->setText(oldSensorItem->getName());
-    ui->BuildCommand->setText(oldSensorItem->getBuildCommand());
-    ui->RunCommand->setText(oldSensorItem->getRunCommand());
-    ui->cmakePath->setText(oldSensorItem->getCmakePath());
-    ui->isDefaultCommands->setCheckState((oldSensorItem->isUseCmakePath() ? Qt::Checked : Qt::Unchecked));
+    ui->ID->setText(oldSensorModel->priority());
+    ui->Name->setText(oldSensorModel->name());
+    ui->BuildCommand->setText(oldSensorModel->buildCommand());
+    ui->RunCommand->setText(oldSensorModel->runCommand());
+    ui->cmakePath->setText(oldSensorModel->cmakePath());
+    ui->isDefaultCommands->setCheckState((oldSensorModel->isUseCmakePath() ? Qt::Checked : Qt::Unchecked));
     on_isDefaultCommands_stateChanged(ui->isDefaultCommands->checkState());
     this->setWindowTitle("Sensor Data");
 }
@@ -28,24 +28,24 @@ PopupDialog::~PopupDialog()
 
 void PopupDialog::on_Save_Button_clicked()
 {
-    oldSensorItem->setPriority(ui->ID->text());
-    oldSensorItem->setName(ui->Name->text());
+    oldSensorModel->setPriority(ui->ID->text());
+    oldSensorModel->setName(ui->Name->text());
 
     if (ui->isDefaultCommands->isChecked())
     {
         auto commands = CMakeUtils::getBuildAndRunCommands(ui->cmakePath->text());
         // folow-up: throw an error
-        oldSensorItem->setBuildCommand(commands.first);
-        oldSensorItem->setRunCommand(commands.second);
+        oldSensorModel->setBuildCommand(commands.first);
+        oldSensorModel->setRunCommand(commands.second);
     }
     else
     {
-        oldSensorItem->setBuildCommand(ui->BuildCommand->text());
-        oldSensorItem->setRunCommand(ui->RunCommand->text());
+        oldSensorModel->setBuildCommand(ui->BuildCommand->text());
+        oldSensorModel->setRunCommand(ui->RunCommand->text());
     }
 
-    oldSensorItem->setCmakePath(ui->cmakePath->text());
-    oldSensorItem->setUseCmakePath(ui->isDefaultCommands->isChecked());
+    oldSensorModel->setCmakePath(ui->cmakePath->text());
+    oldSensorModel->setisUseCmakePath(ui->isDefaultCommands->isChecked());
 
     accept();
 }

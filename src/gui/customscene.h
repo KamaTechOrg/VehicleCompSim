@@ -3,10 +3,11 @@
 #include <QGraphicsScene>
 #include <memory>
 #include "network.hpp"
-#include "items/sensoritem.h"
-#include "items/connectoritem.h"
-#include "items/edgeitem.h"
-#include "items/serializableitem.h"
+#include "sensoritem.h"
+#include "connectoritem.h"
+#include "edgeitem.h"
+#include "serializableitem.h"
+#include "projectmodel.h"
 
 
 class CustomScene : public QGraphicsScene {
@@ -15,10 +16,18 @@ public:
     CustomScene(QObject* parent = nullptr);
     void modifyItem(QGraphicsItem *item);
     
-private:
-    void addItemToScene(SerializableItem* item);
-    void removeItemFromScene(SerializableItem* item);
+public slots:
+    void onCurrentProjectChanged(ProjectModel* project);
+    void onModelAdded(SerializableItem* model);
+    void onModelRemoved(SerializableItem* model);
+    void onModelUpdated(SerializableItem* model);
     
+private:
+    void addItemToScene(BaseItem* item);
+    void removeItemFromScene(BaseItem* item);
+    void clearScene();
+    BaseItem* buildBaseItemFromModel(SerializableItem* model);
+
     //drag and drop handlers
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
@@ -32,10 +41,11 @@ private:
     void handleEdgeConnection(QGraphicsSceneMouseEvent* event, BaseItem* baseItem);
     void startNewEdge(QGraphicsSceneMouseEvent* event, BaseItem* baseItem);
     void cleanupCurrentEdge();
-
     void buildConnection(BaseItem* src, BaseItem* dest);
 
+    void handleProjectConnections(ProjectModel* newProject);
 
+    ProjectModel* m_currentProject = nullptr;
     Network<SensorItem, ConnectorItem>* m_network;
     EdgeItem* m_currentEdge = nullptr;
     BaseItem* m_startItem = nullptr;
