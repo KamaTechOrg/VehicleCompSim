@@ -39,8 +39,8 @@ void EdgeItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 
 QJsonObject EdgeItem::serialize() const {
     QJsonObject itemData = SerializableItem::serialize();
-    itemData["source"] = m_source->getId();
-    itemData["dest"] = m_dest->getId();
+    // itemData["source"] = m_source->getId(); // TODO: 
+    // itemData["dest"] = m_dest->getId();
     return itemData;
 }
 

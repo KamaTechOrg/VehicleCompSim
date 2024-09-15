@@ -5,6 +5,9 @@
 #include <iostream>
 #include <QDebug>
 
+#include "clientconstants.h"
+#include "globalstate.h"
+
 class CustomScene;
 
 WebSocketClient& WebSocketClient::getInstance(const QUrl &url, bool debug)
@@ -14,7 +17,7 @@ WebSocketClient& WebSocketClient::getInstance(const QUrl &url, bool debug)
 }
 
 WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
-    : QObject(parent), m_url(url), m_debug(debug)
+    : QObject(parent), m_url(url), m_debug(debug), m_globalState(GlobalState::getInstance())
 {
     if (m_debug)
         qDebug() << "WebSocketClient created with URL:" << url.toString();
@@ -22,8 +25,11 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     connect(&m_webSocket, &QWebSocket::connected, this, &WebSocketClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &WebSocketClient::onDisconnected);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
-    connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::errorOccurred),
-            this, &WebSocketClient::onError);
+    connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::errorOccurred), this, &WebSocketClient::onError);
+
+    connect(&m_globalState, &GlobalState::isRemoteModeChanged, this, &WebSocketClient::onRemoteModeChanged);
+    connect(&m_globalState, &GlobalState::projectAddedLocally, this, &WebSocketClient::onProjectAdded);
+    connect(&m_globalState, &GlobalState::currentProjectChanged, this, &WebSocketClient::onCurrentProjectChanged);
 
     m_reconnectTimer = new QTimer(this);
     connect(m_reconnectTimer, &QTimer::timeout, this, &WebSocketClient::attemptReconnection);
@@ -32,15 +38,46 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     m_clientId = settings.value("clientId").toString();
     m_clientId = m_clientId.isEmpty() ? "-1" : m_clientId;
 
-    connectToServer();
+    // Register action handlers
+    m_actionHandlers[ClientConstants::ACTION_IDENTIFY] = std::make_unique<IdentifyHandler>();
+    m_actionHandlers[ClientConstants::ACTION_ADD] = std::make_unique<AddItemHandler>();
+    m_actionHandlers[ClientConstants::ACTION_MODIFY] = std::make_unique<ModifyItemHandler>();
+    m_actionHandlers[ClientConstants::ACTION_DELETE] = std::make_unique<DeleteItemHandler>();
+    m_actionHandlers[ClientConstants::ACTION_PROJECT] = std::make_unique<ProjectHandler>();
 }
 
 void WebSocketClient::connectToServer()
 {
+    m_globalState.setIsConnecting(true);
+    if (m_webSocket.isValid())
+    {
+        if (m_debug)
+            qDebug() << "WebSocket is already connected.";
+        m_globalState.setIsConnecting(false);
+        return;
+    }
     if (m_debug)
         qDebug() << "Attempting to connect to server...";
 
     m_webSocket.open(m_url);
+}
+
+void WebSocketClient::disconnectFromServer()
+{
+    if (m_debug)
+        qDebug() << "Disconnecting from server...";
+
+    m_webSocket.close();
+    m_globalState.setIsOnline(false);
+}
+
+void WebSocketClient::onRemoteModeChanged(bool remoteMode)
+{
+    if (remoteMode){
+        connectToServer();
+    } else {
+        disconnectFromServer();
+    }
 }
 
 void WebSocketClient::onError(QAbstractSocket::SocketError error)
@@ -63,7 +100,8 @@ void WebSocketClient::onConnected() {
     disconnect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
 
-    emit connectionStatusChanged(true);
+    m_globalState.setIsConnecting(false);
+    m_globalState.setIsOnline(true);
 }
 
 void WebSocketClient::onDisconnected()
@@ -71,17 +109,19 @@ void WebSocketClient::onDisconnected()
     if (m_debug)
         qDebug() << "WebSocket disconnected.";
 
-    emit closed();
+    m_globalState.setIsOnline(false);
 
-    // Start reconnection attempts
-    m_reconnectTimer->start(10000);  // Try to reconnect every 10 seconds
-    emit connectionStatusChanged(false);
+    if(m_globalState.isRemoteMode()) {
+        m_reconnectTimer->start(5000);
+    }
 }
 
 void WebSocketClient::attemptReconnection()
 {
     if (m_debug)
         qDebug() << "Attempting to reconnect...";
+
+    m_globalState.setIsConnecting(true);
 
     if (!m_webSocket.isValid())
     {
@@ -100,7 +140,7 @@ void WebSocketClient::onTextMessageReceived(const QString &message) {
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonObj = doc.object();
 
-    QString action = jsonObj["action"].toString();
+    QString action = jsonObj[ClientConstants::KEY_ACTION].toString();
     if (m_actionHandlers.find(action) != m_actionHandlers.end()) {
         m_actionHandlers[action]->handle(jsonObj);
     } else {
@@ -108,15 +148,6 @@ void WebSocketClient::onTextMessageReceived(const QString &message) {
     }
 }
 
-void WebSocketClient::setScene(CustomScene *scene)
-{
-    m_scene = scene;
-    // Initialize action handlers with the scene
-    m_actionHandlers["identify"] = std::make_unique<IdentifyHandler>();
-    m_actionHandlers["add"] = std::make_unique<AddItemHandler>(m_scene);
-    m_actionHandlers["modify"] = std::make_unique<ModifyItemHandler>(m_scene);
-    m_actionHandlers["delete"] = std::make_unique<DeleteItemHandler>(m_scene);
-}
 
 void WebSocketClient::sendMessage(const QJsonObject &message)
 {
@@ -135,7 +166,8 @@ void WebSocketClient::addActionHandler(const QString& action, std::unique_ptr<IA
 
 void WebSocketClient::onItemModified(const SerializableItem& item) {
     QJsonObject jsonObj = item.serialize();
-    jsonObj["action"] = "modify";
+    jsonObj[ClientConstants::KEY_ACTION] = ClientConstants::ACTION_MODIFY;
+    jsonObj[ClientConstants::KEY_PROJECT_ID] = m_globalState.currentProject()->id();
 
     QJsonDocument doc(jsonObj);
     QString message = doc.toJson(QJsonDocument::Compact);
@@ -148,7 +180,8 @@ void WebSocketClient::onItemModified(const SerializableItem& item) {
 
 void WebSocketClient::onItemAdded(const SerializableItem& item) {
     QJsonObject jsonObj = item.serialize();
-    jsonObj["action"] = "add";
+    jsonObj[ClientConstants::KEY_ACTION] = ClientConstants::ACTION_ADD;
+    jsonObj[ClientConstants::KEY_PROJECT_ID] = m_globalState.currentProject()->id();
 
     QJsonDocument doc(jsonObj);
     QString message = doc.toJson(QJsonDocument::Compact);
@@ -161,7 +194,8 @@ void WebSocketClient::onItemAdded(const SerializableItem& item) {
 
 void WebSocketClient::onItemDeleted(const SerializableItem& item) {
     QJsonObject jsonObj = item.serialize();
-    jsonObj["action"] = "delete";
+    jsonObj[ClientConstants::KEY_ACTION] = ClientConstants::ACTION_DELETE;
+    jsonObj[ClientConstants::KEY_PROJECT_ID] = m_globalState.currentProject()->id();
 
     QJsonDocument doc(jsonObj);
     QString message = doc.toJson(QJsonDocument::Compact);
@@ -170,4 +204,36 @@ void WebSocketClient::onItemDeleted(const SerializableItem& item) {
         qDebug() << "Item deleted:" << message;
 
     m_webSocket.sendTextMessage(message);
+}
+
+void WebSocketClient::onProjectAdded(ProjectModel* project) {
+    QJsonObject jsonObj;
+    jsonObj[ClientConstants::KEY_ACTION] = ClientConstants::ACTION_PROJECT;
+    jsonObj[ClientConstants::KEY_COMMAND] = ClientConstants::ACTION_ADD;
+    jsonObj[ClientConstants::KEY_ID] = project->id();
+    jsonObj[ClientConstants::KEY_NAME] = project->name();
+
+    QJsonDocument doc(jsonObj);
+    QString message = doc.toJson(QJsonDocument::Compact);
+
+    if (m_debug)
+        qDebug() << "Project added:" << message;
+
+    m_webSocket.sendTextMessage(message);
+}
+
+void WebSocketClient::onCurrentProjectChanged(ProjectModel* project) {
+    if (project && m_globalState.isRemoteMode()) {
+        QJsonObject jsonObj;
+        jsonObj[ClientConstants::KEY_ACTION] = ClientConstants::ACTION_GET_POJECT_ITEMS;
+        jsonObj[ClientConstants::KEY_PROJECT_ID] = project->id();
+
+        QJsonDocument doc(jsonObj);
+        QString message = doc.toJson(QJsonDocument::Compact);
+
+        if (m_debug)
+            qDebug() << "Current project changed:" << message;
+
+        m_webSocket.sendTextMessage(message);
+    }
 }

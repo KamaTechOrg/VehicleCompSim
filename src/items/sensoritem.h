@@ -1,54 +1,42 @@
 #pragma once
 
 #include "baseitem.h"
+#include "sensormodel.h"
+
 class PopupDialog;
 
 class SensorItem : public BaseItem {
 public:
-    SensorItem(QGraphicsItem* parent = nullptr);
-    //copy constructor
-    SensorItem(const SensorItem& other);
+    SensorItem(SensorModel* model, QGraphicsItem* parent = nullptr);
 
     PopupDialog* popupDialog = nullptr;
 
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    QString getPriority() const;
-    QString getName() const;
-    QString getOwnerID() const;
-    virtual QString getBuildCommand() const;
-    virtual QString getRunCommand() const;
-    QString getCmakePath() const;
-    bool isUseCmakePath() const;
-
-    void setPriority(const QString& priority);
-    void setName(const QString& name);
-    void setOwnerID(const QString& ownerID);
-    void setBuildCommand(const QString& buildCommand);
-    void setRunCommand(const QString& runCommand);
-    void setCmakePath(const QString& path);
-    void setUseCmakePath(bool use);
     bool isInitialized() const;
     bool isExludeFromProject() const;
 
-    QJsonObject serialize() const override;
-    void deserialize(const QJsonObject &itemData) override;
+public slots:
+    void onModelUpdated();
 
     virtual void openEditor();
     class Editor;
 private:
-    QString priority = "";
-    QString name = "";
-    QString ownerID = "";
-    QString buildCommand = "";
-    QString runCommand = "";
-    QString cmakePath = "";
-    bool useCmakePath = true;
-    bool excludeFromProject = false;
+    SensorModel* m_model;
+
+    void setupUpdateButtonProxy();
+    void setupCheckBoxProxy();
+
     void showButtons();
     void hideButtons();
 
     QGraphicsProxyWidget* m_updateProxy;
     QGraphicsProxyWidget* m_checkBoxProxy;
+
+    QColor m_disabledColor = QColor(192, 192, 192); // Gray for disabled
+    QColor m_excludedColor = QColor(250, 165, 142); // Red for excluded
+    QColor m_availableColor = QColor(160, 253, 143); // Green for available
+
+    void updateColor();    
 };

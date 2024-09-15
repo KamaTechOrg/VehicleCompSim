@@ -7,13 +7,19 @@
 
 qreal BaseItem::my_id = 0;
 
-
-BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(parent) {
+BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
+
+    if(item){
+        m_model = item;
+        setPos(m_model->x(), m_model->y());
+    } else {
+        m_model = new SerializableItem();
+    }
     
     m_color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 64, 192);
 
@@ -30,7 +36,7 @@ BaseItem::BaseItem(QGraphicsItem* parent) : SerializableItem(), QGraphicsItem(pa
 
     // Store proxies for visibility management
     m_closeProxy = closeProxy;
-
+    
     unique_id = my_id;
     my_id++;
 }
@@ -71,6 +77,10 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
 
             edge->setPath(path);
         }
+        m_positionChanged = true;
+
+        m_model->setX(pos().x());
+        m_model->setY(pos().y());
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -86,7 +96,10 @@ void BaseItem::update_db_data(QList<QVariant> &new_data){
 
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
-    notifyItemModified();
+    if (m_positionChanged) {
+        m_positionChanged = false;
+        m_model->notifyItemModified();
+    }
 }
 
 void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
@@ -222,7 +235,7 @@ void BaseItem::removeItem() {
 //         Remove all connected edges
         for (EdgeItem* edge : m_edges) {
             auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
-            if(connectedItem->itemType() == ItemType::Connector){
+            if(connectedItem->m_model->itemType() == ItemType::Connector){
                 if(connectedItem->edges().size() <= 2){
                     connectedItem->removeItem();
                 }
@@ -245,21 +258,7 @@ void BaseItem::removeItem() {
 
         // Remove this item
         scene()->removeItem(this);
-        notifyItemDeleted();
+        m_model->notifyItemDeleted();
         deleteLater();
     }
-}
-
-QJsonObject BaseItem::serialize() const {
-    QJsonObject itemData = SerializableItem::serialize();
-    itemData["type"] = static_cast<int>(m_type);
-    itemData["x"] = pos().x();
-    itemData["y"] = pos().y();
-    return itemData;
-}
-
-void BaseItem::deserialize(const QJsonObject &itemData) {
-    SerializableItem::deserialize(itemData);
-    m_type = static_cast<ItemType>(itemData["type"].toInt());
-    setPos(itemData["x"].toDouble(), itemData["y"].toDouble());
 }

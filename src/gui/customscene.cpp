@@ -6,47 +6,44 @@
 #include <QJsonDocument>
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
+#include "sensormodel.h"
 #include "popupdialog.h"
 #include "client/websocketclient.h"
+#include "globalstate.h"
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
-
+    connect(&GlobalState::getInstance(), &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
 }
 
-void CustomScene::addItemToScene(SerializableItem *item)
+void CustomScene::addItemToScene(BaseItem *item) 
 {
     if(item == nullptr){
         return;
     }
-    BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
-    if(baseItem){
-        addItem(baseItem);
-    } else
-    {
-        EdgeItem* edgeItem = dynamic_cast<EdgeItem*>(item);
-        if(edgeItem){
-            addItem(edgeItem);
-        }
+    // addItem(item);
+    if (m_currentProject) {
+        m_currentProject->addModel(item->model());
+        item->model()->notifyItemAdded();
     }
-    item->notifyItemAdded();
 }
 
-void CustomScene::removeItemFromScene(SerializableItem *item)
+void CustomScene::removeItemFromScene(BaseItem *item)
 {
     if(item == nullptr){
         return;
     }
-    item->notifyItemDeleted();
-    BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
-    if(baseItem){
-        removeItem(baseItem);
-    } else
-    {
-        EdgeItem* edgeItem = dynamic_cast<EdgeItem*>(item);
-        if(edgeItem){
-            removeItem(edgeItem);
-        }
+    // removeItem(item);
+    if (m_currentProject) {
+        m_currentProject->removeModel(item->model());
+        item->model()->notifyItemDeleted();
+    }
+}
+
+void CustomScene::clearScene() {
+    for (QGraphicsItem* item : items()) {
+        removeItem(item);
+        delete item;
     }
 }
 
@@ -139,7 +136,7 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
 {
     if(src->itemType() == ItemType::Connector){
         if(dest->itemType() == ItemType::Connector){
-            removeItemFromScene(m_currentEdge);
+            removeItem(m_currentEdge); // TODO : notify to server
             delete m_currentEdge;
             return;            
         }
@@ -163,11 +160,11 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         edge->setSource(src);
         edge->setDest(dest);
 
-        addItemToScene(edge);
+        addItem(edge); // TODO : notify to server
         src->addEdge(edge);
         dest->addEdge(edge);
 
-        m_network->connect(dynamic_cast<SensorItem*>(src), dynamic_cast<ConnectorItem*>(dest));
+        // m_network->connect(dynamic_cast<SensorItem*>(src), dynamic_cast<ConnectorItem*>(dest));
     } else if(dest->itemType() == ItemType::Sensor){
         //create a new connector in the middle of the two sensors
         QPointF middlePoint = (startPoint + endPoint) / 2;
@@ -207,12 +204,12 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         connector->addEdge(edge2);
         dest->addEdge(edge2);
 
-        addItemToScene(connector);
-        addItemToScene(edge1);
-        addItemToScene(edge2);
+        addItemToScene(connector); // TODO : notify to server
+        addItem(edge1); // TODO : notify to server
+        addItem(edge2); // TODO : notify to server
 
-        m_network->connect(dynamic_cast<SensorItem*>(src), connector);
-        m_network->connect(dynamic_cast<SensorItem*>(dest), connector);
+        // m_network->connect(dynamic_cast<SensorItem*>(src), connector);
+        // m_network->connect(dynamic_cast<SensorItem*>(dest), connector);
     }
 
     delete m_currentEdge;
@@ -252,36 +249,110 @@ void CustomScene::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
 void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
     if (event->mimeData()->hasText()) {
         QString itemType = event->mimeData()->text();
-        SerializableItem* item = nullptr;
+
+        // SerializableItem* item = new SerializableItem();
+
         if (itemType == "SensorItem") {
-            SensorItem* sensorItem = new SensorItem();
+//             SensorModel* sensorModel = new SensorModel();
+//             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+//             PopupDialog popup(sensorModel);
+//             popup.exec();
+//             if(popup.result() == QDialog::Accepted){
+//                 // item = sensorModel;
+//                 // m_network->addElement(dynamic_cast<SensorItem*>(item));
+//             } else{
+//                 delete sensorModel;
+//                 return;
+//             }
+//             // m_network->addElement(dynamic_cast<SensorItem*>(item));
+//             SensorItem* sensorItem = new SensorItem(sensorModel);
+//             sensorItem->setPos(event->scenePos());
+//             addItemToScene(sensorItem);
+            SensorModel* sensorModel = new SensorModel();
+            sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+            SensorItem* sensorItem = new SensorItem(sensorModel);
             sensorItem->popupDialog = popupDialog;
             item = sensorItem;
             sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
             m_network->addElement(dynamic_cast<SensorItem*>(item));
             sensorItem->openEditor();
-            //popupDialog->oldSensorItem = sensorItem;
-            //popupDialog->reset();
-            // Handle cancellation
-//            if (popupDialog->cancel) {
-//                // Remove the sensorItem from the network
-//                m_network->removeElement(sensorItem);
-//                delete sensorItem;
-//                return;
-//            }
         } else if (itemType == "ConnectorItem") {
-            item = new ConnectorItem();
-            m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
+            // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
+            ConnectorItem * connectorItem = new ConnectorItem();
+            connectorItem->setPos(event->scenePos());
+            addItemToScene(connectorItem);
         }
-        if (item && dynamic_cast<BaseItem*>(item)) {
-            BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
-            baseItem->setPos(event->scenePos());
-            addItemToScene(baseItem);
-            event->setAccepted(true);
-        } else {
+        else {
             event->setAccepted(false);
         }
     } else {
         event->setAccepted(false);
     }
+}
+
+void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
+    clearScene();
+    handleProjectConnections(project);
+
+    m_currentProject = project;
+    if (m_currentProject) {
+        for (SerializableItem* model : m_currentProject->models()) {
+            QGraphicsItem* item = buildBaseItemFromModel(model);
+            if (item) {
+                addItem(item);
+            }
+        }
+    }
+}
+
+void CustomScene::handleProjectConnections(ProjectModel* newProject) {
+    if (m_currentProject) {
+        disconnect(m_currentProject, &ProjectModel::modelAdded, this, &CustomScene::onModelAdded);
+        disconnect(m_currentProject, &ProjectModel::modelRemoved, this, &CustomScene::onModelRemoved);
+        disconnect(m_currentProject, &ProjectModel::modelUpdated, this, &CustomScene::onModelUpdated);
+    }
+
+    connect(newProject, &ProjectModel::modelAdded, this, &CustomScene::onModelAdded);
+    connect(newProject, &ProjectModel::modelRemoved, this, &CustomScene::onModelRemoved);
+    connect(newProject, &ProjectModel::modelUpdated, this, &CustomScene::onModelUpdated);
+}
+
+void CustomScene::onModelAdded(SerializableItem* model) {
+    BaseItem* item = buildBaseItemFromModel(model);
+    if (item) {
+        addItem(item);
+    }
+}
+
+void CustomScene::onModelRemoved(SerializableItem* model) {
+    for (QGraphicsItem* item : items()) {
+        BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
+        if (baseItem && baseItem->model()->getId() == model->getId()) {
+            removeItem(baseItem);
+            delete baseItem;
+            break;
+        }
+    }
+}
+
+void CustomScene::onModelUpdated(SerializableItem* model) {
+    // for (QGraphicsItem* item : items()) {
+    //     BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
+    //     if (baseItem && baseItem->model()->getId() == model->getId()) {
+    //         // modifyItem(item);
+    //         break;
+    //     }
+    // }
+    // TODO
+}
+
+BaseItem* CustomScene::buildBaseItemFromModel(SerializableItem* model) {
+    if (model->itemType() == ItemType::Sensor) {
+        SensorModel* sensorModel = dynamic_cast<SensorModel*>(model);
+        return new SensorItem(sensorModel);
+    } else if (model->itemType() == ItemType::Connector) {
+        return new ConnectorItem();
+    }
+    // TODO : add edge
+    return nullptr;
 }
