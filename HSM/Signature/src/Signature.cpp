@@ -22,7 +22,7 @@ bool Signature::sha256_verify(
     const string &message, const string &signature, const string &sigAlg, const string &key)
 {
     if(sigAlg.find("RSA") != std::string::npos){
-        return RSA::decrypt(signature, key) == SHA256::toHexString(SHA256::sha256(message));
+        return SHA256::compareHashes(RSA::decrypt(signature, key), SHA256::sha256(message));
     }
     return false;
 }
