@@ -31,7 +31,7 @@ add_subdirectory(src)
 # Create client executable
 qt_add_executable(ClientApp
     MANUAL_FINALIZATION
-    src/client/main_client.cpp
+    src/main.cpp
 )
 
 # Set include directories

@@ -16,5 +16,9 @@ target_link_libraries(services PUBLIC Qt6::Core Qt6::Widgets VehicleCompSimUtils
 target_include_directories(services PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/services
+    ${CMAKE_SOURCE_DIR}/src/gui
+    ${CMAKE_SOURCE_DIR}/src/models
+    ${CMAKE_SOURCE_DIR}/src/items
+    ${CMAKE_SOURCE_DIR}/src/state
     ${CMAKE_SOURCE_DIR}/include/VehicleCompSim/utils
 )

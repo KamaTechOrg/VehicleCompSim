@@ -1,7 +1,8 @@
 #ifndef RUNSERVICE_H
 #define RUNSERVICE_H
 
-#include "../gui/customscene.h"
+#include "customscene.h"
+#include "sensormodel.h"
 #include <QProcess>
 #include <future>
 
@@ -31,8 +32,7 @@ class RunService
         void reset();
     };
 
-    CustomScene* scene;
-    QVector<SensorItem*> sensors;
+    QVector<SensorModel*> sensors;
     RunControllData runControl;
     int timer = 0;
     bool isRunning = false;
@@ -49,7 +49,6 @@ public:
     RunService();
     ~RunService();
 
-    void setScene(CustomScene* _scene);
     void start();
     void start(const std::function<void ()> onFinish);
     void stop();
