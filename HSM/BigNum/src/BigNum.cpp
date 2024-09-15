@@ -494,7 +494,7 @@ uint64_t BigNum::toChar() const
 	return static_cast<char>(data[0]);
 }
 
-int BigNum::getSizeThetIsFull() const
+int BigNum::getSizeThatIsFull() const
 {
     int i = 0;
 	while(i < size && data[size - 1 - i] == 0){

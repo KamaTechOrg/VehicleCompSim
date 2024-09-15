@@ -1,7 +1,7 @@
 
 #include <cassert>
 #include <gtest/gtest.h>
-#include "SHA-256.h"
+#include "SHA256.h"
 
 
 TEST(SHA256_Test, Empty_message){

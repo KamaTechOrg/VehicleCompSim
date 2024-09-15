@@ -18,9 +18,9 @@ void RSA::generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, 
 {
 	// std::string num1 = "fbc727ead875405abb015014aacf827cfdbcd1f58907640c33d14f0df6c239586ffd55252d4100fe5422d05ffa3b15b1db9ebb1e895cc42049bf0bc28a15095f";
 	// std::string num2 = "9584fc2295db9bd232e18c6352d22d146e9c26693754f9045b28774886d3275eda82ba271bdfaad6eacc93a0ed37a05eb17a96e1e2b94c1cd5e329bfe95c8309";
-	BigNum p = generateLargePrime(bits);
+	BigNum p = generateLargePrime(bits / 2);
 	// std::cout << "Prime p: " << p << std::endl;
-	BigNum q = generateLargePrime(bits);
+	BigNum q = generateLargePrime(bits / 2);
 	// std::cout << "Prime q: " << q << std::endl;
 
 	BigNum n = p * q;
@@ -126,6 +126,7 @@ BigNum RSA::generateRandomNumber(int bits, int &count)
 
 std::string RSA::generateRandomBits(size_t length)
 {
+	if(length < 16) length = 16;
 	// Calculate the number of bytes needed
 	size_t numBytes = (length + 7) / 8; // Round up to the nearest byte
 
@@ -156,7 +157,7 @@ std::string RSA::generateRandomBits(size_t length)
 
 	// Trim the string to the specified length
 	std::string binaryString = oss.str();
-	return binaryString.substr(0, (length / 4) + 1);
+	return binaryString.substr(0, length / 16);
 }
 
 BigNum RSA::generateLargePrime(int bits)
@@ -222,28 +223,55 @@ BigNum RSA::decrypt(const BigNum &message, const BigNum &privateKey, const BigNu
 
 // 
 
+// std::string RSA::encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus)
+// {
+//     int blockSize = modulus.getSizeThatIsFull() * BigNum::UINT_T_SIZE;
+//     std::string result;
+
+//     for (size_t i = 0; i < message.size(); i += blockSize / sizeof(char)) 
+//     {
+//         BigNum m(blockSize);
+//         size_t blockLen = std::min(blockSize / sizeof(char), message.size() - i);
+        
+//         memcpy(m.data.data(), message.data() + i, blockLen * sizeof(char));
+
+//         BigNum encryptedBlock = RSA::power(m, publicKey, modulus);
+// 		std::string encryptedBlockStr = encryptedBlock.toString();
+// 		while(encryptedBlockStr.size() < blockSize / 16){
+// 			encryptedBlockStr = "0" + encryptedBlockStr;
+// 		}
+//         result += encryptedBlockStr;
+//     }
+
+//     return result;
+// }
+
 std::string RSA::encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus)
 {
-    int blockSize = (modulus.getSizeThetIsFull() - 1) * BigNum::UINT_T_SIZE; // BigNum::UINT_T_SIZE = 32
+    size_t blockSize = modulus.getSizeThatIsFull()* BigNum::UINT_T_SIZE;
     std::string result;
 
-    for (size_t i = 0; i < message.size(); i += blockSize / sizeof(char)) 
+    for (size_t i = 0; i < message.size() * 8; i += blockSize)
     {
-        BigNum m(blockSize);
-        size_t blockLen = std::min(blockSize / sizeof(char), message.size() - i);
-        
-        memcpy(m.data.data(), message.data() + i, blockLen * sizeof(char));
+        BigNum m(blockSize);  
+        size_t blockLen = std::min(blockSize, (message.size() * 8 )- i);
+
+        memcpy(m.data.data(), message.data() + i, blockLen);
 
         BigNum encryptedBlock = RSA::power(m, publicKey, modulus);
-		std::string encryptedBlockStr = encryptedBlock.toString();
-		while(encryptedBlockStr.size() < blockSize / 16){
-			encryptedBlockStr = "0" + encryptedBlockStr;
-		}
+        std::string encryptedBlockStr = encryptedBlock.toString();
+
+        while (encryptedBlockStr.size() < blockSize / 16) {  
+            encryptedBlockStr = "0" + encryptedBlockStr;
+        }
+
         result += encryptedBlockStr;
+		std::cout << "encryptedBlockStr" << std::endl;
     }
 
     return result;
 }
+
 
 std::string RSA::encrypt(const std::string &message, const std::string &key)
 {
@@ -255,13 +283,14 @@ std::string RSA::encrypt(const std::string &message, const std::string &key)
 }
 
 std::string RSA::decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus) {
-	int blockSize = (modulus.getSizeThetIsFull() - 1) * BigNum::UINT_T_SIZE; // BigNum::UINT_T_SIZE = 32
+	int blockSize = modulus.getSizeThatIsFull()  * BigNum::UINT_T_SIZE;
 	std::string result;
-	for (size_t i = 0; i < encrypted_message.size(); i += blockSize / 16) {
-		BigNum m(encrypted_message.substr(i, blockSize / 16));
+	for (size_t i = 0; i < encrypted_message.size(); i += blockSize / 4) {
+		BigNum m(encrypted_message.substr(i, blockSize / 4));
 		BigNum decryptedBlock = RSA::power(m, privateKey, modulus);
-		std::string decryptedBlockStr(blockSize, '\0');
+		std::string decryptedBlockStr(blockSize, ' ');
 		memcpy(decryptedBlockStr.data(), decryptedBlock.data.data(), blockSize);
+		decryptedBlockStr.erase(decryptedBlockStr.find_last_not_of('\0') + 1);
 		result += decryptedBlockStr;
 	}
 	return result;
