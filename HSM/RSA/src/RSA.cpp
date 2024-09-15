@@ -246,31 +246,33 @@ BigNum RSA::decrypt(const BigNum &message, const BigNum &privateKey, const BigNu
 //     return result;
 // }
 
+
+
 std::string RSA::encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus)
 {
-    size_t blockSize = modulus.getSizeThatIsFull()* BigNum::UINT_T_SIZE;
+    int blockSize = modulus.getSizeThatIsFull() - 1;
+	int blockSizeInBits = blockSize * BigNum::UINT_T_SIZE;
     std::string result;
+    int messageSizeInBit = message.size() * 8; 
 
-    for (size_t i = 0; i < message.size() * 8; i += blockSize)
+    for (int i = 0; i < messageSizeInBit; i += blockSizeInBits)
     {
-        BigNum m(blockSize);  
-        size_t blockLen = std::min(blockSize, (message.size() * 8 )- i);
-
-        memcpy(m.data.data(), message.data() + i, blockLen);
+        int blockLen = std::min(blockSizeInBits, messageSizeInBit - i);
+        BigNum m(blockLen);  
+        
+        memcpy(m.data.data(), message.data() + (i/8), blockLen / 8);
 
         BigNum encryptedBlock = RSA::power(m, publicKey, modulus);
         std::string encryptedBlockStr = encryptedBlock.toString();
 
-        while (encryptedBlockStr.size() < blockSize / 16) {  
-            encryptedBlockStr = "0" + encryptedBlockStr;
-        }
-
-        result += encryptedBlockStr;
-		std::cout << "encryptedBlockStr" << std::endl;
+        
+        result +=  encryptedBlockStr + 'P'; 
+        
     }
 
     return result;
 }
+
 
 
 std::string RSA::encrypt(const std::string &message, const std::string &key)
@@ -283,16 +285,18 @@ std::string RSA::encrypt(const std::string &message, const std::string &key)
 }
 
 std::string RSA::decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus) {
-	int blockSize = modulus.getSizeThatIsFull()  * BigNum::UINT_T_SIZE;
 	std::string result;
-	for (size_t i = 0; i < encrypted_message.size(); i += blockSize / 4) {
-		BigNum m(encrypted_message.substr(i, blockSize / 4));
-		BigNum decryptedBlock = RSA::power(m, privateKey, modulus);
-		std::string decryptedBlockStr(blockSize, ' ');
-		memcpy(decryptedBlockStr.data(), decryptedBlock.data.data(), blockSize);
+	std::string encrypted_message_cpy(encrypted_message);
+	while(encrypted_message_cpy.size() > 0){
+		BigNum encryptedBlock(encrypted_message_cpy.substr(0, encrypted_message_cpy.find('P')));
+		encrypted_message_cpy = encrypted_message_cpy.substr(encrypted_message_cpy.find('P') + 1);
+		BigNum decryptedBlock = RSA::power(encryptedBlock, privateKey, modulus);
+		std::string decryptedBlockStr(decryptedBlock.getSizeThatIsFull() * BigNum::UINT_T_SIZE, '\0');
+		memcpy(decryptedBlockStr.data(), decryptedBlock.data.data(), decryptedBlock.getSizeThatIsFull() * BigNum::UINT_T_SIZE);
 		decryptedBlockStr.erase(decryptedBlockStr.find_last_not_of('\0') + 1);
 		result += decryptedBlockStr;
 	}
+	
 	return result;
 }
 
@@ -304,145 +308,4 @@ std::string RSA::decrypt(const std::string &encrypted_message, const std::string
 	BigNum bigModulus(modulus);
 	return RSA::decrypt(encrypted_message, bigPrivateKey, bigModulus);
 }
-
-// void RSA::generate_keys(unsigned long long int& publicKey, unsigned long long int& privateKey, unsigned long long int& modulus, int bits) {
-//     unsigned long long int p = generateLargePrime(bits / 2);
-//     unsigned long long int q = generateLargePrime(bits / 2);
-//     unsigned long long int n = p * q;
-//     unsigned long long int phi = (p - 1) * (q - 1);
-//     unsigned long long int e = 65537;
-
-//     while (gcd(e, phi) != 1) {
-//         e = generateLargePrime(16);
-//     }
-
-//     unsigned long long int d = modInverse(e, phi);
-   
-//     publicKey = e;
-//     privateKey = d;
-//     modulus = n;
-// }
-
-// bool RSA::isPrime(unsigned long long n, int k) {
-//     if (n <= 1 || n == 4) return false;
-//     if (n <= 3) return true;
-
-//     unsigned long long d = n - 1;
-//     while (d % 2 == 0)
-//         d /= 2;
-
-//     for (int i = 0; i < k; i++)
-//         if (!millerTest(d, n))
-//             return false;
-
-//     return true;
-// }
-
-// unsigned long long RSA::power(unsigned long long x, unsigned long long y, unsigned long long p) {
-//     unsigned long long res = 1;
-//     x = x % p;
-//     while (y > 0) {
-//         if (y & 1)
-//             res = (res * x) % p;
-//         y = y >> 1;
-//         x = (x * x) % p;
-//     }
-//     return res;
-// }
-
-// bool RSA::millerTest(unsigned long long d, unsigned long long n) {
-//     std::random_device rd;
-//     std::mt19937_64 gen(rd());
-//     std::uniform_int_distribution<unsigned long long> dis(2, n - 2);
-//     unsigned long long a = dis(gen);
-//     unsigned long long x = power(a, d, n);
-
-//     if (x == 1 || x == n - 1)
-//         return true;
-
-//     while (d != n - 1) {
-//         x = (x * x) % n;
-//         d *= 2;
-
-//         if (x == 1) return false;
-//         if (x == n - 1) return true;
-//     }
-//     return false;
-// }
-
-// unsigned long long RSA::generateRandomNumber(int bits) {
-//     std::random_device rd;
-//     std::mt19937_64 gen(rd());
-//     std::uniform_int_distribution<unsigned long long> dis(0, (1ULL << (bits - 1)) - 1);
-//     unsigned long long number = dis(gen) | (1ULL << (bits - 1)) | 1;
-//     return number;
-// }
-
-// unsigned long long RSA::generateLargePrime(int bits) {
-//     unsigned long long prime;
-//     int k = 40; // Number of iterations for Miller-Rabin test
-//     do {
-//         prime = generateRandomNumber(bits);
-//     } while (!isPrime(prime, k));
-//     return prime;
-// }
-
-// unsigned long long RSA::gcd(unsigned long long a, unsigned long long b) {
-//     while (b != 0) {
-//         unsigned long long t = b;
-//         b = a % b;
-//         a = t;
-//     }
-//     return a;
-// }
-
-// unsigned long long RSA::modInverse(unsigned long long a, unsigned long long m) {
-//     long long m0 = m, t, q;
-//     long long x0 = 0, x1 = 1;
-
-//     if (m == 1)
-//         return 0;
-
-//     while (a > 1) {
-//         q = a / m;
-//         t = m;
-//         m = a % m;
-//         a = t;
-//         t = x0;
-//         x0 = x1 - q * x0;
-//         x1 = t;
-//     }
-
-//     if (x1 < 0)
-//         x1 += m0;
-
-//     return static_cast<unsigned long long>(x1);
-// }
-
-
-// unsigned long long RSA::encrypt(unsigned long long int message, unsigned long long int publicKey, unsigned long long int modulus) {
-//     return power(message, publicKey, modulus);
-// }
-
-// unsigned long long RSA::decrypt(unsigned long long int message, unsigned long long int privateKey, unsigned long long int modulus) {
-//     return power(message, privateKey, modulus);
-// }
-
-// std::string RSA::encrypt_string(std::string message, unsigned long long int publicKey, unsigned long long int modulus) {
-//     std::string result;
-//     for (char c : message) {
-//         result += std::to_string(encrypt(c, publicKey, modulus)) + " ";
-//     }
-//     return result;
-// }
-
-// std::string RSA::decrypt_string(std::string encrypted_message, unsigned long long int privateKey, unsigned long long int modulus) {
-//     std::string result;
-//     std::stringstream ss(encrypted_message);
-//     unsigned long long encrypted_char;
-//     while (ss >> encrypted_char) {
-//         result += static_cast<char>(decrypt(encrypted_char, privateKey, modulus));
-//     }
-//     return result;
-// }
 

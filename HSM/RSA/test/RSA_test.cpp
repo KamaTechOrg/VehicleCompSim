@@ -137,7 +137,7 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)
     // BigNum encrypted1 = RSA::encrypt(BigNum(encryptedInLong,64), e, p * q);
     std::string encrypted = RSA::encrypt(message, e, p * q);
     std::string decrypted = RSA::decrypt(encrypted, d, p * q);
-    EXPECT_EQ("e70802ea7e14079", encrypted);
+    EXPECT_EQ("e70802ea7e14079P", encrypted);
     EXPECT_EQ(message, decrypted);
     EXPECT_NE(message, encrypted);
 }
@@ -187,15 +187,15 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_4)
     EXPECT_NE(message, encrypted);
 }
 
-// TEST(RSA_BigNum_test, isPrime_test_with_prime_number)
-// {
-//     std::string num1 = "3c07baa3";
-//     std::string num2 = "614557f1";
-//     BigNum p(num1);
-//     BigNum q(num2);
-//     EXPECT_TRUE(RSA::isPrime(p, 40));
-//     EXPECT_TRUE(RSA::isPrime(q, 40));
-// }
+TEST(RSA_BigNum_test, isPrime_test_with_prime_number)
+{
+    std::string num1 = "3c07baa3";
+    std::string num2 = "614557f1";
+    BigNum p(num1);
+    BigNum q(num2);
+    EXPECT_TRUE(RSA::isPrime(p, 40));
+    EXPECT_TRUE(RSA::isPrime(q, 40));
+}
 
 TEST(RSA_BigNum_test, isPrime_test_with_non_prime_number)
 {
