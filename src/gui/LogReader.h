@@ -13,22 +13,28 @@
 #include "customscene.h"
 #include "SimulationRecorder.h"
 #include "LiveUpdate.h"
+#include "DB_handler.h"
+
 
 class LogReader : public QObject {
 Q_OBJECT
 public:
-    LogReader(const QString &logFilePath, std::unique_ptr<LiveUpdate> liveUpdate, std::unique_ptr<SimulationRecorder> simulationRecorder = nullptr, QObject *parent = nullptr);
+    LogReader(const QString &logFilePath, std::unique_ptr<LiveUpdate> liveUpdate, DB_handler *db, std::unique_ptr<SimulationRecorder> simulationRecorder = nullptr, QObject *parent = nullptr);
 
 private slots:
     void readNewLogEntries();
 public:
     std::unique_ptr<SimulationRecorder> m_simulationRecorder;
+//    void generate_buffer();
 
 private:
     QFile m_logFile;
     qint64 m_lastPosition;
     QTimer *m_timer;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
+    DB_handler *dbHandler;
+    QList<QString> msg = {"yossi goldebrg", "naomi goldberg", "daniel goldebrg", "nechemia goldebrg", "avishay goldebrg"};
+    int msg_counter = 0;
 };
 
 

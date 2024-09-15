@@ -2,13 +2,13 @@
 
 #include <QGraphicsScene>
 #include <memory>
+#include <QToolBar>
 #include "network.hpp"
 #include "sensoritem.h"
 #include "connectoritem.h"
 #include "edgeitem.h"
 #include "serializableitem.h"
 #include "projectmodel.h"
-
 
 class CustomScene : public QGraphicsScene {
     Q_OBJECT
@@ -21,6 +21,9 @@ public slots:
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
     void onModelUpdated(SerializableItem* model);
+    QToolBar* rightToolBar;  // ToolBar for draggable items
+    PopupDialog* popupDialog;
+
     
 private:
     void addItemToScene(BaseItem* item);
@@ -50,5 +53,8 @@ private:
     EdgeItem* m_currentEdge = nullptr;
     BaseItem* m_startItem = nullptr;
     QPointF m_startPoint;
+
+
+
 
 };

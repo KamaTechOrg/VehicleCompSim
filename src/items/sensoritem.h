@@ -3,9 +3,14 @@
 #include "baseitem.h"
 #include "sensormodel.h"
 
+class PopupDialog;
+
 class SensorItem : public BaseItem {
 public:
     SensorItem(SensorModel* model, QGraphicsItem* parent = nullptr);
+
+    PopupDialog* popupDialog = nullptr;
+
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
@@ -15,12 +20,14 @@ public:
 public slots:
     void onModelUpdated();
 
+    virtual void openEditor();
+    class Editor;
 private:
     SensorModel* m_model;
 
     void setupUpdateButtonProxy();
     void setupCheckBoxProxy();
-    void updateItem();
+
     void showButtons();
     void hideButtons();
 

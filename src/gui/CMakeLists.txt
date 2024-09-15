@@ -17,6 +17,12 @@ set(CLIENT_SOURCES
     popupdialog.ui
     remoteinterface.cpp
     remoteinterface.h
+    editpanel.h
+    editpanel.cpp
+    DB_handler.h
+    DB_handler.cpp
+    buffer_test.cpp
+    buffer_test.h
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

@@ -16,15 +16,16 @@ void LiveUpdate::parse_new_line(QString &line){
         num_of_packets = communication_data[2].toInt();
         for (auto item: m_scene->items()) {
             if (auto *base = dynamic_cast<SensorItem *>(item)) {
-                if (base->get_unique_id() == src.toDouble()) {
+                if (base->getPriority() == src) {
                     this->src_item = base;
                 }
-                if (base->get_unique_id() == dest.toDouble()) {
+                if (base->getPriority() == dest) {
                     dest_item = base;
                 }
             }
         }
         if(src_item != nullptr && dest_item != nullptr){
+            qInfo() << "need change";
             change_view();
         }
     }
@@ -52,4 +53,6 @@ void LiveUpdate::change_view(){
     dest_item->set_m_color(r, g, b);
     src_item->update();
     dest_item->update();
+    qInfo() << "change completed";
+
 }

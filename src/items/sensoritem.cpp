@@ -8,6 +8,7 @@
 #include <cmath>
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
+#include "editors/SensorItem_Editor.h"
 
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
@@ -43,7 +44,7 @@ void SensorItem::setupUpdateButtonProxy()
     m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
 
     // Connect button to its respective slot
-    connect(updateButton, &QPushButton::clicked, this, &SensorItem::updateItem);
+    connect(updateButton, &QPushButton::clicked, this, &SensorItem::openEditor);
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -115,34 +116,10 @@ bool SensorItem::isExludeFromProject() const
     return m_model->isExcludeFromProject();
 }
 
-void SensorItem::updateItem()
-{
-    // //copy the current item
-    // SensorItem* tempSensorItem = new SensorItem(*this);
-    // PopupDialog popup(tempSensorItem);
-    // popup.exec();
-    // if(popup.result() == QDialog::Accepted){
-    //     if(tempSensorItem->isInitialized()){
-    //         priority = tempSensorItem->getPriority();
-    //         name = tempSensorItem->getName();
-    //         ownerID = tempSensorItem->getOwnerID();
-    //         buildCommand = tempSensorItem->getBuildCommand();
-    //         runCommand = tempSensorItem->getRunCommand();
-    //         cmakePath = tempSensorItem->getCmakePath();
-    //         useCmakePath = tempSensorItem->isUseCmakePath();
-    //         notifyItemModified();
-    //     }
-    //     else{
-    //         QMessageBox::StandardButton reply;
-    //         reply = QMessageBox::question(nullptr, "Attention", 
-    //             "Some fields are empty. Do you want to remove this item?",
-    //             QMessageBox::Yes|QMessageBox::No);
-    //         if (reply == QMessageBox::Yes) {
-    //             removeItem();
-    //         }
-    //     }
-    // }
-    // delete tempSensorItem;
+void SensorItem::openEditor() {
+    //popupDialog->oldSensorItem = this;
+   // popupDialog->reset();
+    EditPanel::loadNewEditor(new Editor(this));
 }
 
 void SensorItem::showButtons()

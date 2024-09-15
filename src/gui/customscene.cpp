@@ -253,21 +253,29 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
         // SerializableItem* item = new SerializableItem();
 
         if (itemType == "SensorItem") {
+//             SensorModel* sensorModel = new SensorModel();
+//             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+//             PopupDialog popup(sensorModel);
+//             popup.exec();
+//             if(popup.result() == QDialog::Accepted){
+//                 // item = sensorModel;
+//                 // m_network->addElement(dynamic_cast<SensorItem*>(item));
+//             } else{
+//                 delete sensorModel;
+//                 return;
+//             }
+//             // m_network->addElement(dynamic_cast<SensorItem*>(item));
+//             SensorItem* sensorItem = new SensorItem(sensorModel);
+//             sensorItem->setPos(event->scenePos());
+//             addItemToScene(sensorItem);
             SensorModel* sensorModel = new SensorModel();
             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
-            PopupDialog popup(sensorModel);
-            popup.exec();
-            if(popup.result() == QDialog::Accepted){
-                // item = sensorModel;
-                // m_network->addElement(dynamic_cast<SensorItem*>(item));
-            } else{
-                delete sensorModel;
-                return;
-            }
-            // m_network->addElement(dynamic_cast<SensorItem*>(item));
             SensorItem* sensorItem = new SensorItem(sensorModel);
-            sensorItem->setPos(event->scenePos());
-            addItemToScene(sensorItem);
+            sensorItem->popupDialog = popupDialog;
+            item = sensorItem;
+            sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
+            m_network->addElement(dynamic_cast<SensorItem*>(item));
+            sensorItem->openEditor();
         } else if (itemType == "ConnectorItem") {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
             ConnectorItem * connectorItem = new ConnectorItem();

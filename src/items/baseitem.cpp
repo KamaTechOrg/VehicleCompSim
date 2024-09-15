@@ -1,10 +1,10 @@
 #include "baseitem.h"
 #include <qrandom.h>
-//#include <QIcon>
 #include <QGraphicsSceneHoverEvent>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+
 qreal BaseItem::my_id = 0;
 
 BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
@@ -89,6 +89,11 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsItem::mouseMoveEvent(event);
     update();
 }
+void BaseItem::update_db_data(QList<QVariant> &new_data){
+    Db_data.clear();
+    Db_data = new_data;
+}
+
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
     if (m_positionChanged) {
@@ -103,16 +108,39 @@ void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-
-    // Create a string with the private fields' information
-    QString tooltipText = QString("Color: %1\nHovered Point: (%2, %3)")
-            .arg(m_color.name())
-            .arg(m_hoveredPoint.x())
-            .arg(m_hoveredPoint.y());
-
-    QToolTip::showText(event->screenPos(), tooltipText, nullptr);
+//    qInfo() << "hover";
+    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+//    if(names.empty()){
+//        qInfo() << "empty";
+//    }
+    for (const QString& name : names) {
+//        qInfo() << "inside loop names";
+        tooltipHtml += QString("<th>%1</th>").arg(name);
+    }
+//    qInfo() << "after loop names";
+    tooltipHtml += "</tr><tr>";
+    for (int i = 0; i < Db_data.size(); ++i) {
+//        qInfo() << "inside db data";
+        QVariant value = Db_data.value(i);
+        tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+    }
+//    qInfo() << "after db size";
+    tooltipHtml += "</tr></table>";
+    if(m_persistentTooltip == nullptr){
+        m_persistentTooltip = new PersistentTooltip();
+//        qInfo() << "create persistent tooltip";
+    }
+    m_persistentTooltip->setText(tooltipHtml);
+    m_persistentTooltip->move(event->screenPos());
+    m_persistentTooltip->show();
+//    qInfo() << "show persistent tooltip";
     QGraphicsItem::hoverEnterEvent(event);
-
+}
+void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+    if (m_persistentTooltip) {
+        m_persistentTooltip->hide();
+    }
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
@@ -129,13 +157,6 @@ void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
         }
     }
     QGraphicsItem::hoverMoveEvent(event);
-}
-
-void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    m_hoveredPoint = QPointF();
-    update(); // Trigger a repaint
-    QToolTip::hideText();
-    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void BaseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -210,7 +231,8 @@ void BaseItem::confirmRemove() {
 
 void BaseItem::removeItem() {
     if (scene()) {
-        // Remove all connected edges
+//        qInfo() << "remove";
+//         Remove all connected edges
         for (EdgeItem* edge : m_edges) {
             auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
             if(connectedItem->m_model->itemType() == ItemType::Connector){
@@ -227,10 +249,12 @@ void BaseItem::removeItem() {
             else{
                 scene()->removeItem(edge);
                 edge->notifyItemDeleted();
-                delete edge;                    
+                delete edge;
             }
         }
         m_edges.clear();
+//        qInfo() << "after clear";
+
 
         // Remove this item
         scene()->removeItem(this);
@@ -238,6 +262,3 @@ void BaseItem::removeItem() {
         deleteLater();
     }
 }
-
-
-

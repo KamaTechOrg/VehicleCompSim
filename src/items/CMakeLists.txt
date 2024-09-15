@@ -11,6 +11,12 @@ set(ITEMS_SOURCES
     edgeitem.h
     actionsblocker.h
     actionsblocker.cpp
+    PersistentTootip.cpp
+    PersistentTootip.h
+
+    qemusensoritem.h
+    qemusensoritem.cpp
+
 )
 
 set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)

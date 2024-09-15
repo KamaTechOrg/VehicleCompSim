@@ -24,6 +24,7 @@ target_include_directories(VehicleCompSimCore PUBLIC
 target_link_libraries(VehicleCompSimCore PUBLIC
     Qt::Widgets
     Qt::WebSockets
+    Qt::Sql
 )
 
 # Add subdirectories

@@ -1,11 +1,9 @@
 #pragma once
 #include <QtWidgets/QMainWindow>
-
 #include <QMainWindow>
 #include <memory>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
-
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
@@ -19,6 +17,11 @@
 #include "remoteinterface.h"
 #include <bson/bson.h>
 
+#include "popupdialog.h"
+#include <QLineEdit>
+#include "DB_handler.h"
+#include "buffer_test.h"
+
 
 class QGraphicsView;
 class QToolBar;
@@ -30,7 +33,6 @@ public:
     MainWindow(QWidget* parent = nullptr);
 
 private:
-
     void background_Layout();
     void saveLayout();
     void loadLayout();
@@ -45,11 +47,18 @@ private:
 private slots:
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
+    void update_tooltips();
+    void fill_db_data();
+    void read_from_json();
+    void fill_box_data();
 
 private:
     CustomScene* m_scene;
     QGraphicsView* m_view;
-    QToolBar* m_toolBar; 
+
+    QToolBar* m_toolBar;
+    QToolBar* rightToolBar;
+    PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QPushButton *startBtn;
@@ -64,7 +73,12 @@ private:
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_topLayout;
+    DB_handler *m_DB_handler;
+    QTimer *tooltip_timer;
+    QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;
+
+    buffer_test *m_bufferTest; 
 };
