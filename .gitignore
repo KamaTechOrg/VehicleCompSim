@@ -1,27 +1,29 @@
 # Ignore build directory
 build/
+library_to_user/lib
 
-# Ignore OS-specific files
-.DS_Store
-Thumbs.db
+# # Ignore OS-specific files
+# .DS_Store
+# Thumbs.db
 
 # Ignore CMake build files
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+CMakeListsClient.txt
 
-# Ignore executable files
-*.exe
-*.out
-*.dll
-*.so
-*.dylib
+# # Ignore executable files
+# *.exe
+# *.out
+# *.dll
+# *.so
+# *.dylib
 
-# Ignore generated files
-*.o
-*.obj
+# # Ignore generated files
+# *.o
+# *.obj
 # *.a
 # *.lib
-*.lo
-*.la
+# *.lo
+# *.la
