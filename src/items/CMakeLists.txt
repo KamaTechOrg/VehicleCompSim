@@ -13,6 +13,10 @@ set(CLIENT_SOURCES
     actionsblocker.cpp
     PersistentTootip.cpp
     PersistentTootip.h
+
+    qemusensoritem.h
+    qemusensoritem.cpp
+
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

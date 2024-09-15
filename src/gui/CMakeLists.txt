@@ -15,6 +15,8 @@ set(CLIENT_SOURCES
     popupdialog.cpp
     popupdialog.h
     popupdialog.ui
+    editpanel.h
+    editpanel.cpp
 #    DB_handler.h
 #    DB_handler.cpp
 )

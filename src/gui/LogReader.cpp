@@ -105,7 +105,7 @@ void LogReader::generate_buffer() {
 //    // end test
 //}
 
-void LogReader::readNewLogEntries() {
+void LogReader::readNewLogEntries() { return;
     if (!m_logFile.isOpen()) {
         return;
     }

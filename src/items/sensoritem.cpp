@@ -8,6 +8,7 @@
 #include <cmath>
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
+#include "editors/SensorItem_Editor.h"
 
     SensorItem::SensorItem( QGraphicsItem *parent): BaseItem(parent)
     , m_updateProxy(new QGraphicsProxyWidget(this))
@@ -29,8 +30,7 @@
         m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
 
         // Connect buttons to their respective slots
-        connect(updateButton, &QPushButton::clicked, this, &SensorItem::updateItem);
-
+        connect(updateButton, &QPushButton::clicked, this, &SensorItem::openEditor);
         hideButtons();
 
 
@@ -162,9 +162,11 @@ bool SensorItem::isExludeFromProject() const
     return excludeFromProject;
 }
 
-void SensorItem::updateItem() {
-    popupDialog->oldSensorItem = this;
-    popupDialog->reset();
+void SensorItem::openEditor() {
+    //popupDialog->oldSensorItem = this;
+   // popupDialog->reset();
+    EditPanel::loadNewEditor(new Editor(this));
+
 }
 
 void SensorItem::showButtons()

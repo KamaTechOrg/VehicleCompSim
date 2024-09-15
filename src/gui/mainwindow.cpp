@@ -13,10 +13,12 @@
 #include <QRect>
 //#include <bson/bson.h>
 #include <QHBoxLayout>
-
+#include "./editpanel.h"
 #include "customwidget.h"
 #include "client/websocketclient.h"
 #include "client/RunHandler.h"
+#include "items/qemusensoritem.h"
+#include "editors/QemuSensorItem_Editor.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -47,13 +49,13 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainWidget);
 
     // Create a new toolbar for the right side
-    rightToolBar = new QToolBar("popup", this);
+    rightToolBar = EditPanel::getPanel();
+    rightToolBar->setParent(this);
     rightToolBar->setFixedWidth(150);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
     m_scene->rightToolBar = rightToolBar;
-    m_popupDialog = new PopupDialog(rightToolBar);
-    m_scene->popupDialog = m_popupDialog;
-    qInfo() << "set popupDialog";
+
+
 
 
 
@@ -63,6 +65,11 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
+    toolBar->addAction("qemu box", [this] {
+        QemuSensorItem* qemu = new QemuSensorItem;
+        m_scene->addItem(qemu);
+        qemu->openEditor();
+    });
 
     WebSocketClient& client = WebSocketClient::getInstance();
     client.setScene(m_scene);

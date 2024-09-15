@@ -259,8 +259,9 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             item = sensorItem;
             sensorItem->setOwnerID(WebSocketClient::getInstance().getClientId());
             m_network->addElement(dynamic_cast<SensorItem*>(item));
-            popupDialog->oldSensorItem = sensorItem;
-            popupDialog->reset();
+            sensorItem->openEditor();
+            //popupDialog->oldSensorItem = sensorItem;
+            //popupDialog->reset();
             // Handle cancellation
 //            if (popupDialog->cancel) {
 //                // Remove the sensorItem from the network

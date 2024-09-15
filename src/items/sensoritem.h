@@ -17,8 +17,8 @@ public:
     QString getPriority() const;
     QString getName() const;
     QString getOwnerID() const;
-    QString getBuildCommand() const;
-    QString getRunCommand() const;
+    virtual QString getBuildCommand() const;
+    virtual QString getRunCommand() const;
     QString getCmakePath() const;
     bool isUseCmakePath() const;
 
@@ -35,6 +35,8 @@ public:
     QJsonObject serialize() const override;
     void deserialize(const QJsonObject &itemData) override;
 
+    virtual void openEditor();
+    class Editor;
 private:
     QString priority = "";
     QString name = "";
@@ -44,7 +46,6 @@ private:
     QString cmakePath = "";
     bool useCmakePath = true;
     bool excludeFromProject = false;
-    void updateItem();
     void showButtons();
     void hideButtons();
 
