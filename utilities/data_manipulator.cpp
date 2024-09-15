@@ -71,14 +71,14 @@ std::string Data_manipulator::data_and_id_to_str(void *data, size_t size, int so
     int crc = CRCalgo(charData);
     std::ostringstream oss;
     oss << source_id << '!' << dest_id << '!';
-    std::string id_data = oss.str();
-    id_data.append((char *)(data), size);
-    id_data += '!';
+    std::string all_data = oss.str();
+    all_data.append((char *)(data), size);
+    all_data += '!';
     std::string crcstr = int_to_str(crc);
-    id_data += crcstr;
+    all_data += crcstr;
 
 
-    return id_data;
+    return all_data;
 
 }
 

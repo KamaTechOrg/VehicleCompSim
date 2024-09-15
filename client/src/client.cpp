@@ -40,10 +40,12 @@ sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int des
         throw std::runtime_error("Invalid input");
     }
 
-    std::string id_data = Data_manipulator::data_and_id_to_str(data, size, source_id, dest_id);
-    size_t total_size = id_data.size();
+    std::string all_data = Data_manipulator::data_and_id_to_str(data, size, source_id, dest_id);
+    size_t total_size = all_data.size();
 
-    code = m_clientSocket.send((void *)id_data.c_str(), total_size);
+    std::cout << "data to send on client edge" << all_data << std::endl;
+
+    code = m_clientSocket.send((void *)all_data.c_str(), total_size);
     return code;
 }
 
