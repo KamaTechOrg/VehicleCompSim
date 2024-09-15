@@ -1,5 +1,7 @@
 #include "Signature.h"
 #include "SHA256.h"
+#include "RSA.h"
+
 
 using namespace std;
 
@@ -10,9 +12,8 @@ string Signature::sha256_sign(
     string string_hash = SHA256::toHexString(hash);
 
     if(sigAlg.find("RSA") != std::string::npos){
-        return 
+        return RSA::encrypt(string_hash, key);
     }
-
 
     return string();
 }
@@ -20,6 +21,9 @@ string Signature::sha256_sign(
 bool Signature::sha256_verify(
     const string &message, const string &signature, const string &sigAlg, const string &key)
 {
+    if(sigAlg.find("RSA") != std::string::npos){
+        return RSA::decrypt(signature, key) == SHA256::toHexString(SHA256::sha256(message));
+    }
     return false;
 }
 
