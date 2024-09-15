@@ -134,7 +134,15 @@ std::string toHexString(const std::vector<uint32_t>& hash) {
 }
 
 // Compares two hash values
-bool compareHashes(const std::vector<uint32_t>& hash1, const std::vector<uint32_t>& hash2) {
+// bool compareHashes(const std::vector<uint32_t>& hash1, const std::vector<uint32_t>& hash2) {
+//     if (hash1.size() != hash2.size()) return false;
+//     for (size_t i = 0; i < hash1.size(); i++) {
+//         if (hash1[i] != hash2[i]) return false;
+//     }
+//     return true;
+// }
+
+bool compareHashes(const std::string& hash1, const std::string& hash2) {
     if (hash1.size() != hash2.size()) return false;
     for (size_t i = 0; i < hash1.size(); i++) {
         if (hash1[i] != hash2[i]) return false;

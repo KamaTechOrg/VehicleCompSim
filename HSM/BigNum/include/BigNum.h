@@ -130,7 +130,7 @@ public:
     
     uint64_t toChar() const;
 
-    int getSizeThetIsFull() const;
+    int getSizeThatIsFull() const;
 
 
 };
