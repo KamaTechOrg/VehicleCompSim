@@ -69,6 +69,7 @@ void SensorModel::setisExcludeFromProject(bool isExcludeFromProject) {
     }
 }
 
+
 // Override SerializableItem methods
 QJsonObject SensorModel::serialize() const {
     QJsonObject itemData = SerializableItem::serialize();

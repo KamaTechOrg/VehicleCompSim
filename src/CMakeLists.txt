@@ -6,7 +6,7 @@ file(GLOB_RECURSE SOURCES
 )
 
 # Create a library target for all source files
-add_library(VehicleCompSimCore STATIC ${SOURCES})
+add_library(VehicleCompSimCore STATIC ${SOURCES} )
 
 # Set include directories
 target_include_directories(VehicleCompSimCore PUBLIC

@@ -431,7 +431,9 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     double x = bson_iter_double(&iter);
     bson_iter_next(&iter);
     double y = bson_iter_double(&iter);
-    new_sensor->setPos(x, y);
+    new_sensor->setX(x);
+    new_sensor->setY(y);
+
 
     // sensor info
     bson_iter_next(&iter);
@@ -462,6 +464,8 @@ void MainWindow::loadLayout() {
     } else {
         qInfo() << "File selection canceled by the user.";
     }
+
+    /*
     // add popup to the load sensors
     for (auto item: m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
@@ -472,6 +476,8 @@ void MainWindow::loadLayout() {
             }
         }
     }
+
+    */
 }
 
 

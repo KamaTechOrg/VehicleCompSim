@@ -9,19 +9,16 @@ class SensorItem : public BaseItem {
 public:
     SensorItem(SensorModel* model, QGraphicsItem* parent = nullptr);
 
-    PopupDialog* popupDialog = nullptr;
-
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
     bool isInitialized() const;
     bool isExludeFromProject() const;
     SensorModel& getModel();
+    class Editor;
 public slots:
     void onModelUpdated();
 
     virtual void openEditor();
-    class Editor;
 private:
     SensorModel* m_model;
 

@@ -271,11 +271,12 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             SensorModel* sensorModel = new SensorModel();
             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
-            sensorItem->popupDialog = popupDialog;
+            //sensorItem->popupDialog = popupDialog;
             //item = sensorItem;
-            sensorItem->getModel().setOwnerID(WebSocketClient::getInstance().getClientId());
+            //sensorItem->getModel().setOwnerID(WebSocketClient::getInstance().getClientId());
             m_network->addElement(sensorItem);
             sensorItem->openEditor();
+            addItemToScene(sensorItem);
         } else if (itemType == "ConnectorItem") {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
             ConnectorItem * connectorItem = new ConnectorItem();
