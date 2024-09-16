@@ -4,7 +4,8 @@
 #include <fstream>
 
 #include "constants.h"
-#include "conditionsManager.h"
+#include "ConditionsManager.h"
+#include "JsonLoader.h"
 
 ConditionsEditor::ConditionsEditor()
     : QGroupBox("Editor")
@@ -29,7 +30,7 @@ ConditionsEditor::ConditionsEditor()
     resize(350, 200);
 
     // load from JSON file (if exists) the current conditions state
-    loadGuiDataFromJson(constants::GUI_DATA_JSON_FILE_NAME);
+    loadGuiDataFromJson();
 }
 
 void ConditionsEditor::save()
@@ -52,35 +53,12 @@ void ConditionsEditor::showSaveFeedback(bool success)
         });
 }
 
-void ConditionsEditor::loadGuiDataFromJson(const std::string& filename)
+void ConditionsEditor::loadGuiDataFromJson()
 {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        qDebug() << "Failed to open file: " << QString::fromStdString(filename);
-        return;
-    }
+    nlohmann::json jsonData = JsonLoader().loadGuiData();
 
-    nlohmann::json jsonData;
-    try {
-        file >> jsonData;
-    }
-    catch (const nlohmann::json::parse_error& e) {
-        qDebug() << "JSON parse error: " << e.what();
-        file.close();
-        return;
-    }
-    file.close();
-
-    qDebug() << "Loaded JSON data: " << QString::fromStdString(jsonData.dump(4));
-
-    // Check if the keys exist in the JSON data
-    if (jsonData.contains("conditions") && jsonData.contains("actions")) {
-        _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
-        _thenGroupBox->loadFromJson(jsonData["actions"]);
-    }
-    else {
-        qDebug() << "JSON data missing expected keys: 'conditions' or 'actions'.";
-    }
+    _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
+    _thenGroupBox->loadFromJson(jsonData["actions"]);
 }
 
 void ConditionsEditor::saveLogicDataToJson() {

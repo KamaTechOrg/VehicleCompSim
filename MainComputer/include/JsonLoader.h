@@ -8,8 +8,8 @@ public:
 	JsonLoader();
 	~JsonLoader() = default;
 
-	nlohmann::json loadConditionsLogic();
-	nlohmann::json loadGuiData();
+	nlohmann::json loadConditionsLogic() const;
+	nlohmann::json loadGuiData() const;
 
 private:
 	std::string _logicDataJsonFileName;

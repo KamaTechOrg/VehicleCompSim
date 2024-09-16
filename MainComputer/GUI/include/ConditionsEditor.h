@@ -18,7 +18,7 @@ public:
 
 private:
 	void showSaveFeedback(bool success);
-	void loadGuiDataFromJson(const std::string& filename);
+	void loadGuiDataFromJson();
 	void saveLogicDataToJson();
 	void saveGuiDataToJson();
 
