@@ -324,16 +324,19 @@ BigNum BigNum::operator<<(uint32_t shift) const
 	int k = shift / 32;
 	int add = size > 0 ? data[size - 1] & 1 : 1;
 	BigNum result((size + k) * UINT_T_SIZE + add);
+	BigNum temp(*this);
+	temp.size = result.size;
+	temp.data.resize(temp.size);
 
 	shift %= 32;
-	for (int i = size - 1; i >= 0; --i)
+	for (int i = temp.size - 1; i >= 0; --i)
 	{
 		if (i - k >= 0)
 		{
-			result.data[i] = data[i - k] << shift;
+			result.data[i] = temp.data[i - k] << shift;
 			if (i - k - 1 >= 0 && shift != 0)
 			{
-				result.data[i] |= data[i - k - 1] >> (32 - shift);
+				result.data[i] |= temp.data[i - k - 1] >> (32 - shift);
 			}
 		}
 	}

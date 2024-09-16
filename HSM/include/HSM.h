@@ -4,6 +4,8 @@
 #include <utility>
 #include "RSA.h"
 #include "aes.hpp"
+#include "Signature.h"
+
 
 class HSM
 {

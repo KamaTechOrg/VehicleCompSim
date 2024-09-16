@@ -1,6 +1,15 @@
 #include <gtest/gtest.h>
 #include "BigNum.h"
 
+TEST(BigNumTest, shift_left)
+{
+    std::string expected = "10000000000000000";
+    BigNum y("1");
+    BigNum a = y << 64;
+    std::string result = a.toString();
+    EXPECT_EQ(expected, result) << "BigNum shift left failed";
+}
+
 //Test addition with int
 TEST(BigNumTest, addition_with_int){
     BigNum a("1");

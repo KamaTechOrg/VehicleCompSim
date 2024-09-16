@@ -1,5 +1,4 @@
 #include "HSM.h"
-#include "Signature.h"
 
 std::pair<std::string, std::string> HSM::generateAsymmetricKeys(const std::string& type)
 {
