@@ -8,6 +8,8 @@ ThenGroupBox::ThenGroupBox(QWidget* parent)
     setLayout(_mainLayout);
 
     _addActionButton = new QPushButton("+");
+    int defaultHeight = _addActionButton->sizeHint().height();
+    _addActionButton->setFixedSize(defaultHeight, defaultHeight);
     connect(_addActionButton, &QPushButton::clicked, this, &ThenGroupBox::addActionLayout);
 
     _mainLayout->addWidget(_addActionButton);
