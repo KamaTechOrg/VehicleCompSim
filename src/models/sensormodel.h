@@ -40,6 +40,7 @@ public:
     bool isExcludeFromProject() const;
     void setisExcludeFromProject(bool isExcludeFromProject);
 
+
     // Override SerializableItem methods
     QJsonObject serialize() const override;
     void deserialize(const QJsonObject &itemData) override;

@@ -13,7 +13,7 @@ public:
 
     bool isInitialized() const;
     bool isExludeFromProject() const;
-    SensorModel& getModel();
+    virtual SensorModel& getModel();
     class Editor;
 public slots:
     void onModelUpdated();

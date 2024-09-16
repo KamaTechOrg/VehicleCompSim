@@ -9,6 +9,7 @@
 class QemuSensorItem::Editor : public EditPanel::Editor{
 
     QemuSensorItem* sensor;
+    QemuSensorModel& model;
     QVBoxLayout* layout;
 public:
     Editor(QemuSensorItem* _sensor);

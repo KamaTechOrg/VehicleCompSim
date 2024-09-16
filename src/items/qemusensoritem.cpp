@@ -1,14 +1,16 @@
 #include "qemusensoritem.h"
-#include "qfiledialog.h"
-#include "qfileselector.h"
-#include "qpushbutton.h"
-#include "./editors/QemuSensorItem_Editor.h"
+#include "editors/QemuSensorItem_Editor.h"
 #include "models/qemusensormodel.h"
 
-QemuSensorItem::QemuSensorItem() : SensorItem(new QemuSensorModel)
+QemuSensorItem::QemuSensorItem(QemuSensorModel* _model) :SensorItem(_model), m_Qemu_model(_model)
 {
-
 }
+
+QemuSensorModel &QemuSensorItem::getQemuModel()
+{
+    return *m_Qemu_model;
+}
+
 
 void QemuSensorItem::openEditor()
 {
@@ -16,8 +18,4 @@ void QemuSensorItem::openEditor()
 
 }
 
-QString QemuSensorItem::getRunCommand() const
-{
- //TODO
-    return "";
-}
+

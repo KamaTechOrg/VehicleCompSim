@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
     toolBar->addAction("qemu box", [this] {
-        QemuSensorItem* qemu = new QemuSensorItem;
+        QemuSensorItem* qemu = new QemuSensorItem(new QemuSensorModel);
         m_scene->addItem(qemu);
         qemu->openEditor();
     });

@@ -3,9 +3,11 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QSplitter>
+#include <climits>
+
 QString executeCommand(const QString& command);
 
-QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), layout(new QVBoxLayout(this))
+QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model(_sensor->getQemuModel()), layout(new QVBoxLayout(this))
 {
     //parameters:
 
@@ -22,10 +24,10 @@ QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), layou
         auto value = opt.sliced(0, index).trimmed();
         auto text = opt.sliced(index).trimmed();
         p_machine->addItem(text, value);
-        if (sensor->p_machine.compare(value) == 0) p_machine->setCurrentText(text);
+        if (model.machine().compare(value) == 0) p_machine->setCurrentText(text);
     }
     QObject::connect(p_machine, &QComboBox::currentIndexChanged, [p_machine, this](){
-        this->sensor->p_machine = p_machine->currentData().toString();
+        this->model.setMachine(p_machine->currentData().toString());
     });
 
     // cpu
@@ -40,17 +42,19 @@ QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), layou
         int index = opt.indexOf(' ');
         auto value = opt.sliced(0, index).trimmed();
         p_cpu->addItem(value, value);
-        if (sensor->p_cpu.compare(value) == 0) p_cpu->setCurrentText(value);
+        if (model.cpu().compare(value) == 0) p_cpu->setCurrentText(value);
     }
     QObject::connect(p_cpu, &QComboBox::currentIndexChanged, [p_cpu, this](){
-        this->sensor->p_cpu = p_cpu->currentData().toString();
+        this->model.setCpu(p_cpu->currentData().toString());
     });
 
     // memory
     QSpinBox* p_memory_MB = new QSpinBox(this);
-    p_memory_MB->setValue(sensor->p_memory_MB);
+    p_memory_MB->setMinimum(1);
+    p_memory_MB->setMaximum(INT_MAX);
+    p_memory_MB->setValue(model.memory_MB());
     QObject::connect(p_memory_MB, &QSpinBox::valueChanged, [p_memory_MB, this](){
-        this->sensor->p_memory_MB = p_memory_MB->value();
+        model .setMemory_MB( p_memory_MB->value());
     });
 
 
