@@ -1,5 +1,6 @@
 #include "Action.h"
 
+
 Action::Action(std::string targetUnit, std::string messageToSend)
     : _targetUnit(targetUnit), _messageToSend(messageToSend) {}
 

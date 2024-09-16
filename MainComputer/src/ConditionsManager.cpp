@@ -10,6 +10,8 @@
 #include <QtDebug>
 #include <regex> 
 #include "json.hpp"
+#include <algorithm> 
+
 
 std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
 std::unordered_map<std::string, Action> ConditionsManager::actions;
@@ -23,6 +25,23 @@ ConditionsManager::ConditionsManager()
 void ConditionsManager::addAction(const std::string &id, const Action &action)
 {
     actions[id] = action;
+}
+
+
+void ConditionsManager::executeAction(const std::string &id)
+{
+    auto it = actions.find(id);  
+    if (it != actions.end()) {
+        const Action& action = it->second;  
+        Communication communication;
+        int targetUnitAsInt = std::stoi(action.getTargetUnit());
+
+        communication.sendTo(targetUnitAsInt, action.getMessageToSend());
+        qInfo() << "Action executed: Sent message to ID:" << id.c_str();
+    }
+    else {
+        qWarning() << "No action found for ID:" << id.c_str();
+    }
 }
 
 // Helper function to parse messages with spaces in ID and VALUE
@@ -39,6 +58,7 @@ std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::s
         throw std::runtime_error("Invalid message format");
     }
 }
+
 
 void ConditionsManager::run()
 {
@@ -57,7 +77,7 @@ void ConditionsManager::run()
 
                 if (validateAll(id, value)) {
                     qInfo() << "Validation succeeded for ID:" << id.c_str() << " with value:" << value.c_str();
-                    executeAction(id);  // Execute the associated action
+                    executeAction(id);  
                 }
                 else {
                     qInfo() << "Validation failed for ID:" << id.c_str() << " with value:" << value.c_str();
@@ -70,23 +90,6 @@ void ConditionsManager::run()
         qInfo() << "Conditions Manager thread stopping";
         }).detach(); // Detach the thread so it runs independently*/
 }
-
-void ConditionsManager::executeAction(const std::string &id)
-{
-    auto it = actions.find(id);
-    if (it != actions.end()) {
-        const Action& action = it->second;
-        Communication communication;
-        int targetUnitAsInt = std::stoi(action.getTargetUnit());
-
-        communication.sendTo(targetUnitAsInt, action.getMessageToSend());
-        qInfo() << "Action executed: Sent message to ID:" << id.c_str();
-    }
-    else {
-        qWarning() << "No action found for ID:" << id.c_str();
-    }
-}
-
 
 void ConditionsManager::stop()
 {
@@ -115,11 +118,12 @@ bool ConditionsManager::validateAll(const std::string& senderId, const std::stri
 }
 
 
-void ConditionsManager::loadFromJson(const std::string& filename)
+void ConditionsManager::loadFromJson(const std::string &filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
-        return;  // TODO: maybe throw some error, but for now it's not handled anyway
+        qWarning() << "Could not open JSON file: " << filename.c_str();
+        return; 
 
     nlohmann::json j;
     file >> j;
@@ -131,9 +135,9 @@ void ConditionsManager::loadFromJson(const std::string& filename)
     actions.clear();
 
     addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
-
     for (const auto& actionJson : j["actions"]) {
-        Action action(actionJson["target"], actionJson["message"]);
-        addAction(actionJson["id"], action);
+        std::string id = actionJson["id"];  
+        Action action(actionJson["target"], actionJson["message"]);  
+        addAction(id, action);  
     }
 }
