@@ -15,12 +15,12 @@
 class ConditionsManager {
 private:
     static std::vector<std::shared_ptr<ConditionBase>> conditions;
-    static std::unordered_map<std::string, Action> actions; 
+    static std::unordered_map<std::string, Action> actions;
 
     void addCondition(std::shared_ptr<ConditionBase> condition);
-    void addAction(const std::string &id, const Action &action);     
+    void addAction(const std::string &id, const Action& action);
     bool validateAll(const std::string &senderId, const std::string &value) const;
-    void executeAction(const std::string &id);  // Execute the action associated with the ID
+    void executeAction(const std::string &id);
 
     bool _isRunning;
 

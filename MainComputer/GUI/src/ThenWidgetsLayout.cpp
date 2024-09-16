@@ -1,29 +1,34 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QHBoxLayout> 
 #include "ThenWidgetsLayout.h"
 #include "ControllersManager.h"
 
 
 
+
 ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
-	: QHBoxLayout(parent)
+	: QWidget(parent),
+	_layout(new QHBoxLayout(this))
 {
+	setLayout(_layout);
+
 	_messagePart1 = new QLabel;
 	_messagePart1->setText("Send a message to:");
 	addWidget(_messagePart1);
 
-	_targetUnit = new QComboBox(parent);
+	_targetUnit = new QComboBox(this); // Pass 'this' as parent
 	_targetUnit->setPlaceholderText("target unit");
 	std::vector<std::string> controllers = ControllersManager().getControllersIDS();
-	for (const auto& constroller : controllers)
-		_targetUnit->addItem(constroller.c_str());
+	for (const auto& controller : controllers)
+		_targetUnit->addItem(controller.c_str());
 	addWidget(_targetUnit);
 
 	_messagePart2 = new QLabel;
 	_messagePart2->setText("to do:");
 	addWidget(_messagePart2);
 
-	_operation = new QComboBox(parent);
+	_operation = new QComboBox(this); // Pass 'this' as parent
 	_operation->setPlaceholderText("operation");
 	_operation->addItem("do 1");
 	_operation->addItem("do 2");
@@ -31,28 +36,41 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	_operation->addItem("do 4");
 	addWidget(_operation);
 
+	createDeleteButton();
 	addStretch(1);
+}
+
+void ThenWidgetsLayout::createDeleteButton()
+{
+	_deleteButton = new QPushButton("-");
+	int defaultHeight = _deleteButton->sizeHint().height();
+	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
+	addWidget(_deleteButton);
+
+	connect(_deleteButton, &QPushButton::clicked, this, [this]() {
+		emit requestDelete(this);
+		});
+}
+
+void ThenWidgetsLayout::addWidget(QWidget* widget)
+{
+	_layout->addWidget(widget);
+}
+
+void ThenWidgetsLayout::addStretch(int stretch)
+{
+	_layout->addStretch(stretch);
 }
 
 std::shared_ptr<Action> ThenWidgetsLayout::data()
 {
-	std::string targetUnit;
-	std::string message;
+	std::string targetUnit = _targetUnit->currentText().toStdString();
+	std::string message = _operation->currentText().toStdString();
 
-	try {
-		targetUnit = _targetUnit->currentText().toStdString();
-	}
-	catch (const std::exception& e) {
-		qWarning() << "Error: " << e.what();
-	}
 
-	message = _operation->currentText().toStdString();
 
 	bool targetUnitHasError = targetUnit.empty();
 	bool messageHasError = message.empty();
-
-	//setBorderColor(_targetUnit, targetUnitHasError);
-	//setBorderColor(_operation, messageHasError);
 
 	if (targetUnitHasError || messageHasError) {
 		QMessageBox msgBox;
@@ -64,25 +82,44 @@ std::shared_ptr<Action> ThenWidgetsLayout::data()
 		return nullptr;
 	}
 
-	std::shared_ptr<Action> action = std::make_shared<Action>(targetUnit, message);
-	return action;
+	return std::make_shared<Action>(targetUnit, message);
 }
+
+
+
+void ThenWidgetsLayout::loadFromJson(const nlohmann::json& json)
+{
+	int targetIndex = _targetUnit->findText(QString::fromStdString(json["target"]));
+	if (targetIndex != -1) {
+		_targetUnit->setCurrentIndex(targetIndex);
+	}
+
+	int operationIndex = _operation->findText(QString::fromStdString(json["message"]));
+	if (operationIndex != -1) {
+		_operation->setCurrentIndex(operationIndex);
+	}
+}
+
+
+
+nlohmann::json ThenWidgetsLayout::GuiData()
+{
+	return {
+		{"target", _targetUnit->currentText().toStdString()},
+		{"message", _operation->currentText().toStdString()}
+	};
+}
+
+
 
 
 unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
 {
-	// Find the last space in the string
 	size_t pos = str.find_last_of(' ');
 	if (pos == std::string::npos) {
 		throw std::invalid_argument("String format is incorrect.");
 	}
 
-	// Extract the substring after the last space
 	std::string idStr = str.substr(pos + 1);
-
-	// Convert the extracted substring to an unsigned integer
-	unsigned id = std::stoul(idStr);
-
-	return id;
+	return std::stoul(idStr);
 }
-

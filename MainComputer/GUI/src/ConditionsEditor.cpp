@@ -55,14 +55,32 @@ void ConditionsEditor::showSaveFeedback(bool success)
 void ConditionsEditor::loadGuiDataFromJson(const std::string& filename)
 {
     std::ifstream file(filename);
-    if (!file.is_open())
-        return; // in this case, we just don't load anything
+    if (!file.is_open()) {
+        qDebug() << "Failed to open file: " << QString::fromStdString(filename);
+        return;
+    }
 
     nlohmann::json jsonData;
-    file >> jsonData;
+    try {
+        file >> jsonData;
+    }
+    catch (const nlohmann::json::parse_error& e) {
+        qDebug() << "JSON parse error: " << e.what();
+        file.close();
+        return;
+    }
     file.close();
 
-    _conditionsGroup->addConditionsGroup(jsonData);
+    qDebug() << "Loaded JSON data: " << QString::fromStdString(jsonData.dump(4));
+
+    // Check if the keys exist in the JSON data
+    if (jsonData.contains("conditions") && jsonData.contains("actions")) {
+        _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
+        _thenGroupBox->loadFromJson(jsonData["actions"]);
+    }
+    else {
+        qDebug() << "JSON data missing expected keys: 'conditions' or 'actions'.";
+    }
 }
 
 void ConditionsEditor::saveLogicDataToJson() {
@@ -72,9 +90,10 @@ void ConditionsEditor::saveLogicDataToJson() {
         return;
 
     // get action (that will be executed if conditon were validated at some point)
-    std::shared_ptr<Action> action = _thenGroupBox->data();
+    std::vector<std::shared_ptr<Action>> actions = _thenGroupBox->data();
 
-    if (action == nullptr)
+    
+    if (actions.empty())
         return;
 
     // save both conditions and action to a json file
@@ -89,20 +108,24 @@ void ConditionsEditor::saveLogicDataToJson() {
 
     nlohmann::json jsonData;
     jsonData["conditions"] = conditionsTree->toJson();
-    jsonData["action"] = action->toJson();
+    jsonData["actions"] = nlohmann::json::array();
+    for (const auto& action : actions) {
+        jsonData["actions"].push_back(action->toJson());
+    }
     jsonFile << jsonData.dump(4);
     jsonFile.close();
 
     showSaveFeedback(true);
 
-    // get the "backend" main computer to reload again the conditions from the saved JSON file
     ConditionsManager().loadFromJson(jsonFileName);
 }
 
 void ConditionsEditor::saveGuiDataToJson() {
     nlohmann::json jsonData;
 
-    jsonData = _conditionsGroup->GuiData();
+    jsonData["conditions"] = _conditionsGroup->GuiData();
+    jsonData["actions"] = _thenGroupBox->GuiData();
+
 
     // save both conditions and action to a json file
     std::string jsonFileName = constants::GUI_DATA_JSON_FILE_NAME;
