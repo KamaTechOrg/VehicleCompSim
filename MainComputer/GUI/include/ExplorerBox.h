@@ -12,4 +12,6 @@ public:
 private:
 	QVBoxLayout* _layout;
 	QListView* _scenariosList;
+
+	void onItemClicked(const QModelIndex& index);
 };
