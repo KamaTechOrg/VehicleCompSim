@@ -5,6 +5,7 @@
 #include <string.h>
 #include <algorithm>
 #include <future>
+#include <thread>
 
 #include "client.h"
 
@@ -42,10 +43,8 @@ sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int des
 
     std::string all_data = Data_manipulator::data_and_id_to_str(data, size, source_id, dest_id);
     size_t total_size = all_data.size();
-
-    std::cout << "data to send on client edge" << all_data << std::endl;
-
     code = m_clientSocket.send((void *)all_data.c_str(), total_size);
+
     return code;
 }
 
@@ -61,14 +60,14 @@ std::pair<ListenErrorCode,int> ClientSocket::listen(void *data, size_t size)
     return pair_recv;
 }
 
-std::future<void> ClientSocket::listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback)
+void ClientSocket::listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback)
 {
     if (!is_valid_ptr(data) || !is_valid_size(size))
     {
         throw std::runtime_error("Invalid to receive");
     }
 
-    return std::async(std::launch::async, [this, data, size, callback]()
+    std::thread t1( [this, data, size, callback]()
         {                 
             auto pair_recv = m_clientSocket.recv(data, size);
             if (callback)
@@ -76,6 +75,8 @@ std::future<void> ClientSocket::listenAsync(void *data, size_t size, std::functi
                 callback(pair_recv.first);
             } 
         });
+
+        t1.detach();
 }
 
 bool ClientSocket::is_valid_ptr(void *ptr)

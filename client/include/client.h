@@ -15,7 +15,7 @@ public:
 
     sendErrorCode send(void *data, size_t size, int source_id, int dest_id);
     std::pair<ListenErrorCode,int> listen(void *data, size_t size);
-    std::future<void> listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback);
+    void listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback);
     void shut_down();
 
 private:

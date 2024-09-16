@@ -95,7 +95,7 @@ std::string Data_manipulator:: getCurrentTime() {
     
     // Format time as a string
     std::ostringstream oss;
-    oss << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+    oss << std::put_time(&now_tm, "%Y-%m-%d%H:%M:%S");
     
     return oss.str();
 }

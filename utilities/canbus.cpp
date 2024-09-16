@@ -15,10 +15,10 @@ bool CanBus::operator>(const CanBus &rhs) const
 }
 
 std::string CanBus::getFormattedMessage() const {
-        return "Source ID: " + std::to_string(sourceId) + "\n" +
-               "Destination ID: " + std::to_string(destId) + "\n" +
-               "Message Size: " + std::to_string(messageLength) + "\n" +
-               "Message: " + message + "\n";
+        return "," + std::to_string(sourceId) + 
+               "," + std::to_string(destId) + 
+               "," + std::to_string(messageLength) + 
+               "," + message + "\n";
     }
 
 
@@ -33,9 +33,8 @@ void writeCanMessageToLog(CanBus & message , const std::string & filename)
    
     logFile.open(filename, std::ios_base::app);
     if (logFile.is_open()) {
-        logFile << "time: " << Data_manipulator::getCurrentTime() <<'\n';
+        logFile << Data_manipulator::getCurrentTime();
         logFile << message.getFormattedMessage();
-        logFile << "\n ----------------------------------------------------------------\n\n";
         logFile.close();
     } else {
         std::cerr << "Error: Unable to open log file!" << std::endl;
