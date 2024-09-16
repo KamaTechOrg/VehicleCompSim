@@ -5,7 +5,7 @@
 #include <QSplitter>
 #include <climits>
 
-QString executeCommand(const QString& command);
+QString getQemuOutputForParameter(const QString& flag);
 
 QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model(_sensor->getQemuModel()), layout(new QVBoxLayout(this))
 {
@@ -15,7 +15,7 @@ QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model
     QComboBox* p_machine = new QComboBox(this);
     p_machine->addItem("[None]", "");
 
-    auto opt_list = executeCommand("qemu-system-aarch64 -machine help").split('\n');
+    auto opt_list = getQemuOutputForParameter("-machine").split('\n');
     opt_list.pop_front();
     for (auto opt: opt_list)
     {
@@ -34,13 +34,14 @@ QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model
 
     QComboBox* p_cpu = new QComboBox(this);
     p_cpu->addItem("[None]", "");
-    opt_list = executeCommand("qemu-system-aarch64 -cpu help").split('\n');
+    opt_list = getQemuOutputForParameter("-cpu").split('\n');
     opt_list.pop_front();
-    for (auto opt: opt_list)
+    for (auto &opt: opt_list)
     {
+        opt = opt.trimmed();
         if (opt.isEmpty()) continue;
         int index = opt.indexOf(' ');
-        auto value = opt.sliced(0, index).trimmed();
+        auto value = index > 0 ? opt.sliced(0, index) : opt;
         p_cpu->addItem(value, value);
         if (model.cpu().compare(value) == 0) p_cpu->setCurrentText(value);
     }
@@ -90,11 +91,11 @@ void QemuSensorItem::Editor::close()
 #include <QString>
 #include <QDebug>
 
-QString executeCommand(const QString& command) {
+QString getQemuOutputForParameter(const QString& flag) {
     QProcess process;
     process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-    process.start("qemu-system-aarch64" , {"-machine", "help"});
+    process.start("qemu-system-aarch64" , {flag, "help"});
     process.waitForFinished();  // Wait for the command to finish executing
 
     QString output = process.readAllStandardOutput();  // Capture the standard output
