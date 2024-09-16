@@ -26,6 +26,7 @@ set(HEADER_FILES
     Action.h
     SensorsManager.h
     ControllersManager.h
+    JsonLoader.h
 )
 
 add_library(MainComputerHeaders INTERFACE)

@@ -17,6 +17,7 @@ target_sources(MainComputer PRIVATE
     Action.cpp
     SensorsManager.cpp
     ControllersManager.cpp
+    JsonLoader.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/MainComputer/resources)
