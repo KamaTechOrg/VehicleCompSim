@@ -62,4 +62,12 @@ void GlobalState::setCurrentProject(ProjectModel* project)
     }
 }
 
+void GlobalState::setCurrentSensorModel(SensorModel* sensorModel)
+{
+    if (m_currentSensorModel != sensorModel){
+        m_currentSensorModel = sensorModel;
+        emit currentSensorModelChanged(m_currentSensorModel);
+    }
+}
+
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {}

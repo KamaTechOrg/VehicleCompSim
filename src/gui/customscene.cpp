@@ -6,10 +6,13 @@
 #include <QJsonDocument>
 #include "items/sensoritem.h"
 #include "items/connectoritem.h"
+#include "qemusensoritem.h"
+#include "qemusensormodel.h"
 #include "sensormodel.h"
 #include "popupdialog.h"
 #include "client/websocketclient.h"
 #include "globalstate.h"
+#include "customwidget.h"
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
@@ -248,36 +251,27 @@ void CustomScene::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
 
 void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
     if (event->mimeData()->hasText()) {
-        QString itemType = event->mimeData()->text();
+        CustomWidget::WIDGET_TYPES itemType = (CustomWidget::WIDGET_TYPES)(event->mimeData()->text().toInt());
 
         SerializableItem* item; // = new SerializableItem();
 
-        if (itemType == "SensorItem") {
-//             SensorModel* sensorModel = new SensorModel();
-//             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
-//             PopupDialog popup(sensorModel);
-//             popup.exec();
-//             if(popup.result() == QDialog::Accepted){
-//                 // item = sensorModel;
-//                 // m_network->addElement(dynamic_cast<SensorItem*>(item));
-//             } else{
-//                 delete sensorModel;
-//                 return;
-//             }
-//             // m_network->addElement(dynamic_cast<SensorItem*>(item));
-//             SensorItem* sensorItem = new SensorItem(sensorModel);
-//             sensorItem->setPos(event->scenePos());
-//             addItemToScene(sensorItem);
+        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
             SensorModel* sensorModel = new SensorModel();
             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
-            //sensorItem->popupDialog = popupDialog;
-            //item = sensorItem;
-            //sensorItem->getModel().setOwnerID(WebSocketClient::getInstance().getClientId());
             m_network->addElement(sensorItem);
             sensorItem->openEditor();
             addItemToScene(sensorItem);
-        } else if (itemType == "ConnectorItem") {
+        }
+        else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
+            QemuSensorModel* qemuModel = new QemuSensorModel();
+            qemuModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+            QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
+            m_network->addElement(qemuItem);
+            qemuItem->openEditor();
+            addItemToScene(qemuItem);
+        }
+        else if (itemType == CustomWidget::BUS_ITEM) {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
             ConnectorItem * connectorItem = new ConnectorItem();
             connectorItem->setPos(event->scenePos());

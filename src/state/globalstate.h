@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QVector>
 #include "projectmodel.h"
+#include "sensorModel.h"
 
 class GlobalState : public QObject
 {
@@ -12,6 +13,7 @@ class GlobalState : public QObject
     Q_PROPERTY(bool isConnecting READ isConnecting WRITE setIsConnecting NOTIFY isConnectingChanged)
     Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning NOTIFY isRunningChanged)
     Q_PROPERTY(ProjectModel* currentProject READ currentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
+    Q_PROPERTY(SensorModel* currentSensorModel READ currentSensorModel WRITE setCurrentSensorModel NOTIFY currentSensorModelChanged)
 
 public:
     static GlobalState& getInstance();
@@ -34,12 +36,16 @@ public:
     ProjectModel* currentProject() const { return m_currentProject; }
     void setCurrentProject(ProjectModel* project);
 
+    SensorModel* currentSensorModel() const { return m_currentSensorModel; }
+    void setCurrentSensorModel(SensorModel* sensorModel);
+
 signals:
     void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
     void isConnectingChanged(bool isConnecting);
     void isRunningChanged(bool isRunning);
     void currentProjectChanged(ProjectModel* project);
+    void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
     void projectAddedLocally(ProjectModel* project);
 
@@ -54,4 +60,6 @@ private:
     bool m_isRunning = false;
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
+    SensorModel* m_currentSensorModel = nullptr;
+
 };

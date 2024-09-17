@@ -56,10 +56,6 @@ MainWindow::MainWindow(QWidget* parent)
     rightToolBar->setParent(this);
     rightToolBar->setFixedWidth(250);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
-    //m_scene->rightToolBar = rightToolBar;
-
-
-
 
 
     auto toolBar = addToolBar("Tools");
@@ -68,11 +64,6 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
-    toolBar->addAction("qemu box", [this] {
-        QemuSensorItem* qemu = new QemuSensorItem(new QemuSensorModel);
-        m_scene->addItem(qemu);
-        qemu->openEditor();
-    });
 
     // Connect to GlobalState
     GlobalState& globalState = GlobalState::getInstance();
@@ -92,10 +83,13 @@ void MainWindow::setupToolBar() {
     m_toolBar = new QToolBar("Shapes", this);
     m_toolBar->setOrientation(Qt::Vertical);
 
-    auto rItemWidget = new CustomWidget("SensorItem", this);
+    auto rItemWidget = new CustomWidget(CustomWidget::REGULAR_SENSOR_ITEM, this);
     m_toolBar->addWidget(rItemWidget);
 
-    auto busWidget = new CustomWidget("ConnectorItem", this);
+    auto qemuItemWidget = new CustomWidget(CustomWidget::QEMU_SENSOR_ITEM, this);
+    m_toolBar->addWidget(qemuItemWidget);
+
+    auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
     m_toolBar->addWidget(busWidget);
 
     // Initialize the connection status label
