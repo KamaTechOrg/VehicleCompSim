@@ -15,15 +15,15 @@
 class RSA
 {
 public:
-    static std::pair<std::string, std::string> generateKeys(const std::string& type);
+    static std::pair<std::vector<u_char>, std::vector<u_char>> generateKeys(const std::vector<u_char>& type);
 
     static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 1024);
     static bool isPrime(const BigNum &n, int k);
     static BigNum power(const BigNum &x, const BigNum &y, const BigNum &p);
 
     static bool millerTest(const BigNum &d, const BigNum &n);
-    static BigNum generateRandomNumber(int bits, int &count);
-    static std::string generateRandomBits(size_t length);
+    static BigNum generateRandomNumber(int bits);
+    static std::vector<u_char> generateRandomBits(size_t length);
     static BigNum generateLargePrime(int bits);
     static BigNum gcd(BigNum a, BigNum b);
     static BigNum modInverse(BigNum a, BigNum m);
@@ -32,12 +32,12 @@ public:
 
     static BigNum decrypt(const BigNum &message, const BigNum &privateKey, const BigNum &modulus);
 
-    static std::string encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus);
-    static std::string encrypt(const std::string &message, const std::string& key);
+    static std::vector<u_char> encrypt(const std::vector<u_char> &message, const BigNum &publicKey, const BigNum &modulus);
+    static std::vector<u_char> encrypt(const std::vector<u_char> &message, const std::vector<u_char>& key);
 
-    static std::string decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus);
+    static std::vector<u_char> decrypt(const std::vector<u_char> &encrypted_message, const BigNum &privateKey, const BigNum &modulus);
 
-    static std::string decrypt(const std::string &encrypted_message, const std::string& key);
+    static std::vector<u_char> decrypt(const std::vector<u_char> &encrypted_message, const std::vector<u_char>& key);
 };
 
 

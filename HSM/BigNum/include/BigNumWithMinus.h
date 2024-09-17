@@ -17,6 +17,18 @@ public:
         }
     }
 
+    BigNumWithMinus(std::vector<u_char> num, int numBase = 16) : BigNum(MAX_SIZE * UINT_T_SIZE) {
+    if (!num.empty() && num[0] == '-') {
+        num.erase(num.begin());
+        BigNum tmp(num, numBase);
+        *this = BigNumWithMinus(tmp);
+        setToMinus();
+    } else {
+        BigNum tmp(num, numBase);
+        *this = BigNumWithMinus(tmp);
+    }
+}
+
     BigNumWithMinus(const BigNum& other) : BigNum(MAX_SIZE * UINT_T_SIZE) {
         for (int i = 0; i < other.size; ++i) {
             this->data[i] = other.data[i];
@@ -64,5 +76,5 @@ public:
 
     void print() const ;
 
-    std::string toString() const ;
+    std::vector<u_char> toString() const ;
 };

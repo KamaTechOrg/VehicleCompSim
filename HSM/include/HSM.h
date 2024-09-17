@@ -10,27 +10,27 @@
 class HSM
 {
 public:
-    static std::pair<std::string, std::string> generateAsymmetricKeys(const std::string& type);
+    static std::pair<std::vector<u_char>, std::vector<u_char>> generateAsymmetricKeys(const std::vector<u_char> type);
 
-    static std::string generateSymmetricKey(const std::string& type);
+    static std::vector<u_char> generateSymmetricKey(const std::vector<u_char> type);
 
-    static std::string encrypt(const std::string& message, const std::string& type, const std::string& key);
+    static std::vector<u_char> encrypt(const std::vector<u_char> message, const std::vector<u_char> type, const std::vector<u_char> key);
 
-    static std::string decrypt(const std::string& message, const std::string& type, const std::string& key);
+    static std::vector<u_char> decrypt(const std::vector<u_char> message, const std::vector<u_char> type, const std::vector<u_char> key);
 
-    static std::string signMessage(
-        const std::string& message, 
-        const std::string& sigAlg, 
-        const std::string& hashAlg,
-        const std::string& key
+    static std::vector<u_char> signMessage(
+        const std::vector<u_char> message, 
+        const std::vector<u_char> sigAlg, 
+        const std::vector<u_char> hashAlg,
+        const std::vector<u_char> key
     );
     
     static bool verify(
-        const std::string& message,
-        const std::string& signature,
-        const std::string& sigAlg,
-        const std::string& hashAlg,
-        const std::string& key
+        const std::vector<u_char> message,
+        const std::vector<u_char> signature,
+        const std::vector<u_char> sigAlg,
+        const std::vector<u_char> hashAlg,
+        const std::vector<u_char> key
     );
 };
 

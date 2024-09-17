@@ -2,53 +2,53 @@
 #include "HSM.h"
 #include "AES_API.hpp"
 
-std::pair<std::string, std::string> HSM::generateAsymmetricKeys(const std::string& type)
+std::pair<std::vector<u_char>, std::vector<u_char>> HSM::generateAsymmetricKeys(const std::vector<u_char>& type)
 {
-    if(type.find("RSA") != std::string::npos) return RSA::generateKeys(type);
-    // if(type.find("ECC") != std::string::npos) return ECC::generateKeys(type);
-    return std::pair<std::string, std::string> ();
+    if(type.find("RSA") != std::vector<u_char>::npos) return RSA::generateKeys(type);
+    // if(type.find("ECC") != std::vector<u_char>::npos) return ECC::generateKeys(type);
+    return std::pair<std::vector<u_char>, std::vector<u_char>> ();
 }
-std::string HSM::generateSymmetricKey(const std::string& type)
+std::vector<u_char> HSM::generateSymmetricKey(const std::vector<u_char>& type)
 {
-    // if(type.find("AES") != std::string::npos) return AES::generateKey(type);
-    return std::string();
-}
-
-std::string HSM::encrypt(const std::string& message, const std::string& type,const std::string& key)
-{
-    if(type.find("AES") != std::string::npos) return AES::encrypt(type, message, key);
-    if(type.find("RSA") != std::string::npos) return RSA::encrypt(message, key);
-    // if(type.find("ECC") != std::string::npos) return ECC::encrypt(message, key);
-    return std::string();
+    // if(type.find("AES") != std::vector<u_char>::npos) return AES::generateKey(type);
+    return std::vector<u_char>();
 }
 
-std::string HSM::decrypt(const std::string& message, const std::string& type,const std::string& key)
+std::vector<u_char> HSM::encrypt(const std::vector<u_char>& message, const std::vector<u_char>& type,const std::vector<u_char>& key)
 {
-    if(type.find("AES") != std::string::npos) return AES::decrypt(type, message, key);
-    if(type.find("RSA") != std::string::npos) return RSA::decrypt(message, key);
-    // if(type.find("ECC") != std::string::npos) return ECC::decrypt(message, key);
-    return std::string();
+    if(type.find("AES") != std::vector<u_char>::npos) return AES::encrypt(type, message, key);
+    if(type.find("RSA") != std::vector<u_char>::npos) return RSA::encrypt(message, key);
+    // if(type.find("ECC") != std::vector<u_char>::npos) return ECC::encrypt(message, key);
+    return std::vector<u_char>();
 }
 
-std::string HSM::signMessage(
-        const std::string& message, 
-        const std::string& sigAlg, 
-        const std::string& hashAlg,
-        const std::string& key
+std::vector<u_char> HSM::decrypt(const std::vector<u_char>& message, const std::vector<u_char>& type,const std::vector<u_char>& key)
+{
+    if(type.find("AES") != std::vector<u_char>::npos) return AES::decrypt(type, message, key);
+    if(type.find("RSA") != std::vector<u_char>::npos) return RSA::decrypt(message, key);
+    // if(type.find("ECC") != std::vector<u_char>::npos) return ECC::decrypt(message, key);
+    return std::vector<u_char>();
+}
+
+std::vector<u_char> HSM::signMessage(
+        const std::vector<u_char>& message, 
+        const std::vector<u_char>& sigAlg, 
+        const std::vector<u_char>& hashAlg,
+        const std::vector<u_char>& key
 ){
-    // if(hashAlg.find("SHA3_256") != std::string::npos) return Signature::sha3_256_sign(message, sigAlg, key);
-    if(hashAlg.find("SHA256") != std::string::npos) return Signature::sha256_sign(message, sigAlg, key);
-    return std::string();
+    // if(hashAlg.find("SHA3_256") != std::vector<u_char>::npos) return Signature::sha3_256_sign(message, sigAlg, key);
+    if(hashAlg.find("SHA256") != std::vector<u_char>::npos) return Signature::sha256_sign(message, sigAlg, key);
+    return std::vector<u_char>();
 }
 
 bool HSM::verify(
-        const std::string& message,
-        const std::string& signature,
-        const std::string& sigAlg,
-        const std::string& hashAlg,
-        const std::string& key
+        const std::vector<u_char>& message,
+        const std::vector<u_char>& signature,
+        const std::vector<u_char>& sigAlg,
+        const std::vector<u_char>& hashAlg,
+        const std::vector<u_char>& key
 ){
-    // if(hashAlg.find("SHA3_256") != std::string::npos) return Signature::sha3_256_verify(message, sigAlg, key);
-    // if(hashAlg.find("SHA256") != std::string::npos) return Signature::sha256_verify(message, sigAlg, key);
+    // if(hashAlg.find("SHA3_256") != std::vector<u_char>::npos) return Signature::sha3_256_verify(message, sigAlg, key);
+    // if(hashAlg.find("SHA256") != std::vector<u_char>::npos) return Signature::sha256_verify(message, sigAlg, key);
     return false;
 }

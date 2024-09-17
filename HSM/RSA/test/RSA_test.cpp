@@ -252,60 +252,60 @@ TEST(RSA_BigNum_test, power_test4)
     EXPECT_EQ(c, exp);
 }
 
-// TEST(RSA_BigNum_test, WithBigNum_1)
-// {
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum_1)
+{
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSA::generate_keys(publicKey, privateKey, modulus, 256);
+    RSA::generate_keys(publicKey, privateKey, modulus, 256);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message("12345");
+    // test RSA encryption and decryption for int
+    BigNum message("12345");
     
 
-//     BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
-// }
+    BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
+}
 
-// TEST(RSA_BigNum_test, WithBigNum_2)
-// {
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum_2)
+{
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSA::generate_keys(publicKey, privateKey, modulus, 512);
+    RSA::generate_keys(publicKey, privateKey, modulus, 512);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message("12345768910");
-//     BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
-// }
+    // test RSA encryption and decryption for int
+    BigNum message("12345768910");
+    BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
+}
 
-// TEST(RSA_BigNum_test, WithBigNum_3)
-// {
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum_3)
+{
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSA::generate_keys(publicKey, privateKey, modulus, 1024);
+    RSA::generate_keys(publicKey, privateKey, modulus, 1024);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message("12345768910");
-//     BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
-// }
+    // test RSA encryption and decryption for int
+    BigNum message("12345768910");
+    BigNum encrypted = RSA::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSA::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
+}
 // // test RSA encryption and decryption for string
-// TEST(RSA_BigNum_test, WithString)
-// {
-//     BigNum publicKey, privateKey, modulus;
-//     RSA::generate_keys(publicKey, privateKey, modulus, 256);
-//     std::string text = "Hello, RSA!";
-//     std::string encrypted_text = RSA::encrypt(text, publicKey, modulus);
-//     std::string decrypted_text = RSA::decrypt(encrypted_text, privateKey, modulus);
-//     EXPECT_EQ(text, decrypted_text);
-//     EXPECT_NE(encrypted_text, text);
-// }
+TEST(RSA_BigNum_test, WithString)
+{
+    BigNum publicKey, privateKey, modulus;
+    RSA::generate_keys(publicKey, privateKey, modulus, 256);
+    std::string text = "Hello, RSA!";
+    std::string encrypted_text = RSA::encrypt(text, publicKey, modulus);
+    std::string decrypted_text = RSA::decrypt(encrypted_text, privateKey, modulus);
+    EXPECT_EQ(text, decrypted_text);
+    EXPECT_NE(encrypted_text, text);
+}

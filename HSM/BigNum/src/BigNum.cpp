@@ -3,12 +3,6 @@
 #include <cstdint>
 using namespace std;
 
-#include "BigNum.h"
-
-using namespace std;
-
-// Print the number (for testing purposes)
-
 BigNum::BigNum(int bit_size)
 {
 	size = (bit_size / UINT_T_SIZE) + (bit_size % UINT_T_SIZE == 0 ? 0 : 1);
@@ -48,6 +42,25 @@ BigNum::BigNum(std::string num, int numBase) : size((num.size() / 8) + 1)
 		}
 	}
 }
+
+BigNum::BigNum(std::vector<u_char> num, int numBase) : size((num.size() / 8) + 1)
+{
+	if (size > MAX_SIZE)
+		size = MAX_SIZE;
+	data.resize(size, 0);
+	int num_len = num.size();
+	std::reverse(num.begin(), num.end());
+
+	for (int i = 0; i < num_len; i += 8)
+	{
+		std::vector<u_char> part(num.begin() + i, num.begin() + std::min(i + 8, num_len));
+		std::reverse(part.begin(), part.end());
+		if (i / 8 < size)
+		{
+			data[i / 8] = std::stoul(std::string(part.begin(), part.end()), nullptr, numBase);
+		}
+	}
+}
 void BigNum::print() const
 {
 	bool leading_zero = true;
@@ -62,23 +75,21 @@ void BigNum::print() const
 	std::cout << std::endl;
 }
 
-std::string BigNum::toString() const
+std::vector<u_char> BigNum::toString() const
 {
 	std::stringstream result;
 	bool leading_zero = true;
 
 	for (int i = size - 1; i >= 0; --i)
 	{
-		// Convert to hex and handle leading zeros
 		std::stringstream part;
 		part << std::hex << data[i];
 
 		if (leading_zero)
 		{
-			// Find the first non-zero part
-			std::string part_str = part.str();
+			string part_str = part.str();
 			auto first_non_zero = part_str.find_first_not_of('0');
-			if (first_non_zero != std::string::npos)
+			if (first_non_zero != string::npos)
 			{
 				result << part_str.substr(first_non_zero);
 				leading_zero = false;
@@ -86,21 +97,18 @@ std::string BigNum::toString() const
 		}
 		else
 		{
-			// Append remaining parts with leading zeros
 			result << std::setfill('0') << std::setw(8) << part.str();
 		}
 	}
 
-	// If the result is empty, it means the number is zero
 	if (result.str().empty())
 	{
-		return "0";
+		return {};
 	}
 
-	return result.str();
+	return std::vector<u_char>(result.str().begin(), result.str().end());
 }
 
-// Example of addition operation
 BigNum BigNum::operator+(const BigNum &other) const
 {
 	int max_size = std::max(size, other.size) + 1;
@@ -244,7 +252,7 @@ BigNum BigNum::operator*=(uint32_t num)
 
 BigNum BigNum::operator/(const BigNum &other) const
 {
-	if (other == BigNum("0"))
+	if (other == BigNum(0, 1))
 	{
 		throw std::runtime_error("Division by zero error");
 	}
@@ -286,32 +294,201 @@ BigNum BigNum::operator/=(uint32_t num)
 	return *this;
 }
 
-// Modulus operator
+// BigNum barrett_reduce(const BigNum& x, const BigNum& n, const BigNum& mu) {
+//     int k = n.getSizeThatIsFull() * BigNum::UINT_T_SIZE;
+
+//     BigNum q = x >> (k - 1);  // q = x / 2^k
+//     q = q * mu;               // q = q * mu
+//     q = q >> (k + 1);         // q = q / 2^(k+1)
+
+//     BigNum r1 = q * n;        // r1 = q * n
+//     BigNum r = x - r1;   // r = x - q * n
+
+//     while (r >= n) {
+//         r = r - n;            // Correct if r >= n
+//     }
+
+//     return r;
+// }
+
+int compare(const std::vector<uint32_t> &a, const std::vector<uint32_t> &b)
+{
+	if (a.size() > b.size())
+		return 1;
+	if (a.size() < b.size())
+		return -1;
+
+	for (size_t i = a.size(); i > 0; --i)
+	{
+		if (a[i - 1] > b[i - 1])
+			return 1;
+		if (a[i - 1] < b[i - 1])
+			return -1;
+	}
+
+	return 0;
+}
+void subtract(std::vector<uint32_t> &a, const std::vector<uint32_t> &b)
+{
+	uint64_t borrow = 0;
+	for (size_t i = 0; i < b.size(); ++i)
+	{
+		uint64_t temp = uint64_t(a[i]) - b[i] - borrow;
+		a[i] = static_cast<uint32_t>(temp);
+		borrow = (temp >> 32) & 1;
+	}
+	for (size_t i = b.size(); i < a.size() && borrow; ++i)
+	{
+		uint64_t temp = uint64_t(a[i]) - borrow;
+		a[i] = static_cast<uint32_t>(temp);
+		borrow = (temp >> 32) & 1;
+	}
+	// Remove leading zeros
+	while (a.size() > 1 && a.back() == 0)
+		a.pop_back();
+}
+
+// Helper function to shift a large number to the right by a certain number of bits
+std::vector<uint32_t> shift_right(const std::vector<uint32_t> &num, int bits)
+{
+	std::vector<uint32_t> result(num.size(), 0);
+	uint64_t temp = 0;
+	for (size_t i = num.size(); i > 0; --i)
+	{
+		temp = (temp << 32) | num[i - 1];
+		result[i - 1] = static_cast<uint32_t>(temp >> bits);
+		temp &= ((uint64_t(1) << bits) - 1);
+	}
+	return result;
+}
+
+// Helper function to multiply two large numbers
+std::vector<uint32_t> multiply(const std::vector<uint32_t> &a, const std::vector<uint32_t> &b)
+{
+	std::vector<uint32_t> result(a.size() + b.size(), 0);
+	for (size_t i = 0; i < a.size(); ++i)
+	{
+		uint64_t carry = 0;
+		for (size_t j = 0; j < b.size() || carry; ++j)
+		{
+			uint64_t sum = uint64_t(result[i + j]) + uint64_t(a[i]) * (j < b.size() ? b[j] : 0) + carry;
+			result[i + j] = static_cast<uint32_t>(sum);
+			carry = sum >> 32;
+		}
+	}
+	return result;
+}
+BigNum barrett_reduce(const BigNum &large_number, const BigNum &mod)
+{
+
+	size_t k = mod.getSizeThatIsFull();
+
+	// Step 1: Precompute mu = floor(2^(2k) / mod), where k = mod.size()
+	std::vector<uint32_t> mu = shift_right(multiply({0, 1}, {0, 1}), 32 * mod.getSizeThatIsFull() - 1);
+
+	// Step 2: If large_number < mod, no need to reduce
+	if (large_number < mod)
+		return large_number;
+
+	// Step 3: q1 = floor(large_number / 2^(k-1))
+	std::vector<uint32_t> q1 = shift_right(large_number.data, 32 * (k - 1));
+
+	// Step 4: q2 = q1 * mu
+	std::vector<uint32_t> q2 = multiply(q1, mu);
+
+	// Step 5: q3 = floor(q2 / 2^(k+1))
+	std::vector<uint32_t> q3 = shift_right(q2, 32 * (k + 1));
+
+	// Step 6: r1 = large_number mod 2^(k+1)
+	std::vector<uint32_t> r1(large_number.data.begin(), large_number.data.begin() + std::min(large_number.getSizeThatIsFull(), mod.getSizeThatIsFull() + 1));
+
+	// Step 7: r2 = q3 * mod mod 2^(k+1)
+	std::vector<uint32_t> r2 = multiply(q3, mod.data);
+	r2.resize(mod.getSizeThatIsFull() + 1);
+
+	// Step 8: r = r1 - r2
+	subtract(r1, r2);
+
+	// Step 9: If r >= mod, subtract mod from r
+	while (compare(r1, mod.data) >= 0)
+	{
+		subtract(r1, mod.data);
+	}
+	BigNum toReturn(1, 1);
+	toReturn.data = r1;
+	toReturn.size = r1.size();
+	return toReturn;
+}
 
 BigNum BigNum::operator%(const BigNum &other) const
 {
-	if (other == BigNum("0"))
+	if (*this < other)
 	{
-		throw std::runtime_error("Division by zero error");
+		return *this;
 	}
-
-	BigNum dividend = *this;
-	BigNum divisor = other;
-	BigNum remainder(size * UINT_T_SIZE);
-
-	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
-	{
-		remainder = remainder << 1;
-		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
-
-		if (remainder >= divisor)
-		{
-			remainder = remainder - divisor;
-		}
-	}
-
-	return remainder;
+	return barrett_reduce(*this, other);
 }
+
+// Modulus operator
+// BigNum barrett_reduce(const BigNum& x, const BigNum& n, const BigNum& mu) {
+// 	BigNum tmp(n);
+//     int k = 0;
+// 	while(tmp > 0) {
+// 		tmp = tmp >> 1;
+// 		++k;
+// 	}
+//     BigNum q = x >> (k - 1);  // q = x / 2^k
+//     q = q * mu;               // q = q * mu
+//     q = q >> (k + 1);         // q = q / 2^k
+
+//     BigNum r = x - (q * n);   // r = x - q * n
+
+//     while (r >= n) {
+//         r = r - n;            // Correct if r >= n
+//     }
+
+//     return r;
+// }
+
+// BigNum BigNum::operator%(const BigNum& other) const {
+//     if (*this < other) {
+//         return *this; // If this is less than the modulus, return this
+//     }
+
+//     BigNum mu(1, this->size);
+//     // Compute mu = 2^(2k) / n
+//     BigNum two_k = BigNum(1, this->size) << (2 * other.getSizeThatIsFull() * UINT_T_SIZE);
+//     mu = two_k / other;  // Calculate mu
+
+//     BigNum remainder = barrett_reduce(*this, other, mu);
+
+//     return remainder; // Return the remainder
+// }
+
+// BigNum BigNum::operator%(const BigNum &other) const
+// {
+// 	if (other == BigNum("0"))
+// 	{
+// 		throw std::runtime_error("Division by zero error");
+// 	}
+
+// 	BigNum dividend = *this;
+// 	BigNum divisor = other;
+// 	BigNum remainder(size * UINT_T_SIZE);
+
+// 	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
+// 	{
+// 		remainder = remainder << 1;
+// 		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
+
+// 		if (remainder >= divisor)
+// 		{
+// 			remainder = remainder - divisor;
+// 		}
+// 	}
+
+// 	return remainder;
+// }
 
 BigNum BigNum::operator%(uint32_t num) const
 {
@@ -499,9 +676,22 @@ uint64_t BigNum::toChar() const
 
 int BigNum::getSizeThatIsFull() const
 {
-    int i = 0;
-	while(i < size && data[size - 1 - i] == 0){
+	int i = 0;
+	while (i < size && data[size - 1 - i] == 0)
+	{
 		++i;
 	}
 	return size - i;
+}
+
+int BigNum::bit_length() const
+{
+	BigNum tmp(*this);
+	int k = 0;
+	while (tmp > 0)
+	{
+		tmp = tmp >> 1;
+		++k;
+	}
+	return k;
 }

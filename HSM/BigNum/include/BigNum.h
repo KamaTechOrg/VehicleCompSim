@@ -32,13 +32,14 @@ public:
 
 	BigNum(uint64_t num, int bit_size);
 
+    BigNum(std::vector<u_char> num, int numBase = 16);
     BigNum(std::string num, int numBase = 16);
     
 
     // Print the number (for testing purposes)
     void print() const;
 
-    std::string toString() const;
+    std::vector<u_char> toString() const;
 
 
     BigNum operator+(const BigNum& other) const;
@@ -122,7 +123,9 @@ public:
 
 
 	friend std::ostream& operator<<(std::ostream& out, const BigNum& num) {
-		out << num.toString();
+        std::vector<u_char> num_vec = num.toString();
+        string str(num_vec.begin(), num_vec.end());
+		out << str;
 		return out;
 	}
 
@@ -131,6 +134,8 @@ public:
     uint64_t toChar() const;
 
     int getSizeThatIsFull() const;
+
+    int bit_length() const;
 
 
 };
