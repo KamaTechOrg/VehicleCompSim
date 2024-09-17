@@ -13,24 +13,27 @@ ConditionsEditor::ConditionsEditor()
     _conditionsGroup = new ConditionsGroup;
     _conditionsGroup->unableDelete();
     _conditionsGroup->setBoxTitle("if");
-    _thenGroupBox = new ThenGroupBox;
+
+    _actionGroupBox = new ThenGroupBox;
 
     _saveButton = new QPushButton("save");
     connect(_saveButton, &QPushButton::clicked, this, &ConditionsEditor::save);
 
     _ConditionsEditorLayout = new QVBoxLayout;
     _ConditionsEditorLayout->addLayout(_conditionsGroup);
-    _ConditionsEditorLayout->addWidget(_thenGroupBox);
+    _ConditionsEditorLayout->addWidget(_actionGroupBox);
     _ConditionsEditorLayout->addStretch(1);
     _ConditionsEditorLayout->addWidget(_saveButton);
-
+    
     setLayout(_ConditionsEditorLayout);
 
-
     resize(350, 200);
+}
 
-    // load from JSON file (if exists) the current conditions state
-    loadGuiDataFromJson();
+void ConditionsEditor::setView(nlohmann::json jsonData)
+{
+    _conditionsGroup->setConditionsGroup(jsonData["conditions"]);
+    _actionGroupBox->loadFromJson(jsonData["actions"]);
 }
 
 void ConditionsEditor::save()
@@ -58,7 +61,7 @@ void ConditionsEditor::loadGuiDataFromJson()
     nlohmann::json jsonData = JsonLoader().loadGuiData();
 
     _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
-    _thenGroupBox->loadFromJson(jsonData["actions"]);
+    _actionGroupBox->loadFromJson(jsonData["actions"]);
 }
 
 void ConditionsEditor::saveLogicDataToJson() {
@@ -68,7 +71,7 @@ void ConditionsEditor::saveLogicDataToJson() {
         return;
 
     // get action (that will be executed if conditon were validated at some point)
-    std::vector<std::shared_ptr<Action>> actions = _thenGroupBox->data();
+    std::vector<std::shared_ptr<Action>> actions = _actionGroupBox->data();
 
     
     if (actions.empty())
@@ -102,7 +105,7 @@ void ConditionsEditor::saveGuiDataToJson() {
     nlohmann::json jsonData;
 
     jsonData["conditions"] = _conditionsGroup->GuiData();
-    jsonData["actions"] = _thenGroupBox->GuiData();
+    jsonData["actions"] = _actionGroupBox->GuiData();
 
 
     // save both conditions and action to a json file

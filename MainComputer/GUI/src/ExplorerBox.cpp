@@ -1,9 +1,10 @@
 #include "ExplorerBox.h"
 
 #include <QStringListModel>
+#include "JsonLoader.h"
 
-ExplorerBox::ExplorerBox()
-	: QGroupBox("Explorer")
+ExplorerBox::ExplorerBox(ConditionsEditor* editorReference)
+	: QGroupBox("Explorer"), _editorReference(editorReference)
 {
 	_scenariosList = new QListView;
 
@@ -11,7 +12,6 @@ ExplorerBox::ExplorerBox()
 	QStringList scenarioList;
 	scenarioList << "scenario 1" << "scenario 2" << "scenario 3"
 		<< "scenario 4" << "scenario 5";
-	scenarioList << "scenario 6";
 
 	model->setStringList(scenarioList);
 	_scenariosList->setModel(model);
@@ -25,6 +25,7 @@ ExplorerBox::ExplorerBox()
 void ExplorerBox::onItemClicked(const QModelIndex& index)
 {
 	QString itemText = index.data().toString();
-
-	qInfo() << itemText << " clicked";
+	qDebug() << itemText << " clicked";
+	nlohmann::json jsonData = JsonLoader().loadGuiData();
+	_editorReference->setView(jsonData);
 }

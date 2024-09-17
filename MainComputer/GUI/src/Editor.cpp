@@ -3,15 +3,13 @@
 Editor::Editor()
 {
 	setWindowTitle("Conditions Editor");
-
 	_layout = new QHBoxLayout;
 	_editor = new ConditionsEditor;
-	_explorer = new ExplorerBox;
+	_explorer = new ExplorerBox(_editor);
 	_layout->addWidget(_explorer);
 	_layout->addWidget(_editor);
 	setLayout(_layout);
 	resize(700, 200);
-
 }
 
 Editor::~Editor()

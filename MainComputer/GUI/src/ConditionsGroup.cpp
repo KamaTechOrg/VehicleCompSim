@@ -99,6 +99,12 @@ void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
 	}
 }
 
+void ConditionsGroup::setConditionsGroup(nlohmann::json jsonData)
+{
+	for (auto conditionLayout : _conditions)
+		deleteCondition(conditionLayout);
+	addConditionsGroup(jsonData);
+}
 
 void ConditionsGroup::addEmptySingleCondition()
 {

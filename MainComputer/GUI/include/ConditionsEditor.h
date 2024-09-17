@@ -14,6 +14,7 @@ class ConditionsEditor : public QGroupBox
 public:
 	ConditionsEditor();
 	
+	void setView(nlohmann::json jsonData);
 	void save();
 
 private:
@@ -22,9 +23,8 @@ private:
 	void saveLogicDataToJson();
 	void saveGuiDataToJson();
 
-
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;
-	ThenGroupBox* _thenGroupBox;
+	ThenGroupBox* _actionGroupBox;
 	QPushButton* _saveButton;
 };
