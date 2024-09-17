@@ -29,15 +29,15 @@ protected:
     void initIsUseCmakePath();
 
 
-    void initParameters(); // Declare as virtual
-    void initLayout();      // Declare as virtual
+    void initParameters();
+    void initLayout();
 
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     std::unordered_map<QObject*, QLabel*> labels;
     void switchProjectInputMethod();
 public:
-    Editor(SensorItem* _sensor);
+    Editor(SensorModel* _sensor);
     void open();
     void close();
 };

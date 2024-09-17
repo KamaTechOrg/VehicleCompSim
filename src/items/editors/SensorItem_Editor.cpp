@@ -113,9 +113,8 @@ void SensorItem::Editor::switchProjectInputMethod()
     }
 }
 
-SensorItem::Editor::Editor(SensorItem *_sensor) : model(_sensor->getModel())
+SensorItem::Editor::Editor(SensorModel *_model) : model(*_model)
 {
-
     initParameters();
     initLayout();
     switchProjectInputMethod();

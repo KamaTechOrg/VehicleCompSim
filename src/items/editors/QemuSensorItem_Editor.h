@@ -51,7 +51,7 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
     void initLayout();
 
 public:
-    Editor(QemuSensorItem* _sensor);
+    Editor(QemuSensorModel* _model);
     void open();
     void close();
 };

@@ -59,6 +59,9 @@ void GlobalState::setCurrentProject(ProjectModel* project)
     if (m_currentProject != project) {
         m_currentProject = project;
         emit currentProjectChanged(m_currentProject);
+        QObject::connect(m_currentProject, &ProjectModel::modelRemoved , [this](SerializableItem* model){
+            if (m_currentSensorModel == model) setCurrentSensorModel(nullptr);
+        });
     }
 }
 

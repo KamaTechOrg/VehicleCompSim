@@ -3,6 +3,7 @@
 
 #include "qtoolbar.h"
 #include "qscrollarea.h"
+#include "sensormodel.h"
 
 class EditPanel
 {
@@ -13,8 +14,6 @@ public:
         virtual void open() = 0;
         virtual void close() = 0;
     };
-    static void loadNewEditor(Editor* editor);
-    static void closeCurrentEditor();
     static QToolBar *getPanel();
     static QWidget *getScrollArea();
 
@@ -23,7 +22,13 @@ private:
     Editor* currentEditor;
     QToolBar *panel;
     QScrollArea* scrollArea;
+    SensorModel* currentModel;
 
+    void onGlobalStateCurrentSensorModelChanged();
+    Editor* getEditorForModel(SensorModel* model);
+
+    void loadNewEditor(Editor* editor);
+    void closeCurrentEditor();
     static EditPanel& getInstance();
 
 };

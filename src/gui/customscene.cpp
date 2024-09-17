@@ -260,7 +260,7 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
             m_network->addElement(sensorItem);
-            sensorItem->openEditor();
+            sensorItem->select();
             addItemToScene(sensorItem);
         }
         else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
@@ -268,7 +268,7 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             qemuModel->setOwnerID(WebSocketClient::getInstance().getClientId());
             QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
             m_network->addElement(qemuItem);
-            qemuItem->openEditor();
+            qemuItem->select();
             addItemToScene(qemuItem);
         }
         else if (itemType == CustomWidget::BUS_ITEM) {

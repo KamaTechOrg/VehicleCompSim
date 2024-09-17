@@ -12,10 +12,5 @@ QemuSensorModel &QemuSensorItem::getQemuModel()
 }
 
 
-void QemuSensorItem::openEditor()
-{
-    EditPanel::loadNewEditor(new QemuSensorItem::Editor(this));
-
-}
 
 

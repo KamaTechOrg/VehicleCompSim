@@ -14,11 +14,11 @@ public:
     bool isInitialized() const;
     bool isExludeFromProject() const;
     virtual SensorModel& getModel();
+    void select();
     class Editor;
 public slots:
     void onModelUpdated();
 
-    virtual void openEditor();
 private:
     SensorModel* m_model;
 

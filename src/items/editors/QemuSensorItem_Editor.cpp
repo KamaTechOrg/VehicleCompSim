@@ -191,7 +191,7 @@ void QemuSensorItem::Editor::initParameters()
     initNographic();
 }
 
-QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model(_sensor->getQemuModel()), layout(new QVBoxLayout(this))
+QemuSensorItem::Editor::Editor(QemuSensorModel *_model) : model(*_model), layout(new QVBoxLayout(this))
 {
     initParameters();
     initLayout();

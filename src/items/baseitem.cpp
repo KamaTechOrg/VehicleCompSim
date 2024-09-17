@@ -1,9 +1,11 @@
 #include "baseitem.h"
+#include "customscene.h"
 #include <qrandom.h>
 #include <QGraphicsSceneHoverEvent>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+#include <GlobalState.h>
 
 qreal BaseItem::my_id = 0;
 
@@ -258,7 +260,8 @@ void BaseItem::removeItem() {
 
         // Remove this item
         scene()->removeItem(this);
-        m_model->notifyItemDeleted();
+        m_model->notifyItemDeleted();// TODO - CHECK IF TO DELETE THIS
+        GlobalState::getInstance().currentProject()->removeModel(m_model);
         deleteLater();
     }
 }

@@ -6,6 +6,7 @@
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
 #include <cmath>
+#include "globalstate.h"
 #include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
@@ -44,7 +45,7 @@ void SensorItem::setupUpdateButtonProxy()
     m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
 
     // Connect button to its respective slot
-    connect(updateButton, &QPushButton::clicked, this, &SensorItem::openEditor);
+    connect(updateButton, &QPushButton::clicked, this, &SensorItem::select);
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -121,11 +122,12 @@ SensorModel &SensorItem::getModel()
     return *m_model;
 }
 
-void SensorItem::openEditor() {
-    //popupDialog->oldSensorItem = this;
-   // popupDialog->reset();
-    EditPanel::loadNewEditor(new Editor(this));
+void SensorItem::select()
+{
+    GlobalState::getInstance().setCurrentSensorModel(this->m_model);
 }
+
+
 
 void SensorItem::showButtons()
 {
