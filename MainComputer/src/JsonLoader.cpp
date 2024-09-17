@@ -12,7 +12,16 @@ JsonLoader::JsonLoader()
 
 nlohmann::json JsonLoader::loadConditionsLogic() const
 {
-	return nlohmann::json();
+    std::ifstream file(_logicDataJsonFileName);
+    if (!file.is_open())
+    {
+        qWarning() <<  "Could not open JSON file: " << _logicDataJsonFileName.c_str();
+        return generateDefaultLogicJson();
+    }
+
+    nlohmann::json jsonData;
+    file >> jsonData;
+    file.close();
 }
 
 nlohmann::json JsonLoader::loadGuiData() const
@@ -30,7 +39,7 @@ nlohmann::json JsonLoader::loadGuiData() const
     catch (const nlohmann::json::parse_error& e) {
         qDebug() << "JSON parse error: " << e.what();
         file.close();
-        return {};
+        return generateDefaultGuiDataJson();
     }
     file.close();
 
@@ -42,8 +51,24 @@ nlohmann::json JsonLoader::loadGuiData() const
     }
     else {
         qDebug() << "JSON data missing expected keys: 'conditions' or 'actions'.";
-        return {};
+        return generateDefaultGuiDataJson();
     }
 
-    return {};
+    return generateDefaultGuiDataJson();
+}
+
+nlohmann::json JsonLoader::generateDefaultLogicJson() const
+{
+    return {
+        {"conditions", nlohmann::json::array()},
+        {"actions", {}}
+    };
+}
+
+nlohmann::json JsonLoader::generateDefaultGuiDataJson() const
+{
+    return {
+        {"conditions", nlohmann::json::array()},
+        {"actions", nlohmann::json::array()}
+    };
 }

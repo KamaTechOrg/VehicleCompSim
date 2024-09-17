@@ -14,4 +14,7 @@ public:
 private:
 	std::string _logicDataJsonFileName;
 	std::string _guiDataJsonFileName;
+
+	nlohmann::json generateDefaultLogicJson() const;
+	nlohmann::json generateDefaultGuiDataJson() const;
 };
