@@ -10,6 +10,8 @@ public:
 
 	nlohmann::json loadConditionsLogic() const;
 	nlohmann::json loadGuiData() const;
+	void saveConditionsLogic(const nlohmann::json &jsonData) const;
+	void saveGuiData(const nlohmann::json &jsonData) const;
 
 private:
 	std::string _logicDataJsonFileName;

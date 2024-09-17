@@ -59,6 +59,43 @@ nlohmann::json JsonLoader::loadGuiData() const
     return generateDefaultGuiDataJson();
 }
 
+
+void JsonLoader::saveConditionsLogic(const nlohmann::json& jsonData) const
+{
+    std::ofstream file(_logicDataJsonFileName);
+    if (!file.is_open()) {
+        qWarning() << "Could not open file for writing: " << QString::fromStdString(_logicDataJsonFileName);
+        return;
+    }
+
+    try {
+        file << jsonData.dump(4);  
+    }
+    catch (const std::exception& e) {
+        qWarning() << "Error writing JSON to file: " << e.what();
+    }
+
+    file.close();
+}
+
+void JsonLoader::saveGuiData(const nlohmann::json& jsonData) const
+{
+    std::ofstream file(_guiDataJsonFileName);
+    if (!file.is_open()) {
+        qWarning() << "Could not open file for writing: " << QString::fromStdString(_guiDataJsonFileName);
+        return;
+    }
+
+    try {
+        file << jsonData.dump(4);  
+    }
+    catch (const std::exception& e) {
+        qWarning() << "Error writing JSON to file: " << e.what();
+    }
+
+    file.close();
+}
+
 nlohmann::json JsonLoader::generateDefaultLogicJson() const
 {
     return {
