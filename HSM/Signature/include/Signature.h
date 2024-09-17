@@ -31,4 +31,4 @@ public:
         const std::string& key
     );
     
-}
+};
