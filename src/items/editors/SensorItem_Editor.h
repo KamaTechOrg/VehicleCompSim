@@ -21,6 +21,7 @@ class SensorItem::Editor : public EditPanel::Editor{
 
     QVBoxLayout* v_layout = new QVBoxLayout(this);
 
+    std::unordered_map<QObject*, QLabel*> labels;
     void switchProjectInputMethod();
 public:
     Editor(SensorItem* _sensor);

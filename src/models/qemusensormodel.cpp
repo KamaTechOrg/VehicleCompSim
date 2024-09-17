@@ -1,6 +1,9 @@
 #include "qemusensormodel.h"
+#include <QProcess>
 
-QemuSensorModel::QemuSensorModel() {}
+QemuSensorModel::QemuSensorModel()
+    : m_platform(getPlatformOptions()[0].value)
+{}
 
 QString QemuSensorModel::platform() const
 {
@@ -156,6 +159,63 @@ void QemuSensorModel::setNographic(bool _nographic)
     }
 }
 
+std::vector<parameter_option_t> QemuSensorModel::getPlatformOptions()
+{
+    return {
+        {"Arm v8 (64bit)", "aarch64"},
+        {"Arm v7 (32bit)", "arm"}
+    };
+}
+
+std::vector<parameter_option_t> QemuSensorModel::getMachineOptions()
+{
+    std::vector<parameter_option_t> options;
+
+    options.push_back({"[None]", ""});
+
+    auto opt_list = getQemuOutputForParameter(FLAG_MACHINE).split('\n');
+    opt_list.pop_front();
+
+    for (auto opt: opt_list)
+    {
+        opt = opt.trimmed();
+        if (opt.isEmpty()) continue;
+        int index = opt.indexOf(' ');
+        auto value = opt.sliced(0, index).trimmed();
+        auto text = opt.sliced(index).trimmed();
+        options.push_back({text, value});
+    }
+    return options;
+}
+
+std::vector<parameter_option_t> QemuSensorModel::getCpuOptions()
+{
+    std::vector<parameter_option_t> options;
+
+    options.push_back({"[None]", ""});
+
+    auto opt_list = getQemuOutputForParameter(FLAG_CPU).split('\n');
+    opt_list.pop_front();
+    for (auto &opt: opt_list)
+    {
+        opt = opt.trimmed();
+        if (opt.isEmpty()) continue;
+        int index = opt.indexOf(' ');
+        auto value = index > 0 ? opt.sliced(0, index) : opt;
+        options.push_back({value, value});
+    }
+    return options;
+}
+
+std::vector<parameter_option_t> QemuSensorModel::getBootOptions()
+{
+    return {
+        {"[None]", ""},
+        {"Hard drive", "c"},
+        {"CD rom", "d"},
+    };
+}
+
 
 // Override SerializableItem methods
 QJsonObject QemuSensorModel::serialize() const {
@@ -185,3 +245,31 @@ void QemuSensorModel::deserialize(const QJsonObject &itemData) {
     emit anyPropertyChanged();
 }
 
+QString QemuSensorModel::getQemuOutputForParameter(const QString &flag)
+{
+        QProcess process;
+        process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+        process.start(QString("qemu-system-") + m_platform , {flag, "help"});
+        process.waitForFinished();  // Wait for the command to finish executing
+
+        QString output = process.readAllStandardOutput();  // Capture the standard output
+        QString errorOutput = process.readAllStandardError();  // Capture any error output
+
+        if (!errorOutput.isEmpty()) {
+            qDebug() << "Error:" << errorOutput;
+        }
+
+        return output;  // Return the captured output as a string
+}
+
+const char* QemuSensorModel::FLAG_MACHINE = "-machine";
+const char* QemuSensorModel::FLAG_CPU = "-cpu";
+const char* QemuSensorModel::FLAG_MEMORY_MB = "-memory";
+const char* QemuSensorModel::FLAG_KERNAL = "-kernal";
+const char* QemuSensorModel::FLAG_HARDDRIVE = "";
+const char* QemuSensorModel::FLAG_CDROM = "";
+const char* QemuSensorModel::FLAG_BOOT = "";
+const char* QemuSensorModel::FLAG_NET = "";
+const char* QemuSensorModel::FLAG_APPEND = "";
+const char* QemuSensorModel::FLAG_NOGRAPHIC = "-nographic";

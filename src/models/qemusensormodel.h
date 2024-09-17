@@ -1,6 +1,10 @@
 #ifndef QEMUSENSORMODEL_H
 #define QEMUSENSORMODEL_H
 #include "sensormodel.h"
+typedef struct {
+    QString label;
+    QString value;
+} parameter_option_t;
 
 class QemuSensorModel : public SensorModel
 {
@@ -9,6 +13,7 @@ class QemuSensorModel : public SensorModel
     Q_PROPERTY(QString platform READ platform WRITE setPlatform NOTIFY platformChanged)
     Q_PROPERTY(QString machine READ machine WRITE setMachine NOTIFY machineChanged)
     Q_PROPERTY(QString cpu READ cpu WRITE setCpu NOTIFY cpuChanged)
+    //add cpu count
     Q_PROPERTY(int memory_MB READ memory_MB WRITE setMemory_MB NOTIFY memory_MBChanged)
     Q_PROPERTY(QString kernal READ kernal WRITE setKernal NOTIFY kernalChanged)
     Q_PROPERTY(QString harddrive READ harddrive WRITE setHarddrive NOTIFY harddriveChanged)
@@ -46,6 +51,11 @@ public:
     void setAppend(const QString & _append);
     void setNographic(bool  _nographic);
 
+    // paramaters options getters
+    std::vector<parameter_option_t> getPlatformOptions();
+    std::vector<parameter_option_t> getMachineOptions();
+    std::vector<parameter_option_t> getCpuOptions();
+    std::vector<parameter_option_t> getBootOptions();
 
 
 
@@ -84,6 +94,23 @@ private:
     QString m_net;
     QString m_append;
     bool m_nographic = true;
+
+    // private methodes
+    QString getQemuOutputForParameter(const QString& flag) ;
+
+public:
+
+    //static flags
+    static const char* FLAG_MACHINE;
+    static const char* FLAG_CPU;
+    static const char* FLAG_MEMORY_MB;
+    static const char* FLAG_KERNAL;
+    static const char* FLAG_HARDDRIVE;
+    static const char* FLAG_CDROM;
+    static const char* FLAG_BOOT;
+    static const char* FLAG_NET;
+    static const char* FLAG_APPEND;
+    static const char* FLAG_NOGRAPHIC;
 };
 
 #endif // QEMUSENSORMODEL_H

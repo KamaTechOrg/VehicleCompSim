@@ -3,24 +3,42 @@
 
 void EditPanel::loadNewEditor(EditPanel::Editor *editor)
 {
-    if (currentEditor != nullptr) closeCurrentEditor();
+    if (getInstance().currentEditor != nullptr) closeCurrentEditor();
 
-    currentEditor = editor;
-    currentEditor->setParent(getPanel());
-    currentEditor->show();
+    getInstance().currentEditor = editor;
+    getInstance().panel->addWidget( editor);
+    //getInstance().scrollArea->setWidget(editor);
+    editor->open();
+    //editor->setFixedSize(getInstance().getScrollArea()->size());
 }
 
 void EditPanel::closeCurrentEditor()
 {
-    currentEditor->close();
-    currentEditor->deleteLater();
-    currentEditor = nullptr;
+    getInstance().currentEditor->close();
+    getInstance().currentEditor->deleteLater();
+    getInstance().currentEditor = nullptr;
 }
 
 QToolBar *EditPanel::getPanel()
 {
-    static QToolBar* panel = new QToolBar("rightPanel");
-    return panel;
+    return getInstance().panel;
+}
+QWidget *EditPanel::getScrollArea()
+{
+    return getInstance().scrollArea;
 }
 
-EditPanel::Editor* EditPanel::currentEditor = nullptr;
+EditPanel::EditPanel():
+    panel(new QToolBar),
+    scrollArea (new QScrollArea(/*panel*/))
+{
+    //scrollArea->setWidgetResizable(true);
+    //scrollArea->setFixedWidth(250);
+    //scrollArea->setFixedHeight(panel->height());
+}
+
+EditPanel &EditPanel::getInstance()
+{
+    static EditPanel instance;
+    return instance;
+}

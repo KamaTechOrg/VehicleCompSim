@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget* parent)
     // Create a new toolbar for the right side
     rightToolBar = EditPanel::getPanel();
     rightToolBar->setParent(this);
-    rightToolBar->setFixedWidth(150);
+    rightToolBar->setFixedWidth(250);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
     //m_scene->rightToolBar = rightToolBar;
 

@@ -2,11 +2,11 @@
 #define EDITPANEL_H
 
 #include "qtoolbar.h"
+#include "qscrollarea.h"
 
 class EditPanel
 {
 public:
-    //EditPanel() = delete;
 
     class Editor : public QWidget {
     public:
@@ -16,9 +16,15 @@ public:
     static void loadNewEditor(Editor* editor);
     static void closeCurrentEditor();
     static QToolBar *getPanel();
+    static QWidget *getScrollArea();
 
 private:
-    static Editor* currentEditor;
+    EditPanel();
+    Editor* currentEditor;
+    QToolBar *panel;
+    QScrollArea* scrollArea;
+
+    static EditPanel& getInstance();
 
 };
 
