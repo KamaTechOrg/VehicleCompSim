@@ -1,4 +1,4 @@
-enum ENCRYPTION_ALGORITHM_TYPE{
+enum class ENCRYPTION_ALGORITHM_TYPE{
     RSA,
     ECC,
     AES,
