@@ -54,13 +54,24 @@ target_compile_options(sycl_flags INTERFACE "-fsycl")
 enable_testing()
 add_subdirectory(AES)
 add_subdirectory(BigNum)
-# add_subdirectory(SHA256)
+add_subdirectory(SHA256)
 add_subdirectory(RSA)
 add_subdirectory(KeyStorage)
-# add_subdirectory(Signature)
+add_subdirectory(Signature)
 # add_subdirectory(API)
 
 add_subdirectory(Benchmark)
+
+# API
+add_library(HSM src/HSM.cpp)
+target_include_directories(HSM PUBLIC include)
+target_link_libraries(HSM AES RSA Signature)
+
+#testing
+add_executable(API_TEST test/API_test.cpp)
+target_link_libraries(API_TEST HSM AES GTest::gtest_main)
+gtest_discover_tests(API_TEST)
+
 
 
 # add_executable(main main.cpp)

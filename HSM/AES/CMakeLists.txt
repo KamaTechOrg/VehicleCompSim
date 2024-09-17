@@ -1,4 +1,4 @@
-add_library(AES STATIC src/aes.cpp src/aes_text_encrypt.cpp)
+add_library(AES STATIC src/aes.cpp src/aes_text_encrypt.cpp src/AES_API.cpp)
 
 target_include_directories(AES PUBLIC include)
 
