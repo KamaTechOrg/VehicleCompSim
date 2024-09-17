@@ -122,8 +122,10 @@ void ConditionsManager::loadFromJson(const std::string &filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
+    {
         qWarning() << "Could not open JSON file: " << filename.c_str();
-        return; 
+        return;
+    }
 
     nlohmann::json j;
     file >> j;
@@ -135,9 +137,14 @@ void ConditionsManager::loadFromJson(const std::string &filename)
     actions.clear();
 
     addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
+
     for (const auto& actionJson : j["actions"]) {
-        std::string id = actionJson["id"];  
-        Action action(actionJson["target"], actionJson["message"]);  
-        addAction(id, action);  
+        std::string id = actionJson["target"];
+            std::string target = actionJson["target"];
+            std::string message = actionJson["message"];
+            Action action(target, message);
+            addAction(id, action);
+        }
+        
     }
-}
+
