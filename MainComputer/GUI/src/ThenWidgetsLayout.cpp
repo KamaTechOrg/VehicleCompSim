@@ -73,12 +73,6 @@ std::shared_ptr<Action> ThenWidgetsLayout::data()
 	bool messageHasError = message.empty();
 
 	if (targetUnitHasError || messageHasError) {
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Warning);
-		msgBox.setWindowTitle(tr("Validation Error"));
-		msgBox.setText(tr("Please make sure all fields are filled out."));
-		msgBox.setStandardButtons(QMessageBox::Ok);
-		msgBox.exec();
 		return nullptr;
 	}
 
@@ -104,6 +98,12 @@ void ThenWidgetsLayout::loadFromJson(const nlohmann::json& json)
 
 nlohmann::json ThenWidgetsLayout::GuiData()
 {
+	std::string targetUnit = _targetUnit->currentText().toStdString();
+	std::string message = _operation->currentText().toStdString();
+
+	if (targetUnit.empty() || message.empty()) {
+		return nullptr; 
+	}
 	return {
 		{"target", _targetUnit->currentText().toStdString()},
 		{"message", _operation->currentText().toStdString()}
