@@ -14,7 +14,7 @@
 
 
 std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
-std::unordered_map<std::string, Action> ConditionsManager::actions;
+std::vector<std::vector<Action>> ConditionsManager::actions;
 
 ConditionsManager::ConditionsManager()
     : _isRunning(false)
@@ -22,25 +22,24 @@ ConditionsManager::ConditionsManager()
     loadFromJson(constants::CONDITIONS_JSON_FILE_NAME);
 }
 
-void ConditionsManager::addAction(const std::string &id, const Action &action)
+void ConditionsManager::addAction(const int index, const Action &action)
 {
-    actions[id] = action;
+    actions[index].push_back(action);
 }
 
 
-void ConditionsManager::executeAction(const std::string &id)
+void ConditionsManager::executeActions(const int index)
 {
-    auto it = actions.find(id);  
-    if (it != actions.end()) {
-        const Action& action = it->second;  
-        Communication communication;
-        int targetUnitAsInt = std::stoi(action.getTargetUnit());
-
-        communication.sendTo(targetUnitAsInt, action.getMessageToSend());
-        qInfo() << "Action executed: Sent message to ID:" << id.c_str();
+    if (actions.size() < index || actions.at(index).empty()) {
+        qWarning() << "No action found for index: " << index;
+        return;
     }
-    else {
-        qWarning() << "No action found for ID:" << id.c_str();
+
+    Communication communication;
+    for (const auto& action : actions.at(index)) {
+        int targetUnit = std::stoi(action.getTargetUnit());
+        communication.sendTo(targetUnit, action.getMessageToSend());
+        qInfo() << "Action executed: Sent message to index: " << index;
     }
 }
 
@@ -77,7 +76,13 @@ void ConditionsManager::run()
 
                 if (validateAll(id, value)) {
                     qInfo() << "Validation succeeded for ID:" << id.c_str() << " with value:" << value.c_str();
-                    executeAction(id);  
+                    executeActions(0);
+                    /*
+                    * TODO: executeActions should execute the actions for the indices
+                    *       that were actualy validated as "true".
+                    *       (on the validation loop at "validateAll" if it was "true" at
+                    *       index i, then we execute all actions at index i).
+                    */
                 }
                 else {
                     qInfo() << "Validation failed for ID:" << id.c_str() << " with value:" << value.c_str();
@@ -106,6 +111,9 @@ bool ConditionsManager::isRunning()
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
 {
     conditions.push_back(condition);
+    // add an entry to the actions that will be executed
+    // if this added condition will be validated as "true"
+    actions.push_back(std::vector<Action>(0));
 }
 
 bool ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
@@ -139,12 +147,10 @@ void ConditionsManager::loadFromJson(const std::string &filename)
     addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
 
     for (const auto& actionJson : j["actions"]) {
-        std::string id = actionJson["target"];
             std::string target = actionJson["target"];
             std::string message = actionJson["message"];
             Action action(target, message);
-            addAction(id, action);
+            addAction(0, action);
         }
-        
     }
 
