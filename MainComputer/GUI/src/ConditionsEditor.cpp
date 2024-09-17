@@ -33,7 +33,7 @@ ConditionsEditor::ConditionsEditor()
 void ConditionsEditor::setView(nlohmann::json jsonData)
 {
     _conditionsGroup->setConditionsGroup(jsonData["conditions"]);
-    _actionGroupBox->loadFromJson(jsonData["actions"]);
+    _actionGroupBox->setView(jsonData["actions"]);
 }
 
 void ConditionsEditor::save()
@@ -61,7 +61,7 @@ void ConditionsEditor::loadGuiDataFromJson()
     nlohmann::json jsonData = JsonLoader().loadGuiData();
 
     _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
-    _actionGroupBox->loadFromJson(jsonData["actions"]);
+    _actionGroupBox->setView(jsonData["actions"]);
 }
 
 void ConditionsEditor::saveLogicDataToJson() {

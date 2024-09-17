@@ -13,7 +13,7 @@ public:
 	ThenGroupBox(QWidget* parent = nullptr);
 
 	std::vector<std::shared_ptr<Action>> data();
-	void loadFromJson(const nlohmann::json& json);
+	void setView(const nlohmann::json& json);
 	nlohmann::json GuiData();
 
 private:

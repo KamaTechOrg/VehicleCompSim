@@ -48,9 +48,13 @@ std::vector<std::shared_ptr<Action>> ThenGroupBox::data()
     return actions;
 }
 
-void ThenGroupBox::loadFromJson(const nlohmann::json& json)
+void ThenGroupBox::setView(const nlohmann::json& json)
 {
-    for (const auto& actionJson : json) {
+    for (auto layout : _actionLayouts)
+        removeActionLayout(layout);
+
+    for (const auto& actionJson : json)
+    {
         addActionLayout();
         _actionLayouts.back()->loadFromJson(actionJson);
     }
