@@ -26,19 +26,38 @@ std::shared_ptr<ConditionBase> ConditionsFactory::createCompositeCondition(const
 	}
 }
 
-std::shared_ptr<ConditionBase> ConditionsFactory::createConditionsFromJson(nlohmann::json j)
+std::shared_ptr<ConditionBase> ConditionsFactory::createConditionsFromJson(nlohmann::json jsonData)
 {
-	try {
-		if (j["type"] == "And" || j["type"] == "Or") {
-			return createCompositeCondition(j["type"], createConditionsFromJson(j["lhs"]), createConditionsFromJson(j["rhs"]));
-		}
-		else {
-			return (createSimpleCondition(j["senderId"], j["type"], j["validationValue"]));
-		}
-	}
-	catch (const std::exception& e) {
-		qWarning() << e.what();
-	}
+    try {
+        if (jsonData.is_null() || jsonData.empty()) {
+            qWarning() << "JSON data is empty";
+            return nullptr;
+        }
+
+        if (!jsonData.contains("type")) {
+            qWarning() << "JSON data does not contain 'type' key";
+            return nullptr;
+        }
+
+        if (jsonData["type"] == "And" || jsonData["type"] == "Or") {
+            return createCompositeCondition(
+                jsonData["type"],
+                createConditionsFromJson(jsonData["lhs"]),
+                createConditionsFromJson(jsonData["rhs"])
+            );
+        }
+        else {
+            return createSimpleCondition(
+                jsonData["senderId"],
+                jsonData["type"],
+                jsonData["validationValue"]
+            );
+        }
+    }
+    catch (const std::exception& e) {
+        qWarning() << e.what();
+        return nullptr;  // Return a nullptr if an error occurs
+    }
 }
 
 std::vector<std::string> ConditionsFactory::getSimpleConditionTypes()

@@ -112,6 +112,9 @@ bool ConditionsManager::isRunning()
 
 void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
 {
+    if (condition == nullptr)
+        return;
+
     conditions.push_back(condition);
     // add an entry to the actions that will be executed
     // if this added condition will be validated as "true"

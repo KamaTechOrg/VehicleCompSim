@@ -99,8 +99,8 @@ void JsonLoader::saveGuiData(const nlohmann::json& jsonData) const
 nlohmann::json JsonLoader::generateDefaultLogicJson() const
 {
     return {
-        {"conditions", nlohmann::json::array()},
-        {"actions", {}}
+        {"conditions", {}},
+        {"actions", nlohmann::json::array()}
     };
 }
 
