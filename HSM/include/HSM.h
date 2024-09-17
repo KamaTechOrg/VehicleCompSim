@@ -10,26 +10,26 @@
 class HSM
 {
 public:
-    static std::pair<std::vector<u_char>, std::vector<u_char>> generateAsymmetricKeys(const std::vector<u_char> type);
+    static std::pair<std::vector<u_char>, std::vector<u_char>> generateAsymmetricKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
 
-    static std::vector<u_char> generateSymmetricKey(const std::vector<u_char> type);
+    static std::vector<u_char> generateSymmetricKey(ENCRYPTION_ALGORITHM_TYPE type, int bits = 128);
 
-    static std::vector<u_char> encrypt(const std::vector<u_char> message, const std::vector<u_char> type, const std::vector<u_char> key);
+    static std::vector<u_char> encrypt(const std::vector<u_char> message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> key, int bits = 512);
 
-    static std::vector<u_char> decrypt(const std::vector<u_char> message, const std::vector<u_char> type, const std::vector<u_char> key);
+    static std::vector<u_char> decrypt(const std::vector<u_char> message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> key, int bits = 512);
 
     static std::vector<u_char> signMessage(
         const std::vector<u_char> message, 
-        const std::vector<u_char> sigAlg, 
-        const std::vector<u_char> hashAlg,
+        ENCRYPTION_ALGORITHM_TYPE sigAlg, 
+        ENCRYPTION_ALGORITHM_TYPE hashAlg,
         const std::vector<u_char> key
     );
     
     static bool verify(
         const std::vector<u_char> message,
         const std::vector<u_char> signature,
-        const std::vector<u_char> sigAlg,
-        const std::vector<u_char> hashAlg,
+        ENCRYPTION_ALGORITHM_TYPE sigAlg,
+        ENCRYPTION_ALGORITHM_TYPE hashAlg,
         const std::vector<u_char> key
     );
 };

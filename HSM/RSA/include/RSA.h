@@ -11,13 +11,14 @@
 #include <stdexcept>
 #include "../../BigNum/include/BigNum.h"
 #include "../../BigNum/include/BigNumWithMinus.h"
+#include "HSM_type_enum.hpp"
 
 class RSA
 {
 public:
-    static std::pair<std::vector<u_char>, std::vector<u_char>> generateKeys(const std::vector<u_char>& type);
+    static std::pair<std::vector<u_char>, std::vector<u_char>> generateKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
 
-    static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 1024);
+    static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 512);
     static bool isPrime(const BigNum &n, int k);
     static BigNum power(const BigNum &x, const BigNum &y, const BigNum &p);
 

@@ -3,11 +3,9 @@
 #include <iostream>
 #include <string.h>
 
-std::pair<std::vector<u_char>, std::vector<u_char>> RSA::generateKeys(const std::vector<u_char> &type)
+std::pair<std::vector<u_char>, std::vector<u_char>> RSA::generateKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
-	std::string type_str(type.begin(), type.end());
-	int bits = std::stoi(type_str.substr(type_str.find('_') + 1));
 	generate_keys(publicKey, privateKey, modulus, bits / 2);
 	std::vector<u_char> public_key = publicKey.toString();
 	std::vector<u_char> private_key = privateKey.toString();
