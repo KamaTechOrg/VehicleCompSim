@@ -9,6 +9,7 @@ class Action
 {
 public:
 	Action(std::string targetUnit, std::string messageToSend);
+	Action(const Action& other);
 	Action() = default;
 	~Action() = default;
 
