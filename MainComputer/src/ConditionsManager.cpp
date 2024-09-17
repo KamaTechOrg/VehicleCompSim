@@ -12,6 +12,8 @@
 #include "json.hpp"
 #include <algorithm> 
 
+#include "JsonLoader.h"
+
 
 std::vector<std::shared_ptr<ConditionBase>> ConditionsManager::conditions;
 std::vector<std::vector<Action>> ConditionsManager::actions;
@@ -128,29 +130,17 @@ bool ConditionsManager::validateAll(const std::string& senderId, const std::stri
 
 void ConditionsManager::loadFromJson(const std::string &filename)
 {
-    std::ifstream file(filename);
-    if (!file.is_open())
-    {
-        qWarning() << "Could not open JSON file: " << filename.c_str();
-        return;
-    }
-
-    nlohmann::json j;
-    file >> j;
-    file.close();
-
-    qInfo() << "JSON file ----- ----- ----- ----- -----\n" << j.dump(4) << "\n----- ----- ----- ----- -----\n";
+    nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
 
     conditions.clear();
     actions.clear();
 
-    addCondition(ConditionsFactory().createConditionsFromJson(j["conditions"]));
-
-    for (const auto& actionJson : j["actions"]) {
+    addCondition(ConditionsFactory().createConditionsFromJson(jsonData["conditions"]));
+    for (const auto& actionJson : jsonData["actions"]) {
             std::string target = actionJson["target"];
             std::string message = actionJson["message"];
             Action action(target, message);
             addAction(0, action);
-        }
     }
+}
 

@@ -22,6 +22,8 @@ nlohmann::json JsonLoader::loadConditionsLogic() const
     nlohmann::json jsonData;
     file >> jsonData;
     file.close();
+
+    return jsonData;
 }
 
 nlohmann::json JsonLoader::loadGuiData() const
