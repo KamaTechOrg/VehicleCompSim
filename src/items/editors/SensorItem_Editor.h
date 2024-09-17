@@ -19,7 +19,20 @@ class SensorItem::Editor : public EditPanel::Editor{
     QPushButton* cmakeSelectorOpen = new QPushButton(this);
     QCheckBox* isUseCmakePath = new QCheckBox(this);
 
-    QVBoxLayout* v_layout = new QVBoxLayout(this);
+protected:
+
+    void initPriority();
+    void initName();
+    void initBuildCommand();
+    void initRunCommand();
+    void initCmakeSelectorOpen();
+    void initIsUseCmakePath();
+
+
+    void initParameters(); // Declare as virtual
+    void initLayout();      // Declare as virtual
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
 
     std::unordered_map<QObject*, QLabel*> labels;
     void switchProjectInputMethod();

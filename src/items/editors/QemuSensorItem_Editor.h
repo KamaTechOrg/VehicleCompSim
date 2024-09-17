@@ -18,6 +18,8 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
     QVBoxLayout* layout;
 
     // parameters:
+    QLineEdit* priority = new QLineEdit(this);
+    QLineEdit* name = new QLineEdit(this);
     QComboBox* m_platform = new QComboBox(this);
     QComboBox* m_machine = new QComboBox(this);
     QComboBox* m_cpu = new QComboBox(this);
@@ -31,6 +33,8 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
     QCheckBox* m_nographic = new QCheckBox(this);
 
     // inits:
+    void initPriority();
+    void initName();
     void initPlatform();
     void initMachine();
     void initCpu();

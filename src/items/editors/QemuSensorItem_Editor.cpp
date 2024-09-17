@@ -7,6 +7,26 @@
 #include <climits>
 
 
+void QemuSensorItem::Editor::initPriority()
+{
+    priority->setText(model.priority());
+    QObject::connect(priority, &QLineEdit::textChanged, [this](){
+        model.setPriority(priority->text());
+    });
+    layout->addWidget(new QLabel("priority", this));
+    layout->addWidget(priority);
+}
+
+void QemuSensorItem::Editor::initName()
+{
+    name->setText(model.name());
+    QObject::connect(name,  &QLineEdit::textChanged  , [this](){
+        model.setName(name->text());
+    });
+    layout->addWidget(new QLabel("name", this));
+    layout->addWidget(name);
+}
+
 void QemuSensorItem::Editor::initPlatform()
 {
     for (auto &option: model.getPlatformOptions())
@@ -17,6 +37,8 @@ void QemuSensorItem::Editor::initPlatform()
     QObject::connect(m_platform, &QComboBox::currentTextChanged, [this](){
         model.setPlatform(m_platform->currentData().toString());
     });
+    layout->addWidget(new QLabel("platform:", this));
+    layout->addWidget(m_platform);
 }
 
 void QemuSensorItem::Editor::initMachine()
@@ -29,6 +51,8 @@ void QemuSensorItem::Editor::initMachine()
     QObject::connect(m_machine, &QComboBox::currentIndexChanged, [this](){
         this->model.setMachine(m_machine->currentData().toString());
     });
+    layout->addWidget(new QLabel("machine:", this));
+    layout->addWidget(m_machine);
 }
 
 void QemuSensorItem::Editor::initCpu()
@@ -42,6 +66,8 @@ void QemuSensorItem::Editor::initCpu()
     QObject::connect(m_cpu, &QComboBox::currentIndexChanged, [this](){
         this->model.setCpu(m_cpu->currentData().toString());
     });
+    layout->addWidget(new QLabel("cpu:", this));
+    layout->addWidget(m_cpu);
 }
 
 void QemuSensorItem::Editor::initMemory_MB()
@@ -52,6 +78,8 @@ void QemuSensorItem::Editor::initMemory_MB()
     QObject::connect(m_memory_MB, &QSpinBox::valueChanged, [this](){
         model .setMemory_MB( m_memory_MB->value());
     });
+    layout->addWidget(new QLabel("memory (in MB):", this));
+    layout->addWidget(m_memory_MB);
 }
 
 void QemuSensorItem::Editor::initKernal()
@@ -64,6 +92,8 @@ void QemuSensorItem::Editor::initKernal()
         m_kernal->setText(model.kernal());
     });
     m_kernal->setText(model.kernal());
+    layout->addWidget(new QLabel("Kernal File:", this));
+    layout->addWidget(m_kernal);
 }
 
 void QemuSensorItem::Editor::initHarddrive()
@@ -76,6 +106,8 @@ void QemuSensorItem::Editor::initHarddrive()
         m_harddrive->setText(model.harddrive());
     });
     m_harddrive->setText(model.harddrive());
+    layout->addWidget(new QLabel("Hard Drive File:", this));
+    layout->addWidget(m_harddrive);
 }
 
 void QemuSensorItem::Editor::initCdrom()
@@ -88,7 +120,8 @@ void QemuSensorItem::Editor::initCdrom()
         m_cdrom->setText(model.cdrom());
     });
     m_cdrom->setText(model.cdrom());
-
+    layout->addWidget(new QLabel("cdrom File:", this));
+    layout->addWidget(m_cdrom);
 }
 
 void QemuSensorItem::Editor::initBoot()
@@ -102,6 +135,8 @@ void QemuSensorItem::Editor::initBoot()
     QObject::connect(m_boot, &QComboBox::currentIndexChanged, [this](){
         model.setBoot(m_boot->currentData().toString());
     });
+    layout->addWidget(new QLabel("start boot from device:", this));
+    layout->addWidget(m_boot);
 }
 
 void QemuSensorItem::Editor::initNet()
@@ -110,6 +145,8 @@ void QemuSensorItem::Editor::initNet()
     QObject::connect(m_net, &QLineEdit::textEdited, [this](){
         model.setNet(m_net->text());
     });
+    layout->addWidget(new QLabel("network configuration (advanced)", this));
+    layout->addWidget(m_net);
 }
 
 void QemuSensorItem::Editor::initAppend()
@@ -118,6 +155,8 @@ void QemuSensorItem::Editor::initAppend()
     QObject::connect(m_append, &QLineEdit::textEdited, [this](){
         model.setAppend(m_append->text());
     });
+    layout->addWidget(new QLabel("kernal startup parameters (advanced):", this));
+    layout->addWidget(m_append);
 }
 
 void QemuSensorItem::Editor::initNographic()
@@ -126,49 +165,19 @@ void QemuSensorItem::Editor::initNographic()
     QObject::connect(m_nographic, &QCheckBox::checkStateChanged, [this](){
         model.setNographic(m_nographic->checkState() == Qt::Checked);
     });
+    layout->addWidget(new QLabel("dont open a screen window:", this));
+    layout->addWidget(m_nographic);
 }
 
 void QemuSensorItem::Editor::initLayout()
 {
-    // platform
-    layout->addWidget(new QLabel("platform:", this));
-    layout->addWidget(m_platform);
-    // machine
-    layout->addWidget(new QLabel("machine:", this));
-    layout->addWidget(m_machine);
-    // cpu
-    layout->addWidget(new QLabel("cpu:", this));
-    layout->addWidget(m_cpu);
-    // memory
-    layout->addWidget(new QLabel("memory (in MB):", this));
-    layout->addWidget(m_memory_MB);
-    // kernal
-    layout->addWidget(new QLabel("Kernal File:", this));
-    layout->addWidget(m_kernal);
-    // hard drive
-    layout->addWidget(new QLabel("Hard Drive File:", this));
-    layout->addWidget(m_harddrive);
-    // cdrom
-    layout->addWidget(new QLabel("cdrom File:", this));
-    layout->addWidget(m_cdrom);
-    // boot
-    layout->addWidget(new QLabel("start boot from device:", this));
-    layout->addWidget(m_boot);
-    // net
-    layout->addWidget(new QLabel("network configuration (advanced)", this));
-    layout->addWidget(m_net);
-    // append
-    layout->addWidget(new QLabel("kernal startup parameters (advanced):", this));
-    layout->addWidget(m_append);
-    // nographic
-    layout->addWidget(new QLabel("dont open a screen window:", this));
-    layout->addWidget(m_nographic);
-
-
     setLayout(layout);
 }
+
 void QemuSensorItem::Editor::initParameters()
 {
+    initPriority();
+    initName();
     initPlatform();
     initMachine();
     initCpu();
@@ -181,15 +190,11 @@ void QemuSensorItem::Editor::initParameters()
     initAppend();
     initNographic();
 }
+
 QemuSensorItem::Editor::Editor(QemuSensorItem *_sensor) : sensor(_sensor), model(_sensor->getQemuModel()), layout(new QVBoxLayout(this))
 {
-    //parameters:
-
-
-
     initParameters();
     initLayout();
-
 }
 
 void QemuSensorItem::Editor::open()
