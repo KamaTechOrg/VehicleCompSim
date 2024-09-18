@@ -13,6 +13,8 @@ set(CLIENT_SOURCES
     actionsblocker.cpp
     PersistentTootip.cpp
     PersistentTootip.h
+    CustomInfoWindow.cpp
+    CustomInfoWindow.h
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

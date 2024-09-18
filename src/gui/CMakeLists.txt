@@ -15,8 +15,10 @@ set(CLIENT_SOURCES
     popupdialog.cpp
     popupdialog.h
     popupdialog.ui
-#    DB_handler.h
-#    DB_handler.cpp
+    DB_handler.h
+    DB_handler.cpp
+    buffer_test.h
+    buffer_test.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

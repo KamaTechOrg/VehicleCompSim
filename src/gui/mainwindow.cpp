@@ -11,7 +11,6 @@
 #include <QRandomGenerator>
 #include "SimulationControlPanel.h"
 #include <QRect>
-//#include <bson/bson.h>
 #include <QHBoxLayout>
 
 #include "customwidget.h"
@@ -118,15 +117,7 @@ void MainWindow::setupRunService()
     m_scene_blocker->transparency(0.0);
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
-
-    const QString& filePath = QDir::currentPath() + "/A.log";
-    m_logReader = std::make_unique<LogReader>(filePath, std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
-    //    m_logReader = std::make_unique<LogReader>(R"(C:\Users\OWNER\Downloads\A.log)", std::move(m_liveUpdate_forLogger), m_DB_handler, nullptr, this);
-
-    // timer for tooltip update
-    tooltip_timer = new QTimer(this);
-    connect(tooltip_timer, &QTimer::timeout, this, &MainWindow::update_tooltips);
-    tooltip_timer->start(7000); // Start the timer with a 1000 ms (1 second) interval
+    qInfo () << " new handler";
 
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
@@ -201,14 +192,6 @@ void MainWindow::fill_box_data() {
             }
         }
     }
-    // for test
-//    for (auto item: m_scene->items()) {
-//        if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
-//            for(const auto& name : base->names){
-//                qInfo() << name;
-//            }
-//        }
-//    }
 }
 void MainWindow::read_from_json() {
     const QString& filePath = QDir::currentPath() + "/box_info.json";
@@ -260,12 +243,103 @@ void MainWindow::fill_db_data()
 
 }
 
+void MainWindow::background_Layout() {
+    QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
+    if (!imagePath.isEmpty()) {
+        QImage backgroundImage(imagePath);
+        QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(backgroundImage));
+        pixmapItem->setPos(0, 0);
+        m_scene->addItem(pixmapItem);
+    }
+}
+void MainWindow::record() {
+    QString defaultFileName = "record.log";
+    QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
+    if (!logFilePath.isEmpty()) {
+        m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
+    }
+}
+
+void MainWindow::replayer() {
+    close_previous_replay();
+    loadLayout();
+    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
+    if (!logFilePath.isEmpty()) {
+        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
+        m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, m_DB_handler, std::move(m_liveUpdate_forReplyer), m_scene, this);
+        m_simulationReplayer->startReplay();
+        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
+        m_mainLayout->addWidget(controlPanel);
+        read_from_json();
+        fill_db_data();
+        fill_box_data();
+    }
+}
+
+void MainWindow::close_previous_replay(){
+    if (controlPanel != nullptr) {
+        m_simulationReplayer->clear_current_events();
+        controlPanel->close();
+        delete controlPanel;
+        controlPanel = nullptr;
+    }
+}
+
+void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
+    QString defaultFileName = "layout.bson";
+    QString selectedFileName = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
+    if (!selectedFileName.isEmpty()) {
+        QFile outputFile(selectedFileName);
+        if (outputFile.open(QIODevice::WriteOnly)) {
+            for(bson_t * bson_obj : bson_obj_vector) {
+                const uint8_t *bsonData = bson_get_data(bson_obj);
+                outputFile.write(reinterpret_cast<const char *>(bsonData), bson_obj->len);
+            }
+            outputFile.close();
+        }
+    }
+}
+bson_t* sensor_to_bson_obj(SensorItem* sensor){
+    bson_t* base_BSON = bson_new();
+    BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
+    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
+    BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
+    BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
+    BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
+    BSON_APPEND_UTF8(base_BSON, "id", sensor->getPriority().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->getCmakePath().toUtf8().constData());
+    return base_BSON;
+}
+void MainWindow::saveLayout() {
+    std::vector<bson_t*> base_BSON_vector;
+    for (auto item : m_scene->items()) {
+        if (BaseItem* base = dynamic_cast<SensorItem*>(item)) {
+            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorItem*>(item)));
+        }
+    }
+    SaveBsonToFile(base_BSON_vector);
+}
 
 void MainWindow::onRunStart()
 {
     read_from_json();
     fill_db_data();
     fill_box_data();
+    // for test only
+    m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
+    // end text
+    const QString& filePath = QDir::currentPath() + "/A.log";
+    m_logReader = std::make_unique<LogReader>(filePath, m_DB_handler, nullptr, this);
+    if(m_simulationRecorder != nullptr){
+        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
+    }
+    change_view_timer = new QTimer(this);
+    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
+    change_view_timer->start(5000);
 
 
     startBtn->hide();
@@ -287,119 +361,28 @@ void MainWindow::onRunEnd()
     m_scene_blocker->hide();
 }
 
-void MainWindow::background_Layout() {
-    QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
-    if (!imagePath.isEmpty()) {
-        QImage backgroundImage(imagePath);
-        QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(backgroundImage));
-        pixmapItem->setPos(0, 0);
-        m_scene->addItem(pixmapItem);
-    }
-}
-void MainWindow::record() {
-    QString defaultFileName = "record.log";
-    QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
-    if (!logFilePath.isEmpty()) {
-        m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
-        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
-    }
-    saveLayout();
-}
-
-void MainWindow::replayer() {
-    close_previous_replay();
-    loadLayout();
-    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
-    if (!logFilePath.isEmpty()) {
-        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
-        m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, std::move(m_liveUpdate_forReplyer), this);
-        m_simulationReplayer->startReplay();
-        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
-        m_mainLayout->addWidget(controlPanel);
-    }
-}
-
-void MainWindow::update_tooltips() {
-//    for (auto item: m_scene->items()) {
-//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-//            qInfo() << "before nullptr popupDialog";
-//            if(sensor->popupDialog == nullptr){
-//                qInfo() << "after nullptr popupDialog";
-//                sensor->popupDialog = m_popupDialog;
-//            }
-//        }
-//    }
-
-    for (auto item: m_scene->items()) {
-        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getName();
-            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
-            sensor->update_db_data(data);
-        }
-    }
-}
-
-void MainWindow::close_previous_replay(){
-    if (controlPanel != nullptr) {
-        m_simulationReplayer->clear_current_events();
-        controlPanel->close();
-        delete controlPanel;
-        controlPanel = nullptr;
-    }
-}
-
-
-bson_t* sensor_to_bson_obj(SensorItem* sensor){
-    bson_t* base_BSON = bson_new();
-    BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
-    BSON_APPEND_DOUBLE(base_BSON, "unique_id", sensor->get_unique_id());
-    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
-    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
-    BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
-    BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
-    BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
-//    BSON_APPEND_UTF8(base_BSON, "id", sensor->getID().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
-    return base_BSON;
-}
-
-void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
-    QString defaultFileName = "layout.bson";
-    QString selectedFileName = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
-    if (!selectedFileName.isEmpty()) {
-        QFile outputFile(selectedFileName);
-        if (outputFile.open(QIODevice::WriteOnly)) {
-            for(bson_t * bson_obj : bson_obj_vector) {
-                const uint8_t *bsonData = bson_get_data(bson_obj);
-                outputFile.write(reinterpret_cast<const char *>(bsonData), bson_obj->len);
-            }
-            outputFile.close();
-        }
-    }
-}
-
-void MainWindow::saveLayout() {
-    std::vector<bson_t*> base_BSON_vector;
+void MainWindow::update_view() {
+    QMap<QString, QVariantList> last_changes;
     for (auto item : m_scene->items()) {
-        if (BaseItem* base = dynamic_cast<SensorItem*>(item)) {
-            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorItem*>(item)));
+        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+            QString sensorId = sensor->getPriority();
+            QList<QVariant> data = m_DB_handler->read_all_from_DB(sensorId);
+//            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
+            sensor->update_db_data(data);
+            last_changes[sensorId] = data;
         }
     }
-    SaveBsonToFile(base_BSON_vector);
+    m_liveUpdate_forLogger->parse_new_data(last_changes);
 }
+
 void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     auto *new_sensor = new SensorItem();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
-    bson_iter_next(&iter);
-
-    new_sensor->set_unique_id(bson_iter_double(&iter));
-    bson_iter_next(&iter);
 
     // location
+    bson_iter_next(&iter);
     double x = bson_iter_double(&iter);
     bson_iter_next(&iter);
     double y = bson_iter_double(&iter);
@@ -413,16 +396,18 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     bson_iter_next(&iter);
     int b = bson_iter_int32(&iter);
     new_sensor->set_m_color(r,g,b);
-//    bson_iter_next(&iter);
 
     // sensor info
-//    new_sensor->setID(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setPriority(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setName(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setBuildCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    new_sensor->setCmakePath(bson_iter_utf8(&iter, nullptr));
 
     m_scene->addItem(new_sensor);
     new_sensor->update();
@@ -442,6 +427,15 @@ void MainWindow::loadLayout() {
     } else {
         qInfo() << "File selection canceled by the user.";
     }
+    // add popup to the load sensors
+    for (auto item: m_scene->items()) {
+        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+            if(sensor->popupDialog == nullptr){
+                sensor->popupDialog = m_popupDialog;
+            }
+        }
+    }
 }
+
 
 

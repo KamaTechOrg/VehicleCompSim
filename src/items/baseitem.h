@@ -11,12 +11,13 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QToolTip>
 #include <QWidget>
+#include "CustomInfoWindow.h"
 
 
 class EdgeItem;
 
 class BaseItem : public QObject, public SerializableItem, public QGraphicsItem {
-    Q_OBJECT
+Q_OBJECT
 public:
 
     BaseItem(QGraphicsItem* parent = nullptr);
@@ -65,9 +66,8 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-
-    bool isNearConnectionPoint(const QPointF& point, QPointF* nearestPoint) const; // Overload for hover events
-
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    bool isNearConnectionPoint(const QPointF& point, QPointF* nearestPoint) const;
     void showButtons();
     void hideButtons();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -86,9 +86,28 @@ protected:
     static constexpr qreal DotRadius = 5.0;
     static qreal my_id;
 
-    PersistentTooltip* m_persistentTooltip;
-    QList<QVariant> Db_data;
+    PersistentTooltip* m_persistentTooltip = nullptr;
+    QList<QVariant> tooltipData;
+    QList<QVariant> all_Db_data;
+
 public:
     QList<QString> names;
+private:
+
+    void showInfoWindow();
+    QString fetchDataFromDB();
+    void updateInfoWindow();
+
+    QTimer* m_updateTimer;
+    QGraphicsProxyWidget* m_infoWindowProxy = nullptr;
+    CustomInfoWindow* m_infoWindow = nullptr;
+    bool mouse_pressed = false;
+    int m_itemId;
+
+private slots:
+    void onCustomWindowClosed() {
+        m_updateTimer->stop();
+        mouse_pressed = false;
+    }
 };
 

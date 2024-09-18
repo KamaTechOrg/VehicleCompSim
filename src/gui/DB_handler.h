@@ -15,6 +15,7 @@ public:
     DB_handler();
     void write_to_DB(const QByteArray& buffer) const;
     QList<QVariant> read_last_from_DB(const QString& table_name);
+    QList<QVariant> read_all_from_DB(const QString& table_name);
 
 public:
     QSqlDatabase *sqlitedb;

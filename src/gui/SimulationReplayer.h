@@ -13,12 +13,14 @@
 #include <QQueue>
 #include "customscene.h"
 #include "LiveUpdate.h"
+#include "DB_handler.h"
+#include "customscene.h"
 
 class SimulationReplayer : public QObject {
 Q_OBJECT
 
 public:
-    SimulationReplayer(const QString &filePath, std::unique_ptr<LiveUpdate> liveUpdate, QObject *parent = nullptr);
+    SimulationReplayer(const QString &filePath, DB_handler *db, std::unique_ptr<LiveUpdate> liveUpdate, CustomScene* m_scene, QObject *parent = nullptr);
     void pauseSimulation();
     void playSimulation();
     void jumpToTime(const QTime &targetTime);
@@ -28,7 +30,8 @@ public:
 
 
 private:
-    void scheduleEvent(const QString &event, int delay);
+    void scheduleEvent(const QByteArray &event, int delay);
+    void update_view();
 
 private slots:
     void processEvent();
@@ -36,10 +39,12 @@ private slots:
 private:
     QFile m_logFile;
     qint64 m_lastPosition;
-    QQueue<QString> m_eventQueue;
+    QQueue<QByteArray> m_eventQueue;
     QList<QTimer *> m_timers;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;
+    DB_handler *m_db;
+    CustomScene* m_scene_simulation;
 public:
     QDateTime m_startTime;
     QDateTime m_totalTime;
