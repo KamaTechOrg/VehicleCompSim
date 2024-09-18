@@ -3,9 +3,9 @@
 
 // Constants
 // The height of every frame is 720, so 690 is 30 px above the bottom
-const cv::Point POINT1(200, 690);
-const cv::Point POINT2(610, 530);
-const cv::Point POINT3(1200, 690);
+const cv::Point POINT1(300, 615);
+const cv::Point POINT2(630, 445);
+const cv::Point POINT3(1200, 655);
 
 
 // Function to perform polynomial fit (linear regression)
@@ -117,6 +117,9 @@ cv::Mat region_of_interest(const cv::Mat& img) {
 	fillPoly(mask, std::vector<std::vector<cv::Point>>{points}, cv::Scalar(255, 255, 255));
 	cv::Mat masked_image;
 	bitwise_and(img, mask, masked_image);
+
+	//cv::imshow("Lane Departure", masked_image);
+
 	return masked_image;
 }
 
@@ -124,7 +127,7 @@ std::vector<std::vector<int>> detect_lanes(cv::Mat& image, bool isImgShow) {
 	cv::Mat canny_image = canny(image);  // Use the canny function to detect edges
 	cv::Mat cropped_canny = region_of_interest(canny_image);  // Apply region of interest
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP(cropped_canny, lines, 2, CV_PI / 180, 40, 20, 50);  // Detect lines
+	cv::HoughLinesP(cropped_canny, lines, 2, CV_PI / 180, 60, 10, 60);  // Detect lines
 
 	std::vector<std::vector<int>> averaged_lines = average_slope_intercept(image, lines);  // Get averaged lines
 	if (isImgShow)
