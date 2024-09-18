@@ -24,6 +24,6 @@ int Cross_platform::cress_send(FD d_s,const char *buf, size_t size)
     }
     std::cout << std::endl;
 
-    return ::send(d_s, buf, size + 1, MSG_NOSIGNAL);
+    return ::send(d_s, buf, size , MSG_NOSIGNAL);
 #endif
 }
