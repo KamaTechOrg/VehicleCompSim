@@ -2,9 +2,8 @@
 #include <QPainter>
 #include <cmath>
 
-ConnectorItem::ConnectorItem(QGraphicsItem* parent)
-    : BaseItem(parent) {
-        m_type = ItemType::Connector;
+ConnectorItem::ConnectorItem(SerializableItem* item, QGraphicsItem* parent)
+    : BaseItem(item, parent) {
         m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25));
         hideButtons();
     }

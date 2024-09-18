@@ -26,6 +26,7 @@ private slots:
 public:
     std::unique_ptr<SimulationRecorder> m_simulationRecorder;
 
+
 private:
     QFile m_logFile;
     qint64 m_lastPosition;

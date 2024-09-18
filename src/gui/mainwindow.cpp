@@ -12,15 +12,21 @@
 #include "SimulationControlPanel.h"
 #include <QRect>
 #include <QHBoxLayout>
-
+#include "./editpanel.h"
 #include "customwidget.h"
-#include "client/websocketclient.h"
-#include "client/RunHandler.h"
+#include "websocketclient.h"
+#include "handlers/RunHandler.h"
+
+#include "sensormodel.h"
+#include "globalstate.h"
+#include "items/qemusensoritem.h"
+
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
         m_scene(new CustomScene()),
-        m_runService(std::make_shared<RunService>()) {
+        m_runService(std::make_shared<RunService>())
+{
     m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
@@ -46,14 +52,10 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainWidget);
 
     // Create a new toolbar for the right side
-    rightToolBar = new QToolBar("popup", this);
-    rightToolBar->setFixedWidth(150);
+    rightToolBar = EditPanel::getPanel();
+    rightToolBar->setParent(this);
+    rightToolBar->setFixedWidth(250);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
-    m_scene->rightToolBar = rightToolBar;
-    m_popupDialog = new PopupDialog(rightToolBar);
-    m_scene->popupDialog = m_popupDialog;
-    qInfo() << "set popupDialog";
-
 
 
     auto toolBar = addToolBar("Tools");
@@ -63,9 +65,16 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
 
-    WebSocketClient& client = WebSocketClient::getInstance();
-    client.setScene(m_scene);
-    connect(&client, &WebSocketClient::connectionStatusChanged, this, &MainWindow::onConnectionStatusChanged);
+    // Connect to GlobalState
+    GlobalState& globalState = GlobalState::getInstance();
+    connect(&globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onConnectionStatusChanged);
+
+    ProjectModel* startingProject = new ProjectModel("Project");
+    GlobalState::getInstance().addProject(startingProject);
+    GlobalState::getInstance().setCurrentProject(startingProject);
+
+    m_remoteInterface = new RemoteInterface(this);
+    addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
 
     setupRunService();
 }
@@ -74,10 +83,13 @@ void MainWindow::setupToolBar() {
     m_toolBar = new QToolBar("Shapes", this);
     m_toolBar->setOrientation(Qt::Vertical);
 
-    auto rItemWidget = new CustomWidget("SensorItem", this);
+    auto rItemWidget = new CustomWidget(CustomWidget::REGULAR_SENSOR_ITEM, this);
     m_toolBar->addWidget(rItemWidget);
 
-    auto busWidget = new CustomWidget("ConnectorItem", this);
+    auto qemuItemWidget = new CustomWidget(CustomWidget::QEMU_SENSOR_ITEM, this);
+    m_toolBar->addWidget(qemuItemWidget);
+
+    auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
     m_toolBar->addWidget(busWidget);
 
     // Initialize the connection status label
@@ -97,7 +109,7 @@ void MainWindow::setupToolBar() {
 
 void MainWindow::setupRunService()
 {
-    m_runService->setScene(m_scene);
+    // m_runService->setScene(m_scene);
 
     startBtn = new QPushButton("start", m_toolBar);
     // m_toolBar->addWidget(startBtn);
@@ -117,7 +129,6 @@ void MainWindow::setupRunService()
     m_scene_blocker->transparency(0.0);
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
-    qInfo () << " new handler";
 
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
@@ -182,7 +193,7 @@ void MainWindow::fill_box_data() {
     for (auto item: m_scene->items()) {
         if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
             auto *sensor = dynamic_cast<SensorItem *>(item);
-            QString sensorId = sensor->getPriority();
+            QString sensorId = sensor->getModel().priority();
             int intValue = sensorId.toInt();
             auto wideIntValue = static_cast<wint_t>(intValue);
             if (json_names.contains(wideIntValue)) {
@@ -239,9 +250,22 @@ void MainWindow::fill_db_data()
         m_DB_handler->data_of_sensors[id] = itemData;
     }
     int numKeys = m_DB_handler->data_of_sensors.size();
-    qDebug() << "Number of keys (sensors):" << numKeys;
+//    qDebug() << "Number of keys (sensors):" << numKeys;
+
+//    // Assuming data_of_sensors is already populated with some data
+//    for (const auto& key : m_DB_handler->data_of_sensors.keys()) {
+//        const QList<QList<QString>>& values = m_DB_handler->data_of_sensors.value(key);
+//        qInfo() << "Key:" << key;
+//        for (const QList<QString>& innerList : values) {
+//            for (const QString& item : innerList) {
+//                qInfo() << "  Item:" << item;
+//            }
+//        }
+//    }
+
 
 }
+
 
 void MainWindow::background_Layout() {
     QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
@@ -285,6 +309,21 @@ void MainWindow::close_previous_replay(){
     }
 }
 
+bson_t* sensor_to_bson_obj(SensorModel* sensor) {
+    bson_t* base_BSON = bson_new();
+    BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
+    //  TODO add owner id
+    BSON_APPEND_UTF8(base_BSON, "id", sensor->getId().toUtf8().constData());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->x());
+    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->y());
+    BSON_APPEND_UTF8(base_BSON, "priority", sensor->getPriority().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "name", sensor->name().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->buildCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->runCommand().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->cmakePath().toUtf8().constData());
+    return base_BSON;
+}
+
 void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
     QString defaultFileName = "layout.bson";
     QString selectedFileName = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
@@ -299,26 +338,12 @@ void SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
         }
     }
 }
-bson_t* sensor_to_bson_obj(SensorItem* sensor){
-    bson_t* base_BSON = bson_new();
-    BSON_APPEND_UTF8(base_BSON, "type", "Sensor");
-    BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->pos().x());
-    BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->pos().y());
-    BSON_APPEND_INT32(base_BSON, "red", sensor->get_m_color().red());
-    BSON_APPEND_INT32(base_BSON, "green", sensor->get_m_color().green());
-    BSON_APPEND_INT32(base_BSON, "blue", sensor->get_m_color().blue());
-    BSON_APPEND_UTF8(base_BSON, "id", sensor->getPriority().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "name", sensor->getName().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->getBuildCommand().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->getRunCommand().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "cmakePath", sensor->getCmakePath().toUtf8().constData());
-    return base_BSON;
-}
+
 void MainWindow::saveLayout() {
     std::vector<bson_t*> base_BSON_vector;
     for (auto item : m_scene->items()) {
-        if (BaseItem* base = dynamic_cast<SensorItem*>(item)) {
-            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorItem*>(item)));
+        if (SensorModel* base = dynamic_cast<SensorModel*>(item)) {
+            base_BSON_vector.push_back(sensor_to_bson_obj(dynamic_cast<SensorModel*>(item)));
         }
     }
     SaveBsonToFile(base_BSON_vector);
@@ -375,27 +400,25 @@ void MainWindow::update_view() {
     m_liveUpdate_forLogger->parse_new_data(last_changes);
 }
 
+
 void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
-    auto *new_sensor = new SensorItem();
+    auto *new_sensor = new SensorModel();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
 
+    new_sensor->setId(bson_iter_utf8(&iter, nullptr));
+  
+    bson_iter_next(&iter);
+    new_sensor->setOwnerID(bson_iter_utf8(&iter, nullptr));
+    
     // location
     bson_iter_next(&iter);
     double x = bson_iter_double(&iter);
     bson_iter_next(&iter);
     double y = bson_iter_double(&iter);
-    new_sensor->setPos(x, y);
-
-    // color
-    bson_iter_next(&iter);
-    int r = bson_iter_int32(&iter);
-    bson_iter_next(&iter);
-    int g = bson_iter_int32(&iter);
-    bson_iter_next(&iter);
-    int b = bson_iter_int32(&iter);
-    new_sensor->set_m_color(r,g,b);
+    new_sensor->setX(x);
+    new_sensor->setY(y);
 
     // sensor info
     bson_iter_next(&iter);
@@ -408,9 +431,7 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setCmakePath(bson_iter_utf8(&iter, nullptr));
-
-    m_scene->addItem(new_sensor);
-    new_sensor->update();
+    GlobalState::getInstance().currentProject()->addModel(new_sensor);
 }
 
 void MainWindow::loadLayout() {
@@ -426,14 +447,6 @@ void MainWindow::loadLayout() {
         bson_reader_destroy(reader);
     } else {
         qInfo() << "File selection canceled by the user.";
-    }
-    // add popup to the load sensors
-    for (auto item: m_scene->items()) {
-        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            if(sensor->popupDialog == nullptr){
-                sensor->popupDialog = m_popupDialog;
-            }
-        }
     }
 }
 

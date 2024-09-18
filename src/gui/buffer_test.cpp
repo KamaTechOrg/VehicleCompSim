@@ -56,3 +56,4 @@ void buffer_test::generate_buffer() {
     }
     msg_counter++;
 }
+

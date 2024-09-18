@@ -14,13 +14,13 @@
 #include "LiveUpdate.h"
 #include "LogReader.h"
 #include "SimulationControlPanel.h"
+#include "remoteinterface.h"
+#include <bson/bson.h>
+
 #include "popupdialog.h"
-#include "bson/bson.h"
 #include <QLineEdit>
 #include "DB_handler.h"
 #include "buffer_test.h"
-
-
 
 
 class QGraphicsView;
@@ -43,6 +43,8 @@ private:
     void record();
     void replayer();
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
+
+private slots:
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
     void update_view();
@@ -50,8 +52,10 @@ private:
     void read_from_json();
     void fill_box_data();
 
+private:
     CustomScene* m_scene;
     QGraphicsView* m_view;
+
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
     PopupDialog* m_popupDialog;
@@ -74,7 +78,6 @@ private:
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
-    buffer_test *m_bufferTest;  // Add this line
-
-
+    RemoteInterface* m_remoteInterface;
+    buffer_test *m_bufferTest; 
 };

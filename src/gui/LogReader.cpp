@@ -14,12 +14,14 @@ LogReader::LogReader(const QString &logFilePath, DB_handler *db,
         qWarning() << "Cannot open log file for reading:" << m_logFile.errorString();
         return;
     }
+//    qInfo() << "log reader activate";
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &LogReader::readNewLogEntries);
     m_timer->start(5000); // Check for new log entries every 5 seconds
 }
 
 void LogReader::readNewLogEntries() {
+//    qInfo() << "read log";
     if (!m_logFile.isOpen()) {
         return;
     }
@@ -35,6 +37,8 @@ void LogReader::readNewLogEntries() {
         }
         dbHandler->write_to_DB(line);
     }
+//    qInfo() << m_lastPosition;
     m_lastPosition = m_logFile.pos();
+//    qInfo() << m_lastPosition;
 }
 

@@ -10,7 +10,13 @@ class CustomWidget : public QWidget {
     Q_OBJECT
 
 public:
-    CustomWidget(const QString& type, QWidget* parent = nullptr);
+    enum WIDGET_TYPES {
+        REGULAR_SENSOR_ITEM,
+        QEMU_SENSOR_ITEM,
+        BUS_ITEM,
+        WIDGET_TYPES_COUNT
+    };
+    CustomWidget(const WIDGET_TYPES type, QWidget* parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -18,6 +24,6 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
-    QString m_type;
+    WIDGET_TYPES m_type;
     QPoint m_dragStartPosition;
 };

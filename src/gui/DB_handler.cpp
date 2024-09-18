@@ -25,8 +25,16 @@ QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>
     QList<QVariant> parsedValues;
     int offset = 0;
     for (const QList<QString>& column : columnInfo) {
+        if(column == columnInfo[columnInfo.size()-1]){
+//            qInfo() << "QString";
+            QString time_stamp = QString::fromLatin1(buffer.mid(200 - 24, 200).constData());
+//            qInfo() << time_stamp;
+            parsedValues.append(QVariant(time_stamp));
+            break;
+        }
         int bitLength = column[1].toInt();
         if(column[2] == "wint_t"){
+//            qInfo() << "wint_t";
             wint_t exit_id = buffer[offset] & 0x7F;
             parsedValues.append(QVariant(exit_id));
         }else if(column[2] == "QString"){

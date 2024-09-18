@@ -1,4 +1,4 @@
-set(CLIENT_SOURCES
+set(ITEMS_SOURCES
     serializableitem.cpp
     serializableitem.h
     baseitem.cpp
@@ -15,6 +15,8 @@ set(CLIENT_SOURCES
     PersistentTootip.h
     CustomInfoWindow.cpp
     CustomInfoWindow.h
+    qemusensoritem.h
+    qemusensoritem.cpp
 )
 
-set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)
+set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)

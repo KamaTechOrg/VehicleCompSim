@@ -10,14 +10,15 @@
 #include <QUrl>
 #include <QTimer>
 #include "observer.h"
-#include "items/serializableitem.h"
-#include "gui/customscene.h"
+#include "serializableitem.h"
+#include "projectmodel.h"
 
-#include "IActionHandler.h"
-#include "IdentifyHandler.h"
-#include "AddItemHandler.h"
-#include "ModifyItemHandler.h"
-#include "DeleteItemHandler.h"
+#include "handlers/IActionHandler.h"
+#include "handlers/IdentifyHandler.h"
+#include "handlers/AddItemHandler.h"
+#include "handlers/ModifyItemHandler.h"
+#include "handlers/DeleteItemHandler.h"
+#include "handlers/ProjectHandler.h"
 
 
 class SerializableItem;
@@ -34,22 +35,22 @@ public:
     void onItemModified(const SerializableItem& item) override;
     void onItemAdded(const SerializableItem& item) override;
     void onItemDeleted(const SerializableItem& item) override;
-
+    
     const QString& getClientId() const { return m_clientId; }
     void setClientId(const QString& clientId) { m_clientId = clientId; }
-    void setScene(CustomScene* scene);
 
     void sendMessage(const QJsonObject &message);
     void addActionHandler(const QString& action, std::unique_ptr<IActionHandler> handler);
 
 Q_SIGNALS:
-    void closed();
-    void connectionStatusChanged(bool connected);
     void errorOccurred(const QString &errorString);
 
-private Q_SLOTS:
+private slots:
+    void onRemoteModeChanged(bool remoteMode);
+    void onCurrentProjectChanged(ProjectModel* project);
     void onConnected();
     void onDisconnected();
+    void onProjectAdded(ProjectModel* project);
     void onTextMessageReceived(const QString &message);
     void attemptReconnection();
     void onError(QAbstractSocket::SocketError error);
@@ -58,12 +59,13 @@ private:
     explicit WebSocketClient(const QUrl &url, bool debug, QObject *parent = nullptr);
 
     void connectToServer();
+    void disconnectFromServer();
 
     std::unordered_map<QString, std::unique_ptr<IActionHandler>> m_actionHandlers;
     QString m_clientId;
     QUrl m_url;
     QWebSocket m_webSocket;
-    CustomScene* m_scene;
     bool m_debug;
     QTimer *m_reconnectTimer;
+    GlobalState &m_globalState;
 };
