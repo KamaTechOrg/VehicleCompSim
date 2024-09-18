@@ -13,10 +13,10 @@ set(ITEMS_SOURCES
     actionsblocker.cpp
     PersistentTootip.cpp
     PersistentTootip.h
-
+    CustomInfoWindow.cpp
+    CustomInfoWindow.h
     qemusensoritem.h
     qemusensoritem.cpp
-
 )
 
 set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)

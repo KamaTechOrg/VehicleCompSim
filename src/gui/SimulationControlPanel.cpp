@@ -26,14 +26,18 @@ SimulationControlPanel::SimulationControlPanel(SimulationReplayer* replayer, QWi
     connect(m_playButton, &QPushButton::clicked, this, &SimulationControlPanel::play);
     connect(m_pauseButton, &QPushButton::clicked, this, &SimulationControlPanel::pause);
     connect(m_slider, &QSlider::valueChanged, this, &SimulationControlPanel::seek);
+
     int delay = qMax(0, m_replayer->m_startTime.msecsTo(m_replayer->m_totalTime));
     delayTime = QTime(0, 0).addMSecs(delay);
     m_totalTimeLabel->setText(delayTime.toString("hh:mm:ss"));
     m_totalTimeLabel->update();
     m_elapsedTimeLabel->update();
+    m_slider->setRange(0, delay/1000);
+
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer, &QTimer::timeout, this, &SimulationControlPanel::updateSlider);
     m_updateTimer->start(1000);
+    pause();
 }
 
 void SimulationControlPanel::play() {
@@ -44,7 +48,6 @@ void SimulationControlPanel::play() {
 void SimulationControlPanel::pause() {
     m_replayer->pauseSimulation();
     m_updateTimer->stop();
-
 }
 
 void SimulationControlPanel::seek(int value) {
