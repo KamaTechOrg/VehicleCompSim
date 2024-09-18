@@ -1,11 +1,6 @@
 #include "laneDetction.h"
 #include <numeric>  // For std::accumulate
 
-// Constants
-// The height of every frame is 720, so 690 is 30 px above the bottom
-const cv::Point POINT1(200, 690);
-const cv::Point POINT2(610, 530);
-const cv::Point POINT3(1200, 690);
 
 
 // Function to perform polynomial fit (linear regression)
@@ -32,7 +27,7 @@ std::pair<float, float> polyfit(const std::vector<float>& x, const std::vector<f
 std::vector<int> make_points(const cv::Mat& image, const std::pair<float, float>& line) {
 	float slope = line.first, intercept = line.second;
 	int y1 = image.rows;  // Bottom of the image
-	int y2 = static_cast<int>(y1 * 3 / 5);  // Slightly lower than the middle
+	int y2 = static_cast<int>(y1 * 3 / 4);  // Slightly lower than the middle
 	int x1 = static_cast<int>((y1 - intercept) / slope);
 	int x2 = static_cast<int>((y2 - intercept) / slope);
 
@@ -111,20 +106,20 @@ cv::Mat display_lines(cv::Mat& img, const std::vector<std::vector<int>>& lines) 
 }
 
 // Function to define the region of interest
-cv::Mat region_of_interest(const cv::Mat& img) {
+cv::Mat region_of_interest(const cv::Mat& img, const std::vector<cv::Point>& points) {
 	cv::Mat mask = cv::Mat::zeros(img.size(), img.type());
-	std::vector<cv::Point> points = { POINT1, POINT2, POINT3 };
 	fillPoly(mask, std::vector<std::vector<cv::Point>>{points}, cv::Scalar(255, 255, 255));
 	cv::Mat masked_image;
 	bitwise_and(img, mask, masked_image);
 	return masked_image;
 }
 
-std::vector<std::vector<int>> detect_lanes(cv::Mat& image, bool isImgShow) {
+std::vector<std::vector<int>> detect_lanes(cv::Mat& image, const std::vector<cv::Point>& points, bool isImgShow) {
 	cv::Mat canny_image = canny(image);  // Use the canny function to detect edges
-	cv::Mat cropped_canny = region_of_interest(canny_image);  // Apply region of interest
+	cv::Mat cropped_canny = region_of_interest(canny_image, points);  // Apply region of interest
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP(cropped_canny, lines, 2, CV_PI / 180, 40, 20, 50);  // Detect lines
+	//cv::HoughLinesP(cropped_canny, lines, 2, CV_PI / 180, 40, 20, 50);  // Detect lines
+	cv::HoughLinesP(cropped_canny, lines, 2, CV_PI / 180, 60, 10, 60);  // Detect lines
 
 	std::vector<std::vector<int>> averaged_lines = average_slope_intercept(image, lines);  // Get averaged lines
 	if (isImgShow)
