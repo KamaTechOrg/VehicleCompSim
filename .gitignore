@@ -1,0 +1,65 @@
+# Visual Studio generated files
+.vscode/
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.opendb
+*.tlog
+*.lastbuildstate
+ipch/
+*.pdb
+*.obj
+*.log
+*.tlb
+*.tli
+*.sdf
+*.sqlite
+*.idb
+*.ipdb
+*.iobj
+
+# Build directories
+Debug/
+Release/
+x64/Debug/
+x64/Release/
+build/
+
+# OpenCV specific
+*.exe
+*.lib
+*.dll
+*.ilk
+*.manifest
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Compiled dynamic libraries
+*.so
+*.dylib
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Backup files
+*.bak
+*.swp
+*.tmp
+*.temp
+
+# Package management files
+*.nuget/
+packages/
+
+# Other IDE specific files
+.idea/
+/lane_detection.vcxproj
+/opencv
