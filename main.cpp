@@ -13,6 +13,12 @@
 
 std::string videoPath = "project_video.mp4";
 
+std::vector<cv::Point> departure_video_roi_points =
+{ cv::Point(200, 690) ,cv::Point(610, 530), cv::Point(1200, 690) };
+std::vector<cv::Point> curved_video_roi_points =
+{ cv::Point(300, 615), cv::Point(630, 445), cv::Point(1200, 655) };
+
+
 
 void display_red_line(cv::Mat& frame, cv::Vec4i& line);
 
@@ -33,7 +39,7 @@ int main() {
 		}
 
 		// Detect lanes and optionally display them on the frame
-		std::vector<std::vector<int>> lanes = detect_lanes(frame, true);
+		std::vector<std::vector<int>> lanes = detect_lanes(frame, departure_video_roi_points, true);
 
 		// Check for lane departure
 		int lane_depatured = is_lane_departure(frame, lanes, 30);
