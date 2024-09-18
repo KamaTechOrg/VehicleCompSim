@@ -20,18 +20,18 @@ std::vector<cv::Point> curved_video_roi_points =
 
 float calculateSlope(const std::vector<int>& line) {
 	if (line.size() != 4) {
-		throw std::invalid_argument("הווקטור חייב להכיל 4 ערכים: x1, y1, x2, y2.");
+		throw std::invalid_argument("The vector must contain 4 values: x1, y1, x2, y2.");
 	}
 
 	float x1 = line[0], y1 = line[1];
 	float x2 = line[2], y2 = line[3];
 
-	// בדיקה שהנקודות לא נמצאות על אותו קו אנכי (מקרה של חלוקה באפס)
+	// Checking if the points are on the same vertical line (division by zero case)
 	if (x2 - x1 == 0) {
-		throw std::invalid_argument("הנקודות יוצרות קו אנכי ולכן השיפוע אינו מוגדר.");
+		throw std::invalid_argument("The points create a vertical line, so the slope is undefined.");
 	}
 
-	// חישוב השיפוע
+	// Calculating the slope
 	return (y2 - y1) / (x2 - x1);
 }
 
@@ -56,7 +56,7 @@ int main() {
 		if (lanes.size() != 2)
 			continue;
 
-		std::cout << "frame number: " << i++ << " slote = " << calculateSlope(lanes[1]) << std::endl;
+		std::cout << "frame number: " << i++ << " slope = " << calculateSlope(lanes[1]) << std::endl;
 
 		float left_slope = calculateSlope(lanes[0]);
 		float right_slope = calculateSlope(lanes[1]);
