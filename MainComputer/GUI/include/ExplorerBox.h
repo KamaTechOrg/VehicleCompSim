@@ -17,4 +17,8 @@ private:
 	QListView* _scenariosList;
 
 	void onItemClicked(const QModelIndex& index);
+	void showContextMenu(const QPoint& pos);
+	void renameSelectedItem();
+	void deleteSelectedItem();
+	void addNewItem();
 };
