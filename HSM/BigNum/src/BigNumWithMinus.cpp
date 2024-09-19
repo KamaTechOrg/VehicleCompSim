@@ -1,5 +1,6 @@
 #include "BigNumWithMinus.h"
 
+
 void BigNumWithMinus::setToMinus()
 {
     for (int i = 0; i < size; ++i)
@@ -178,10 +179,11 @@ bool BigNumWithMinus::isMinus() const
 
 void BigNumWithMinus::print() const
 {
-    std::cout << toString() << std::endl;
+    // Directly convert to string and print
+    std::cout << std::string(toString().begin(), toString().end()) << std::endl;
 }
 
-std::string BigNumWithMinus::toString() const
+std::vector<u_char> BigNumWithMinus::toString() const
 {
     if (!isMinus())
     {
@@ -191,6 +193,9 @@ std::string BigNumWithMinus::toString() const
     {
         BigNumWithMinus tmp = *this;
         tmp.setToPlus();
-        return "-" + tmp.BigNum::toString();
+        std::vector<u_char> toReturn{'-'};
+        std::vector<u_char> tmpVec = tmp.BigNum::toString();
+        toReturn.insert(toReturn.end(), tmpVec.begin(), tmpVec.end());
+        return toReturn;
     }
 }

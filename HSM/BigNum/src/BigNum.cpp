@@ -490,6 +490,43 @@ BigNum BigNum::operator%(const BigNum &other) const
 // 	return remainder;
 // }
 
+// BigNum BigNum::operator%(const BigNum &other) const
+// {
+// 	if (other == BigNum("0"))
+// 	{
+// 		throw std::runtime_error("Division by zero error");
+// 	}
+
+// 	BigNum num = *this;
+// 	BigNum mod = other;
+// 	BigNum temp1 = mod;
+// 	BigNum temp2 = mod;
+// 	temp2 = temp2 << 1;
+// 	while (temp2 <= num)
+// 	{
+// 		temp1 = temp2;
+// 		temp2 = temp2 << 1;
+// 	}
+// 	while(temp1 >= num)
+// 	{
+// 		BigNum temp3 = num - temp1;
+// 		if (temp3 > 0 || num == temp1){
+// 			num = temp3;
+// 		}else{
+// 			temp1 = temp1 >> 1;
+// 		}
+// 	}
+// 	while (num >= mod)
+// 	{
+// 		num = num - mod;
+// 	}
+	
+
+// 	return num;
+	
+	
+// }
+
 BigNum BigNum::operator%(uint32_t num) const
 {
 	return *this % BigNum(num, 32);

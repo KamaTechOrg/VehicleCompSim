@@ -37,6 +37,7 @@ target_compile_options(sycl_flags INTERFACE "-fsycl")
 
 # add_library(API src/HSM.cpp)
 # target_include_directories(API PUBLIC include)
+# target_sources(API PRIVATE include/HSM_type_enum.hpp)
 
 #testing
 # add_executable(APITest test/API_test.cpp)

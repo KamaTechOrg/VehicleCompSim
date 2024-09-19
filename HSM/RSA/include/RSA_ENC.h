@@ -13,22 +13,9 @@
 #include "../../BigNum/include/BigNumWithMinus.h"
 #include "HSM_type_enum.hpp"
 
-class RSA
+class RSA_ENC
 {
 public:
-    static std::pair<std::vector<u_char>, std::vector<u_char>> generateKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
-
-    static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 512);
-    static bool isPrime(const BigNum &n, int k);
-    static BigNum power(const BigNum &x, const BigNum &y, const BigNum &p);
-
-    static bool millerTest(const BigNum &d, const BigNum &n);
-    static BigNum generateRandomNumber(int bits);
-    static std::vector<u_char> generateRandomBits(size_t length);
-    static BigNum generateLargePrime(int bits);
-    static BigNum gcd(BigNum a, BigNum b);
-    static BigNum modInverse(BigNum a, BigNum m);
-
     static BigNum encrypt(const BigNum &message, const BigNum &publicKey, const BigNum &modulus);
 
     static BigNum decrypt(const BigNum &message, const BigNum &privateKey, const BigNum &modulus);

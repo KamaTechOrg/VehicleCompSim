@@ -3,17 +3,6 @@
 #include "AES_API.hpp"
 #include "HSM_type_enum.hpp"
 
-std::pair<std::vector<u_char>, std::vector<u_char>> HSM::generateAsymmetricKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512)
-{
-    if(type == ENCRYPTION_ALGORITHM_TYPE::RSA) return RSA::generateKeys(type, bits);
-    // if(type == ENCRYPTION_ALGORITHM_TYPE::ECC) return ECC::generateKeys(type, bits);
-    return std::pair<std::vector<u_char>, std::vector<u_char>> ();
-}
-std::vector<u_char> HSM::generateSymmetricKey(ENCRYPTION_ALGORITHM_TYPE  type, int bits = 128)
-{
-    // if(type == ENCRYPTION_ALGORITHM_TYPE::AES) return AES::generateKey(type);
-    return std::vector<u_char>();
-}
 
 std::vector<u_char> HSM::encrypt(const std::vector<u_char>& message, ENCRYPTION_ALGORITHM_TYPE type,const std::vector<u_char>& key , int bits = 512)
 {
