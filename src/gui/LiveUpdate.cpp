@@ -51,7 +51,7 @@ void LiveUpdate::change_view(const QString &srcId, const QString &destId) {
     }
     for (auto item: m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();;
+            QString sensorId = sensor->getModel().priority();
 //            qInfo() << "sensorId" << sensorId;
             if (sensorId == srcId || sensorId == destId) {
                 if (sensorId == srcId && src_item == nullptr) {

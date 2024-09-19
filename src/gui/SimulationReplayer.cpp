@@ -113,7 +113,7 @@ void SimulationReplayer::update_view() {
     QMap<QString, QVariantList> last_changes;
     for (auto item : m_scene_simulation->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();
+            QString sensorId = sensor->getModel().priority();
             QList<QVariant> data = m_db->read_all_from_DB(sensorId);
 //            QList<QVariant> data = m_db->read_last_from_DB(sensorId);
             sensor->update_db_data(data);

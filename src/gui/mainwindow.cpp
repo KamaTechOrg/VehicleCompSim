@@ -316,7 +316,7 @@ bson_t* sensor_to_bson_obj(SensorModel* sensor) {
     BSON_APPEND_UTF8(base_BSON, "id", sensor->getId().toUtf8().constData());
     BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->x());
     BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->y());
-    BSON_APPEND_UTF8(base_BSON, "priority", sensor->getPriority().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "priority", sensor->priority().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "name", sensor->name().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->buildCommand().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->runCommand().toUtf8().constData());
@@ -390,7 +390,7 @@ void MainWindow::update_view() {
     QMap<QString, QVariantList> last_changes;
     for (auto item : m_scene->items()) {
         if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();
+            QString sensorId = sensor->getModel().priority();
             QList<QVariant> data = m_DB_handler->read_all_from_DB(sensorId);
 //            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
             sensor->update_db_data(data);
