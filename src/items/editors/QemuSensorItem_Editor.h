@@ -20,17 +20,25 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
     // parameters:
     QLineEdit* priority = new QLineEdit(this);
     QLineEdit* name = new QLineEdit(this);
-    QComboBox* m_platform = new QComboBox(this);
-    QComboBox* m_machine = new QComboBox(this);
-    QComboBox* m_cpu = new QComboBox(this);
-    QSpinBox* m_memory_MB = new QSpinBox(this);
-    QPushButton* m_kernal = new QPushButton (this);
-    QPushButton* m_harddrive = new QPushButton(this);
-    QPushButton* m_cdrom = new QPushButton(this);
-    QComboBox* m_boot = new QComboBox(this);
-    QLineEdit* m_net = new QLineEdit(this);
-    QLineEdit* m_append = new QLineEdit(this);
-    QCheckBox* m_nographic = new QCheckBox(this);
+    QComboBox* platform = new QComboBox(this);
+    QComboBox* machine = new QComboBox(this);
+    QComboBox* cpu = new QComboBox(this);
+    QSpinBox* memory_MB = new QSpinBox(this);
+    QPushButton* kernal = new QPushButton (this);
+    QPushButton* harddrive = new QPushButton(this);
+    QPushButton* cdrom = new QPushButton(this);
+    QComboBox* boot = new QComboBox(this);
+    QLineEdit* net = new QLineEdit(this);
+    QLineEdit* append = new QLineEdit(this);
+    QCheckBox* nographic = new QCheckBox(this);
+
+
+
+
+    QString m_kernal;
+    QString m_harddrive;
+    QString m_cdrom;
+
 
     // inits:
     void initPriority();
@@ -47,8 +55,12 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
     void initAppend();
     void initNographic();
 
+    void initSaveCancelBtns();
     void initParameters();
     void initLayout();
+
+    void onSaveBtnClicked();
+    void onCancelBtnCliked();
 
 public:
     Editor(QemuSensorModel* _model);

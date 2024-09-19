@@ -78,7 +78,7 @@ signals:
     void netChanged();
     void appendChanged();
     void nographicChanged();
-    void anyPropertyChanged();
+    //void anyPropertyChanged();
 
 private:
 
@@ -97,6 +97,7 @@ private:
 
     // private methodes
     QString getQemuOutputForParameter(const QString& flag) ;
+    void updateRunCommand();
 
 public:
 
