@@ -17,7 +17,7 @@ buffer_test::buffer_test(QObject *parent) : QObject(parent), m_logFile(QDir::cur
     }
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &buffer_test::generate_buffer);
-    m_timer->start(2000);
+    m_timer->start(1000);
 }
 buffer_test::~buffer_test() {
     if (m_logFile.isOpen()) {

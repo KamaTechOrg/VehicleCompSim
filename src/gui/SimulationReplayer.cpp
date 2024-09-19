@@ -3,6 +3,7 @@
 //
 
 #include "SimulationReplayer.h"
+#include "globalstate.h"
 #include <QDebug>
 
 SimulationReplayer::SimulationReplayer(const QString &filePath, DB_handler *db, std::unique_ptr<LiveUpdate> liveUpdate, CustomScene* m_scene, QObject *parent)
@@ -108,18 +109,32 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
         }
     }
 }
-
 void SimulationReplayer::update_view() {
-    QMap<QString, QVariantList> last_changes;
-    for (auto item : m_scene_simulation->items()) {
-        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();
-            QList<QVariant> data = m_db->read_all_from_DB(sensorId);
-//            QList<QVariant> data = m_db->read_last_from_DB(sensorId);
-            sensor->update_db_data(data);
-            last_changes[sensorId] = data;
+    auto models = GlobalState::getInstance().currentProject()->models();
+//    QMap<QString, QVariantList> last_changes;
+    for (auto model: models) {
+        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
+            QString sensorId = sensor->priority();
+            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
+            GlobalState::getInstance().updateLogData(sensorId, data);
+
+//            last_changes[sensorId] = data;
         }
     }
-    m_LiveUpdate->parse_new_data(last_changes);
-
+//    m_liveUpdate_forLogger->parse_new_data(last_changes);
 }
+
+//void SimulationReplayer::update_view() {
+//    QMap<QString, QVariantList> last_changes;
+//    for (auto item : m_scene_simulation->items()) {
+//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            QString sensorId = sensor->getPriority();
+//            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
+////            QList<QVariant> data = m_db->read_last_from_DB(sensorId);
+//            sensor->update_data(data);
+//            last_changes[sensorId] = data;
+//        }
+//    }
+//    m_LiveUpdate->parse_new_data(last_changes);
+//
+//}

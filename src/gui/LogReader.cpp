@@ -17,7 +17,7 @@ LogReader::LogReader(const QString &logFilePath, DB_handler *db,
 //    qInfo() << "log reader activate";
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &LogReader::readNewLogEntries);
-    m_timer->start(5000); // Check for new log entries every 5 seconds
+    m_timer->start(1000); // Check for new log entries every 5 seconds
 }
 
 void LogReader::readNewLogEntries() {

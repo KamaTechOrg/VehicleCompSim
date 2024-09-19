@@ -73,4 +73,11 @@ void GlobalState::setCurrentSensorModel(SensorModel* sensorModel)
     }
 }
 
+void GlobalState::updateLogData(QString sensorId, QList<QVariant> data){
+    emit dataLogAdded(sensorId, data);
+
+}
+
+
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {}
+

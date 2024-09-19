@@ -13,6 +13,8 @@
 #include "CustomInfoWindow.h"
 
 #include "serializableitem.h"
+#include "state/globalstate.h"
+
 
 class EdgeItem;
 
@@ -54,7 +56,7 @@ public:
 
     SerializableItem* model() const { return m_model; }
   
-    void update_db_data(QList<QVariant> &new_data);
+//    void update_db_data(QList<QVariant> &new_data);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
@@ -84,27 +86,25 @@ protected:
     static qreal my_id;
 
     PersistentTooltip* m_persistentTooltip = nullptr;
-    QList<QVariant> tooltipData;
-    QList<QVariant> all_Db_data;
+    QList<QVariant> last_data;
+    QList<QVariant> all_data;
+
 
 public:
-    QList<QString> names;
+    QList<QString> columnNames;
 private:
 
     void showInfoWindow();
-    QString fetchDataFromDB();
+    QString fetchDataInTable();
     void updateInfoWindow();
-
-    QTimer* m_updateTimer;
+    QTimer* m_updateWindowTimer;
     QGraphicsProxyWidget* m_infoWindowProxy = nullptr;
     CustomInfoWindow* m_infoWindow = nullptr;
     bool mouse_pressed = false;
-    int m_itemId;
+    bool playMode = false;
 
 private slots:
-    void onCustomWindowClosed() {
-        m_updateTimer->stop();
-        mouse_pressed = false;
-    }
+    void update_data(const QString& sensorId, QList<QVariant> data);
+    void onCustomWindowClosed();
 };
 

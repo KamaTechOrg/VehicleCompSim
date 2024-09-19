@@ -49,30 +49,30 @@ void LiveUpdate::change_view(const QString &srcId, const QString &destId) {
 //        qInfo() << "null";
         return;
     }
-    for (auto item: m_scene->items()) {
-        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();;
-//            qInfo() << "sensorId" << sensorId;
-            if (sensorId == srcId || sensorId == destId) {
-                if (sensorId == srcId && src_item == nullptr) {
-                    src_item = sensor;
-//                    qInfo() << "set src_item to srcId";
-                } else if (sensorId == srcId && dest_item == nullptr) {
-                    dest_item = sensor;
-//                    qInfo() << "set dest_item to srcId";
-                }
-                if (sensorId == destId && src_item == nullptr) {
-                    src_item = sensor;
-//                    qInfo() << "set src_item to destId";
-
-                } else if (sensorId == destId && dest_item == nullptr) {
-                    dest_item = sensor;
-//                    qInfo() << "set dest_item to destId";
-
-                }
-            }
-        }
-    }
+//    for (auto item: m_scene->items()) {
+//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            QString sensorId = sensor->getPriority();;
+////            qInfo() << "sensorId" << sensorId;
+//            if (sensorId == srcId || sensorId == destId) {
+//                if (sensorId == srcId && src_item == nullptr) {
+//                    src_item = sensor;
+////                    qInfo() << "set src_item to srcId";
+//                } else if (sensorId == srcId && dest_item == nullptr) {
+//                    dest_item = sensor;
+////                    qInfo() << "set dest_item to srcId";
+//                }
+//                if (sensorId == destId && src_item == nullptr) {
+//                    src_item = sensor;
+////                    qInfo() << "set src_item to destId";
+//
+//                } else if (sensorId == destId && dest_item == nullptr) {
+//                    dest_item = sensor;
+////                    qInfo() << "set dest_item to destId";
+//
+//                }
+//            }
+//        }
+//    }
 //    qInfo() << "SET SRC DEST";
     // Generate a random index
     int randomIndex = QRandomGenerator::global()->bounded(colorList.size());

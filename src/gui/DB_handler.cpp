@@ -105,7 +105,7 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         qInfo() << "Database connection failed:" << sqlitedb->lastError().text();
     }
 }
-QList<QVariant> DB_handler::read_all_from_DB(const QString& table_name) {
+QList<QVariant> DB_handler::read_all_sensor_data(const QString& table_name) {
     QList<QVariant> result;
     QString update_table_name = "'" + table_name + "'";
     if (sqlitedb->open()) {

@@ -197,9 +197,9 @@ void MainWindow::fill_box_data() {
             int intValue = sensorId.toInt();
             auto wideIntValue = static_cast<wint_t>(intValue);
             if (json_names.contains(wideIntValue)) {
-                base->names = json_names.value(wideIntValue);
+                base->columnNames = json_names.value(wideIntValue);
             } else {
-                base->names = json_names.value(0);
+                base->columnNames = json_names.value(0);
             }
         }
     }
@@ -316,7 +316,7 @@ bson_t* sensor_to_bson_obj(SensorModel* sensor) {
     BSON_APPEND_UTF8(base_BSON, "id", sensor->getId().toUtf8().constData());
     BSON_APPEND_DOUBLE(base_BSON, "pos_x", sensor->x());
     BSON_APPEND_DOUBLE(base_BSON, "pos_y", sensor->y());
-    BSON_APPEND_UTF8(base_BSON, "priority", sensor->getPriority().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "priority", sensor->priority().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "name", sensor->name().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "buildCommand", sensor->buildCommand().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "runCommand", sensor->runCommand().toUtf8().constData());
@@ -364,8 +364,7 @@ void MainWindow::onRunStart()
     }
     change_view_timer = new QTimer(this);
     connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
-    change_view_timer->start(5000);
-
+    change_view_timer->start(2000);
 
     startBtn->hide();
     timer->hide();
@@ -387,18 +386,42 @@ void MainWindow::onRunEnd()
 }
 
 void MainWindow::update_view() {
-    QMap<QString, QVariantList> last_changes;
-    for (auto item : m_scene->items()) {
-        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-            QString sensorId = sensor->getPriority();
-            QList<QVariant> data = m_DB_handler->read_all_from_DB(sensorId);
-//            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
-            sensor->update_db_data(data);
-            last_changes[sensorId] = data;
+//    for (auto item : m_scene->items()) {
+//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            QString sensorId = sensor->priority();
+//            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
+////            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
+//            sensor->updatData(data);
+//        }
+//    }
+
+    auto models = GlobalState::getInstance().currentProject()->models();
+//    QMap<QString, QVariantList> last_changes;
+    for (auto model: models) {
+        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
+            QString sensorId = sensor->priority();
+            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
+            GlobalState::getInstance().updateLogData(sensorId, data);
+
+//            last_changes[sensorId] = data;
         }
     }
-    m_liveUpdate_forLogger->parse_new_data(last_changes);
+//    m_liveUpdate_forLogger->parse_new_data(last_changes);
 }
+
+//
+//        QMap<QString, QVariantList> last_changes;
+//    for (auto item : m_scene->items()) {
+//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+//            QString sensorId = sensor->priority();
+//            QList<QVariant> data = m_DB_handler->read_all_from_DB(sensorId);
+////            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
+//            sensor->update_db_data(data);
+//            last_changes[sensorId] = data;
+//        }
+//    }
+//    m_liveUpdate_forLogger->parse_new_data(last_changes);
+//}
 
 
 void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {

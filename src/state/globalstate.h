@@ -39,6 +39,11 @@ public:
     SensorModel* currentSensorModel() const { return m_currentSensorModel; }
     void setCurrentSensorModel(SensorModel* sensorModel);
 
+//    QList<QList<QVariant>*> snesors_data() const { return snesors_log_data.values(); }
+    void updateLogData(QString sensorId, QList<QVariant>);
+
+
+
 signals:
     void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
@@ -48,6 +53,7 @@ signals:
     void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
     void projectAddedLocally(ProjectModel* project);
+    void dataLogAdded(QString sensorId, QList<QVariant> data);
 
 private:
     GlobalState(QObject* parent = nullptr);
@@ -61,5 +67,8 @@ private:
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
     SensorModel* m_currentSensorModel = nullptr;
+
+
+//    QHash<QString, QList<QVariant> *> snesors_log_data;
 
 };
