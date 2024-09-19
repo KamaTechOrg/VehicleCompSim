@@ -38,41 +38,49 @@ void ConditionsEditor::setView(nlohmann::json jsonData)
 
 void ConditionsEditor::save()
 {
-    saveLogicDataToJson();
-    saveGuiDataToJson();
+    bool success = saveLogicDataToJson() && saveGuiDataToJson();
+    if (success)
+        showSaveSuccessFeedback();
+    else
+        showSaveFailedFeedback();
 }
 
-void ConditionsEditor::showSaveFeedback(bool success)
+void ConditionsEditor::showSaveSuccessFeedback()
 {
-    if (success) {
-        _saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
-    }
-    else {
-        _saveButton->setStyleSheet("background-color: #F44336;"); // Red
-    }
-
+    _saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
+    _saveButton->setText("success");
     QTimer::singleShot(3000, [this]() {
         _saveButton->setStyleSheet("");
+        _saveButton->setText("save");
+        });
+}
+
+void ConditionsEditor::showSaveFailedFeedback()
+{
+    _saveButton->setStyleSheet("background-color: #F44336;"); // Red
+    _saveButton->setText("failed");
+    QTimer::singleShot(3000, [this]() {
+        _saveButton->setStyleSheet("");
+        _saveButton->setText("save");
         });
 }
 
 void ConditionsEditor::loadGuiDataFromJson()
 {
     nlohmann::json jsonData = JsonLoader().loadGuiData();
-
     _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
     _actionGroupBox->setView(jsonData["actions"]);
 }
 
-void ConditionsEditor::saveLogicDataToJson() {
+bool ConditionsEditor::saveLogicDataToJson() {
     std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->logicData();
     if (conditionsTree == nullptr)
-        return;
+        return false;
 
     // get action (that will be executed if conditon were validated at some point)
     std::vector<std::shared_ptr<Action>> actions = _actionGroupBox->data();
     if (actions.empty())
-        return;
+        return false;
 
     nlohmann::json jsonData;
     jsonData["conditions"] = conditionsTree->toJson();
@@ -80,18 +88,15 @@ void ConditionsEditor::saveLogicDataToJson() {
     for (const auto& action : actions) {
         jsonData["actions"].push_back(action->toJson());
     }
-
     JsonLoader().saveConditionsLogic(jsonData);
-    showSaveFeedback(true);
-
     ConditionsManager().loadFromJson();
+    return true;
 }
 
-void ConditionsEditor::saveGuiDataToJson() {
+bool ConditionsEditor::saveGuiDataToJson() {
     nlohmann::json jsonData;
-
     jsonData["conditions"] = _conditionsGroup->GuiData();
     jsonData["actions"] = _actionGroupBox->GuiData();
-
     JsonLoader().saveGuiData(jsonData);
+    return true;
 }

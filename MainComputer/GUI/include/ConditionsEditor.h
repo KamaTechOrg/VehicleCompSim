@@ -18,10 +18,11 @@ public:
 	void save();
 
 private:
-	void showSaveFeedback(bool success);
+	void showSaveSuccessFeedback();
+	void showSaveFailedFeedback();
 	void loadGuiDataFromJson();
-	void saveLogicDataToJson();
-	void saveGuiDataToJson();
+	bool saveLogicDataToJson();
+	bool saveGuiDataToJson();
 
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;
