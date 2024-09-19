@@ -1,9 +1,9 @@
 #include "customwidget.h"
 #include <QPainter>
-#include <QMouseEvent>
+//#include <QMouseEvent>
 #include <QApplication>
 
-CustomWidget::CustomWidget(const QString& type, QWidget* parent)
+CustomWidget::CustomWidget(const WIDGET_TYPES type, QWidget* parent)
     : QWidget(parent), m_type(type) {
     setFixedSize(50, 50);
     setAcceptDrops(true);
@@ -13,10 +13,18 @@ void CustomWidget::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_type == "SensorItem") {
+    switch (m_type) {
+    case REGULAR_SENSOR_ITEM:
         painter.drawRoundedRect(QRectF(5, 5, 40, 22.5), 4, 4);
-    } else if (m_type == "ConnectorItem") {
+        break;
+    case QEMU_SENSOR_ITEM:
+        painter.drawPolygon(QPolygonF({QPointF(25, 5), QPointF(5, 25), QPointF(45, 25)}));
+        break;
+    case BUS_ITEM:
         painter.drawEllipse(12.5, 12.5, 25, 25);
+        break;
+    default:
+        break;
     }
 }
 
@@ -36,7 +44,7 @@ void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
 
     QDrag* drag = new QDrag(this);
     QMimeData* mimeData = new QMimeData;
-    mimeData->setText(m_type);
+    mimeData->setText(QString::number(m_type));
     drag->setMimeData(mimeData);
 
     QPixmap pixmap(size());

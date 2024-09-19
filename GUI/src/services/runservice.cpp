@@ -1,23 +1,19 @@
 #include "runservice.h"
 #include <thread>
-#include "../include/VehicleCompSim/utils/processControls.h"
-#include "../include/VehicleCompSim/utils/createDump.h"
-
+#include <QSettings>
+#include "processControls.h"
+#include "createDump.h"
+#include "globalstate.h"
 
 int RunService::RunControllData::RunControllCounter = 0;
 
 RunService::RunService()
-    : scene(nullptr), timer(0)
+    : timer(0)
 {}
 
 RunService::~RunService()
 {
     isRunning = false;
-}
-
-void RunService::setScene(CustomScene *_scene)
-{
-    scene = _scene;
 }
 
 void RunService::start()
@@ -101,11 +97,13 @@ std::shared_ptr<QProcess> RunService::processInit(const QString &command)
 
 void RunService::extarctSensorsFromScene()
 {
+    QSettings settings("VehicleCompSim", "GUI");
+    QString clientId = settings.value("clientId").toString();
     sensors.clear();
-    for (auto & item: scene->items())
+    for (auto & model: GlobalState::getInstance().currentProject()->models())
     {
-        SensorItem* sensor = dynamic_cast<SensorItem*>(item);
-        if (sensor && !sensor->isExludeFromProject())
+        SensorModel* sensor = dynamic_cast<SensorModel*>(model);
+        if (sensor && !sensor->isExcludeFromProject() && sensor->ownerID() == clientId)
         {
             sensors.push_back(sensor);
         }
@@ -120,9 +118,9 @@ void RunService::compile()
 
     for (auto sensor: sensors)
     {
-        if (sensor->getBuildCommand().isEmpty()) continue;
+        if (sensor->buildCommand().isEmpty()) continue;
 
-        auto process = processInit(sensor->getBuildCommand());
+        auto process = processInit(sensor->buildCommand());
         auto process_ptr = process.get();
 
         QObject::connect(process_ptr, &QProcess::errorOccurred, [process_ptr, this](QProcess::ProcessError error){
@@ -156,7 +154,7 @@ void RunService::run()
 
     for (auto sensor: sensors)
     {
-        auto process = processInit(sensor->getRunCommand());
+        auto process = processInit(sensor->runCommand());
         auto process_ptr = process.get();
         QObject::connect(process_ptr, &QProcess::errorOccurred, [process_ptr, this](QProcess::ProcessError error){
             this->runControl.isErrorAccure = true;

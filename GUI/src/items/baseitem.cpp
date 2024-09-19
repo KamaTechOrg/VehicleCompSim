@@ -1,18 +1,24 @@
 #include "baseitem.h"
+#include "customscene.h"
 #include <qrandom.h>
-//#include <QIcon>
 #include <QGraphicsSceneHoverEvent>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 
-BaseItem::BaseItem(QGraphicsItem* parent){
+BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
-    
+    if(item){
+        m_model = item;
+        setPos(m_model->x(), m_model->y());
+    } else {
+        m_model = new SerializableItem();
+    }
     m_color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 64, 192);
 
     // Create close button
@@ -23,9 +29,7 @@ BaseItem::BaseItem(QGraphicsItem* parent){
 
     QGraphicsProxyWidget* closeProxy = new QGraphicsProxyWidget(this);
     closeProxy->setWidget(closeButton);
-
     connect(closeButton, &QPushButton::clicked, this, &BaseItem::confirmRemove);
-
     // Store proxies for visibility management
     m_closeProxy = closeProxy;
 }
@@ -65,8 +69,11 @@ QVariant BaseItem::itemChange(GraphicsItemChange change, const QVariant &value) 
             path.cubicTo(controlPoint1, controlPoint2, destPos);
 
             edge->setPath(path);
-            //Todo: send update to server
         }
+        m_positionChanged = true;
+
+        m_model->setX(pos().x());
+        m_model->setY(pos().y());
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -75,13 +82,20 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsItem::mouseMoveEvent(event);
     update();
 }
-void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    QPointF nearestPoint;
-    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
-        m_hoveredPoint = nearestPoint;
-        update(); // Trigger a repaint
+
+void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsItem::mouseReleaseEvent(event);
+    if (m_positionChanged) {
+        m_positionChanged = false;
+        m_model->notifyItemModified();
     }
-    QGraphicsItem::hoverEnterEvent(event);
+}
+
+void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+}
+void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
@@ -100,10 +114,9 @@ void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
     QGraphicsItem::hoverMoveEvent(event);
 }
 
-void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    m_hoveredPoint = QPointF();
-    update(); // Trigger a repaint
-    QGraphicsItem::hoverLeaveEvent(event);
+void BaseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->setBrush(m_color);
+    painter->drawRect(boundingRect());
 }
 
 QPointF BaseItem::connectionPoint(const QPointF& otherPoint) const {
@@ -121,12 +134,12 @@ QPointF BaseItem::connectionPoint(const QPointF& otherPoint) const {
 }
 
 QList<QPointF> BaseItem::connectionPoints() const {
-    QRectF rect(-m_width / 2, -m_height / 2, m_width, m_height); 
+    QRectF rect(-m_width / 2, -m_height / 2, m_width, m_height);
     return {
-        QPointF(rect.left() + rect.width() / 2, rect.top()), // Top middle
-        QPointF(rect.right(), rect.top() + rect.height() / 2), // Right middle
-        QPointF(rect.left() + rect.width() / 2, rect.bottom()), // Bottom middle
-        QPointF(rect.left(), rect.top() + rect.height() / 2) // Left middle
+            QPointF(rect.left() + rect.width() / 2, rect.top()), // Top middle
+            QPointF(rect.right(), rect.top() + rect.height() / 2), // Right middle
+            QPointF(rect.left() + rect.width() / 2, rect.bottom()), // Bottom middle
+            QPointF(rect.left(), rect.top() + rect.height() / 2) // Left middle
     };
 }
 
@@ -163,9 +176,9 @@ void BaseItem::hideButtons()
 
 void BaseItem::confirmRemove() {
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(nullptr, "Confirm Removal", 
-        "Are you sure you want to remove this item?",
-        QMessageBox::Yes|QMessageBox::No);
+    reply = QMessageBox::question(nullptr, "Confirm Removal",
+                                  "Are you sure you want to remove this item?",
+                                  QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         removeItem();
     }
@@ -173,42 +186,35 @@ void BaseItem::confirmRemove() {
 
 void BaseItem::removeItem() {
     if (scene()) {
-        // Remove all connected edges
+//        qInfo() << "remove";
+//         Remove all connected edges
         for (EdgeItem* edge : m_edges) {
             auto connectedItem = edge->source() == this ? edge->dest() : edge->source();
-            if(connectedItem->itemType() == ItemType::Connector){
+            if(connectedItem->m_model->itemType() == ItemType::Connector){
                 if(connectedItem->edges().size() <= 2){
                     connectedItem->removeItem();
                 }
                 else{
                     connectedItem->removeEdge(edge);
                     scene()->removeItem(edge);
+                    edge->notifyItemDeleted();
                     delete edge;
                 }
             }
             else{
                 scene()->removeItem(edge);
-                delete edge;                    
+                edge->notifyItemDeleted();
+                delete edge;
             }
         }
         m_edges.clear();
+//        qInfo() << "after clear";
+
 
         // Remove this item
         scene()->removeItem(this);
+        m_model->notifyItemDeleted();// TODO - CHECK IF TO DELETE THIS
+        GlobalState::getInstance().currentProject()->removeModel(m_model);
         deleteLater();
     }
-}
-
-QJsonObject BaseItem::serialize() const {
-    QJsonObject itemData = SerializableItem::serialize();
-    itemData["type"] = static_cast<int>(m_type);
-    itemData["x"] = pos().x();
-    itemData["y"] = pos().y();
-    return itemData;
-}
-
-void BaseItem::deserialize(const QJsonObject &itemData) {
-    SerializableItem::deserialize(itemData);
-    m_type = static_cast<ItemType>(itemData["type"].toInt());
-    setPos(itemData["x"].toDouble(), itemData["y"].toDouble());
 }

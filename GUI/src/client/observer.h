@@ -1,6 +1,6 @@
 #pragma once
 
-#include "items/serializableitem.h"
+#include "serializableitem.h"
 
 class SerializableItem;
 
