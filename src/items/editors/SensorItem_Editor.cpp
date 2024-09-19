@@ -1,12 +1,10 @@
 #include "./SensorItem_Editor.h"
+#include <GlobalState.h>
 #include <vector>
 
 void SensorItem::Editor::initPriority()
 {
     priority->setText(model.priority());
-    QObject::connect(priority, &QLineEdit::textChanged, [this](){
-        model.setPriority(priority->text());
-    });
     layout->addWidget(labels[priority] = new QLabel("priority", this));
     layout->addWidget(priority);
 }
@@ -14,9 +12,6 @@ void SensorItem::Editor::initPriority()
 void SensorItem::Editor::initName()
 {
     name->setText(model.name());
-    QObject::connect(name,  &QLineEdit::textChanged  , [this](){
-        model.setName(name->text());
-    });
     layout->addWidget(labels[name] = new QLabel("name", this));
     layout->addWidget(name);
 }
@@ -24,9 +19,6 @@ void SensorItem::Editor::initName()
 void SensorItem::Editor::initBuildCommand()
 {
     buildCommand->setText(model.buildCommand());
-    QObject::connect(buildCommand,  &QLineEdit::textChanged  , [this](){
-        model.setBuildCommand(buildCommand->text());
-    });
     layout->addWidget(labels[buildCommand] = new QLabel("build Command", this));
     layout->addWidget(buildCommand);
 }
@@ -34,22 +26,19 @@ void SensorItem::Editor::initBuildCommand()
 void SensorItem::Editor::initRunCommand()
 {
     runCommand->setText(model.runCommand());
-    QObject::connect(runCommand,    &QLineEdit::textChanged  , [this](){
-        model.setRunCommand(runCommand->text());
-    });
     layout->addWidget(labels[runCommand] = new QLabel("run Command", this));
     layout->addWidget(runCommand);
 }
 
 void SensorItem::Editor::initCmakeSelectorOpen()
 {
-    cmakeSelectorOpen->setText(model.cmakePath());
+    cmakeSelectorOpen->setText(cmakePath);
     QObject::connect(cmakeSelectorOpen,    &QPushButton::clicked  , [this](){
         QString newCMakeFile = QFileDialog::getOpenFileName(this, "Select CMake File",
-                                                            model.cmakePath(),
+                                                            cmakePath,
                                                             "CMake files (CMakeLists.txt)");
-        if (!newCMakeFile.isEmpty()) model.setCmakePath(newCMakeFile);
-        cmakeSelectorOpen->setText(model.cmakePath());
+        if (!newCMakeFile.isEmpty()) cmakePath = newCMakeFile;
+        cmakeSelectorOpen->setText(cmakePath);
     });
     layout->addWidget(labels[cmakeSelectorOpen] = new QLabel("Select cmake file", this));
     layout->addWidget(cmakeSelectorOpen);
@@ -66,19 +55,52 @@ void SensorItem::Editor::initIsUseCmakePath()
     layout->addWidget(isUseCmakePath);
 }
 
+void SensorItem::Editor::initSaveCancelBtns()
+{
+    QHBoxLayout *row = new QHBoxLayout;
+    QPushButton* save = new QPushButton("Save", this);
+    QPushButton* cancel = new QPushButton("Cancel", this);
+
+    QObject::connect(save, &QPushButton::clicked, this, &Editor::onSaveBtnClicked);
+    QObject::connect(cancel, &QPushButton::clicked, this, &Editor::onCancelBtnCliked);
+
+    row->addWidget(save);
+    row->addWidget(cancel);
+    layout->addLayout(row);
+}
+
 void SensorItem::Editor::initParameters()
 {
     initPriority();
     initName();
+    initIsUseCmakePath();
     initBuildCommand();
     initRunCommand();
     initCmakeSelectorOpen();
-    initIsUseCmakePath();
 }
 
 void SensorItem::Editor::initLayout()
 {
     setLayout(layout);
+}
+
+void SensorItem::Editor::onSaveBtnClicked()
+{
+    model.setPriority(priority->text());
+    model.setName(name->text());
+    model.setBuildCommand(buildCommand->text());
+    model.setRunCommand(runCommand->text());
+    model.setisUseCmakePath(isUseCmakePath->checkState() == Qt::Checked);
+    model.setCmakePath(cmakePath);
+
+    model.notifyItemModified();
+    onCancelBtnCliked();
+}
+
+void SensorItem::Editor::onCancelBtnCliked()
+{
+    GlobalState::getInstance().setCurrentSensorModel(nullptr);
+
 }
 
 void SensorItem::Editor::switchProjectInputMethod()
@@ -113,8 +135,9 @@ void SensorItem::Editor::switchProjectInputMethod()
     }
 }
 
-SensorItem::Editor::Editor(SensorModel *_model) : model(*_model)
+SensorItem::Editor::Editor(SensorModel *_model) : model(*_model), cmakePath(model.cmakePath())
 {
+    initSaveCancelBtns();
     initParameters();
     initLayout();
     switchProjectInputMethod();

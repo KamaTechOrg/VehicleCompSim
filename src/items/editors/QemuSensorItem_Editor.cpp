@@ -4,15 +4,13 @@
 #include <QSpinBox>
 #include <QSplitter>
 #include "qfiledialog.h"
+#include <GlobalState.h>
 #include <climits>
 
 
 void QemuSensorItem::Editor::initPriority()
 {
     priority->setText(model.priority());
-    QObject::connect(priority, &QLineEdit::textChanged, [this](){
-        model.setPriority(priority->text());
-    });
     layout->addWidget(new QLabel("priority", this));
     layout->addWidget(priority);
 }
@@ -20,9 +18,6 @@ void QemuSensorItem::Editor::initPriority()
 void QemuSensorItem::Editor::initName()
 {
     name->setText(model.name());
-    QObject::connect(name,  &QLineEdit::textChanged  , [this](){
-        model.setName(name->text());
-    });
     layout->addWidget(new QLabel("name", this));
     layout->addWidget(name);
 }
@@ -31,149 +26,163 @@ void QemuSensorItem::Editor::initPlatform()
 {
     for (auto &option: model.getPlatformOptions())
     {
-        m_platform->addItem(option.label, option.value);
-        if (model.platform() == option.value) m_platform->setCurrentText(option.label);
+        platform->addItem(option.label, option.value);
+        if (model.platform() == option.value) platform->setCurrentText(option.label);
     }
-    QObject::connect(m_platform, &QComboBox::currentTextChanged, [this](){
-        model.setPlatform(m_platform->currentData().toString());
-    });
     layout->addWidget(new QLabel("platform:", this));
-    layout->addWidget(m_platform);
+    layout->addWidget(platform);
 }
 
 void QemuSensorItem::Editor::initMachine()
 {
     for (auto option : model.getMachineOptions())
     {
-        m_machine->addItem(option.label, option.value);
-        if (model.machine().compare(option.value) == 0) m_machine->setCurrentText(option.label);
+        machine->addItem(option.label, option.value);
+        if (model.machine().compare(option.value) == 0) machine->setCurrentText(option.label);
     }
-    QObject::connect(m_machine, &QComboBox::currentIndexChanged, [this](){
-        this->model.setMachine(m_machine->currentData().toString());
-    });
     layout->addWidget(new QLabel("machine:", this));
-    layout->addWidget(m_machine);
+    layout->addWidget(machine);
 }
 
 void QemuSensorItem::Editor::initCpu()
 {
     for (auto option : model.getCpuOptions())
     {
-        m_cpu->addItem(option.label, option.value);
-        if (model.cpu().compare(option.value) == 0) m_cpu->setCurrentText(option.label);
+        cpu->addItem(option.label, option.value);
+        if (model.cpu().compare(option.value) == 0) cpu->setCurrentText(option.label);
     }
 
-    QObject::connect(m_cpu, &QComboBox::currentIndexChanged, [this](){
-        this->model.setCpu(m_cpu->currentData().toString());
-    });
     layout->addWidget(new QLabel("cpu:", this));
-    layout->addWidget(m_cpu);
+    layout->addWidget(cpu);
 }
 
 void QemuSensorItem::Editor::initMemory_MB()
 {
-    m_memory_MB->setMinimum(1);
-    m_memory_MB->setMaximum(INT_MAX);
-    m_memory_MB->setValue(model.memory_MB());
-    QObject::connect(m_memory_MB, &QSpinBox::valueChanged, [this](){
-        model .setMemory_MB( m_memory_MB->value());
-    });
+    memory_MB->setMinimum(1);
+    memory_MB->setMaximum(INT_MAX);
+    memory_MB->setValue(model.memory_MB());
     layout->addWidget(new QLabel("memory (in MB):", this));
-    layout->addWidget(m_memory_MB);
+    layout->addWidget(memory_MB);
 }
 
 void QemuSensorItem::Editor::initKernal()
 {
-    QObject::connect(m_kernal, &QPushButton::clicked, [this](){
+    QObject::connect(kernal, &QPushButton::clicked, [this](){
         QString newFile = QFileDialog::getOpenFileName(this, "Select File",
-                                                            model.kernal(),
+                                                            m_kernal,
                                                             "all files (*.*)");
-        if (!newFile.isEmpty()) model.setKernal(newFile);
-        m_kernal->setText(model.kernal());
+        if (!newFile.isEmpty()) m_kernal = newFile;
+        kernal->setText(m_kernal);
     });
-    m_kernal->setText(model.kernal());
+    kernal->setText(m_kernal);
     layout->addWidget(new QLabel("Kernal File:", this));
-    layout->addWidget(m_kernal);
+    layout->addWidget(kernal);
 }
 
 void QemuSensorItem::Editor::initHarddrive()
 {
-    QObject::connect(m_harddrive, &QPushButton::clicked, [this](){
+    QObject::connect(harddrive, &QPushButton::clicked, [this](){
         QString newFile = QFileDialog::getOpenFileName(this, "Select File",
-                                                       model.harddrive(),
+                                                       m_harddrive,
                                                        "all files (*.*)");
-        if (!newFile.isEmpty()) model.setHarddrive(newFile);
-        m_harddrive->setText(model.harddrive());
+        if (!newFile.isEmpty()) m_harddrive = newFile;
+        harddrive->setText(m_harddrive);
     });
-    m_harddrive->setText(model.harddrive());
+    harddrive->setText(m_harddrive);
     layout->addWidget(new QLabel("Hard Drive File:", this));
-    layout->addWidget(m_harddrive);
+    layout->addWidget(harddrive);
 }
 
 void QemuSensorItem::Editor::initCdrom()
 {
-    QObject::connect(m_cdrom, &QPushButton::clicked, [this](){
+    QObject::connect(cdrom, &QPushButton::clicked, [this](){
         QString newFile = QFileDialog::getOpenFileName(this, "Select File",
-                                                       model.cdrom(),
+                                                       m_cdrom,
                                                        "all files (*.*)");
-        if (!newFile.isEmpty()) model.setCdrom(newFile);
-        m_cdrom->setText(model.cdrom());
+        if (!newFile.isEmpty()) m_cdrom = newFile;
+        cdrom->setText(m_cdrom);
     });
-    m_cdrom->setText(model.cdrom());
+    cdrom->setText(m_cdrom);
     layout->addWidget(new QLabel("cdrom File:", this));
-    layout->addWidget(m_cdrom);
+    layout->addWidget(cdrom);
 }
 
 void QemuSensorItem::Editor::initBoot()
 {
     for (auto option : model.getBootOptions())
     {
-        m_boot->addItem(option.label, option.value);
-        if (model.boot().compare(option.value) == 0) m_boot->setCurrentText(option.label);
+        boot->addItem(option.label, option.value);
+        if (model.boot().compare(option.value) == 0) boot->setCurrentText(option.label);
     }
 
-    QObject::connect(m_boot, &QComboBox::currentIndexChanged, [this](){
-        model.setBoot(m_boot->currentData().toString());
-    });
     layout->addWidget(new QLabel("start boot from device:", this));
-    layout->addWidget(m_boot);
+    layout->addWidget(boot);
 }
 
 void QemuSensorItem::Editor::initNet()
 {
-    m_net->setText(model.net());
-    QObject::connect(m_net, &QLineEdit::textEdited, [this](){
-        model.setNet(m_net->text());
-    });
+    net->setText(model.net());
     layout->addWidget(new QLabel("network configuration (advanced)", this));
-    layout->addWidget(m_net);
+    layout->addWidget(net);
 }
 
 void QemuSensorItem::Editor::initAppend()
 {
-    m_append->setText(model.append());
-    QObject::connect(m_append, &QLineEdit::textEdited, [this](){
-        model.setAppend(m_append->text());
-    });
+    append->setText(model.append());
     layout->addWidget(new QLabel("kernal startup parameters (advanced):", this));
-    layout->addWidget(m_append);
+    layout->addWidget(append);
 }
 
 void QemuSensorItem::Editor::initNographic()
 {
-    m_nographic->setCheckState((model.nographic() ? Qt::Checked : Qt::Unchecked));
-    QObject::connect(m_nographic, &QCheckBox::checkStateChanged, [this](){
-        model.setNographic(m_nographic->checkState() == Qt::Checked);
-    });
+    nographic->setCheckState((model.nographic() ? Qt::Checked : Qt::Unchecked));
     layout->addWidget(new QLabel("dont open a screen window:", this));
-    layout->addWidget(m_nographic);
+    layout->addWidget(nographic);
+}
+
+void QemuSensorItem::Editor::initSaveCancelBtns()
+{
+    QHBoxLayout *row = new QHBoxLayout;
+    QPushButton* save = new QPushButton("Save", this);
+    QPushButton* cancel = new QPushButton("Cancel", this);
+
+    QObject::connect(save, &QPushButton::clicked, this, &Editor::onSaveBtnClicked);
+    QObject::connect(cancel, &QPushButton::clicked, this, &Editor::onCancelBtnCliked);
+
+    row->addWidget(save);
+    row->addWidget(cancel);
+    layout->addLayout(row);
 }
 
 void QemuSensorItem::Editor::initLayout()
 {
     setLayout(layout);
 }
+void QemuSensorItem::Editor::onSaveBtnClicked()
+{
+    model.setPriority(priority->text());
+    model.setName(name->text());
+    model.setPlatform(platform->currentData().toString());
+    model.setMachine(machine->currentData().toString());
+    model.setCpu(cpu->currentData().toString());
+    model.setMemory_MB(memory_MB->value());
+    model.setKernal(m_kernal);
+    model.setHarddrive(m_harddrive);
+    model.setCdrom(m_cdrom);
+    model.setBoot(boot->currentData().toString());
+    model.setNet(net->text());
+    model.setAppend(append->text());
+    model.setNographic(nographic->checkState() == Qt::Checked);
 
+    model.notifyItemModified();
+    onCancelBtnCliked();
+}
+
+void QemuSensorItem::Editor::onCancelBtnCliked()
+{
+    GlobalState::getInstance().setCurrentSensorModel(nullptr);
+
+}
 void QemuSensorItem::Editor::initParameters()
 {
     initPriority();
@@ -193,6 +202,7 @@ void QemuSensorItem::Editor::initParameters()
 
 QemuSensorItem::Editor::Editor(QemuSensorModel *_model) : model(*_model), layout(new QVBoxLayout(this))
 {
+    initSaveCancelBtns();
     initParameters();
     initLayout();
 }
