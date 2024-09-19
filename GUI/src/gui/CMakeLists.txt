@@ -1,0 +1,34 @@
+set(CLIENT_SOURCES
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+    customwidget.cpp
+    customwidget.h
+    customscene.cpp
+    customscene.h
+    LiveUpdate.cpp
+    LogReader.cpp
+    SimulationRecorder.cpp
+    SimulationReplayer.cpp
+    SimulationControlPanel.h
+    SimulationControlPanel.cpp
+    popupdialog.cpp
+    popupdialog.h
+    popupdialog.ui
+    remoteinterface.cpp
+    remoteinterface.h
+    editpanel.h
+    editpanel.cpp
+    DB_handler.h
+    DB_handler.cpp
+    buffer_test.cpp
+    buffer_test.h
+    PersistentTootip.h
+    PersistentTootip.cpp
+    CustomInfoWindow.h
+    CustomInfoWindow.cpp
+    initializeSensorsData.h
+    initializeSensorsData.cpp
+)
+
+set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)
