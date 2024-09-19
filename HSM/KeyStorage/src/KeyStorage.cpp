@@ -8,26 +8,22 @@ HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyI
     switch (type)
     {
     case RSA:
-    RSA_KEY::generat
 
-        
+        return RSA_KEY::generateKeys(publicKey, privateKey, type, bits);
+
         break;
-    
+
+    case ECC:
+
+        break;
+
+    case AES:
+        break;
+
     default:
         break;
     }
     return HSM_STATUS();
-}
-std::pair<std::vector<u_char>, std::vector<u_char>> HSM::generateAsymmetricKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512)
-{
-    if(type == ENCRYPTION_ALGORITHM_TYPE::RSA) return RSA::generateKeys(type, bits);
-    // if(type == ENCRYPTION_ALGORITHM_TYPE::ECC) return ECC::generateKeys(type, bits);
-    return std::pair<std::vector<u_char>, std::vector<u_char>> ();
-}
-std::vector<u_char> HSM::generateSymmetricKey(ENCRYPTION_ALGORITHM_TYPE  type, int bits = 128)
-{
-    // if(type == ENCRYPTION_ALGORITHM_TYPE::AES) return AES::generateKey(type);
-    return std::vector<u_char>();
 }
 
 HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
