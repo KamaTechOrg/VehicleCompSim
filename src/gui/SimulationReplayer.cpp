@@ -5,11 +5,12 @@
 #include "SimulationReplayer.h"
 #include <QDebug>
 
-SimulationReplayer::SimulationReplayer(const QString &filePath, std::unique_ptr<LiveUpdate> liveUpdate, QObject *parent)
-        : QObject(parent), m_logFile(filePath), m_LiveUpdate(std::move(liveUpdate)), m_lastPosition(0) {
+SimulationReplayer::SimulationReplayer(const QString &filePath, DB_handler *db, std::unique_ptr<LiveUpdate> liveUpdate, CustomScene* m_scene, QObject *parent)
+        : QObject(parent), m_db(db), m_logFile(filePath), m_LiveUpdate(std::move(liveUpdate)), m_lastPosition(0), m_scene_simulation(m_scene) {
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Cannot open log file for reading:" << m_logFile.errorString();
     }
+
 }
 
 void SimulationReplayer::startReplay() {
@@ -18,14 +19,15 @@ void SimulationReplayer::startReplay() {
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
-            QString line = in.readLine();
+            QByteArray line = in.readLine().toUtf8();
+            QList<QByteArray> parts = line.split(',');
             if(first_line){
-                m_startTime = QDateTime::fromString(line, Qt::ISODate);
+                QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
+                m_startTime = QDateTime::fromString(parts[0], Qt::ISODate);
                 first_line = false;
                 continue;
             }
-            QStringList parts = line.split(',');
-            if (parts.size() == 4) {
+            if (parts.size() == 6) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
                 int delay = qMax(0, m_startTime.msecsTo(timestamp));
                 scheduleEvent(line, delay);
@@ -35,7 +37,7 @@ void SimulationReplayer::startReplay() {
     }
 }
 
-void SimulationReplayer::scheduleEvent(const QString &event, int delay) {
+void SimulationReplayer::scheduleEvent(const QByteArray &event, int delay) {
     m_eventQueue.enqueue(event);
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -47,12 +49,14 @@ void SimulationReplayer::scheduleEvent(const QString &event, int delay) {
 
 void SimulationReplayer::processEvent() {
     if (!m_eventQueue.isEmpty()) {
-        QString event = m_eventQueue.dequeue();
-        QStringList parts = event.split(',');
+        QByteArray event = m_eventQueue.dequeue();
+        QList<QByteArray> parts = event.split(',');
         m_currentTime = QDateTime::fromString(parts[0], Qt::ISODate);
-        QString event_without_time = parts.mid(1, 3).join(',');
-        m_LiveUpdate->parse_new_line(event_without_time);
-
+        QByteArray event_without_time = parts.mid(1, 5).join(',');
+        m_db->write_to_DB(event_without_time);
+        // need to call just after all the junk of lines that theire timers ended already updated in the db
+        // in this time update view is calling after every update in the db. not ok!
+        update_view();
     } else {
         qWarning() << "processEvent: Event queue is empty";
     }
@@ -84,22 +88,38 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
-            QString line = in.readLine();
+            QByteArray line = in.readLine().toUtf8();
             if(first_line){
                 first_line = false;
                 continue;
             }
-            QStringList parts = line.split(',');
-            if (parts.size() == 4) {
+            QList<QByteArray> parts = line.split(',');
+            if (parts.size() == 6) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
                 if (timestamp > m_startTime.addSecs(secondsToAdd)) {
                     int delay = qMax(0, m_startTime.addSecs(secondsToAdd).msecsTo(timestamp));
                     scheduleEvent(line, delay);
                 }else{
-                    QString event_without_time = parts.mid(1, 3).join(',');
-                    m_LiveUpdate->parse_new_line(event_without_time);
+                    QByteArray event_without_time = parts.mid(1, 5).join(',');
+                    m_db->write_to_DB(event_without_time);
+                    update_view();
                 }
             }
         }
     }
+}
+
+void SimulationReplayer::update_view() {
+    QMap<QString, QVariantList> last_changes;
+    for (auto item : m_scene_simulation->items()) {
+        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
+            QString sensorId = sensor->getPriority();
+            QList<QVariant> data = m_db->read_all_from_DB(sensorId);
+//            QList<QVariant> data = m_db->read_last_from_DB(sensorId);
+            sensor->update_db_data(data);
+            last_changes[sensorId] = data;
+        }
+    }
+    m_LiveUpdate->parse_new_data(last_changes);
+
 }

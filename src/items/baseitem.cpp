@@ -5,8 +5,10 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <GlobalState.h>
 
+// TODO remove this
 qreal BaseItem::my_id = 0;
 
 BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
@@ -15,14 +17,12 @@ BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsIte
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
-
     if(item){
         m_model = item;
         setPos(m_model->x(), m_model->y());
     } else {
         m_model = new SerializableItem();
     }
-    
     m_color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 64, 192);
 
     // Create close button
@@ -41,6 +41,60 @@ BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsIte
     
     unique_id = my_id;
     my_id++;
+    // Set up timer for live updates
+    m_updateTimer = new QTimer(this);
+    connect(m_updateTimer, &QTimer::timeout, this, &BaseItem::showInfoWindow);
+}
+
+void BaseItem::showInfoWindow() {
+    if (!scene()) return;
+    m_updateTimer->start(1000);  // Update every second
+    if (m_infoWindowProxy == nullptr) {
+        m_infoWindow = new CustomInfoWindow();
+        m_infoWindowProxy = new QGraphicsProxyWidget(this);
+        m_infoWindowProxy = scene()->addWidget(m_infoWindow);
+        m_infoWindowProxy->setZValue(1);
+        connect(m_infoWindow, &CustomInfoWindow::closed, this, &BaseItem::onCustomWindowClosed);
+    }
+    updateInfoWindow();
+    QPointF pos = mapToScene(boundingRect().topRight() + QPointF(10, 0));
+    m_infoWindowProxy->setPos(pos);
+    m_infoWindowProxy->show();
+//    m_updateTimer->start(1000);  // Update every second
+
+}
+void BaseItem::updateInfoWindow() {
+    if (!m_infoWindow) return;
+    QString info = fetchDataFromDB();
+    m_infoWindow->setInfo(info);
+}
+
+QString BaseItem::fetchDataFromDB() {
+    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'>";
+    tooltipHtml += "<tr>";
+    for (const QString &name: names) {
+        tooltipHtml += QString("<th>%1</th>").arg(name);
+    }
+    tooltipHtml += "</tr>";
+    for (int i = 0; i < all_Db_data.size(); i += names.size()) {
+        tooltipHtml += "<tr>";
+        for (int j = 0; j < names.size() && (i + j) < all_Db_data.size(); ++j) {
+            QVariant value = all_Db_data.value(i + j);
+            tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+        }
+        tooltipHtml += "</tr>";
+    }
+
+    tooltipHtml += "</table>";
+    return tooltipHtml;
+}
+
+void BaseItem::mousePressEvent(QGraphicsSceneMouseEvent* event){
+    if (event->button() == Qt::LeftButton) {
+        mouse_pressed = true;
+        showInfoWindow();
+    }
+    QGraphicsItem::mousePressEvent(event);
 }
 
 QRectF BaseItem::boundingRect() const {
@@ -92,8 +146,14 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     update();
 }
 void BaseItem::update_db_data(QList<QVariant> &new_data){
-    Db_data.clear();
-    Db_data = new_data;
+    tooltipData.clear();
+    all_Db_data.clear();
+    all_Db_data = new_data;
+    if(!new_data.empty()) {
+        for (int i = 0; i < names.size(); i++) {
+            tooltipData.emplace_back(new_data[i]);
+        }
+    }
 }
 
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
@@ -110,32 +170,24 @@ void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-//    qInfo() << "hover";
-    QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
-//    if(names.empty()){
-//        qInfo() << "empty";
-//    }
-    for (const QString& name : names) {
-//        qInfo() << "inside loop names";
-        tooltipHtml += QString("<th>%1</th>").arg(name);
+    if(!mouse_pressed){
+        QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+        for (const QString &name: names) {
+            tooltipHtml += QString("<th>%1</th>").arg(name);
+        }
+        tooltipHtml += "</tr><tr>";
+        for (int i = 0; i < tooltipData.size(); ++i) {
+            QVariant value = tooltipData.value(i);
+            tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+        }
+        tooltipHtml += "</tr></table>";
+        if (m_persistentTooltip == nullptr) {
+            m_persistentTooltip = new PersistentTooltip();
+        }
+        m_persistentTooltip->setText(tooltipHtml);
+        m_persistentTooltip->move(event->screenPos());
+        m_persistentTooltip->show();
     }
-//    qInfo() << "after loop names";
-    tooltipHtml += "</tr><tr>";
-    for (int i = 0; i < Db_data.size(); ++i) {
-//        qInfo() << "inside db data";
-        QVariant value = Db_data.value(i);
-        tooltipHtml += QString("<td>%1</td>").arg(value.toString());
-    }
-//    qInfo() << "after db size";
-    tooltipHtml += "</tr></table>";
-    if(m_persistentTooltip == nullptr){
-        m_persistentTooltip = new PersistentTooltip();
-//        qInfo() << "create persistent tooltip";
-    }
-    m_persistentTooltip->setText(tooltipHtml);
-    m_persistentTooltip->move(event->screenPos());
-    m_persistentTooltip->show();
-//    qInfo() << "show persistent tooltip";
     QGraphicsItem::hoverEnterEvent(event);
 }
 void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
@@ -181,12 +233,12 @@ QPointF BaseItem::connectionPoint(const QPointF& otherPoint) const {
 }
 
 QList<QPointF> BaseItem::connectionPoints() const {
-    QRectF rect(-m_width / 2, -m_height / 2, m_width, m_height); 
+    QRectF rect(-m_width / 2, -m_height / 2, m_width, m_height);
     return {
-        QPointF(rect.left() + rect.width() / 2, rect.top()), // Top middle
-        QPointF(rect.right(), rect.top() + rect.height() / 2), // Right middle
-        QPointF(rect.left() + rect.width() / 2, rect.bottom()), // Bottom middle
-        QPointF(rect.left(), rect.top() + rect.height() / 2) // Left middle
+            QPointF(rect.left() + rect.width() / 2, rect.top()), // Top middle
+            QPointF(rect.right(), rect.top() + rect.height() / 2), // Right middle
+            QPointF(rect.left() + rect.width() / 2, rect.bottom()), // Bottom middle
+            QPointF(rect.left(), rect.top() + rect.height() / 2) // Left middle
     };
 }
 
@@ -223,9 +275,9 @@ void BaseItem::hideButtons()
 
 void BaseItem::confirmRemove() {
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(nullptr, "Confirm Removal", 
-        "Are you sure you want to remove this item?",
-        QMessageBox::Yes|QMessageBox::No);
+    reply = QMessageBox::question(nullptr, "Confirm Removal",
+                                  "Are you sure you want to remove this item?",
+                                  QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         removeItem();
     }

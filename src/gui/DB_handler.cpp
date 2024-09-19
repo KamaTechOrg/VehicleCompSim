@@ -36,12 +36,9 @@ QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>
         if(column[2] == "wint_t"){
 //            qInfo() << "wint_t";
             wint_t exit_id = buffer[offset] & 0x7F;
-//            qInfo() << exit_id;
             parsedValues.append(QVariant(exit_id));
         }else if(column[2] == "QString"){
-//            qInfo() << "QString" << offset << " " << offset + bitLength;
             QString exit_message2 = QString::fromLatin1(buffer.mid(offset, offset + bitLength).constData());
-//            qInfo() << "exit_message2" << exit_message2;
             parsedValues.append(QVariant(exit_message2));
         }
         offset += bitLength;
@@ -50,38 +47,29 @@ QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>
 }
 
 void DB_handler::write_to_DB(const QByteArray& buffer) const {
-//    qInfo() << "enter write db";
-    wint_t table_name = buffer[0] & 0x7F;
-    QString exit_message = QString::fromLatin1(buffer.mid(1, 128).constData());
-//    qInfo() << "exit_message" << exit_message;
+    QList<QByteArray> pieces = buffer.split(',');
+    int src_id = pieces.value(1).toInt();
     if (sqlitedb->open()) {
         QSqlQuery query(*sqlitedb);
         QList<QList<QString>> columnInfo;
-        if (data_of_sensors.contains(table_name)) {
-            columnInfo = data_of_sensors.value(table_name);
+        if (data_of_sensors.contains(src_id)) {
+            columnInfo = data_of_sensors.value(src_id);
         } else {
             columnInfo = data_of_sensors.value(0);
         }
-        QList<QVariant> parsed = parseBuffer(buffer, columnInfo);
-        if(!parsed.empty()){
-//            qInfo() << "parsed[1]" << parsed[1];
-        }
-        // Create the table if it doesn't exist
-        QString createTableQuery = "CREATE TABLE IF NOT EXISTS '" + QString::number(table_name) + "' (";
+        QList<QVariant> parsed = parseBuffer(pieces[4], columnInfo);
+        QString createTableQuery = "CREATE TABLE IF NOT EXISTS '" + QString::number(src_id) + "' (";
         for (const QList<QString>& column : columnInfo) {
             createTableQuery += column[0] + " " + "TEXT" + ",";
         }
         createTableQuery.chop(1);
         createTableQuery += ")";
-//        qInfo() << "createTableQuery" << createTableQuery;
-
         if (!query.exec(createTableQuery)) {
             qCritical() << "Failed to create table:" << query.lastError().text();
             sqlitedb->close();
             return;
         }
-        // Construct the SQL query dynamically
-        QString insertQuery = "INSERT INTO '" + QString::number(table_name) + "' (";
+        QString insertQuery = "INSERT INTO '" + QString::number(src_id) + "' (";
         QString valuePlaceholders = "(";
         QList<QString> names_for_bind;
         for (const QList<QString>& column : columnInfo) {
@@ -94,12 +82,19 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         valuePlaceholders.chop(1);
         insertQuery += ") VALUES " + valuePlaceholders + ")";
         query.prepare(insertQuery);
+        for(const auto &item : names_for_bind){
+            qInfo () << item;
+        }
         int counter = 0;
-        while(counter < names_for_bind.size()){
-            query.bindValue(names_for_bind[counter], parsed[counter]);
+        while(counter < names_for_bind.size() - 1){
+            if(counter < 2){
+                query.bindValue(names_for_bind[counter], pieces[counter + 1]);
+            }else{
+                query.bindValue(names_for_bind[counter], parsed[counter - 2]);
+            }
             counter++;
         }
-//        qInfo() << "insertQuery" << insertQuery;
+        query.bindValue(names_for_bind[counter], pieces[0]);
         if (query.exec()) {
             qInfo() << "Data inserted successfully!";
         } else {
@@ -110,21 +105,18 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         qInfo() << "Database connection failed:" << sqlitedb->lastError().text();
     }
 }
-
-QList<QVariant> DB_handler::read_last_from_DB(const QString& table_name) {
+QList<QVariant> DB_handler::read_all_from_DB(const QString& table_name) {
     QList<QVariant> result;
     QString update_table_name = "'" + table_name + "'";
     if (sqlitedb->open()) {
         QSqlQuery query(*sqlitedb);
-        QString selectQuery = QString("SELECT * FROM %1 ORDER BY ROWID DESC LIMIT 1").arg(update_table_name);
+        QString selectQuery = QString("SELECT * FROM %1 ORDER BY ROWID DESC").arg(update_table_name);
         if (query.exec(selectQuery)) {
-            if (query.next()) {
+            while (query.next()) {
                 const QSqlRecord record = query.record();
                 for (int i = 0; i < record.count(); ++i) {
                     result.append(query.value(i));
                 }
-            } else {
-                qInfo() << "No records found in" << table_name << "table.";
             }
         } else {
             qInfo() << "Error executing query:" << query.lastError().text();
@@ -135,3 +127,29 @@ QList<QVariant> DB_handler::read_last_from_DB(const QString& table_name) {
     }
     return result;
 }
+
+
+//QList<QVariant> DB_handler::read_last_from_DB(const QString& table_name) {
+//    QList<QVariant> result;
+//    QString update_table_name = "'" + table_name + "'";
+//    if (sqlitedb->open()) {
+//        QSqlQuery query(*sqlitedb);
+//        QString selectQuery = QString("SELECT * FROM %1 ORDER BY ROWID DESC LIMIT 1").arg(update_table_name);
+//        if (query.exec(selectQuery)) {
+//            if (query.next()) {
+//                const QSqlRecord record = query.record();
+//                for (int i = 0; i < record.count(); ++i) {
+//                    result.append(query.value(i));
+//                }
+//            } else {
+//                qInfo() << "No records found in" << table_name << "table.";
+//            }
+//        } else {
+//            qInfo() << "Error executing query:" << query.lastError().text();
+//        }
+//        sqlitedb->close();
+//    } else {
+//        qInfo() << "Database connection failed:" << sqlitedb->lastError().text();
+//    }
+//    return result;
+//}

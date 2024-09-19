@@ -27,7 +27,7 @@ class QGraphicsView;
 class QToolBar;
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     MainWindow(QWidget* parent = nullptr);
@@ -47,7 +47,7 @@ private:
 private slots:
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
-    void update_tooltips();
+    void update_view();
     void fill_db_data();
     void read_from_json();
     void fill_box_data();
@@ -66,7 +66,7 @@ private:
     QTimeEdit *timer;
     std::shared_ptr<RunService> m_runService;
     std::unique_ptr<LogReader> m_logReader;
-    std::unique_ptr<SimulationRecorder> m_simulationRecorder;
+    std::unique_ptr<SimulationRecorder> m_simulationRecorder = nullptr;
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
@@ -74,11 +74,10 @@ private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_topLayout;
     DB_handler *m_DB_handler;
-    QTimer *tooltip_timer;
+    QTimer *change_view_timer;
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;
-
     buffer_test *m_bufferTest; 
 };
