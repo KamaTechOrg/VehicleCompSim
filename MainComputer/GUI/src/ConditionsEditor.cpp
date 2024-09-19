@@ -66,26 +66,13 @@ void ConditionsEditor::loadGuiDataFromJson()
 
 void ConditionsEditor::saveLogicDataToJson() {
     std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->logicData();
-
     if (conditionsTree == nullptr)
         return;
 
     // get action (that will be executed if conditon were validated at some point)
     std::vector<std::shared_ptr<Action>> actions = _actionGroupBox->data();
-
-    
     if (actions.empty())
         return;
-
-    // save both conditions and action to a json file
-    std::string jsonFileName = constants::CONDITIONS_JSON_FILE_NAME;
-
-    std::ofstream jsonFile(jsonFileName);
-    if (!jsonFile.is_open()) {
-        showSaveFeedback(false);
-        QMessageBox::critical(this, "Error", "Cannot open file: " + QString::fromStdString(jsonFileName));
-        return;
-    }
 
     nlohmann::json jsonData;
     jsonData["conditions"] = conditionsTree->toJson();
@@ -93,12 +80,11 @@ void ConditionsEditor::saveLogicDataToJson() {
     for (const auto& action : actions) {
         jsonData["actions"].push_back(action->toJson());
     }
-    jsonFile << jsonData.dump(4);
-    jsonFile.close();
 
+    JsonLoader().saveConditionsLogic(jsonData);
     showSaveFeedback(true);
 
-    ConditionsManager().loadFromJson(jsonFileName);
+    ConditionsManager().loadFromJson();
 }
 
 void ConditionsEditor::saveGuiDataToJson() {
@@ -107,15 +93,5 @@ void ConditionsEditor::saveGuiDataToJson() {
     jsonData["conditions"] = _conditionsGroup->GuiData();
     jsonData["actions"] = _actionGroupBox->GuiData();
 
-
-    // save both conditions and action to a json file
-    std::string jsonFileName = constants::GUI_DATA_JSON_FILE_NAME;
-
-    std::ofstream jsonFile(jsonFileName);
-    if (!jsonFile.is_open()) {
-        return;
-    }
-
-    jsonFile << jsonData.dump(4);
-    jsonFile.close();
+    JsonLoader().saveGuiData(jsonData);
 }

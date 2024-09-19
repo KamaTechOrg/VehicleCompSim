@@ -21,7 +21,7 @@ std::vector<std::vector<Action>> ConditionsManager::actions;
 ConditionsManager::ConditionsManager()
     : _isRunning(false)
 {
-    loadFromJson(constants::CONDITIONS_JSON_FILE_NAME);
+    loadFromJson();
 }
 
 void ConditionsManager::addAction(const int index, const Action &action)
@@ -131,7 +131,7 @@ bool ConditionsManager::validateAll(const std::string& senderId, const std::stri
 }
 
 
-void ConditionsManager::loadFromJson(const std::string &filename)
+void ConditionsManager::loadFromJson()
 {
     nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
 

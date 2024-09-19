@@ -29,7 +29,7 @@ public:
     void run();
     void stop();
     bool isRunning();
-    void loadFromJson(const std::string &filename);
+    void loadFromJson();
     std::pair<std::string, std::string> parseMessage(const std::string &message);  // Parse the message to extract ID and value
 };
 
