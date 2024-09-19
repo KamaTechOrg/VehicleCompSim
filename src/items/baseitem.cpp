@@ -7,9 +7,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 
-// TODO remove this
-qreal BaseItem::my_id = 0;
-
 BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
@@ -32,71 +29,9 @@ BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsIte
 
     QGraphicsProxyWidget* closeProxy = new QGraphicsProxyWidget(this);
     closeProxy->setWidget(closeButton);
-
     connect(closeButton, &QPushButton::clicked, this, &BaseItem::confirmRemove);
-
     // Store proxies for visibility management
     m_closeProxy = closeProxy;
-    
-    unique_id = my_id;
-    my_id++;
-    // Set up timer for live updates
-    m_updateWindowTimer = new QTimer(this);
-    connect(m_updateWindowTimer, &QTimer::timeout, this, &BaseItem::showInfoWindow);
-}
-
-void BaseItem::showInfoWindow() {
-    if (!scene()) return;
-    m_updateWindowTimer->start(1000);  // Update every second
-    if (m_infoWindowProxy == nullptr) {
-        m_infoWindow = new CustomInfoWindow();
-        m_infoWindowProxy = new QGraphicsProxyWidget(this);
-        m_infoWindowProxy = scene()->addWidget(m_infoWindow);
-        m_infoWindowProxy->setZValue(1);
-        connect(m_infoWindow, &CustomInfoWindow::closed, this, &BaseItem::onCustomWindowClosed);
-        connect(&GlobalState::getInstance(), &GlobalState::dataLogAdded, this, &BaseItem::update_data);
-    }
-
-    updateInfoWindow();
-    QPointF pos = mapToScene(boundingRect().topRight() + QPointF(10, 0));
-    m_infoWindowProxy->setPos(pos);
-    m_infoWindowProxy->show();
-//    m_updateTimer->start(1000);  // Update every second
-
-}
-void BaseItem::updateInfoWindow() {
-    if (!m_infoWindow) return;
-    QString info = fetchDataInTable();
-    m_infoWindow->setInfo(info);
-}
-
-QString BaseItem::fetchDataInTable() {
-    QString windowInfoHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'>";
-    windowInfoHtml += "<tr>";
-    for (const QString &name: columnNames) {
-        windowInfoHtml += QString("<th>%1</th>").arg(name);
-    }
-    windowInfoHtml += "</tr>";
-    for (int i = 0; i < all_data.size(); i += columnNames.size()) {
-        windowInfoHtml += "<tr>";
-        for (int j = 0; j < columnNames.size() && (i + j) < all_data.size(); ++j) {
-            QVariant value = all_data.value(i + j);
-            windowInfoHtml += QString("<td>%1</td>").arg(value.toString());
-        }
-        windowInfoHtml += "</tr>";
-    }
-
-    windowInfoHtml += "</table>";
-    return windowInfoHtml;
-}
-
-void BaseItem::mousePressEvent(QGraphicsSceneMouseEvent* event){
-    if (event->button() == Qt::LeftButton) {
-//        if (event->button() == Qt::LeftButton && playMode) {
-        mouse_pressed = true;
-        showInfoWindow();
-    }
-    QGraphicsItem::mousePressEvent(event);
 }
 
 QRectF BaseItem::boundingRect() const {
@@ -147,24 +82,6 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsItem::mouseMoveEvent(event);
     update();
 }
-void BaseItem::update_data(const QString& sensorId, QList<QVariant> data){
-    auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == sensorId){
-        last_data.clear();
-        all_data.clear();
-        all_data = data;
-        if(!data.empty()) {
-            for (int i = 0; i < columnNames.size(); i++) {
-                last_data.emplace_back(data[i]);
-            }
-        }
-    }
-}
-void BaseItem::onCustomWindowClosed() {
-    m_updateWindowTimer->stop();
-    mouse_pressed = false;
-}
-
 
 void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
@@ -175,35 +92,9 @@ void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    QPointF nearestPoint;
-    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
-        m_hoveredPoint = nearestPoint;
-        update(); // Trigger a repaint
-    }
-    if(!mouse_pressed){
-        QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
-        for (const QString &name: columnNames) {
-            tooltipHtml += QString("<th>%1</th>").arg(name);
-        }
-        tooltipHtml += "</tr><tr>";
-        for (int i = 0; i < last_data.size(); ++i) {
-            QVariant value = last_data.value(i);
-            tooltipHtml += QString("<td>%1</td>").arg(value.toString());
-        }
-        tooltipHtml += "</tr></table>";
-        if (m_persistentTooltip == nullptr) {
-            m_persistentTooltip = new PersistentTooltip();
-        }
-        m_persistentTooltip->setText(tooltipHtml);
-        m_persistentTooltip->move(event->screenPos());
-        m_persistentTooltip->show();
-    }
-    QGraphicsItem::hoverEnterEvent(event);
 }
 void BaseItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
-    if (m_persistentTooltip) {
-        m_persistentTooltip->hide();
-    }
+
     QGraphicsItem::hoverLeaveEvent(event);
 }
 

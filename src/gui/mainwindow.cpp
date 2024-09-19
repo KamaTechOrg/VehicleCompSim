@@ -1,26 +1,4 @@
 #include "mainwindow.h"
-#include <QGraphicsView>
-#include <QToolBar>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QFile>
-#include <QFileDialog>
-#include <QGraphicsItem>
-#include <QWidget>
-#include <QPushButton>
-#include <QRandomGenerator>
-#include "SimulationControlPanel.h"
-#include <QRect>
-#include <QHBoxLayout>
-#include "./editpanel.h"
-#include "customwidget.h"
-#include "websocketclient.h"
-#include "handlers/RunHandler.h"
-
-#include "sensormodel.h"
-#include "globalstate.h"
-#include "items/qemusensoritem.h"
-
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -77,6 +55,8 @@ MainWindow::MainWindow(QWidget* parent)
     addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
 
     setupRunService();
+
+    m_initializeSensorsData = new initializeSensorsData();
 }
 
 void MainWindow::setupToolBar() {
@@ -176,96 +156,6 @@ void MainWindow::onConnectionStatusChanged(bool connected) {
         mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
     }
 }
-void MainWindow::fill_box_data() {
-    QMap<wint_t, QList<QString>> json_names;
-    for (const QJsonValue &value: itemsArray) {
-        QJsonObject obj = value.toObject();
-        wint_t id = obj["id"].toInt();
-        QJsonArray dataArray = obj["data"].toArray();
-
-        QList<QString> namesList;
-        for (const QJsonValue &dataValue: dataArray) {
-            QJsonObject dataObj = dataValue.toObject();
-            namesList << dataObj["name"].toString();
-        }
-        json_names[id] = namesList;
-    }
-    for (auto item: m_scene->items()) {
-        if (BaseItem *base = dynamic_cast<SensorItem *>(item)) {
-            auto *sensor = dynamic_cast<SensorItem *>(item);
-            QString sensorId = sensor->getModel().priority();
-            int intValue = sensorId.toInt();
-            auto wideIntValue = static_cast<wint_t>(intValue);
-            if (json_names.contains(wideIntValue)) {
-                base->columnNames = json_names.value(wideIntValue);
-            } else {
-                base->columnNames = json_names.value(0);
-            }
-        }
-    }
-}
-void MainWindow::read_from_json() {
-    const QString& filePath = QDir::currentPath() + "/box_info.json";
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Couldn't open file" << filePath << ": " << file.errorString();
-        return;
-    }
-    QByteArray jsonData = file.readAll();
-    file.close();
-
-    QJsonParseError parseError;
-    QJsonDocument document = QJsonDocument::fromJson(jsonData, &parseError);
-    if (document.isNull()) {
-        qWarning() << "Failed to create JSON doc.";
-        qWarning() << "Error:" << parseError.errorString();
-        qWarning() << "Offset:" << parseError.offset;
-        return;
-    }
-    if (!document.isObject()) {
-        qWarning() << "JSON is not an object.";
-        return;
-    }
-    QJsonObject jsonObj = document.object();
-    itemsArray = jsonObj["items"].toArray();
-    qInfo() << "Successfully read from JSON. Number of items:" << itemsArray.size();
-}
-
-void MainWindow::fill_db_data()
-{
-    for (const auto &value : itemsArray) {
-        QJsonObject obj = value.toObject();
-        wint_t id = obj["id"].toInt();
-        QJsonArray dataArray = obj["data"].toArray();
-
-        QList<QList<QString>> itemData;
-        for (const auto &dataValue : dataArray) {
-            QJsonObject dataObj = dataValue.toObject();
-            QList<QString> row;
-            row << dataObj["name"].toString()
-                << dataObj["numBits"].toString()
-                << dataObj["type"].toString();
-            itemData.append(row);
-        }
-        m_DB_handler->data_of_sensors[id] = itemData;
-    }
-    int numKeys = m_DB_handler->data_of_sensors.size();
-//    qDebug() << "Number of keys (sensors):" << numKeys;
-
-//    // Assuming data_of_sensors is already populated with some data
-//    for (const auto& key : m_DB_handler->data_of_sensors.keys()) {
-//        const QList<QList<QString>>& values = m_DB_handler->data_of_sensors.value(key);
-//        qInfo() << "Key:" << key;
-//        for (const QList<QString>& innerList : values) {
-//            for (const QString& item : innerList) {
-//                qInfo() << "  Item:" << item;
-//            }
-//        }
-//    }
-
-
-}
-
 
 void MainWindow::background_Layout() {
     QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
@@ -294,9 +184,7 @@ void MainWindow::replayer() {
         m_simulationReplayer->startReplay();
         controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
         m_mainLayout->addWidget(controlPanel);
-        read_from_json();
-        fill_db_data();
-        fill_box_data();
+        m_initializeSensorsData->initialize();
     }
 }
 
@@ -351,9 +239,7 @@ void MainWindow::saveLayout() {
 
 void MainWindow::onRunStart()
 {
-    read_from_json();
-    fill_db_data();
-    fill_box_data();
+    m_initializeSensorsData->initialize();
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
@@ -386,15 +272,6 @@ void MainWindow::onRunEnd()
 }
 
 void MainWindow::update_view() {
-//    for (auto item : m_scene->items()) {
-//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-//            QString sensorId = sensor->priority();
-//            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
-////            QList<QVariant> data = m_DB_handler->read_last_from_DB(sensorId);
-//            sensor->updatData(data);
-//        }
-//    }
-
     auto models = GlobalState::getInstance().currentProject()->models();
 //    QMap<QString, QVariantList> last_changes;
     for (auto model: models) {
@@ -402,7 +279,6 @@ void MainWindow::update_view() {
             QString sensorId = sensor->priority();
             QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
             GlobalState::getInstance().updateLogData(sensorId, data);
-
 //            last_changes[sensorId] = data;
         }
     }

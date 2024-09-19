@@ -19,6 +19,7 @@ DB_handler::DB_handler() {
     if (!sqlitedb->open()) {
         qDebug() << "Could not open the database:" << sqlitedb->lastError().text();
     }
+    connect(&GlobalState::getInstance(), &GlobalState::SensorDbInfoAdded, this, &DB_handler::update_sensor_data);
 }
 
 QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>>& columnInfo) {
@@ -64,6 +65,7 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         }
         createTableQuery.chop(1);
         createTableQuery += ")";
+        qInfo() << createTableQuery << createTableQuery;
         if (!query.exec(createTableQuery)) {
             qCritical() << "Failed to create table:" << query.lastError().text();
             sqlitedb->close();
@@ -127,6 +129,12 @@ QList<QVariant> DB_handler::read_all_sensor_data(const QString& table_name) {
     }
     return result;
 }
+
+void DB_handler::update_sensor_data(const wint_t& sensorId, QList<QList<QString>> data){
+    data_of_sensors[sensorId] = data;
+
+}
+
 
 
 //QList<QVariant> DB_handler::read_last_from_DB(const QString& table_name) {

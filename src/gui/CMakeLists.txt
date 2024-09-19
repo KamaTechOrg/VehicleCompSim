@@ -23,6 +23,12 @@ set(CLIENT_SOURCES
     DB_handler.cpp
     buffer_test.cpp
     buffer_test.h
+    PersistentTootip.h
+    PersistentTootip.cpp
+    CustomInfoWindow.h
+    CustomInfoWindow.cpp
+    initializeSensorsData.h
+    initializeSensorsData.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

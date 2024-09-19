@@ -1,13 +1,9 @@
 #include "sensoritem.h"
 #include <QPainter>
-// #include <QIcon>
 #include <QCheckBox>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
-#include <QMessageBox>
-#include <cmath>
 #include "globalstate.h"
-#include "gui/popupdialog.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
 
@@ -18,19 +14,22 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
 {
     m_width = 160;
     m_height = 90;
-    
 
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
-
     setupUpdateButtonProxy();
     setupCheckBoxProxy();
-
-    // setPos(m_model->x(), m_model->y());
-
     connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
-    
     updateColor();
     hideButtons();
+
+    // Set up timer for live updates
+    m_updateWindowTimer = new QTimer(this);
+    connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
+    connect(&GlobalState::getInstance(), &GlobalState::ColumnNamesAdded, this, &SensorItem::update_column_names);
+
+}
+SensorItem::~SensorItem() {
+    delete m_persistentTooltip;
 }
 
 void SensorItem::setupUpdateButtonProxy()
@@ -46,6 +45,7 @@ void SensorItem::setupUpdateButtonProxy()
 
     // Connect button to its respective slot
     connect(updateButton, &QPushButton::clicked, this, &SensorItem::select);
+
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -162,3 +162,115 @@ void SensorItem::updateColor()
 
     update(); // Trigger a repaint
 }
+
+void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+    QPointF nearestPoint;
+    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
+        m_hoveredPoint = nearestPoint;
+        update(); // Trigger a repaint
+    }
+    if(!mouse_pressed){
+        QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+        for (const QString &name: columnNames) {
+            tooltipHtml += QString("<th>%1</th>").arg(name);
+        }
+        tooltipHtml += "</tr><tr>";
+        for (int i = 0; i < last_data.size(); ++i) {
+            QVariant value = last_data.value(i);
+            tooltipHtml += QString("<td>%1</td>").arg(value.toString());
+        }
+        tooltipHtml += "</tr></table>";
+        if (m_persistentTooltip == nullptr) {
+            m_persistentTooltip = new PersistentTooltip();
+        }
+        m_persistentTooltip->setText(tooltipHtml);
+        m_persistentTooltip->move(event->screenPos());
+        m_persistentTooltip->show();
+    }
+    BaseItem::hoverEnterEvent(event);
+}
+
+void SensorItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+//        if (event->button() == Qt::LeftButton && playMode) {
+        mouse_pressed = true;
+        showInfoWindow();
+    }
+    BaseItem::mousePressEvent(event);
+}
+void SensorItem::showInfoWindow() {
+    if (!scene()) return;
+    m_updateWindowTimer->start(1000);  // Update every second
+    if (m_infoWindowProxy == nullptr) {
+        m_infoWindow = new CustomInfoWindow();
+        m_infoWindowProxy = new QGraphicsProxyWidget(this);
+        m_infoWindowProxy = scene()->addWidget(m_infoWindow);
+        m_infoWindowProxy->setZValue(1);
+        connect(m_infoWindow, &CustomInfoWindow::closed, this, &SensorItem::onCustomWindowClosed);
+        connect(&GlobalState::getInstance(), &GlobalState::dataLogAdded, this, &SensorItem::update_data);
+    }
+
+    updateInfoWindow();
+    QPointF pos = mapToScene(boundingRect().topRight() + QPointF(10, 0));
+    m_infoWindowProxy->setPos(pos);
+    m_infoWindowProxy->show();
+//    m_updateTimer->start(1000);  // Update every second
+
+}
+void SensorItem::updateInfoWindow() {
+    if (!m_infoWindow) return;
+    QString info = fetchDataInTable();
+    m_infoWindow->setInfo(info);
+}
+
+QString SensorItem::fetchDataInTable() {
+    QString windowInfoHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'>";
+    windowInfoHtml += "<tr>";
+    for (const QString &name: columnNames) {
+        windowInfoHtml += QString("<th>%1</th>").arg(name);
+    }
+    windowInfoHtml += "</tr>";
+    for (int i = 0; i < all_data.size(); i += columnNames.size()) {
+        windowInfoHtml += "<tr>";
+        for (int j = 0; j < columnNames.size() && (i + j) < all_data.size(); ++j) {
+            QVariant value = all_data.value(i + j);
+            windowInfoHtml += QString("<td>%1</td>").arg(value.toString());
+        }
+        windowInfoHtml += "</tr>";
+    }
+
+    windowInfoHtml += "</table>";
+    return windowInfoHtml;
+}
+void SensorItem::onCustomWindowClosed() {
+    m_updateWindowTimer->stop();
+    mouse_pressed = false;
+}
+void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+    if (m_persistentTooltip) {
+        m_persistentTooltip->hide();
+    }
+    BaseItem::hoverLeaveEvent(event);
+}
+void SensorItem::update_data(const QString& sensorId, QList<QVariant> data){
+    auto *sensor = dynamic_cast<SensorItem *>(this);
+    if(sensor->getModel().priority() == sensorId){
+        last_data.clear();
+        all_data.clear();
+        all_data = data;
+        if(!data.empty()) {
+            for (int i = 0; i < columnNames.size(); i++) {
+                last_data.emplace_back(data[i]);
+            }
+        }
+    }
+}
+void SensorItem::update_column_names(const QString& sensorId, QList<QString> data){
+    auto *sensor = dynamic_cast<SensorItem *>(this);
+    if(sensor->getModel().priority() == sensorId){
+        columnNames = data;
+    }
+}
+
+
+

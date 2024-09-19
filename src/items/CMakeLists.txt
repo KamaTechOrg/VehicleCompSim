@@ -11,10 +11,6 @@ set(ITEMS_SOURCES
     edgeitem.h
     actionsblocker.h
     actionsblocker.cpp
-    PersistentTootip.cpp
-    PersistentTootip.h
-    CustomInfoWindow.cpp
-    CustomInfoWindow.h
     qemusensoritem.h
     qemusensoritem.cpp
 )

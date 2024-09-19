@@ -40,9 +40,9 @@ public:
     void setCurrentSensorModel(SensorModel* sensorModel);
 
 //    QList<QList<QVariant>*> snesors_data() const { return snesors_log_data.values(); }
-    void updateLogData(QString sensorId, QList<QVariant>);
-
-
+    void updateLogData(QString sensorId, QList<QVariant> data);
+    void updateColumnNames(QString sensorId, QList<QString> data);
+    void updateDbHandler(wint_t sensorId, QList<QList<QString>> data);
 
 signals:
     void isOnlineChanged(bool isOnline);
@@ -54,6 +54,9 @@ signals:
     void projectAdded(ProjectModel* project);
     void projectAddedLocally(ProjectModel* project);
     void dataLogAdded(QString sensorId, QList<QVariant> data);
+    void ColumnNamesAdded(QString sensorId, QList<QString> data);
+    void SensorDbInfoAdded(wint_t sensorId, QList<QList<QString>> data);
+
 
 private:
     GlobalState(QObject* parent = nullptr);

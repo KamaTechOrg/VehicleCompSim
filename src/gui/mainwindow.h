@@ -4,6 +4,20 @@
 #include <memory>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
+#include <QLineEdit>
+#include <QGraphicsView>
+#include <QToolBar>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QFile>
+#include <QFileDialog>
+#include <QGraphicsItem>
+#include <QWidget>
+#include <QPushButton>
+#include <QRandomGenerator>
+#include <QRect>
+#include <QHBoxLayout>
+
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
@@ -16,12 +30,18 @@
 #include "SimulationControlPanel.h"
 #include "remoteinterface.h"
 #include <bson/bson.h>
-
 #include "popupdialog.h"
-#include <QLineEdit>
 #include "DB_handler.h"
 #include "buffer_test.h"
-
+#include "SimulationControlPanel.h"
+#include "./editpanel.h"
+#include "customwidget.h"
+#include "websocketclient.h"
+#include "handlers/RunHandler.h"
+#include "globalstate.h"
+#include "items/qemusensoritem.h"
+#include "initializeSensorsData.h"
+#include "sensormodel.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -48,9 +68,9 @@ private slots:
     void onConnectionStatusChanged(bool connected);
     void close_previous_replay();
     void update_view();
-    void fill_db_data();
-    void read_from_json();
-    void fill_box_data();
+//    void fill_db_data();
+//    void read_from_json();
+//    void fill_box_data();
 
 private:
     CustomScene* m_scene;
@@ -79,5 +99,6 @@ private:
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;
-    buffer_test *m_bufferTest; 
+    buffer_test *m_bufferTest;
+    initializeSensorsData *m_initializeSensorsData;
 };
