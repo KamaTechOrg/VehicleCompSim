@@ -182,7 +182,7 @@ ipch/
 *.lai
 *.la
 *.a
-*.lib
+# *.lib
 # Visual Studio profiler
 *.psess
 *.vsp
