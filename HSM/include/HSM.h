@@ -5,32 +5,35 @@
 #include "RSA.h"
 #include "aes.hpp"
 #include "Signature.h"
+#include "KyeStorage.h"
+#include "HSM_type_enum.hpp"
+#include "HSM_status_enum.cpp"
 
 
-class HSM
+class HSM: public KyeStorage
 {
 public:
-    static std::pair<std::vector<u_char>, std::vector<u_char>> generateAsymmetricKeys(ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
 
-    static std::vector<u_char> generateSymmetricKey(ENCRYPTION_ALGORITHM_TYPE type, int bits = 128);
+    static HSM_STATUS encrypt(const std::vector<u_char>& message, std::vector<u_char>& encrypted_message , ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId);
 
-    static std::vector<u_char> encrypt(const std::vector<u_char> message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> key, int bits = 512);
+    static HSM_STATUS decrypt(const std::vector<u_char>& message, std::vector<u_char>& decrypted_message , ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId);
 
-    static std::vector<u_char> decrypt(const std::vector<u_char> message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> key, int bits = 512);
-
-    static std::vector<u_char> signMessage(
-        const std::vector<u_char> message, 
+    static HSM_STATUS signMessage(
+        const std::vector<u_char>& message, 
+        std::vector<u_char>& signature, 
         ENCRYPTION_ALGORITHM_TYPE sigAlg, 
         ENCRYPTION_ALGORITHM_TYPE hashAlg,
-        const std::vector<u_char> key
+        const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign,
+        const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash
     );
     
-    static bool verify(
-        const std::vector<u_char> message,
-        const std::vector<u_char> signature,
+    static HSM_STATUS verify(
+        const std::vector<u_char>& message,
+        const std::vector<u_char>& signature,
         ENCRYPTION_ALGORITHM_TYPE sigAlg,
         ENCRYPTION_ALGORITHM_TYPE hashAlg,
-        const std::vector<u_char> key
+        const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign,
+        const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash
     );
 };
 

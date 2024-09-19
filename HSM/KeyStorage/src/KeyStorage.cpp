@@ -26,7 +26,7 @@ HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyI
     return HSM_STATUS();
 }
 
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
 {
     return HSM_STATUS();
 }
