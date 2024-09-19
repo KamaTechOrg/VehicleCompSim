@@ -208,6 +208,9 @@ void Socket::connect(const std::string host, const int port)
         std::cerr << "connect failed with error: " << WSAGetLastError() << "\n";
 #else
         std::cerr << "connect failed with errno: " << errno << "\n";
+        const char* errorStr = strerror(errno);
+        std::cout << errorStr << "\n";
+
 #endif
         // throw...
     }

@@ -32,3 +32,6 @@ target_link_libraries(client_exec client_lib server_lib )
 endif()
 
 add_executable(run_progrum runfiles.cpp)
+
+add_executable(server_and_client serverendclient.cpp)
+target_link_libraries(server_and_client client_lib server_lib )
