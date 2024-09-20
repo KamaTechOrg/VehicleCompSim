@@ -17,7 +17,7 @@ target_include_directories(VehicleCompSimCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/services
     ${CMAKE_CURRENT_SOURCE_DIR}/models
     ${CMAKE_CURRENT_SOURCE_DIR}/state
-    ${CMAKE_SOURCE_DIR}/include/VehicleCompSim/utils
+    ${CMAKE_SOURCE_DIR}/GUI/include/VehicleCompSim/utils
 )
 
 # Link Qt libraries

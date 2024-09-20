@@ -34,9 +34,9 @@ target_link_libraries(runservice_test
 
 # Set include directories
 target_include_directories(runservice_test PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/services
-    ${CMAKE_SOURCE_DIR}/include/VehicleCompSim/utils
+    ${CMAKE_SOURCE_DIR}/GUI/src
+    ${CMAKE_SOURCE_DIR}/GUI/src/services
+    ${CMAKE_SOURCE_DIR}/GUI/include/VehicleCompSim/utils
 )
 
 # Add the test
