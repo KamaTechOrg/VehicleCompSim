@@ -28,7 +28,7 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::errorOccurred), this, &WebSocketClient::onError);
 
     connect(&m_globalState, &GlobalState::isRemoteModeChanged, this, &WebSocketClient::onRemoteModeChanged);
-    connect(&m_globalState, &GlobalState::projectAddedLocally, this, &WebSocketClient::onProjectAdded);
+    connect(&m_globalState, &GlobalState::currentProjectPublished, this, &WebSocketClient::onProjectAdded);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &WebSocketClient::onCurrentProjectChanged);
 
     m_reconnectTimer = new QTimer(this);

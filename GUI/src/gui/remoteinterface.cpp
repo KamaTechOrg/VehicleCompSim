@@ -23,6 +23,7 @@ RemoteInterface::RemoteInterface(QWidget *parent)
     connect(&m_globalState, &GlobalState::isOnlineChanged, this, &RemoteInterface::onConnectionStatusChanged);
     connect(&m_globalState, &GlobalState::isConnectingChanged, this, &RemoteInterface::onConnectingStatusChanged);
     connect(&m_globalState, &GlobalState::projectAdded, this, &RemoteInterface::onProjectAdded);
+    connect(&m_globalState, &GlobalState::currentProjectPublished, this, &RemoteInterface::onCurrentProjectPublished);
 
     // Initial update
     onRemoteModeChanged(m_globalState.isRemoteMode());
@@ -109,11 +110,19 @@ void RemoteInterface::populateProjectList()
 
     for (const auto &project : m_globalState.projects()) {
         QStandardItem *item = new QStandardItem(project->name());
-        item->setSizeHint(QSize(100, 50)); // Adjust the item size as needed
+        item->setSizeHint(QSize(100, 50)); 
         item->setTextAlignment(Qt::AlignCenter);
         item->setEditable(false);
+
+        // Set background color based on isPublished field
+        if (project->isPublished()) {
+            item->setBackground(m_publishedColor);
+        } else {
+            item->setBackground(m_nonublishedColor);
+        }
+
         m_projectListModel->appendRow(item);
-        m_projectItemMap[item] = project; // Populate the map
+        m_projectItemMap[item] = project; 
     }
 }
 
@@ -175,9 +184,22 @@ void RemoteInterface::onProjectAdded(ProjectModel* project)
         item->setSizeHint(QSize(100, 50)); // Adjust the item size as needed
         item->setTextAlignment(Qt::AlignCenter);
         item->setEditable(false);
+
+        // Set background color based on isPublished field
+        if (project->isPublished()) {
+            item->setBackground(m_publishedColor);
+        } else {
+            item->setBackground(m_nonublishedColor);
+        }
+
         m_projectListModel->appendRow(item);
         m_projectItemMap[item] = project; // Add to the map
     }
+}
+
+void RemoteInterface::onCurrentProjectPublished(ProjectModel* project)
+{
+    populateProjectList();
 }
 
 void RemoteInterface::onAddProjectClicked()
@@ -188,13 +210,6 @@ void RemoteInterface::onAddProjectClicked()
                                                 "", &ok);
     if (ok && !projectName.isEmpty()) {
         ProjectModel* newProject = new ProjectModel(projectName);
-        m_globalState.addProject(newProject, true);
-
-        QStandardItem *item = new QStandardItem(newProject->name());
-        item->setSizeHint(QSize(100, 50)); // Adjust the item size as needed
-        item->setTextAlignment(Qt::AlignCenter);
-        item->setEditable(false);
-        m_projectListModel->appendRow(item);
-        m_projectItemMap[item] = newProject;
+        m_globalState.addProject(newProject);
     }
 }

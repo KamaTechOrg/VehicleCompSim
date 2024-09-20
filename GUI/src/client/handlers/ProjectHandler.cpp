@@ -16,6 +16,6 @@ void ProjectHandler::handle(const QJsonObject& message) {
 ProjectModel* ProjectHandler::createProject(const QJsonObject& jsonObj) {
     QString name = jsonObj[ClientConstants::KEY_NAME].toString();
     QString id = jsonObj[ClientConstants::KEY_ID].toString();
-    ProjectModel* project = new ProjectModel(name, id);
+    ProjectModel* project = new ProjectModel(name, id, true);
     return project;
 }

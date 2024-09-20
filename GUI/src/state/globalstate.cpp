@@ -38,18 +38,14 @@ void GlobalState::setIsRunning(bool value)
     }
 }
 
-void GlobalState::addProject(ProjectModel* project, bool local)
+void GlobalState::addProject(ProjectModel* project)
 {
     if (project) {
         QString projectId = project->id();
         if (!m_projects.contains(projectId)) {
             project->setParent(this);  
             m_projects.insert(projectId, project);
-            if (local) {
-                emit projectAddedLocally(project);
-            } else {
-                emit projectAdded(project);
-            }
+            emit projectAdded(project);
         }
     }
 }
@@ -62,6 +58,14 @@ void GlobalState::setCurrentProject(ProjectModel* project)
         QObject::connect(m_currentProject, &ProjectModel::modelRemoved , [this](SerializableItem* model){
             if (m_currentSensorModel == model) setCurrentSensorModel(nullptr);
         });
+    }
+}
+
+void GlobalState::publishCurrentProject()
+{
+    if (m_currentProject) {
+        m_currentProject->setPublished(true);
+        emit currentProjectPublished(m_currentProject);
     }
 }
 

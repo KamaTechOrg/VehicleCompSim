@@ -31,10 +31,11 @@ public:
     void setIsRunning(bool value);
 
     QList<ProjectModel*> projects() const { return m_projects.values(); }
-    void addProject(ProjectModel* project, bool local = false);
+    void addProject(ProjectModel* project);
 
     ProjectModel* currentProject() const { return m_currentProject; }
     void setCurrentProject(ProjectModel* project);
+    void publishCurrentProject();
 
     SensorModel* currentSensorModel() const { return m_currentSensorModel; }
     void setCurrentSensorModel(SensorModel* sensorModel);
@@ -52,7 +53,7 @@ signals:
     void currentProjectChanged(ProjectModel* project);
     void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
-    void projectAddedLocally(ProjectModel* project);
+    void currentProjectPublished(ProjectModel* project);
     void dataLogAdded(QString sensorId, QList<QVariant> data);
     void ColumnNamesAdded(QString sensorId, QList<QString> data);
     void SensorDbInfoAdded(wint_t sensorId, QList<QList<QString>> data);
