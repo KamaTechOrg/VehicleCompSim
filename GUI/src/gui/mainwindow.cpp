@@ -70,8 +70,8 @@ void MainWindow::setupToolBar() {
     auto qemuItemWidget = new CustomWidget(CustomWidget::QEMU_SENSOR_ITEM, this);
     m_toolBar->addWidget(qemuItemWidget);
 
-    auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
-    m_toolBar->addWidget(busWidget);
+    // auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
+    // m_toolBar->addWidget(busWidget);
 
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
