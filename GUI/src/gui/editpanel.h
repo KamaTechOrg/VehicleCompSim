@@ -4,6 +4,7 @@
 #include "qtoolbar.h"
 #include "qscrollarea.h"
 #include "sensormodel.h"
+#include "globalstate.h"
 
 class EditPanel
 {
@@ -23,6 +24,7 @@ private:
     QToolBar *panel;
     QScrollArea* scrollArea;
     SensorModel* currentModel;
+    GlobalState& globalState;
 
     void onGlobalStateCurrentSensorModelChanged();
     Editor* getEditorForModel(SensorModel* model);

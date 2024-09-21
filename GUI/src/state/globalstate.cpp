@@ -1,4 +1,5 @@
 #include "globalstate.h"
+#include <QSettings>
 
 GlobalState& GlobalState::getInstance()
 {
@@ -77,6 +78,15 @@ void GlobalState::setCurrentSensorModel(SensorModel* sensorModel)
     }
 }
 
+void GlobalState::setMyClientId(QString value)
+{
+    if (m_myClientId != value) {
+        m_myClientId = value;
+        QSettings settings("VehicleCompSim", "GUI");
+        settings.setValue("clientId", m_myClientId);
+    }
+}
+
 void GlobalState::updateLogData(QString sensorId, QList<QVariant> data){
     emit dataLogAdded(sensorId, data);
 }
@@ -87,10 +97,10 @@ void GlobalState::updateDbHandler(wint_t sensorId, QList<QList<QString>> data){
     emit SensorDbInfoAdded(sensorId, data);
 }
 
-
-
-
-
-GlobalState::GlobalState(QObject* parent) : QObject(parent) {}
+GlobalState::GlobalState(QObject* parent) : QObject(parent) {
+    QSettings settings("VehicleCompSim", "GUI");
+    m_myClientId = settings.value("clientId").toString();
+    m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
+}
 
 

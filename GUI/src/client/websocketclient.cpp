@@ -34,10 +34,6 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     m_reconnectTimer = new QTimer(this);
     connect(m_reconnectTimer, &QTimer::timeout, this, &WebSocketClient::attemptReconnection);
 
-    QSettings settings("VehicleCompSim", "GUI");
-    m_clientId = settings.value("clientId").toString();
-    m_clientId = m_clientId.isEmpty() ? "-1" : m_clientId;
-
     // Register action handlers
     m_actionHandlers[ClientConstants::ACTION_IDENTIFY] = std::make_unique<IdentifyHandler>();
     m_actionHandlers[ClientConstants::ACTION_ADD] = std::make_unique<AddItemHandler>();
@@ -220,6 +216,10 @@ void WebSocketClient::onProjectAdded(ProjectModel* project) {
         qDebug() << "Project added:" << message;
 
     m_webSocket.sendTextMessage(message);
+
+    for(auto model : project->models()) {
+        model->notifyItemAdded();
+    }
 }
 
 void WebSocketClient::onCurrentProjectChanged(ProjectModel* project) {
