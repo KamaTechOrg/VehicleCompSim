@@ -158,7 +158,7 @@ void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-    if(!mouse_pressed){
+    if(m_globalState.isRunning()){
         QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
         for (const QString &name: columnNames) {
             tooltipHtml += QString("<th>%1</th>").arg(name);
@@ -182,9 +182,10 @@ void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
 void SensorItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
 //        if (event->button() == Qt::LeftButton && playMode) {
-        mouse_pressed = true;
         m_globalState.setCurrentSensorModel(this->m_model);
-        showInfoWindow();
+        if(m_globalState.isRunning()){
+            showInfoWindow();
+        }
     }
     BaseItem::mousePressEvent(event);
 }
@@ -234,7 +235,6 @@ QString SensorItem::fetchDataInTable() {
 }
 void SensorItem::onCustomWindowClosed() {
     m_updateWindowTimer->stop();
-    mouse_pressed = false;
 }
 void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     if (m_persistentTooltip) {

@@ -2,7 +2,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QMainWindow>
 #include <memory>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
 #include <QLineEdit>
 #include <QGraphicsView>
@@ -21,13 +20,11 @@
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
-#include "qpushbutton.h"
 #include "services/runservice/runservice.h"
 #include "SimulationRecorder.h"
 #include "SimulationReplayer.h"
 #include "LiveUpdate.h"
 #include "LogReader.h"
-#include "SimulationControlPanel.h"
 #include "remoteinterface.h"
 #include <bson/bson.h>
 #include "popupdialog.h"
