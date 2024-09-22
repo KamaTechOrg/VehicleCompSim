@@ -14,6 +14,7 @@ class GlobalState : public QObject
     Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning NOTIFY isRunningChanged)
     Q_PROPERTY(ProjectModel* currentProject READ currentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
     Q_PROPERTY(SensorModel* currentSensorModel READ currentSensorModel WRITE setCurrentSensorModel NOTIFY currentSensorModelChanged)
+    Q_PROPERTY(QString myClientId READ myClientId WRITE setMyClientId)
 
 public:
     static GlobalState& getInstance();
@@ -31,13 +32,17 @@ public:
     void setIsRunning(bool value);
 
     QList<ProjectModel*> projects() const { return m_projects.values(); }
-    void addProject(ProjectModel* project, bool local = false);
+    void addProject(ProjectModel* project);
 
     ProjectModel* currentProject() const { return m_currentProject; }
     void setCurrentProject(ProjectModel* project);
+    void publishCurrentProject();
 
     SensorModel* currentSensorModel() const { return m_currentSensorModel; }
     void setCurrentSensorModel(SensorModel* sensorModel);
+
+    QString myClientId() const { return m_myClientId; }
+    void setMyClientId(QString value);
 
 //    QList<QList<QVariant>*> snesors_data() const { return snesors_log_data.values(); }
     void updateLogData(QString sensorId, QList<QVariant> data);
@@ -52,7 +57,7 @@ signals:
     void currentProjectChanged(ProjectModel* project);
     void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
-    void projectAddedLocally(ProjectModel* project);
+    void currentProjectPublished(ProjectModel* project);
     void dataLogAdded(QString sensorId, QList<QVariant> data);
     void ColumnNamesAdded(QString sensorId, QList<QString> data);
     void SensorDbInfoAdded(wint_t sensorId, QList<QList<QString>> data);
@@ -67,6 +72,7 @@ private:
     bool m_isRemoteMode = false;
     bool m_isConnecting = false;
     bool m_isRunning = false;
+    QString m_myClientId;
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
     SensorModel* m_currentSensorModel = nullptr;

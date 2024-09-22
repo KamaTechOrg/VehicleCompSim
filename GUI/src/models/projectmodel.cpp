@@ -1,8 +1,8 @@
 #include "projectmodel.h"
 #include <QUuid>
 
-ProjectModel::ProjectModel(QString name, QString id, QObject* parent) 
-: QObject(parent), m_id(QUuid::createUuid().toString()), m_name(name) {
+ProjectModel::ProjectModel(QString name, QString id, bool isPublished, QObject* parent) 
+: QObject(parent), m_id(QUuid::createUuid().toString()), m_name(name), m_isPuplished(isPublished) {
     if (!id.isEmpty()) m_id = id;
 }
 

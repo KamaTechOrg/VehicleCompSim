@@ -2,7 +2,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QMainWindow>
 #include <memory>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QTimeEdit>
 #include <QLineEdit>
 #include <QGraphicsView>
@@ -21,13 +20,11 @@
 #include "customscene.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
-#include "qpushbutton.h"
 #include "services/runservice/runservice.h"
 #include "SimulationRecorder.h"
 #include "SimulationReplayer.h"
 #include "LiveUpdate.h"
 #include "LogReader.h"
-#include "SimulationControlPanel.h"
 #include "remoteinterface.h"
 #include <bson/bson.h>
 #include "popupdialog.h"
@@ -58,6 +55,7 @@ private:
     void loadLayout();
     void setupToolBar();
     void setupRunService();
+    void setupView();
     void onRunStart();
     void onRunEnd();
     void record();
@@ -65,7 +63,9 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
 
 private slots:
-    void onConnectionStatusChanged(bool connected);
+    void onOnlineStatusChanged(bool online);
+    void onCurrentProjectChanged(ProjectModel* project);
+    void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
     void update_view();
 //    void fill_db_data();
@@ -75,6 +75,7 @@ private slots:
 private:
     CustomScene* m_scene;
     QGraphicsView* m_view;
+    GlobalState &m_globalState;
 
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
@@ -92,7 +93,7 @@ private:
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
-    QHBoxLayout *m_topLayout;
+    QHBoxLayout *m_centerLayout;
     DB_handler *m_DB_handler;
     QTimer *change_view_timer;
     QJsonArray itemsArray;
@@ -101,4 +102,7 @@ private:
     RemoteInterface* m_remoteInterface;
     buffer_test *m_bufferTest;
     initializeSensorsData *m_initializeSensorsData;
+
+    QGroupBox* m_sceneBox;
+    QPushButton* m_publishButton;
 };

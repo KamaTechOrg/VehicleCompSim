@@ -9,6 +9,7 @@
 #include "edgeitem.h"
 #include "serializableitem.h"
 #include "projectmodel.h"
+#include "globalstate.h"
 
 class CustomScene : public QGraphicsScene {
     Q_OBJECT
@@ -53,8 +54,5 @@ private:
     EdgeItem* m_currentEdge = nullptr;
     BaseItem* m_startItem = nullptr;
     QPointF m_startPoint;
-
-
-
-
+    GlobalState &m_globalState;
 };

@@ -27,7 +27,7 @@ public:
     bool isNearConnectionPoint(const QPointF& point) const;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void removeItem();
-    void confirmRemove();
+    virtual void confirmRemove();
     void set_m_color(int R, int G, int B){ this->m_color.setRed(R), this->m_color.setGreen(G),this->m_color.setBlue(B); }
     ItemType itemType() const { return m_model->itemType(); }
     SerializableItem* model() const { return m_model; }

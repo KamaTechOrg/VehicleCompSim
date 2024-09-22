@@ -1,6 +1,7 @@
 #include "sensoritem.h"
 #include <QPainter>
 #include <QCheckBox>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include "globalstate.h"
@@ -9,14 +10,15 @@
 
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
-      m_updateProxy(new QGraphicsProxyWidget(this)),
-      m_checkBoxProxy(new QGraphicsProxyWidget(this))
+      m_checkBoxProxy(new QGraphicsProxyWidget(this)),
+      m_globalState(GlobalState::getInstance())
 {
     m_width = 160;
     m_height = 90;
 
+    m_isOwnedByMe = m_model->ownerID() == m_globalState.myClientId();
+
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
-    setupUpdateButtonProxy();
     setupCheckBoxProxy();
     connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
     updateColor();
@@ -25,27 +27,10 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     // Set up timer for live updates
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
-    connect(&GlobalState::getInstance(), &GlobalState::ColumnNamesAdded, this, &SensorItem::update_column_names);
-
+    connect(&m_globalState, &GlobalState::ColumnNamesAdded, this, &SensorItem::update_column_names);
 }
 SensorItem::~SensorItem() {
     delete m_persistentTooltip;
-}
-
-void SensorItem::setupUpdateButtonProxy()
-{
-    // Create update button
-    QPushButton* updateButton = new QPushButton("↻");
-    //updateButton->setIcon(QIcon(":/icons/update.png"));
-    updateButton->setFixedSize(20, 20);
-    updateButton->setToolTip("Update Item");
-
-    m_updateProxy->setWidget(updateButton);
-    m_updateProxy->setPos(boundingRect().topRight() + QPointF(30, -25)); // Position next to the close button
-
-    // Connect button to its respective slot
-    connect(updateButton, &QPushButton::clicked, this, &SensorItem::select);
-
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -55,7 +40,7 @@ void SensorItem::setupCheckBoxProxy()
         QCheckBox* checkBox = static_cast<QCheckBox*>(m_checkBoxProxy->widget());
         bool oldState = checkBox->blockSignals(true); // Block signals
         checkBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
-        checkBox->setEnabled(isInitialized());
+        checkBox->setEnabled(isInitialized() && m_isOwnedByMe);
         checkBox->blockSignals(oldState); // Restore previous state
         return;
     }
@@ -65,7 +50,7 @@ void SensorItem::setupCheckBoxProxy()
     excludeCheckBox->setToolTip("Exclude this sensor from the project");
     excludeCheckBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
     excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
-    excludeCheckBox->setEnabled(isInitialized());
+    excludeCheckBox->setEnabled(isInitialized() && m_isOwnedByMe);
     connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
         m_model->setisExcludeFromProject(state == Qt::Checked);
         m_model->notifyItemModified();
@@ -83,6 +68,10 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(m_color);
+    if (!m_isOwnedByMe) {
+        painter->setOpacity(0.5);
+    }
+
     painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
 
     painter->setPen(Qt::black);
@@ -122,23 +111,23 @@ SensorModel &SensorItem::getModel()
     return *m_model;
 }
 
-void SensorItem::select()
+void SensorItem::confirmRemove()
 {
-    GlobalState::getInstance().setCurrentSensorModel(this->m_model);
+    if(!m_isOwnedByMe){
+        QMessageBox::warning(nullptr, "Error", "Only the owner can remove the sensor");
+        return;
+    }
+    BaseItem::confirmRemove();
 }
-
-
 
 void SensorItem::showButtons()
 {
     m_closeProxy->setVisible(true);
-    m_updateProxy->setVisible(true);
 }
 
 void SensorItem::hideButtons()
 {
     m_closeProxy->setVisible(false);
-    m_updateProxy->setVisible(false);
 }
 
 void SensorItem::onModelUpdated()
@@ -169,7 +158,7 @@ void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
         m_hoveredPoint = nearestPoint;
         update(); // Trigger a repaint
     }
-    if(!mouse_pressed){
+    if(m_globalState.isRunning()){
         QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
         for (const QString &name: columnNames) {
             tooltipHtml += QString("<th>%1</th>").arg(name);
@@ -193,8 +182,10 @@ void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
 void SensorItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
 //        if (event->button() == Qt::LeftButton && playMode) {
-        mouse_pressed = true;
-        showInfoWindow();
+        m_globalState.setCurrentSensorModel(this->m_model);
+        if(m_globalState.isRunning()){
+            showInfoWindow();
+        }
     }
     BaseItem::mousePressEvent(event);
 }
@@ -207,7 +198,7 @@ void SensorItem::showInfoWindow() {
         m_infoWindowProxy = scene()->addWidget(m_infoWindow);
         m_infoWindowProxy->setZValue(1);
         connect(m_infoWindow, &CustomInfoWindow::closed, this, &SensorItem::onCustomWindowClosed);
-        connect(&GlobalState::getInstance(), &GlobalState::dataLogAdded, this, &SensorItem::update_data);
+        connect(&m_globalState, &GlobalState::dataLogAdded, this, &SensorItem::update_data);
     }
 
     updateInfoWindow();
@@ -244,7 +235,6 @@ QString SensorItem::fetchDataInTable() {
 }
 void SensorItem::onCustomWindowClosed() {
     m_updateWindowTimer->stop();
-    mouse_pressed = false;
 }
 void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     if (m_persistentTooltip) {

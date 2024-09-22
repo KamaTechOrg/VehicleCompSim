@@ -1,6 +1,7 @@
 #include "QemuSensorItem_Editor.h"
 #include "qlabel.h"
 #include <QComboBox>
+#include <QMessageBox>
 #include <QSpinBox>
 #include <QSplitter>
 #include "qfiledialog.h"
@@ -160,6 +161,11 @@ void QemuSensorItem::Editor::initLayout()
 }
 void QemuSensorItem::Editor::onSaveBtnClicked()
 {
+    if(!(model.ownerID() == GlobalState::getInstance().myClientId()))
+    {
+        QMessageBox::warning(this, "Error", "Only the owner can modify the sensor");
+        return;
+    }
     model.setPriority(priority->text());
     model.setName(name->text());
     model.setPlatform(platform->currentData().toString());

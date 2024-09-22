@@ -35,9 +35,6 @@ public:
     void onItemModified(const SerializableItem& item) override;
     void onItemAdded(const SerializableItem& item) override;
     void onItemDeleted(const SerializableItem& item) override;
-    
-    const QString& getClientId() const { return m_clientId; }
-    void setClientId(const QString& clientId) { m_clientId = clientId; }
 
     void sendMessage(const QJsonObject &message);
     void addActionHandler(const QString& action, std::unique_ptr<IActionHandler> handler);
@@ -62,7 +59,6 @@ private:
     void disconnectFromServer();
 
     std::unordered_map<QString, std::unique_ptr<IActionHandler>> m_actionHandlers;
-    QString m_clientId;
     QUrl m_url;
     QWebSocket m_webSocket;
     bool m_debug;

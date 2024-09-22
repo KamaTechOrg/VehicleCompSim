@@ -18,7 +18,7 @@ public:
     bool isInitialized() const;
     bool isExludeFromProject() const;
     virtual SensorModel& getModel();
-    void select();
+    void confirmRemove() override;
     class Editor;
 
 protected:
@@ -30,7 +30,6 @@ public:
     QList<QString> columnNames;
 
 private:
-    void setupUpdateButtonProxy();
     void setupCheckBoxProxy();
     void showButtons();
     void hideButtons();
@@ -40,7 +39,8 @@ private:
     void updateColor();
 
     SensorModel* m_model;
-    QGraphicsProxyWidget* m_updateProxy;
+    GlobalState &m_globalState;
+
     QGraphicsProxyWidget* m_checkBoxProxy;
     QColor m_disabledColor = QColor(192, 192, 192); // Gray for disabled
     QColor m_excludedColor = QColor(250, 165, 142); // Red for excluded
@@ -51,9 +51,8 @@ private:
     QList<QVariant> last_data;
     QList<QVariant> all_data;
     PersistentTooltip* m_persistentTooltip = nullptr;
-    bool mouse_pressed = false;
     bool playMode = false;
-
+    bool m_isOwnedByMe = false;
 
 public slots:
     void onModelUpdated();

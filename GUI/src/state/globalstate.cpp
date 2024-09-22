@@ -1,4 +1,5 @@
 #include "globalstate.h"
+#include <QSettings>
 
 GlobalState& GlobalState::getInstance()
 {
@@ -38,18 +39,14 @@ void GlobalState::setIsRunning(bool value)
     }
 }
 
-void GlobalState::addProject(ProjectModel* project, bool local)
+void GlobalState::addProject(ProjectModel* project)
 {
     if (project) {
         QString projectId = project->id();
         if (!m_projects.contains(projectId)) {
             project->setParent(this);  
             m_projects.insert(projectId, project);
-            if (local) {
-                emit projectAddedLocally(project);
-            } else {
-                emit projectAdded(project);
-            }
+            emit projectAdded(project);
         }
     }
 }
@@ -65,11 +62,28 @@ void GlobalState::setCurrentProject(ProjectModel* project)
     }
 }
 
+void GlobalState::publishCurrentProject()
+{
+    if (m_currentProject) {
+        m_currentProject->setPublished(true);
+        emit currentProjectPublished(m_currentProject);
+    }
+}
+
 void GlobalState::setCurrentSensorModel(SensorModel* sensorModel)
 {
     if (m_currentSensorModel != sensorModel){
         m_currentSensorModel = sensorModel;
         emit currentSensorModelChanged(m_currentSensorModel);
+    }
+}
+
+void GlobalState::setMyClientId(QString value)
+{
+    if (m_myClientId != value) {
+        m_myClientId = value;
+        QSettings settings("VehicleCompSim", "GUI");
+        settings.setValue("clientId", m_myClientId);
     }
 }
 
@@ -83,10 +97,10 @@ void GlobalState::updateDbHandler(wint_t sensorId, QList<QList<QString>> data){
     emit SensorDbInfoAdded(sensorId, data);
 }
 
-
-
-
-
-GlobalState::GlobalState(QObject* parent) : QObject(parent) {}
+GlobalState::GlobalState(QObject* parent) : QObject(parent) {
+    QSettings settings("VehicleCompSim", "GUI");
+    m_myClientId = settings.value("clientId").toString();
+    m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
+}
 
 

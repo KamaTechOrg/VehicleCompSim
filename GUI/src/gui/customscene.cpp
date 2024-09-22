@@ -11,12 +11,12 @@
 #include "sensormodel.h"
 #include "popupdialog.h"
 #include "client/websocketclient.h"
-#include "globalstate.h"
 #include "customwidget.h"
 
 CustomScene::CustomScene(QObject* parent)
-    : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()) {
-    connect(&GlobalState::getInstance(), &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
+    : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()),
+    m_globalState(GlobalState::getInstance()) {
+    connect(&m_globalState, &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
 }
 
 void CustomScene::addItemToScene(BaseItem *item) 
@@ -257,19 +257,19 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
 
         if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
             SensorModel* sensorModel = new SensorModel();
-            sensorModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+            sensorModel->setOwnerID(m_globalState.myClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
             m_network->addElement(sensorItem);
-            sensorItem->select();
             addItemToScene(sensorItem);
+            m_globalState.setCurrentSensorModel(sensorModel);
         }
         else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
             QemuSensorModel* qemuModel = new QemuSensorModel();
-            qemuModel->setOwnerID(WebSocketClient::getInstance().getClientId());
+            qemuModel->setOwnerID(m_globalState.myClientId());
             QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
             m_network->addElement(qemuItem);
-            qemuItem->select();
             addItemToScene(qemuItem);
+            m_globalState.setCurrentSensorModel(qemuModel);
         }
         else if (itemType == CustomWidget::BUS_ITEM) {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
