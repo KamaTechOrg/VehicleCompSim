@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "../../MainComputer/src/maincomputer.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
+    toolBar->addAction("mainComp", [this] { MainComputer().openEditor(); });
 
     // Connect to GlobalState
     GlobalState& globalState = GlobalState::getInstance();

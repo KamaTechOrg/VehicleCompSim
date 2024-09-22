@@ -13,6 +13,7 @@ set(HEADER_FILES
     ConditionLayoutBase.h
     Editor.h
     ExplorerBox.h
+    Window.h
 )
 
 add_library(GuiHeaders INTERFACE)

@@ -25,10 +25,9 @@ include_directories(${mongo-c-driver_BINARY_DIR}/src/libbson/src)
 enable_testing()
 
 # Add subdirectories
-add_subdirectory(tests)
 add_subdirectory(include/VehicleCompSim/utils)
-
 add_subdirectory(src)
+add_subdirectory(tests)
 
 # Create client executable
 qt_add_executable(ClientApp
@@ -40,6 +39,7 @@ qt_add_executable(ClientApp
 target_include_directories(ClientApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include/VehicleCompSim/utils
+    ${CMAKE_SOURCE_DIR}/MainComputer
 )
 
 # Link libraries
@@ -47,6 +47,7 @@ target_link_libraries(ClientApp PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::WebSockets
+    MainComputer
     VehicleCompSimUtils
     VehicleCompSimCore
     services

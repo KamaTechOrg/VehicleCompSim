@@ -12,4 +12,5 @@ target_sources(MainComputer PRIVATE
     ConditionsGroup.cpp
     Editor.cpp
     ExplorerBox.cpp
+    Window.cpp
 )
