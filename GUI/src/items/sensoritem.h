@@ -51,7 +51,6 @@ private:
     QList<QVariant> last_data;
     QList<QVariant> all_data;
     PersistentTooltip* m_persistentTooltip = nullptr;
-    bool mouse_pressed = false;
     bool playMode = false;
     bool m_isOwnedByMe = false;
 
