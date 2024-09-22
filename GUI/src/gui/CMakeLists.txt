@@ -29,6 +29,8 @@ set(CLIENT_SOURCES
     CustomInfoWindow.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
+    saveAndLoad.cpp
+    saveAndLoad.h
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

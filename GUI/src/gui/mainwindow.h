@@ -39,6 +39,7 @@
 #include "items/qemusensoritem.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
+#include "saveAndLoad.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -109,5 +110,6 @@ private:
     QGroupBox* m_sceneBox;
     QPushButton* m_publishButton;
     QWidget* m_layoutWidget;
+    saveAndLoad *m_saveAndLoad;
 };
 

@@ -49,6 +49,10 @@ public:
     void updateColumnNames(QString sensorId, QList<QString> data);
     void updateDbHandler(wint_t sensorId, QList<QList<QString>> data);
 
+    void saveData();
+    void loadData();
+
+
 signals:
     void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
@@ -61,6 +65,9 @@ signals:
     void dataLogAdded(QString sensorId, QList<QVariant> data);
     void ColumnNamesAdded(QString sensorId, QList<QString> data);
     void SensorDbInfoAdded(wint_t sensorId, QList<QList<QString>> data);
+    void saveBtnPressed();
+    void loadBtnPressed();
+
 
 
 private:

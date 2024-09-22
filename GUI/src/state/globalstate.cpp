@@ -96,6 +96,12 @@ void GlobalState::updateColumnNames(QString sensorId, QList<QString> data){
 void GlobalState::updateDbHandler(wint_t sensorId, QList<QList<QString>> data){
     emit SensorDbInfoAdded(sensorId, data);
 }
+void GlobalState::saveData(){
+    emit saveBtnPressed();
+}
+void GlobalState::loadData(){
+    emit loadBtnPressed();
+}
 
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");
