@@ -7,9 +7,9 @@ AndCondition::AndCondition(std::shared_ptr<ConditionBase> lhs,
     : CompositeCondition(lhs, rhs, elapsedTime),
     _startTime(std::chrono::steady_clock::now())
 {
-    if (!lhs || !rhs) {
-        throw std::runtime_error("One or more arguments were nullptr");
-    }
+  
+    assert((lhs && rhs) && "One or more arguments were nullptr");
+
 }
 
 bool AndCondition::validate(const std::string& senderId,
