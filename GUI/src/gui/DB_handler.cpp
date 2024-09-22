@@ -65,7 +65,7 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         }
         createTableQuery.chop(1);
         createTableQuery += ")";
-        qInfo() << createTableQuery << createTableQuery;
+//        qInfo() << createTableQuery << createTableQuery;
         if (!query.exec(createTableQuery)) {
             qCritical() << "Failed to create table:" << query.lastError().text();
             sqlitedb->close();
@@ -84,9 +84,9 @@ void DB_handler::write_to_DB(const QByteArray& buffer) const {
         valuePlaceholders.chop(1);
         insertQuery += ") VALUES " + valuePlaceholders + ")";
         query.prepare(insertQuery);
-        for(const auto &item : names_for_bind){
-            qInfo () << item;
-        }
+//        for(const auto &item : names_for_bind){
+//            qInfo () << item;
+//        }
         int counter = 0;
         while(counter < names_for_bind.size() - 1){
             if(counter < 2){
