@@ -5,7 +5,7 @@
 
 CustomWidget::CustomWidget(const WIDGET_TYPES type, QWidget* parent)
     : QWidget(parent), m_type(type) {
-    setFixedSize(50, 50);
+    setFixedSize(90, 55);
     setAcceptDrops(true);
 }
 
@@ -15,10 +15,11 @@ void CustomWidget::paintEvent(QPaintEvent* event) {
 
     switch (m_type) {
     case REGULAR_SENSOR_ITEM:
-        painter.drawRoundedRect(QRectF(5, 5, 40, 22.5), 4, 4);
+        painter.drawRoundedRect(QRectF(5, 5, 80, 45), 4, 4);
         break;
     case QEMU_SENSOR_ITEM:
-        painter.drawPolygon(QPolygonF({QPointF(25, 5), QPointF(5, 25), QPointF(45, 25)}));
+        painter.drawRoundedRect(QRectF(5, 5, 80, 45), 4, 4);
+        painter.drawText(5, 5, 80, 45, Qt::AlignCenter, "QEMU");
         break;
     case BUS_ITEM:
         painter.drawEllipse(12.5, 12.5, 25, 25);

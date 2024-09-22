@@ -28,15 +28,11 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     connect(&m_webSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::errorOccurred), this, &WebSocketClient::onError);
 
     connect(&m_globalState, &GlobalState::isRemoteModeChanged, this, &WebSocketClient::onRemoteModeChanged);
-    connect(&m_globalState, &GlobalState::projectAddedLocally, this, &WebSocketClient::onProjectAdded);
+    connect(&m_globalState, &GlobalState::currentProjectPublished, this, &WebSocketClient::onProjectAdded);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &WebSocketClient::onCurrentProjectChanged);
 
     m_reconnectTimer = new QTimer(this);
     connect(m_reconnectTimer, &QTimer::timeout, this, &WebSocketClient::attemptReconnection);
-
-    QSettings settings("VehicleCompSim", "GUI");
-    m_clientId = settings.value("clientId").toString();
-    m_clientId = m_clientId.isEmpty() ? "-1" : m_clientId;
 
     // Register action handlers
     m_actionHandlers[ClientConstants::ACTION_IDENTIFY] = std::make_unique<IdentifyHandler>();
@@ -220,6 +216,10 @@ void WebSocketClient::onProjectAdded(ProjectModel* project) {
         qDebug() << "Project added:" << message;
 
     m_webSocket.sendTextMessage(message);
+
+    for(auto model : project->models()) {
+        model->notifyItemAdded();
+    }
 }
 
 void WebSocketClient::onCurrentProjectChanged(ProjectModel* project) {

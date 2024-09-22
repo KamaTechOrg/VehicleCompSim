@@ -1,6 +1,5 @@
 #include "editpanel.h"
 #include "qemusensormodel.h"
-#include "state/globalstate.h"
 #include "editors/QemuSensorItem_Editor.h"
 #include"editors/SensorItem_Editor.h"
 
@@ -36,10 +35,11 @@ QWidget *EditPanel::getScrollArea()
 
 EditPanel::EditPanel():
     panel(new QToolBar),
-    scrollArea (new QScrollArea(/*panel*/))
+    scrollArea (new QScrollArea(/*panel*/)),
+    globalState(GlobalState::getInstance())
 {
-    currentModel = GlobalState::getInstance().currentSensorModel();
-    QObject::connect(&GlobalState::getInstance(), &GlobalState::currentSensorModelChanged, [this](){onGlobalStateCurrentSensorModelChanged();});
+    currentModel = globalState.currentSensorModel();
+    QObject::connect(&globalState, &GlobalState::currentSensorModelChanged, [this](){onGlobalStateCurrentSensorModelChanged();});
     //scrollArea->setWidgetResizable(true);
     //scrollArea->setFixedWidth(250);
     //scrollArea->setFixedHeight(panel->height());
@@ -47,15 +47,17 @@ EditPanel::EditPanel():
 
 void EditPanel::onGlobalStateCurrentSensorModelChanged()
 {
-    currentModel = GlobalState::getInstance().currentSensorModel();
-    if (currentModel) loadNewEditor(getEditorForModel(currentModel));
+    currentModel = globalState.currentSensorModel();
+    if (currentModel) {
+        loadNewEditor(getEditorForModel(currentModel));
+    }
     else closeCurrentEditor();
 }
 
 EditPanel::Editor *EditPanel::getEditorForModel(SensorModel *model)
 {
     if (!model) return nullptr;
-    else if (dynamic_cast<QemuSensorModel*>(model))
+    if (dynamic_cast<QemuSensorModel*>(model))
     {
         return new QemuSensorItem::Editor(dynamic_cast<QemuSensorModel*>(model));
     }

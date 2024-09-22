@@ -1,5 +1,6 @@
 #include "./SensorItem_Editor.h"
 #include <GlobalState.h>
+#include <QMessageBox>
 #include <vector>
 
 void SensorItem::Editor::initPriority()
@@ -86,6 +87,11 @@ void SensorItem::Editor::initLayout()
 
 void SensorItem::Editor::onSaveBtnClicked()
 {
+    if(!(model.ownerID() == GlobalState::getInstance().myClientId()))
+    {
+        QMessageBox::warning(this, "Error", "Only the owner can modify the sensor");
+        return;
+    }
     model.setPriority(priority->text());
     model.setName(name->text());
     model.setBuildCommand(buildCommand->text());

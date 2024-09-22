@@ -28,6 +28,7 @@ private slots:
     void onConnectingStatusChanged(bool isConnecting);
     void onProjectAdded(ProjectModel* project);
     void onAddProjectClicked();
+    void onCurrentProjectPublished(ProjectModel* project);
     void scrollLeft();
     void scrollRight();
 
@@ -51,4 +52,7 @@ private:
     QScrollArea *m_scrollArea;
     QPushButton *m_scrollLeftButton;
     QPushButton *m_scrollRightButton;
+
+    QColor m_publishedColor = QColor(160, 253, 143); // Green
+    QColor m_nonublishedColor = QColor(250, 165, 142); // Red
 };

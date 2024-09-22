@@ -3,18 +3,18 @@
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
         m_scene(new CustomScene()),
-        m_runService(std::make_shared<RunService>())
+        m_runService(std::make_shared<RunService>()),
+        m_globalState(GlobalState::getInstance()),
+        m_initializeSensorsData(new initializeSensorsData())
 {
-    m_view = new QGraphicsView(m_scene);
 
     setupToolBar();
 
     auto mainWidget = new QWidget(this);
     m_mainLayout = new QVBoxLayout();
-    m_topLayout = new QHBoxLayout();
-    m_topLayout->addWidget(m_toolBar);
-    m_topLayout->addWidget(m_view);
-    m_mainLayout->addLayout(m_topLayout);
+    m_centerLayout = new QHBoxLayout();
+    m_centerLayout->addWidget(m_toolBar);
+    m_mainLayout->addLayout(m_centerLayout);
 
     // Create a frame to wrap the main layout
     mainFrame = new QFrame();
@@ -43,20 +43,21 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
 
+    setupView();
+
     // Connect to GlobalState
-    GlobalState& globalState = GlobalState::getInstance();
-    connect(&globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onConnectionStatusChanged);
+    connect(&m_globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onOnlineStatusChanged);
+    connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
+    connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
 
     ProjectModel* startingProject = new ProjectModel("Project");
-    GlobalState::getInstance().addProject(startingProject);
-    GlobalState::getInstance().setCurrentProject(startingProject);
+    m_globalState.addProject(startingProject);
+    m_globalState.setCurrentProject(startingProject);
 
     m_remoteInterface = new RemoteInterface(this);
     addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
 
     setupRunService();
-
-    m_initializeSensorsData = new initializeSensorsData();
 }
 
 void MainWindow::setupToolBar() {
@@ -69,20 +70,8 @@ void MainWindow::setupToolBar() {
     auto qemuItemWidget = new CustomWidget(CustomWidget::QEMU_SENSOR_ITEM, this);
     m_toolBar->addWidget(qemuItemWidget);
 
-    auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
-    m_toolBar->addWidget(busWidget);
-
-    // Initialize the connection status label
-    m_connectionStatusLabel = new QLabel("Disconnected", this);
-    m_connectionStatusLabel->setStyleSheet("QLabel { color : red; }");
-    m_connectionStatusLabel->setAlignment(Qt::AlignCenter);
-
-    // Create a layout for the connection status
-    QVBoxLayout* connectionStatusLayout = new QVBoxLayout();
-    connectionStatusLayout->addWidget(m_connectionStatusLabel);
-
-    // Add the connection status label to the toolbar
-    m_toolBar->addWidget(m_connectionStatusLabel);
+    // auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
+    // m_toolBar->addWidget(busWidget);
 
     addToolBar(Qt::LeftToolBarArea, m_toolBar);
 }
@@ -145,16 +134,52 @@ void MainWindow::setupRunService()
     ));
 }
 
-void MainWindow::onConnectionStatusChanged(bool connected) {
-    if (connected) {
-        m_connectionStatusLabel->setText("Connected");
-        m_connectionStatusLabel->setStyleSheet("QLabel { color : green; }");
+void MainWindow::setupView() {
+    m_view = new QGraphicsView(m_scene);
+    m_sceneBox = new QGroupBox(this);
+
+    // Initialize the title and conditional button
+    m_publishButton = new QPushButton("Publish project", m_sceneBox);
+    m_publishButton->setDisabled(!m_globalState.isOnline());
+    QObject::connect(m_publishButton, &QPushButton::clicked, [this] {
+        m_globalState.publishCurrentProject();
+    });
+    // set the style of the button
+    m_publishButton->setStyleSheet("QPushButton { border: 1px solid black; border-radius: 5px; padding: 5px; }");
+    
+
+    // Add the title and button to the layout
+    auto sceneBoxLayout = new QVBoxLayout();
+    sceneBoxLayout->addWidget(m_publishButton);
+    sceneBoxLayout->setAlignment(m_publishButton, Qt::AlignCenter);
+    sceneBoxLayout->addWidget(m_view);
+
+    // Set the border style for the layout to none
+    QWidget* layoutWidget = new QWidget();
+    layoutWidget->setLayout(sceneBoxLayout);
+    layoutWidget->setStyleSheet("QWidget { border: none; }");
+
+    m_sceneBox->setLayout(new QVBoxLayout());
+    m_sceneBox->layout()->addWidget(layoutWidget);
+    m_centerLayout->addWidget(m_sceneBox);
+}
+
+void MainWindow::onCurrentProjectChanged(ProjectModel* project) {
+    m_sceneBox->setTitle(project->name());
+    m_publishButton->setVisible(!project->isPublished());
+}
+
+void MainWindow::onCurrentProjectPublished(ProjectModel* project) {
+    m_publishButton->hide();
+}
+
+void MainWindow::onOnlineStatusChanged(bool online) {
+    if (online) {
         mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
     } else {
-        m_connectionStatusLabel->setText("Disconnected");
-        m_connectionStatusLabel->setStyleSheet("QLabel { color : red; }");
         mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
     }
+    m_publishButton->setDisabled(!online);
 }
 
 void MainWindow::background_Layout() {
@@ -272,13 +297,13 @@ void MainWindow::onRunEnd()
 }
 
 void MainWindow::update_view() {
-    auto models = GlobalState::getInstance().currentProject()->models();
+    auto models = m_globalState.currentProject()->models();
 //    QMap<QString, QVariantList> last_changes;
     for (auto model: models) {
         if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
             QString sensorId = sensor->priority();
             QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
-            GlobalState::getInstance().updateLogData(sensorId, data);
+            m_globalState.updateLogData(sensorId, data);
 //            last_changes[sensorId] = data;
         }
     }
@@ -330,7 +355,7 @@ void MainWindow::create_sensor_from_bson_obj(const bson_t *bsonDocument) {
     new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
     new_sensor->setCmakePath(bson_iter_utf8(&iter, nullptr));
-    GlobalState::getInstance().currentProject()->addModel(new_sensor);
+    m_globalState.currentProject()->addModel(new_sensor);
 }
 
 void MainWindow::loadLayout() {
