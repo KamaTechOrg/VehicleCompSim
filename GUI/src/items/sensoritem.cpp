@@ -28,6 +28,8 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
     connect(&m_globalState, &GlobalState::ColumnNamesAdded, this, &SensorItem::update_column_names);
+    setZValue(1);
+
 }
 SensorItem::~SensorItem() {
     delete m_persistentTooltip;

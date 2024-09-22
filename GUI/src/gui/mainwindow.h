@@ -61,6 +61,8 @@ private:
     void record();
     void replayer();
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
+    void updateBackground();
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void onOnlineStatusChanged(bool online);
@@ -102,7 +104,10 @@ private:
     RemoteInterface* m_remoteInterface;
     buffer_test *m_bufferTest;
     initializeSensorsData *m_initializeSensorsData;
+    QString m_currentMainBackgroundPath;
 
     QGroupBox* m_sceneBox;
     QPushButton* m_publishButton;
+    QWidget* m_layoutWidget;
 };
+

@@ -157,12 +157,12 @@ void MainWindow::setupView() {
     sceneBoxLayout->addWidget(m_view);
 
     // Set the border style for the layout to none
-    QWidget* layoutWidget = new QWidget();
-    layoutWidget->setLayout(sceneBoxLayout);
-    layoutWidget->setStyleSheet("QWidget { border: none; }");
+    m_layoutWidget = new QWidget();
+    m_layoutWidget->setLayout(sceneBoxLayout);
+    m_layoutWidget->setStyleSheet("QWidget { border: none; }");
 
     m_sceneBox->setLayout(new QVBoxLayout());
-    m_sceneBox->layout()->addWidget(layoutWidget);
+    m_sceneBox->layout()->addWidget(m_layoutWidget);
     m_centerLayout->addWidget(m_sceneBox);
 }
 
@@ -185,14 +185,44 @@ void MainWindow::onOnlineStatusChanged(bool online) {
 }
 
 void MainWindow::background_Layout() {
+//    QString imagePath1 = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
+//    m_currentFrameBackgroundPath = imagePath1;
     QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
-    if (!imagePath.isEmpty()) {
-        QImage backgroundImage(imagePath);
-        QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(backgroundImage));
-        pixmapItem->setPos(0, 0);
-        m_scene->addItem(pixmapItem);
+    m_currentMainBackgroundPath = imagePath;
+    updateBackground();
+}
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
+    updateBackground();
+}
+
+void MainWindow::updateBackground()
+{
+    if (!m_currentFrameBackgroundPath.isEmpty()) {
+//        QPixmap backgroundImage(m_currentFrameBackgroundPath);
+//        QPixmap scaledImage = backgroundImage.scaled(mainFrame->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+//        QPalette palette;
+//        palette.setBrush(QPalette::Window, scaledImage);
+//        mainFrame->setAutoFillBackground(true);
+//        mainFrame->setPalette(palette);
+    }
+    if (!m_currentMainBackgroundPath.isEmpty()) {
+        QImage backgroundImage(m_currentMainBackgroundPath);
+        QSize viewSize = m_view->viewport()->size();
+        QImage scaledImage = backgroundImage.scaled(viewSize, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+        if (scaledImage.width() > viewSize.width() || scaledImage.height() > viewSize.height()) {
+            scaledImage = scaledImage.copy((scaledImage.width() - viewSize.width()) / 2,
+                                           (scaledImage.height() - viewSize.height()) / 2,
+                                           viewSize.width(),
+                                           viewSize.height());
+        }
+        QBrush imageBrush(scaledImage);
+        imageBrush.setTransform(QTransform().translate(-viewSize.width() / 2, -viewSize.height() / 2));
+        m_view->setBackgroundBrush(imageBrush);
     }
 }
+
 void MainWindow::record() {
     QString defaultFileName = "record.log";
     QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
