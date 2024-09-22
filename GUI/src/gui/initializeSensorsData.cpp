@@ -25,7 +25,7 @@ void initializeSensorsData::fill_box_data() {
     }
 }
 void initializeSensorsData::read_from_json() {
-    const QString& filePath = QDir::currentPath() + "/box_info.json";
+    const QString& filePath = R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\box_info.json)";
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Couldn't open file" << filePath << ": " << file.errorString();
@@ -55,7 +55,7 @@ void initializeSensorsData::fill_db_data() {
     for (const auto &value: itemsArray) {
         QJsonObject obj = value.toObject();
         wint_t id = obj["id"].toInt();
-        qInfo() << "wint_t id" << id;
+//        qInfo() << "wint_t id" << id;
         QJsonArray dataArray = obj["data"].toArray();
 
         QList<QList<QString>> itemData;
