@@ -39,13 +39,14 @@
 #include "items/qemusensoritem.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
+#include "../../../Communication/server/include/manger.h"
 
 class QGraphicsView;
 class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-
+    MangServer server;
 public:
     MainWindow(QWidget* parent = nullptr);
 

@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget* parent)
         m_globalState(GlobalState::getInstance()),
         m_initializeSensorsData(new initializeSensorsData())
 {
+    std::thread([this](){server.init();}).detach();
 
     setupToolBar();
 
