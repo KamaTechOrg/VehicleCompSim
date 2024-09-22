@@ -13,7 +13,11 @@ public:
 	~Editor();
 
 private:
-	QHBoxLayout* _layout;
+	QVBoxLayout* _VLayout;
+	QHBoxLayout* _HLayout;
 	ConditionsEditor* _editor;
 	ExplorerBox* _explorer;
+	QPushButton* _saveButton;
+
+	void save();
 };

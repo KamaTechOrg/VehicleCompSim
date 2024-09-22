@@ -15,9 +15,9 @@ public:
 	ConditionsEditor();
 	
 	void setView(nlohmann::json jsonData);
-	void save();
 
 private:
+	void save();
 	void showSaveSuccessFeedback();
 	void showSaveFailedFeedback();
 	void loadGuiDataFromJson();
@@ -27,5 +27,5 @@ private:
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;
 	ThenGroupBox* _actionGroupBox;
-	QPushButton* _saveButton;
+	//QPushButton* _saveButton;
 };

@@ -27,6 +27,19 @@ ExplorerBox::ExplorerBox(ConditionsEditor* editorReference)
 	setLayout(_layout);
 }
 
+std::vector<std::string> ExplorerBox::scenariosNames() const
+{
+	std::vector<std::string> scenariosNames;
+	QStringListModel* model = qobject_cast<QStringListModel*>(_scenariosList->model());
+	if (model) {
+		QStringList scenariosList = model->stringList();
+		for (const QString& scenario : scenariosList) {
+			scenariosNames.push_back(scenario.toStdString());
+		}
+	}
+	return scenariosNames;
+}
+
 void ExplorerBox::onItemClicked(const QModelIndex& index)
 {
 	QString itemText = index.data().toString();

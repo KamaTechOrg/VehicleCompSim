@@ -16,14 +16,14 @@ ConditionsEditor::ConditionsEditor()
 
     _actionGroupBox = new ThenGroupBox;
 
-    _saveButton = new QPushButton("save");
-    connect(_saveButton, &QPushButton::clicked, this, &ConditionsEditor::save);
+    //_saveButton = new QPushButton("save");
+    //connect(_saveButton, &QPushButton::clicked, this, &ConditionsEditor::save);
 
     _ConditionsEditorLayout = new QVBoxLayout;
     _ConditionsEditorLayout->addLayout(_conditionsGroup);
     _ConditionsEditorLayout->addWidget(_actionGroupBox);
     _ConditionsEditorLayout->addStretch(1);
-    _ConditionsEditorLayout->addWidget(_saveButton);
+    //_ConditionsEditorLayout->addWidget(_saveButton);
     
     setLayout(_ConditionsEditorLayout);
 
@@ -47,22 +47,22 @@ void ConditionsEditor::save()
 
 void ConditionsEditor::showSaveSuccessFeedback()
 {
-    _saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
-    _saveButton->setText("success");
-    QTimer::singleShot(3000, [this]() {
-        _saveButton->setStyleSheet("");
-        _saveButton->setText("save");
-        });
+    //_saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
+    //_saveButton->setText("success");
+    //QTimer::singleShot(3000, [this]() {
+    //    _saveButton->setStyleSheet("");
+    //    _saveButton->setText("save");
+    //    });
 }
 
 void ConditionsEditor::showSaveFailedFeedback()
 {
-    _saveButton->setStyleSheet("background-color: #F44336;"); // Red
-    _saveButton->setText("failed");
-    QTimer::singleShot(3000, [this]() {
-        _saveButton->setStyleSheet("");
-        _saveButton->setText("save");
-        });
+    //_saveButton->setStyleSheet("background-color: #F44336;"); // Red
+    //_saveButton->setText("failed");
+    //QTimer::singleShot(3000, [this]() {
+    //    _saveButton->setStyleSheet("");
+    //    _saveButton->setText("save");
+    //    });
 }
 
 void ConditionsEditor::loadGuiDataFromJson()

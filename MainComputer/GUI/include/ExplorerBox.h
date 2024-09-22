@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <QGroupBox>
 #include <QListView>
 #include <QVBoxLayout>
@@ -10,6 +11,8 @@ class ExplorerBox : public QGroupBox
 {
 public:
 	ExplorerBox(ConditionsEditor* editorReference);
+
+	std::vector<std::string> scenariosNames() const;
 
 private:
 	ConditionsEditor* _editorReference;
