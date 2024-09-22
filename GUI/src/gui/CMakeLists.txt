@@ -29,6 +29,8 @@ set(CLIENT_SOURCES
     CustomInfoWindow.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
+    widgets/verticalindicator.h
+    widgets/verticalindicator.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

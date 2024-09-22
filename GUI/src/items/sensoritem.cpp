@@ -8,9 +8,13 @@
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
 
+#include <qrandom.h>
+
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
       m_checkBoxProxy(new QGraphicsProxyWidget(this)),
+      m_verticalIndicatorProxy(new QGraphicsProxyWidget(this)),
+      m_verticalIndicator(new VerticalIndicator()),
       m_globalState(GlobalState::getInstance())
 {
     m_width = 160;
@@ -20,6 +24,13 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
 
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
     setupCheckBoxProxy();
+    // Set up vertical indicator
+    m_verticalIndicator->setMaxValue(200); // Set max value
+    m_verticalIndicator->setValue(50);
+    m_verticalIndicatorProxy->setWidget(m_verticalIndicator);
+    m_verticalIndicatorProxy->setPos(QPointF(boundingRect().right(), boundingRect().top() + 5));
+    m_verticalIndicatorProxy->setZValue(1);
+    
     connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
     updateColor();
     hideButtons();
@@ -94,6 +105,8 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     } else{
         hideButtons();
     }
+
+    m_verticalIndicator->setValue(QRandomGenerator::global()->bounded(200));
 }
 
 bool SensorItem::isInitialized() const
