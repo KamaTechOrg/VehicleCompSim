@@ -199,14 +199,14 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::updateBackground()
 {
-    if (!m_currentFrameBackgroundPath.isEmpty()) {
+//    if (!m_currentFrameBackgroundPath.isEmpty()) {
 //        QPixmap backgroundImage(m_currentFrameBackgroundPath);
 //        QPixmap scaledImage = backgroundImage.scaled(mainFrame->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 //        QPalette palette;
 //        palette.setBrush(QPalette::Window, scaledImage);
 //        mainFrame->setAutoFillBackground(true);
 //        mainFrame->setPalette(palette);
-    }
+//    }
     if (!m_currentMainBackgroundPath.isEmpty()) {
         QImage backgroundImage(m_currentMainBackgroundPath);
         QSize viewSize = m_view->viewport()->size();
