@@ -1,0 +1,52 @@
+# Visual Studio
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.ide
+*.sln
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt.user
+Makefile
+cmake_install.cmake
+*.cmake
+*.o
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.log
+*.exe
+*.dll
+*.lib
+
+# OpenCV specific
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.gif
+*.tiff
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Temporary files
+*.tmp
+*.temp
+*.~*
+*~
+
+# Build directories
+build/
+bin/
+lib/
+
+# Local server files (אם יש תיקיות ספציפיות לשרת)
+server_data/
+logs/
