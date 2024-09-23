@@ -8,9 +8,13 @@
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
 
+#include <qrandom.h>
+
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
       m_checkBoxProxy(new QGraphicsProxyWidget(this)),
+      m_verticalIndicatorProxy(new QGraphicsProxyWidget(this)),
+      m_verticalIndicator(new VerticalIndicator()),
       m_globalState(GlobalState::getInstance())
 {
     m_width = 160;
@@ -20,6 +24,13 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
 
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
     setupCheckBoxProxy();
+    // Set up vertical indicator
+    m_verticalIndicator->setMaxValue(200); // Set max value
+    m_verticalIndicator->setValue(50);
+    m_verticalIndicatorProxy->setWidget(m_verticalIndicator);
+    m_verticalIndicatorProxy->setPos(QPointF(boundingRect().right(), boundingRect().top() + 5));
+    m_verticalIndicatorProxy->setZValue(1);
+    
     connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
     updateColor();
     hideButtons();
@@ -27,12 +38,23 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     // Set up timer for live updates
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
-    connect(&m_globalState, &GlobalState::ColumnNamesAdded, this, &SensorItem::update_column_names);
+    connect(&GlobalState::getInstance(), &GlobalState::newParsedData, this, &SensorItem::update_new_data);
+
     setZValue(1);
 
 }
 SensorItem::~SensorItem() {
     delete m_persistentTooltip;
+}
+void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
+    auto *sensor = dynamic_cast<SensorItem *>(this);
+    if(sensor->getModel().priority() == data[1].second || sensor->getModel().priority() == data[2].second){
+        for(const auto& pair : data){
+            qInfo() << pair.first << pair.second;
+        }
+    }
+
+    // todo update sensor data
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -96,6 +118,8 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     } else{
         hideButtons();
     }
+
+    m_verticalIndicator->setValue(QRandomGenerator::global()->bounded(200));
 }
 
 bool SensorItem::isInitialized() const
@@ -200,7 +224,6 @@ void SensorItem::showInfoWindow() {
         m_infoWindowProxy = scene()->addWidget(m_infoWindow);
         m_infoWindowProxy->setZValue(1);
         connect(m_infoWindow, &CustomInfoWindow::closed, this, &SensorItem::onCustomWindowClosed);
-        connect(&m_globalState, &GlobalState::dataLogAdded, this, &SensorItem::update_data);
     }
 
     updateInfoWindow();
@@ -257,12 +280,23 @@ void SensorItem::update_data(const QString& sensorId, QList<QVariant> data){
         }
     }
 }
-void SensorItem::update_column_names(const QString& sensorId, QList<QString> data){
-    auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == sensorId){
-        columnNames = data;
-    }
-}
+//void SensorItem::update_column_names(const QString& sensorId, QList<QString> data){
+//    auto *sensor = dynamic_cast<SensorItem *>(this);
+//    if(sensor->getModel().priority() == sensorId){
+//        columnNames = data;
+//    }
+//}
+//
+//void SensorItem::update_data_new(const QByteArray &buffer) {
+//    QList<QByteArray> pieces = buffer.split(',');
+//    auto *sensor = dynamic_cast<SensorItem *>(this);
+//    if(sensor->getModel().priority() == pieces[1] || sensor->getModel().priority() == pieces[2]){
+//
+//        // need to parse before
+//        all_data.emplace_back(buffer);
+//    }
+//
+//}
 
 
 

@@ -44,13 +44,15 @@ public:
     QString myClientId() const { return m_myClientId; }
     void setMyClientId(QString value);
 
-//    QList<QList<QVariant>*> snesors_data() const { return snesors_log_data.values(); }
-    void updateLogData(QString sensorId, QList<QVariant> data);
-    void updateColumnNames(QString sensorId, QList<QString> data);
-    void updateDbHandler(wint_t sensorId, QList<QList<QString>> data);
+    void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
+    void newData(const QByteArray& new_buffer);
+    void newParsedData(QList<QPair<QString, QString>> data);
 
     void saveData();
     void loadData();
+
+    // for test only
+    void new_test_buffer(QByteArray buffer);
 
 
 signals:
@@ -62,11 +64,15 @@ signals:
     void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
     void currentProjectPublished(ProjectModel* project);
-    void dataLogAdded(QString sensorId, QList<QVariant> data);
-    void ColumnNamesAdded(QString sensorId, QList<QString> data);
-    void SensorDbInfoAdded(wint_t sensorId, QList<QList<QString>> data);
+
+    void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
+    void newDataArrived(const QByteArray& new_buffer);
+    void parsedData(QList<QPair<QString, QString>> data);
     void saveBtnPressed();
     void loadBtnPressed();
+
+    // for test only
+    void new_test_buffer_arrived(QByteArray buffer);
 
 
 
@@ -83,8 +89,5 @@ private:
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
     SensorModel* m_currentSensorModel = nullptr;
-
-
-//    QHash<QString, QList<QVariant> *> snesors_log_data;
 
 };

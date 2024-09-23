@@ -40,13 +40,16 @@
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
 #include "saveAndLoad.h"
+#include "items/parser.h"
+#include "../../../Communication/server/include/manger.h"
+
 
 class QGraphicsView;
 class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-
+    MangServer server;
 public:
     MainWindow(QWidget* parent = nullptr);
 
@@ -64,13 +67,13 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
-
+    void buffer_listener(const QByteArray& new_buffer);
 private slots:
     void onOnlineStatusChanged(bool online);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
-    void update_view();
+//    void update_view();
 //    void fill_db_data();
 //    void read_from_json();
 //    void fill_box_data();
@@ -89,7 +92,7 @@ private:
     QPushButton *stopBtn ;
     QTimeEdit *timer;
     std::shared_ptr<RunService> m_runService;
-    std::unique_ptr<LogReader> m_logReader;
+//    std::unique_ptr<LogReader> m_logReader;
     std::unique_ptr<SimulationRecorder> m_simulationRecorder = nullptr;
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
@@ -98,7 +101,7 @@ private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
     DB_handler *m_DB_handler;
-    QTimer *change_view_timer;
+//    QTimer *change_view_timer;
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
@@ -111,5 +114,5 @@ private:
     QPushButton* m_publishButton;
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
+    parser * m_parser;
 };
-

@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget* parent)
         m_globalState(GlobalState::getInstance()),
         m_initializeSensorsData(new initializeSensorsData())
 {
+    std::thread([this](){server.init();}).detach();
 
     setupToolBar();
 
@@ -51,6 +52,10 @@ MainWindow::MainWindow(QWidget* parent)
     connect(&m_globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onOnlineStatusChanged);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
+
+    // for test only
+    connect(&m_globalState, &GlobalState::new_test_buffer_arrived, this, &MainWindow::buffer_listener);
+
 
     ProjectModel* startingProject = new ProjectModel("Project");
     m_globalState.addProject(startingProject);
@@ -101,6 +106,7 @@ void MainWindow::setupRunService()
     m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
     m_saveAndLoad = new saveAndLoad(&m_globalState);
+    m_parser = new parser();
 
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
@@ -261,14 +267,14 @@ void MainWindow::onRunStart()
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
-    const QString& filePath = QDir::currentPath() + "/A.log";
-    m_logReader = std::make_unique<LogReader>(filePath, m_DB_handler, nullptr, this);
-    if(m_simulationRecorder != nullptr){
-        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
-    }
-    change_view_timer = new QTimer(this);
-    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
-    change_view_timer->start(2000);
+//    const QString& filePath = QDir::currentPath() + "/A.log";
+//    m_logReader = std::make_unique<LogReader>(filePath, m_DB_handler, nullptr, this);
+//    if(m_simulationRecorder != nullptr){
+//        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
+//    }
+//    change_view_timer = new QTimer(this);
+//    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
+//    change_view_timer->start(2000);
 
     startBtn->hide();
     timer->hide();
@@ -288,20 +294,23 @@ void MainWindow::onRunEnd()
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
 }
-
-void MainWindow::update_view() {
-    auto models = m_globalState.currentProject()->models();
-//    QMap<QString, QVariantList> last_changes;
-    for (auto model: models) {
-        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
-            QString sensorId = sensor->priority();
-            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
-            m_globalState.updateLogData(sensorId, data);
-//            last_changes[sensorId] = data;
-        }
-    }
-//    m_liveUpdate_forLogger->parse_new_data(last_changes);
+void MainWindow:: buffer_listener(const QByteArray& new_buffer){
+    m_globalState.newData(new_buffer);
 }
+
+//void MainWindow::update_view() {
+//    auto models = m_globalState.currentProject()->models();
+////    QMap<QString, QVariantList> last_changes;
+//    for (auto model: models) {
+//        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
+//            QString sensorId = sensor->priority();
+//            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
+//            m_globalState.newData(sensorId, data);
+////            last_changes[sensorId] = data;
+//        }
+//    }
+//    m_liveUpdate_forLogger->parse_new_data(last_changes);
+//}
 
 void MainWindow::saveLayout() {
     m_globalState.saveBtnPressed();

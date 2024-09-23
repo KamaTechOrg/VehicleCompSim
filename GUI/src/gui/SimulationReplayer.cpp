@@ -54,7 +54,7 @@ void SimulationReplayer::processEvent() {
         QList<QByteArray> parts = event.split(',');
         m_currentTime = QDateTime::fromString(parts[0], Qt::ISODate);
         QByteArray event_without_time = parts.mid(1, 5).join(',');
-        m_db->write_to_DB(event_without_time);
+        m_db->write_data_to_DB(event_without_time);
         // need to call just after all the junk of lines that theire timers ended already updated in the db
         // in this time update view is calling after every update in the db. not ok!
         update_view();
@@ -102,7 +102,7 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
                     scheduleEvent(line, delay);
                 }else{
                     QByteArray event_without_time = parts.mid(1, 5).join(',');
-                    m_db->write_to_DB(event_without_time);
+                    m_db->write_data_to_DB(event_without_time);
                     update_view();
                 }
             }
@@ -110,17 +110,17 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
     }
 }
 void SimulationReplayer::update_view() {
-    auto models = GlobalState::getInstance().currentProject()->models();
-//    QMap<QString, QVariantList> last_changes;
-    for (auto model: models) {
-        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
-            QString sensorId = sensor->priority();
-            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
-            GlobalState::getInstance().updateLogData(sensorId, data);
-
-//            last_changes[sensorId] = data;
-        }
-    }
+//    auto models = GlobalState::getInstance().currentProject()->models();
+////    QMap<QString, QVariantList> last_changes;
+//    for (auto model: models) {
+//        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
+//            QString sensorId = sensor->priority();
+//            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
+//            GlobalState::getInstance().parsedData(sensorId, data);
+//
+////            last_changes[sensorId] = data;
+//        }
+//    }
 //    m_liveUpdate_forLogger->parse_new_data(last_changes);
 }
 

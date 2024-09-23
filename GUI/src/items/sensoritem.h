@@ -5,8 +5,9 @@
 #include <QGraphicsView>
 #include "baseitem.h"
 #include "sensormodel.h"
-#include "gui/PersistentTootip.h"
-#include "gui/CustomInfoWindow.h"
+#include "PersistentTootip.h"
+#include "CustomInfoWindow.h"
+#include "widgets/verticalindicator.h"
 
 class PopupDialog;
 
@@ -42,6 +43,8 @@ private:
     GlobalState &m_globalState;
 
     QGraphicsProxyWidget* m_checkBoxProxy;
+    QGraphicsProxyWidget* m_verticalIndicatorProxy;
+    VerticalIndicator* m_verticalIndicator;
     QColor m_disabledColor = QColor(192, 192, 192); // Gray for disabled
     QColor m_excludedColor = QColor(250, 165, 142); // Red for excluded
     QColor m_availableColor = QColor(160, 253, 143); // Green for available
@@ -58,6 +61,10 @@ public slots:
     void onModelUpdated();
 
 private slots:
+    void update_new_data(QList<QPair<QString, QString>> data);
+//    void update_data_new(const QByteArray& buffer);
+
+
     void update_data(const QString& sensorId, QList<QVariant> data);
     void update_column_names(const QString& sensorId, QList<QString> data);
 

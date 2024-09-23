@@ -13,6 +13,8 @@ set(ITEMS_SOURCES
     actionsblocker.cpp
     qemusensoritem.h
     qemusensoritem.cpp
+    parser.cpp
+    parser.h
 )
 
 set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)
