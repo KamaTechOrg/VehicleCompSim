@@ -9,13 +9,17 @@
 
 class ExplorerBox : public QGroupBox
 {
+	Q_OBJECT
+
 public:
-	ExplorerBox(ConditionsEditor* editorReference);
+	ExplorerBox();
 
 	std::vector<std::string> scenariosNames() const;
 
+signals:
+	void scenarioClicked(int index);
+
 private:
-	ConditionsEditor* _editorReference;
 	QVBoxLayout* _layout;
 	QListView* _scenariosList;
 

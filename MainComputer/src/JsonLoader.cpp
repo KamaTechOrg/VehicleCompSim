@@ -26,7 +26,7 @@ nlohmann::json JsonLoader::loadConditionsLogic() const
     return jsonData;
 }
 
-nlohmann::json JsonLoader::loadGuiData() const
+nlohmann::json::array_t JsonLoader::loadGuiData() const
 {
     std::ifstream file(_guiDataJsonFileName);
     if (!file.is_open()) {
@@ -48,15 +48,15 @@ nlohmann::json JsonLoader::loadGuiData() const
     qDebug() << "Loaded JSON data: " << QString::fromStdString(jsonData.dump(4));
 
     // Check if the keys exist in the JSON data
-    if (jsonData.contains("conditions") && jsonData.contains("actions")) {
+    /*if (jsonData.contains("conditions") && jsonData.contains("actions")) {
         return jsonData;
     }
     else {
         qDebug() << "JSON data missing expected keys: 'conditions' or 'actions'.";
         return generateDefaultGuiDataJson();
-    }
+    }*/
 
-    return generateDefaultGuiDataJson();
+    return jsonData;
 }
 
 

@@ -15,9 +15,13 @@ public:
 private:
 	QVBoxLayout* _VLayout;
 	QHBoxLayout* _HLayout;
-	ConditionsEditor* _editor;
+	std::vector<ConditionsEditor*> _scenariosEditors; // an "editor" for each scenario
 	ExplorerBox* _explorer;
 	QPushButton* _saveButton;
 
 	void save();
+	void initializeGuiFields();
+
+private slots:
+	void handleScenarioClicked(int index);
 };

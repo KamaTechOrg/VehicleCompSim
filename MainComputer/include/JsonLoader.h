@@ -9,7 +9,7 @@ public:
 	~JsonLoader() = default;
 
 	nlohmann::json loadConditionsLogic() const;
-	nlohmann::json loadGuiData() const;
+	nlohmann::json::array_t loadGuiData() const;
 	void saveConditionsLogic(const nlohmann::json &jsonData) const;
 	void saveGuiData(const nlohmann::json &jsonData) const;
 

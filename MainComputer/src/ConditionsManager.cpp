@@ -138,8 +138,8 @@ void ConditionsManager::loadFromJson()
     conditions.clear();
     actions.clear();
 
-    addCondition(ConditionsFactory().createConditionsFromJson(jsonData["conditions"]));
-    for (const auto& actionJson : jsonData["actions"]) {
+    addCondition(ConditionsFactory().createConditionsFromJson(jsonData.at(0)["conditions"]));
+    for (const auto& actionJson : jsonData.at(0)["actions"]) {
             std::string target = actionJson["target"];
             std::string message = actionJson["message"];
             Action action(target, message);

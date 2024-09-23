@@ -13,20 +13,12 @@ ConditionsEditor::ConditionsEditor()
     _conditionsGroup = new ConditionsGroup;
     _conditionsGroup->unableDelete();
     _conditionsGroup->setBoxTitle("if");
-
     _actionGroupBox = new ThenGroupBox;
-
-    //_saveButton = new QPushButton("save");
-    //connect(_saveButton, &QPushButton::clicked, this, &ConditionsEditor::save);
-
     _ConditionsEditorLayout = new QVBoxLayout;
     _ConditionsEditorLayout->addLayout(_conditionsGroup);
     _ConditionsEditorLayout->addWidget(_actionGroupBox);
     _ConditionsEditorLayout->addStretch(1);
-    //_ConditionsEditorLayout->addWidget(_saveButton);
-    
     setLayout(_ConditionsEditorLayout);
-
     resize(350, 200);
 }
 

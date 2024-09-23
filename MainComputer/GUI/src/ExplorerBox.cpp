@@ -4,8 +4,8 @@
 #include <QMenu>
 #include "JsonLoader.h"
 
-ExplorerBox::ExplorerBox(ConditionsEditor* editorReference)
-	: QGroupBox("Explorer"), _editorReference(editorReference)
+ExplorerBox::ExplorerBox()
+	: QGroupBox("Explorer")
 {
 	this->setFixedWidth(250);
 
@@ -44,8 +44,9 @@ void ExplorerBox::onItemClicked(const QModelIndex& index)
 {
 	QString itemText = index.data().toString();
 	qDebug() << itemText << " clicked";
-	nlohmann::json jsonData = JsonLoader().loadGuiData();
-	_editorReference->setView(jsonData);
+	emit scenarioClicked(index.row());
+	//nlohmann::json jsonData = JsonLoader().loadGuiData();
+	//_editorReference->setView(jsonData);
 }
 
 void ExplorerBox::showContextMenu(const QPoint& pos)
