@@ -1,9 +1,9 @@
 namespace HSM {
   /**
-   * @enum HsmStatus
+   * @enum HSM_STATUS
    * @brief Status for the HSM module.
    */
-  enum HsmStatus {
+  enum HSM_STATUS {
     HSM_Good,
     HSM_InvalidAlg,
     HSM_InvalidIdent,

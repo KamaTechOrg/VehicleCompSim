@@ -11,13 +11,12 @@
 #include <stdexcept>
 #include "../../BigNum/include/BigNum.h"
 #include "../../BigNum/include/BigNumWithMinus.h"
-#include "HSM_status_enum.hpp"
-
+#include "HSMStatusEnum.hpp"
 
 class RSA_KEY
 {
 public:
-    HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits = 512);
+    static HSM::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits = 512);
 
     static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 512);
     static bool isPrime(const BigNum &n, int k);

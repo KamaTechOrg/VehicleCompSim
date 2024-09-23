@@ -54,7 +54,6 @@ add_subdirectory(AES)
 add_subdirectory(BigNum)
 add_subdirectory(SHA256)
 add_subdirectory(RSA)
-add_subdirectory(KeyStorage)
 add_subdirectory(Signature)
 add_subdirectory(Benchmark)
 add_subdirectory(HsmStatus)
@@ -62,7 +61,10 @@ add_subdirectory(HsmStatus)
 # API
 add_library(HSM src/HSM.cpp)
 target_include_directories(HSM PUBLIC include)
-target_link_libraries(HSM AES RSA Signature)
+target_link_libraries(HSM AES RSA Signature HsmStatus)
+
+add_dependencies(RSA HsmStatus)
+target_link_libraries(RSA INTERFACE HsmStatus)
 
 #testing
 add_executable(API_TEST test/API_test.cpp)
