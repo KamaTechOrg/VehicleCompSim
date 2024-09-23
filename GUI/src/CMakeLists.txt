@@ -19,6 +19,8 @@ target_include_directories(VehicleCompSimCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/state
     ${CMAKE_SOURCE_DIR}/GUI/include/VehicleCompSim/utils
     ${CMAKE_SOURCE_DIR}/MainComputer/include
+    ${CMAKE_SOURCE_DIR}/Communication/server/include
+    ${CMAKE_SOURCE_DIR}/Communication/utilities
 )
 
 # Link Qt libraries
@@ -27,6 +29,8 @@ target_link_libraries(VehicleCompSimCore PUBLIC
     Qt::WebSockets
     Qt::Sql
     MainComputer
+    server_lib
+
 )
 
 # Add subdirectories

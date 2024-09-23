@@ -40,13 +40,15 @@
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
 #include "saveAndLoad.h"
+#include "../../../Communication/server/include/manger.h"
+
 
 class QGraphicsView;
 class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-
+    MangServer server;
 public:
     MainWindow(QWidget* parent = nullptr);
 
@@ -64,7 +66,6 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
-
 private slots:
     void onOnlineStatusChanged(bool online);
     void onCurrentProjectChanged(ProjectModel* project);
@@ -112,4 +113,3 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
 };
-

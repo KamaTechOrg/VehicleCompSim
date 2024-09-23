@@ -15,5 +15,6 @@ else()
 endif()
 
 # Add subdirectories
+add_subdirectory(Communication)
 add_subdirectory(MainComputer)
 add_subdirectory(GUI)
