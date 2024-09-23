@@ -10,8 +10,8 @@
 #include <arpa/inet.h>
 #endif
 
-#include "aes_text_encrypt.hpp"
-#include "aes.hpp"
+#include "AES_chaining_stream.hpp"
+#include "AES_block_encrypt.hpp"
 
 
 
@@ -21,19 +21,18 @@
 
 namespace aes {
 
+using AES_State = AES_block_encrypt::State;
 
 /* /////////// ECB mode \\\\\\\\\\\  */
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ecb(Aes<Aes_var> const& aes, std::string const& message){
-    std::string encrypted_message;
+std::vector<uint8_t> AES_ChainingStream::encrypt_ecb(AES_block_encrypt const& aes, std::vector<uint8_t> const& message){
+    std::vector<uint8_t> encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   encrypted_message.reserve(message.size() + paddingN); // encrypted_message.size() == N*sizeof(State)
   
-  encrypted_message += message; // fill message
-  encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
-  using State = typename Aes<Aes_var>::State;
-  auto* states_buf = reinterpret_cast<State*>(encrypted_message.data());
+  encrypted_message.insert(encrypted_message.end(), message.begin(), message.end()); // fill message
+  encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding char
+  auto* states_buf = reinterpret_cast<AES_State*>(encrypted_message.data());
   std::for_each_n(/* std::execution::par,  */states_buf, encrypted_message.size()/16, [&](auto& state){
     aes.encrypt(state);
   });
@@ -41,51 +40,42 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ecb(Aes<Aes_var> const& aes, std::s
 }
 
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_ecb(Aes<Aes_var> const& aes, std::string const& encrypted_message) {
+std::vector<uint8_t> AES_ChainingStream::decrypt_ecb(AES_block_encrypt const& aes, std::vector<uint8_t> const& encrypted_message) {
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
-  std::string message = encrypted_message;
-  using State = typename Aes<Aes_var>::State;
-  State* states_buf = reinterpret_cast<State*>(message.data());
+  std::vector<uint8_t> message = encrypted_message;
+  auto states_buf = reinterpret_cast<AES_State*>(message.data());
   std::for_each_n(/* std::execution::par, */ states_buf, message.size()/16, [&](auto& state){
     aes.decrypt(state);
   });
 
-  if(message.back() > 16){
-    throw std::invalid_argument("aes invalid padding char");
+  if(message.back() > 16 
+    || !std::all_of(
+     message.end() - message.back(),
+      message.end(),
+      [&](uint8_t c){ return c == message.back();})
+  ){
+    throw std::invalid_argument("invalid padding for AES ECB.");
   }
   message.resize(message.size() - message.back());
   return message;
 }
 
-
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ecb(KeyType const& key, std::string const& message){
-    return encrypt_ecb(Aes<Aes_var>(key), message);
-}
-
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_ecb(KeyType const& key, std::string const& encrypted_message){
-    return decrypt_ecb(Aes<Aes_var>(key), encrypted_message);
-}
-
 #if SYCL_ENABLED
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ecb(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message)  {
-  std::string encrypted_message;
+std::vector<uint8_t> AES_ChainingStream::encrypt_ecb(sycl::queue& q, AES_block_encrypt const& aes, std::vector<uint8_t> const& message)  {
+  std::vector<uint8_t> encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   encrypted_message.reserve(message.size() + paddingN); // encrypted_message.size() == N*sizeof(State)
   
-  encrypted_message += message; // fill message
+  encrypted_message.insert(encrypted_message.end(), message.begin(), message.end()); // fill message
   encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
 
   size_t blocksN = encrypted_message.size()/16;
   sycl::range<1> blocksN_range{blocksN};
-  using State = typename Aes<Aes_var>::State;
-  sycl::buffer states_buf(reinterpret_cast<State*>(encrypted_message.data()), blocksN_range);
+
+  sycl::buffer states_buf(reinterpret_cast<AES_State*>(encrypted_message.data()), blocksN_range);
   sycl::buffer aes_buf(&aes, sycl::range<1>{1});
   q.submit([&](sycl::handler &h){
     sycl::accessor aes_accessor(aes_buf, h, sycl::read_only);
@@ -99,17 +89,15 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ecb(sycl::queue& q, Aes<Aes_var> co
 }
 
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_ecb(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& encrypted_message) {
+std::vector<uint8_t> AES_ChainingStream::decrypt_ecb(sycl::queue& q, AES_block_encrypt const& aes, std::vector<uint8_t> const& encrypted_message) {
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
-  std::string message = encrypted_message;
+  std::vector<uint8_t> message = encrypted_message;
 
-  using State = typename Aes<Aes_var>::State;
   { 
     sycl::range<1> blocksN_range{message.size()/16};
-    sycl::buffer states_buf(reinterpret_cast<State*>(message.data()), blocksN_range);
+    sycl::buffer states_buf(reinterpret_cast<AES_State*>(message.data()), blocksN_range);
     sycl::buffer aes_buf(&aes, sycl::range<1>{1});
     q.submit([&](sycl::handler &h){
       sycl::accessor aes_accessor(aes_buf, h, sycl::read_only);
@@ -127,36 +115,22 @@ std::string AesTextEncrypt<Aes_var>::decrypt_ecb(sycl::queue& q, Aes<Aes_var> co
   return message;
 }
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ecb(sycl::queue& q, typename Aes<Aes_var>::KeyType const& key, std::string const& message){
-    return AesTextEncrypt<Aes_var>::encrypt_ecb(q, Aes<Aes_var>(key), message);
-}
-
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_ecb(sycl::queue& q, typename Aes<Aes_var>::KeyType const& key, std::string const& encrypted_message){
-    return AesTextEncrypt<Aes_var>::decrypt_ecb(q, Aes<Aes_var>(key), encrypted_message);
-}
-
-
 #endif
-
 
 
 /* /////////// CBC mode \\\\\\\\\\\  */
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 16> const& iv) {
-  using State = typename Aes<Aes_var>::State;
-  auto Nb = Aes<Aes_var>::Nb;
+std::vector<uint8_t> AES_ChainingStream::encrypt_cbc(AES_block_encrypt const& aes, std::array<uint8_t, 16> const& iv, std::vector<uint8_t> const& message) {
+  auto Nb = AES_block_encrypt::Nb;
 
-  State prev_state;
+  AES_State prev_state;
   for (uint col = 0; col < Nb; ++col) {
     for (uint row = 0; row < Nb ; ++row) {
       prev_state[col][row] = iv[row + col*4];
     }
   }
-  State state;
-  std::string encrypted_message;
+  AES_State state;
+  std::vector<uint8_t> encrypted_message;
   uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
   encrypted_message.reserve(message.size() + paddingN);
   size_t msg_idx = 0;
@@ -176,7 +150,7 @@ std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::s
     aes.encrypt(state);
     for (uint col = 0; col < Nb; ++col) {
       for (uint row = 0; row < Nb; ++row) {
-        encrypted_message += state[col][row];
+        encrypted_message.push_back(state[col][row]);
       }
     }
     prev_state = state;
@@ -186,22 +160,20 @@ std::string AesTextEncrypt<Aes_var>::encrypt_cbc(Aes<Aes_var> const& aes, std::s
 }
 
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_cbc(Aes<Aes_var> const& aes, std::string const& encrypted_message, std::array<uint8_t, 16> const& iv)  {
-  using State = typename Aes<Aes_var>::State;
-  auto Nb = Aes<Aes_var>::Nb;
+std::vector<uint8_t> AES_ChainingStream::decrypt_cbc(AES_block_encrypt const& aes, std::array<uint8_t, 16> const& iv, std::vector<uint8_t> const& encrypted_message)  {
+  auto Nb = AES_block_encrypt::Nb;
 
   if(encrypted_message.size() % 16 != 0){
     throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
-  State prev_state;
+  AES_State prev_state;
   for (uint col = 0; col < Nb; ++col) {
     for (uint row = 0; row < Nb ; ++row) {
       prev_state[col][row] = iv[row + col*4];
     }
   }
-  State state;
-  std::string message;
+  AES_State state;
+  std::vector<uint8_t> message;
   message.reserve(encrypted_message.size());
   size_t msg_idx = 0;
   while(msg_idx < encrypted_message.size()){
@@ -214,36 +186,25 @@ std::string AesTextEncrypt<Aes_var>::decrypt_cbc(Aes<Aes_var> const& aes, std::s
     aes.decrypt(state);
     for (uint col = 0; col < Nb && msg_idx < encrypted_message.size(); ++col) {
       for (uint row = 0; row < Nb; ++row) {
-        message += state[col][row]^prev_state[col][row];
+        message.push_back(state[col][row]^prev_state[col][row]);
       }
     }
     prev_state = tmp;
     msg_idx += Nb*Nb;
   }
   if(message.back() > 16){
-    throw std::invalid_argument(std::string("aes invalid padding char: ") + message.back());
+    throw std::invalid_argument(std::string("aes invalid padding char."));
   }
   message.resize(message.size() - message.back());
   return message;
 }
-
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& message, std::array<uint8_t, 16> const& iv){
-    return encrypt_cbc(Aes<Aes_var>(key), message, iv);
-}
-
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::decrypt_cbc(typename Aes<Aes_var>::KeyType const& key, std::string const& encrypted_message, std::array<uint8_t, 16> const& iv){
-    return decrypt_cbc(Aes<Aes_var>(key), encrypted_message, iv);
-}
-
 
 
 /* /////////// CTR mode \\\\\\\\\\\  */
 
 struct CtrBlock{
   union {
-    AesState state;
+    AES_State state;
     struct {
       std::array<uint8_t, 4> nonce;
       std::array<uint8_t, 8> iv;
@@ -253,10 +214,9 @@ struct CtrBlock{
   };
 };
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ctr(Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+std::vector<uint8_t> AES_ChainingStream::encrypt_ctr(AES_block_encrypt const& aes, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce,  std::vector<uint8_t> const& message){
     size_t blocksN = (message.size() + 15) / 16; 
-    std::string encrypted_message = message;
+    std::vector<uint8_t> encrypted_message = message;
     size_t msg_idx = 0;
     for(uint32_t counter = 1; counter<=blocksN; ++counter){
       CtrBlock block = {
@@ -275,19 +235,14 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ctr(Aes<Aes_var> const& aes, std::s
     return encrypted_message;
 }
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ctr(KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
-  return encrypt_ctr(Aes<Aes_var>(key), message, iv, nonce);
-}
 
 
 
 #if SYCL_ENABLED
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ctr(sycl::queue& q, Aes<Aes_var> const& aes, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
+std::vector<uint8_t> AES_ChainingStream::encrypt_ctr(sycl::queue& q, AES_block_encrypt const& aes, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce, std::vector<uint8_t> const& message){
     size_t blocksN = message.size() / 16; //entire blocks
     size_t remain = message.size() % 16;
-    std::string encrypted_message = message;
+    std::vector<uint8_t> encrypted_message = message;
     if(blocksN) {
       sycl::buffer aes_buf(&aes, sycl::range<1>{1});
       sycl::range<1> blocksN_range{blocksN};
@@ -324,24 +279,6 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ctr(sycl::queue& q, Aes<Aes_var> co
     return encrypted_message;
 }
 
-template <AesVariant Aes_var>
-std::string AesTextEncrypt<Aes_var>::encrypt_ctr(sycl::queue& q, typename Aes<Aes_var>::KeyType const& key, std::string const& message, std::array<uint8_t, 8> const& iv, std::array<uint8_t, 4> const& nonce){
-    return AesTextEncrypt<Aes_var>::encrypt_ctr(q, Aes<Aes_var>(key), message, iv, nonce);
-}
-
-
 #endif
-
-/* /////////// explicit instantiations \\\\\\\\\\\  */
-
-template
-class AesTextEncrypt<AesVariant::Aes128>;
-
-template
-class AesTextEncrypt<AesVariant::Aes192>;
-
-template
-class AesTextEncrypt<AesVariant::Aes256>;
-
 
 } // namespace aes

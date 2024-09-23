@@ -11,13 +11,29 @@ namespace aes {
 
 enum class AesVariant {Aes128, Aes192, Aes256};
 
-using AesState = std::array<std::array<uint8_t, 4>, 4>;
-
-template <AesVariant Aes_var>
-class Aes {
+class AES_block_encrypt {
 public:
   static const uint Nb = 4; // number of columns in the state & expanded key
   static const uint BlockSize = Nb*Nb; // number of bytes in block
+
+  using State = std::array<std::array<uint8_t, Nb>, Nb>;
+
+  virtual ~AES_block_encrypt() = default;
+
+#if SYCL_ENABLED
+  SYCL_EXTERNAL virtual void encrypt(State&) const;
+  SYCL_EXTERNAL virtual void decrypt(State&) const;
+#else
+  virtual void encrypt(State&) const = 0;
+  virtual void decrypt(State&) const = 0;
+#endif
+
+};
+
+
+template <AesVariant Aes_var>
+class AES_block_encrypt_impl : public AES_block_encrypt {
+public:
 
   // number of rounds in encryption
   static const uint Nr = Aes_var == AesVariant::Aes128 ? 10 
@@ -30,20 +46,20 @@ public:
                         :       /* AesVariant::Aes256 */ 8; 
   static const uint KeySize = Nk*4; // in bytes
   using KeyType = std::array<uint8_t, KeySize>;
-  
-  explicit Aes(std::array<uint8_t, KeySize> const &key) { expand_key(key); }
   using State = std::array<std::array<uint8_t, 4>, 4>;
+  
+  explicit AES_block_encrypt_impl(KeyType const&key);
 
 #if SYCL_ENABLED
-  SYCL_EXTERNAL void encrypt(State&) const;
-  SYCL_EXTERNAL void decrypt(State&) const;
+  SYCL_EXTERNAL void encrypt(State&) const override;
+  SYCL_EXTERNAL void decrypt(State&) const override;
 #else
-  void encrypt(State&) const;
-  void decrypt(State&) const;
+  void encrypt(State&) const override;
+  void decrypt(State&) const override;
 #endif
 
 private:
-  void expand_key(std::array<uint8_t, KeySize> const &key);
+  void expand_key(KeyType const &key);
   void add_round_key(State &, uint key_index) const;
 
   void subBytes(State &) const;
@@ -58,15 +74,19 @@ private:
   std::array<std::array<uint8_t, 4>, Nb * (Nr + 1)> m_expended_key;
 };
 
-template <AesVariant Aes_var>
-void print_state(typename Aes<Aes_var>::State const& state){
-    for (auto &row :state) {
-      for (uint c : row) {
-        std::cout << std::hex << c << ' ' << std::flush;
-      }
-      std::cout << "\n";
-    }
-    std::cout << "\n";
-}
+using AES_block_encrypt_128 = AES_block_encrypt_impl<AesVariant::Aes128>;
+using AES_block_encrypt_192 = AES_block_encrypt_impl<AesVariant::Aes192>;
+using AES_block_encrypt_256 = AES_block_encrypt_impl<AesVariant::Aes256>;
+
+// template <AesVariant Aes_var>
+// void print_state(typename Aes<Aes_var>::State const& state){
+//     for (auto &row :state) {
+//       for (uint c : row) {
+//         std::cout << std::hex << c << ' ' << std::flush;
+//       }
+//       std::cout << "\n";
+//     }
+//     std::cout << "\n";
+// }
 
 } // namespace aes
