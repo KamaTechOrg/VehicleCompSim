@@ -39,7 +39,9 @@ public:
     // Print the number (for testing purposes)
     void print() const;
 
-    std::vector<u_char> toString() const;
+    std::string toString() const;
+
+    std::vector<u_char> toVectorChar() const;
 
 
     BigNum operator+(const BigNum& other) const;
@@ -123,8 +125,7 @@ public:
 
 
 	friend std::ostream& operator<<(std::ostream& out, const BigNum& num) {
-        std::vector<u_char> num_vec = num.toString();
-        string str(num_vec.begin(), num_vec.end());
+        std::string str = num.toString();
 		out << str;
 		return out;
 	}

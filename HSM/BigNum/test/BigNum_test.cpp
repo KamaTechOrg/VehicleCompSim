@@ -10,6 +10,15 @@ TEST(BigNumTest, shift_left)
     EXPECT_EQ(expected, result) << "BigNum shift left failed";
 }
 
+TEST(BigNumTest, shift_left_2)
+{
+    std::string expected = "100000000";
+    BigNum y(2147483648, 1);
+    BigNum a = y << 1;
+    std::string result = a.toString();
+    EXPECT_EQ(expected, result) << "BigNum shift left_2 failed";
+}
+
 //Test addition with int
 TEST(BigNumTest, addition_with_int){
     BigNum a("1");

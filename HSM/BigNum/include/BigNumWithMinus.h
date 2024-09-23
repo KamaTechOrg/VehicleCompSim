@@ -89,5 +89,6 @@ public:
 
     void print() const;
 
-    std::vector<u_char> toString() const;
+    std::string toString() const;
+    std::vector<u_char> toVectorChar() const;
 };
