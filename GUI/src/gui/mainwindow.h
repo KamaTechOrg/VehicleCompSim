@@ -39,10 +39,9 @@
 #include "items/qemusensoritem.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
+#include "../../../Communication/server/include/manger.h"
 #include "saveAndLoad.h"
 #include "items/parser.h"
-#include "../../../Communication/server/include/manger.h"
-
 
 class QGraphicsView;
 class QToolBar;
@@ -116,3 +115,4 @@ private:
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
 };
+
