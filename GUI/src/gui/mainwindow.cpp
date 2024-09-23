@@ -313,8 +313,8 @@ void MainWindow:: buffer_listener(const QByteArray& new_buffer){
 //}
 
 void MainWindow::saveLayout() {
-    m_globalState.saveBtnPressed();
+    m_globalState.saveData();
 }
 void MainWindow::loadLayout() {
-    m_globalState.loadBtnPressed();
+    m_globalState.loadData();
 }

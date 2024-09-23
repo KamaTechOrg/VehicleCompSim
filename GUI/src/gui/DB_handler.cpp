@@ -21,6 +21,54 @@ DB_handler::DB_handler() {
     }
     connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &DB_handler::write_data_to_DB);
 }
+void DB_handler::write_data_to_DB(const QByteArray& buffer) const {
+    QList<QString> columnInfo = {"time", "src_id", "dest_id", "len", "buffer"};
+    QList<QByteArray> pieces = buffer.split(',');
+    if (sqlitedb->open()) {
+        QSqlQuery query(*sqlitedb);
+        sqlitedb->transaction();  // Start a transaction for better performance and atomicity
+        QString createTableQuery = "CREATE TABLE IF NOT EXISTS DB (";
+        for (const QString &info : columnInfo) {
+            createTableQuery += info + " TEXT,";
+        }
+        createTableQuery.chop(1);
+        createTableQuery += ")";
+        if (!query.exec(createTableQuery)) {
+            qCritical() << "Failed to create table:" << query.lastError().text();
+            sqlitedb->rollback();
+            sqlitedb->close();
+            return;
+        }
+        QString insertQuery = "INSERT INTO DB (" + columnInfo.join(",") + ") VALUES (" +
+                              QStringList(columnInfo.size(), "?").join(",") + ")";
+
+        if (!query.prepare(insertQuery)) {
+            qCritical() << "Failed to prepare insert query:" << query.lastError().text();
+            sqlitedb->rollback();
+            sqlitedb->close();
+            return;
+        }
+        for (int i = 0; i < columnInfo.size(); ++i) {
+            if (i < pieces.size()) {
+                query.addBindValue(QString::fromUtf8(pieces[i]));
+            } else {
+                query.addBindValue(QVariant(QVariant::String));
+            }
+        }
+        if (query.exec()) {
+            qInfo() << "Data inserted successfully!";
+            sqlitedb->commit();
+        } else {
+            qCritical() << "Error inserting data:" << query.lastError().text();
+            sqlitedb->rollback();
+        }
+        sqlitedb->close();
+    } else {
+        qCritical() << "Database connection failed:" << sqlitedb->lastError().text();
+    }
+}
+
+
 
 //QList<QVariant> parseBuffer(const QByteArray& buffer, const QList<QList<QString>>& columnInfo) {
 //    QList<QVariant> parsedValues;
@@ -130,10 +178,10 @@ DB_handler::DB_handler() {
 //    return result;
 //}
 
-//void DB_handler::update_sensor_data(const wint_t& sensorId, QList<QList<QString>> data){
-//    data_of_sensors[sensorId] = data;
-//
-//}
+void DB_handler::update_sensor_data(const wint_t& sensorId, QList<QList<QString>> data){
+    data_of_sensors[sensorId] = data;
+
+}
 
 
 
@@ -162,49 +210,3 @@ DB_handler::DB_handler() {
 //    return result;
 //}
 
-void DB_handler::write_data_to_DB(const QByteArray& buffer) const {
-    QList<QString> columnInfo = {"time", "src_id", "dest_id", "len", "buffer"};
-    QList<QByteArray> pieces = buffer.split(',');
-    if (sqlitedb->open()) {
-        QSqlQuery query(*sqlitedb);
-        sqlitedb->transaction();  // Start a transaction for better performance and atomicity
-        QString createTableQuery = "CREATE TABLE IF NOT EXISTS DB (";
-        for (const QString &info : columnInfo) {
-            createTableQuery += info + " TEXT,";
-        }
-        createTableQuery.chop(1);
-        createTableQuery += ")";
-        if (!query.exec(createTableQuery)) {
-            qCritical() << "Failed to create table:" << query.lastError().text();
-            sqlitedb->rollback();
-            sqlitedb->close();
-            return;
-        }
-        QString insertQuery = "INSERT INTO DB (" + columnInfo.join(",") + ") VALUES (" +
-                              QStringList(columnInfo.size(), "?").join(",") + ")";
-
-        if (!query.prepare(insertQuery)) {
-            qCritical() << "Failed to prepare insert query:" << query.lastError().text();
-            sqlitedb->rollback();
-            sqlitedb->close();
-            return;
-        }
-        for (int i = 0; i < columnInfo.size(); ++i) {
-            if (i < pieces.size()) {
-                query.addBindValue(QString::fromUtf8(pieces[i]));
-            } else {
-                query.addBindValue(QVariant(QVariant::String));
-            }
-        }
-        if (query.exec()) {
-            qInfo() << "Data inserted successfully!";
-            sqlitedb->commit();
-        } else {
-            qCritical() << "Error inserting data:" << query.lastError().text();
-            sqlitedb->rollback();
-        }
-        sqlitedb->close();
-    } else {
-        qCritical() << "Database connection failed:" << sqlitedb->lastError().text();
-    }
-}
