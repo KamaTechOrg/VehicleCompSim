@@ -3,25 +3,25 @@
 #include <iostream>
 #include <string.h>
 
-    HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits)
+    HSM::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
 	generate_keys(publicKey, privateKey, modulus, bits / 2);
-	std::vector<u_char> public_key = publicKey.toString();
-	std::vector<u_char> private_key = privateKey.toString();
-	std::vector<u_char> modulus_str = modulus.toString();
+	std::vector<u_char> public_key1 = publicKey.toVectorChar();
+	std::vector<u_char> private_key1 = privateKey.toVectorChar();
+	std::vector<u_char> modulus_str = modulus.toVectorChar();
 	modulus_str.emplace_back('P');
 	std::vector<u_char> result1 = modulus_str;
-	result1.insert(result1.end(), public_key.begin(), public_key.end());
+	result1.insert(result1.end(), public_key1.begin(), public_key1.end());
 
 	std::vector<u_char> result2 = modulus_str;
-	result2.insert(result2.end(), private_key.begin(), private_key.end());
+	result2.insert(result2.end(), private_key1.begin(), private_key1.end());
 
 	public_key = result1;
 	private_key = result2;
 
 
-	return HSM_STATUS::SUCCESS_GEN_KYE;
+	return HSM::HSM_STATUS::HSM_Good;
 }
 
 void RSA_KEY::generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits)

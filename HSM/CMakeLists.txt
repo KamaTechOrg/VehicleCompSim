@@ -63,8 +63,6 @@ add_library(HSM src/HSM.cpp)
 target_include_directories(HSM PUBLIC include)
 target_link_libraries(HSM AES RSA Signature HsmStatus)
 
-add_dependencies(RSA HsmStatus)
-target_link_libraries(RSA INTERFACE HsmStatus)
 
 #testing
 add_executable(API_TEST test/API_test.cpp)

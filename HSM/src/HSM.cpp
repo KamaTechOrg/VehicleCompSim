@@ -3,6 +3,8 @@
 #include "RSA_ENC.h"
 #include "RSA_KEY.h"
 #include <vector>
+#include <iostream>
+#include <ostream>
 
 using namespace HSM;
 
