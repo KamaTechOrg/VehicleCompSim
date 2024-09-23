@@ -3,7 +3,6 @@
 #include "RSA_KEY.h"
 #include "../../BigNum/include/BigNum.h"
 
-
 TEST(RSA_BigNum_test, gcd_test)
 {
     BigNum a("a");
@@ -115,7 +114,7 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_int_2)
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
     BigNum e("10001");
-    BigNum message(825373492,64);
+    BigNum message(825373492, 64);
 
     BigNum encrypted = RSA_ENC::encrypt(message, e, p * q);
     std::string encrypted1 = encrypted.toString();
@@ -138,9 +137,14 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string)
     // BigNum encrypted1 = RSA_ENC::encrypt(BigNum(encryptedInLong,64), e, p * q);
     std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), e, p * q);
     std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, d, p * q);
-    EXPECT_EQ("e70802ea7e14079P", encrypted);
-    EXPECT_EQ(message, decrypted);
-    EXPECT_NE(message, encrypted);
+
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
+    EXPECT_EQ("e70802ea7e14079P", encrypted_str);
 }
 
 TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_2)
@@ -151,11 +155,15 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_2)
     BigNum q(num2);
     BigNum d("13dcfa5db7bcc201");
     BigNum e("10001");
-    std::string text = "Hello";
-    std::vector<u_char> encrypted_text = RSA_ENC::encrypt(std::vector<u_char>(text.begin(), text.end()), e, p * q);
-    std::vector<u_char> decrypted_text = RSA_ENC::decrypt(encrypted_text, d, p * q);
-    EXPECT_EQ(text, decrypted_text);
-    EXPECT_NE(text, encrypted_text); 
+    std::string message = "Hello";
+    std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), e, p * q);
+    std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, d, p * q);
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
 }
 
 TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_3)
@@ -169,8 +177,12 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_3)
     std::string message = "12345";
     std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), e, p * q);
     std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, d, p * q);
-    EXPECT_EQ(message, decrypted);
-    EXPECT_NE(message, encrypted);
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
 }
 
 TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_4)
@@ -184,8 +196,12 @@ TEST(RSA_BigNum_test, encryption_and_decryption_tst_for_string_4)
     std::string message = "Hello World, this is my secret message!";
     std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), e, p * q);
     std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, d, p * q);
-    EXPECT_EQ(message, decrypted);
-    EXPECT_NE(message, encrypted);
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
 }
 
 TEST(RSA_BigNum_test, isPrime_test_with_prime_number)
@@ -262,7 +278,6 @@ TEST(RSA_BigNum_test, WithBigNum_1)
 
     // test RSA encryption and decryption for int
     BigNum message("12345");
-    
 
     BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
     BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
@@ -304,9 +319,13 @@ TEST(RSA_BigNum_test, WithString)
 {
     BigNum publicKey, privateKey, modulus;
     RSA_KEY::generate_keys(publicKey, privateKey, modulus, 256);
-    std::string text = {"Hello, RSA!"};
-    std::vector<u_char> encrypted_text = RSA_ENC::encrypt(std::vector<u_char>(text.begin(), text.end()), publicKey, modulus);
-    std::vector<u_char> decrypted_text = RSA_ENC::decrypt(encrypted_text, privateKey, modulus);
-    EXPECT_EQ(text, decrypted_text);
-    EXPECT_NE(encrypted_text, text);
+    std::string message = {"Hello, RSA!"};
+    std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), publicKey, modulus);
+    std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
 }

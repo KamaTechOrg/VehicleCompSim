@@ -55,7 +55,7 @@ add_subdirectory(BigNum)
 add_subdirectory(SHA256)
 add_subdirectory(RSA)
 add_subdirectory(Signature)
-add_subdirectory(Benchmark)
+# add_subdirectory(Benchmark)
 add_subdirectory(HsmStatus)
 
 # API
