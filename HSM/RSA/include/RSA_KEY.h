@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include "../../BigNum/include/BigNum.h"
 #include "../../BigNum/include/BigNumWithMinus.h"
-#include "HSM_status_enum.cpp"
+#include "HSM_status_enum.hpp"
 
 
 class RSA_KEY

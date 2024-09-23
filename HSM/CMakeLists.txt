@@ -57,6 +57,7 @@ add_subdirectory(RSA)
 add_subdirectory(KeyStorage)
 add_subdirectory(Signature)
 add_subdirectory(Benchmark)
+add_subdirectory(HsmStatus)
 
 # API
 add_library(HSM src/HSM.cpp)
