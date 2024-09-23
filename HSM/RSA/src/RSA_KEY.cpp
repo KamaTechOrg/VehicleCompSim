@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string.h>
 
-    HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, ENCRYPTION_ALGORITHM_TYPE type, int bits)
+    HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
 	generate_keys(publicKey, privateKey, modulus, bits / 2);

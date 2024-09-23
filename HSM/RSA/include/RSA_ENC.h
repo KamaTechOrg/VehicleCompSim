@@ -11,7 +11,6 @@
 #include <stdexcept>
 #include "../../BigNum/include/BigNum.h"
 #include "../../BigNum/include/BigNumWithMinus.h"
-#include "HSM_type_enum.hpp"
 
 class RSA_ENC
 {

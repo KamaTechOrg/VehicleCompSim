@@ -35,9 +35,6 @@ target_compile_definitions(sycl_flags INTERFACE SYCL_ENABLED=1)
 target_link_options(sycl_flags INTERFACE "-fsycl")
 target_compile_options(sycl_flags INTERFACE "-fsycl")
 
-# add_library(API src/HSM.cpp)
-# target_include_directories(API PUBLIC include)
-# target_sources(API PRIVATE include/HSM_type_enum.hpp)
 
 #testing
 # add_executable(APITest test/API_test.cpp)
@@ -59,8 +56,6 @@ add_subdirectory(SHA256)
 add_subdirectory(RSA)
 add_subdirectory(KeyStorage)
 add_subdirectory(Signature)
-# add_subdirectory(API)
-
 add_subdirectory(Benchmark)
 
 # API
