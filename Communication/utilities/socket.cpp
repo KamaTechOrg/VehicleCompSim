@@ -21,15 +21,7 @@ Socket::Socket() : m_sock(-1)
 
 Socket::~Socket()
 {
-    if (is_valid())
-    {
-
-#ifdef _WIN32
-        WSACleanup();
-#else
-        close(m_sock);
-#endif
-    }
+  close();
 }
 
 void Socket::create()
@@ -219,6 +211,19 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 void Socket::set_FD(int fd)
 {
     m_sock = fd;
+}
+
+void Socket::close()
+{
+       if (is_valid())
+    {
+
+#ifdef _WIN32
+        WSACleanup();
+#else
+        ::close(m_sock);
+#endif
+    }
 }
 
 void Socket::connect(const std::string host, const int port)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <future>
+#include <atomic>
 
 #include "socket.h"
 #include "constants.h"
@@ -12,6 +13,7 @@ class ClientSocket
 
 public:
     ClientSocket( int id);
+    ~ClientSocket();
 
     sendErrorCode send(void *data, size_t size, int source_id, int dest_id);
     std::pair<ListenErrorCode,int> listen(void *data, size_t size);
