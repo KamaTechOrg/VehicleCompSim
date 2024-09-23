@@ -18,6 +18,7 @@
 #include <string>
 
 #include "constants.h"
+#include "canbus.h"
 
 class Socket
 {
