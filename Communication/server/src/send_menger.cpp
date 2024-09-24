@@ -44,8 +44,23 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
 
         memcpy(data + message_len, crcstr.c_str(), crc_len);
         if (d_s)
-        {
+        {   
+
             int status = Cross_platform::cress_send(d_s, data, message_len + crc_len);
+
+            if (status == -1)
+            {
+                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+            }
+        }
+
+        std::string mesegeForGui = CanMessageToLog(canbus);
+        FD d_s_gui = get_sock(100);
+
+        if (d_s_gui)
+        {   
+            std::cout << d_s_gui << "gguuii" << std::endl;
+            int status = Cross_platform::cress_send(d_s_gui, mesegeForGui.c_str(), mesegeForGui.size());
 
             if (status == -1)
             {

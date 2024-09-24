@@ -145,6 +145,7 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
 #else
     int status = ::recv(m_sock, buf, len, 0);
+
 #endif
 
     if (status == -1)
@@ -166,9 +167,6 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        
-
-
         std::string input(buf, len);  
         size_t pos1 = input.find('%');  
 
@@ -192,12 +190,19 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
             else{
                 std::cout << "CRC check failed" << std::endl;
                 memcpy(data, buf, len);
+
             }
            
              
         } else {
             
             memcpy(data, buf, len);
+            std::cout << "received = "; 
+            for (int i = 0; i < len; ++i) {
+            std::cout << buf[i];
+            }
+            std::cout << std::endl;
+
         }
 
 

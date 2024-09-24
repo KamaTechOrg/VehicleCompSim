@@ -47,3 +47,4 @@ private:
 };
 
 void writeCanMessageToLog(CanBus & message , const std::string & filename);
+std::string CanMessageToLog(CanBus &message);
