@@ -110,7 +110,7 @@ std::string Data_manipulator::readFileContents(const std::filesystem::path& file
     std::ifstream file(filePath);
     if (!file) {
         std::cerr << "Error: Unable to open file " << filePath << std::endl;
-        return "";
+        return "127.0.0.1";
     }
 
     std::string content;
