@@ -25,6 +25,8 @@ private:
 	void save();
 	void initializeGuiFields();
 	void initializeScenariosExplorer();
+	void initializeSaveButton();
+	void initializeScenriosEditors();
 
 private slots:
 	void handleScenarioClicked(int index);

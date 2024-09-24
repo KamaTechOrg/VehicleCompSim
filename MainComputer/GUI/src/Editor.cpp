@@ -48,20 +48,12 @@ void Editor::initializeGuiFields()
 {
 	_VLayout = new QVBoxLayout;
 	_HLayout = new QHBoxLayout;
-	_conditionsEditorLayout = new QVBoxLayout;
 	
 	initializeScenariosExplorer();
-
-	_saveButton = new QPushButton("save");
-	connect(_saveButton, &QPushButton::clicked, this, &Editor::save);
-
-	_HLayout->addWidget(_explorer);
-	for (auto editor : _scenariosEditors)
-		_conditionsEditorLayout->addWidget(editor);
-	_HLayout->addLayout(_conditionsEditorLayout);
+	initializeScenriosEditors();
 	_HLayout->addStretch(1);
 	_VLayout->addLayout(_HLayout);
-	_VLayout->addWidget(_saveButton);
+	initializeSaveButton();
 
 	setLayout(_VLayout);
 	resize(700, 200);
@@ -73,6 +65,22 @@ void Editor::initializeScenariosExplorer()
 	connect(_explorer, &ExplorerBox::scenarioClicked, this, &Editor::handleScenarioClicked);
 	connect(_explorer, &ExplorerBox::scenarioAdded, this, &Editor::handleAddScenario);
 	connect(_explorer, &ExplorerBox::scenarioDeleted, this, &Editor::handleDeleteScenario);
+	_HLayout->addWidget(_explorer);
+}
+
+void Editor::initializeSaveButton()
+{
+	_saveButton = new QPushButton("save");
+	connect(_saveButton, &QPushButton::clicked, this, &Editor::save);
+	_VLayout->addWidget(_saveButton);
+}
+
+void Editor::initializeScenriosEditors()
+{
+	_conditionsEditorLayout = new QVBoxLayout;
+	for (auto editor : _scenariosEditors)
+		_conditionsEditorLayout->addWidget(editor);
+	_HLayout->addLayout(_conditionsEditorLayout);
 }
 
 void Editor::handleScenarioClicked(int index)
