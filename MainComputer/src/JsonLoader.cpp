@@ -10,7 +10,7 @@ JsonLoader::JsonLoader()
 	_guiDataJsonFileName =	 constants::GUI_DATA_JSON_FILE_NAME;
 }
 
-nlohmann::json JsonLoader::loadConditionsLogic() const
+nlohmann::json::array_t JsonLoader::loadConditionsLogic() const
 {
     std::ifstream file(_logicDataJsonFileName);
     if (!file.is_open())
@@ -98,10 +98,7 @@ void JsonLoader::saveGuiData(const nlohmann::json& jsonData) const
 
 nlohmann::json JsonLoader::generateDefaultLogicJson() const
 {
-    return {
-        {"conditions", {}},
-        {"actions", nlohmann::json::array()}
-    };
+    return nlohmann::json::array_t();
 }
 
 nlohmann::json JsonLoader::generateDefaultGuiDataJson() const

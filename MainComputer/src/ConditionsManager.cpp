@@ -134,16 +134,17 @@ bool ConditionsManager::validateAll(const std::string& senderId, const std::stri
 void ConditionsManager::loadFromJson()
 {
     nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
-
     conditions.clear();
     actions.clear();
-
-    addCondition(ConditionsFactory().createConditionsFromJson(jsonData.at(0)["conditions"]));
-    for (const auto& actionJson : jsonData.at(0)["actions"]) {
+    if (jsonData.is_array() && !jsonData.empty())
+    {
+        addCondition(ConditionsFactory().createConditionsFromJson(jsonData.at(0)["conditions"]));
+        for (const auto& actionJson : jsonData.at(0)["actions"]) {
             std::string target = actionJson["target"];
             std::string message = actionJson["message"];
             Action action(target, message);
             addAction(0, action);
+        }
     }
 }
 
