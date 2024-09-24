@@ -106,8 +106,9 @@ nlohmann::json JsonLoader::generateDefaultLogicJson() const
 
 nlohmann::json JsonLoader::generateDefaultGuiDataJson() const
 {
-    return {
+    /*return {
         {"conditions", nlohmann::json::array()},
         {"actions", nlohmann::json::array()}
-    };
+    };*/
+    return nlohmann::json::array_t();
 }

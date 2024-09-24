@@ -99,14 +99,11 @@ void ExplorerBox::deleteSelectedItem()
 
 void ExplorerBox::addNewItem()
 {
-	QModelIndex index = _scenariosList->currentIndex();
-	if (index.isValid()) {
-		QStringListModel* model = qobject_cast<QStringListModel*>(_scenariosList->model());
-		if (model) {
-			QStringList scenariosList = model->stringList();
-			scenariosList << "New Scenario";
-			model->setStringList(scenariosList);
-		}
+	QStringListModel* model = qobject_cast<QStringListModel*>(_scenariosList->model());
+	if (model) {
+		QStringList scenariosList = model->stringList();
+		scenariosList << "New Scenario";
+		model->setStringList(scenariosList);
 	}
 	emit scenarioAdded();
 }
