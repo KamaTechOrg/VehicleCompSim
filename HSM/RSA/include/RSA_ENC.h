@@ -20,9 +20,12 @@ public:
     static BigNum decrypt(const BigNum &message, const BigNum &privateKey, const BigNum &modulus);
 
     static std::vector<u_char> encrypt(const std::vector<u_char> &message, const BigNum &publicKey, const BigNum &modulus);
-    static std::vector<u_char> encrypt(const std::vector<u_char> &message, const std::vector<u_char>& key);
+    static std::string encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus);
+    static std::vector<u_char> encrypt(const std::vector<u_char> &message, const std::vector<u_char> &key);
 
     static std::vector<u_char> decrypt(const std::vector<u_char> &encrypted_message, const BigNum &privateKey, const BigNum &modulus);
+
+    static std::string decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus);
 
     static std::vector<u_char> decrypt(const std::vector<u_char> &encrypted_message, const std::vector<u_char>& key);
 };

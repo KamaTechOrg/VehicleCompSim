@@ -16,23 +16,29 @@ BigNum RSA_ENC::decrypt(const BigNum &message, const BigNum &privateKey, const B
 
 std::vector<u_char> RSA_ENC::encrypt(const std::vector<u_char> &message, const BigNum &publicKey, const BigNum &modulus)
 {
+	std::string messageStr(message.begin(), message.end());
+	std::string result = encrypt(messageStr, publicKey, modulus);
+	return std::vector<u_char>(result.begin(), result.end());
+}
+
+std::string RSA_ENC::encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus)
+{
 	int blockSize = modulus.getSizeThatIsFull() - 1;
 	int blockSizeInBits = blockSize * BigNum::UINT_T_SIZE;
-	std::vector<u_char> result;
+	std::string result;
 	int messageSizeInBit = message.size() * 8;
 
 	for (int i = 0; i < messageSizeInBit; i += blockSizeInBits)
 	{
 		int blockLen = std::min(blockSizeInBits, messageSizeInBit - i);
-		BigNum m(blockLen);
+		BigNum m(blockLen * 2);
 
 		memcpy(m.data.data(), message.data() + (i / 8), blockLen / 8);
 
 		BigNum encryptedBlock = RSA_KEY::power(m, publicKey, modulus);
-		std::vector<u_char> encryptedBlockStr = encryptedBlock.toVectorChar();
+		std::string encryptedBlockStr = encryptedBlock.toString();
 
-		result.insert(result.end(), encryptedBlockStr.begin(), encryptedBlockStr.end());
-		result.emplace_back('P');
+		result += encryptedBlockStr + 'P';
 	}
 
 	return result;
@@ -49,17 +55,24 @@ std::vector<u_char> RSA_ENC::encrypt(const std::vector<u_char> &message, const s
 
 std::vector<u_char> RSA_ENC::decrypt(const std::vector<u_char> &encrypted_message, const BigNum &privateKey, const BigNum &modulus)
 {
-	std::vector<u_char> result;
-	std::vector<u_char> encrypted_message_cpy = encrypted_message;
+	std::string encrypted_message_str(encrypted_message.begin(), encrypted_message.end());
+	std::string result = decrypt(encrypted_message_str, privateKey, modulus);
+	return std::vector<u_char>(result.begin(), result.end());
+}
+
+std::string RSA_ENC::decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus)
+{
+	std::string result;
+	std::string encrypted_message_cpy(encrypted_message);
 	while (encrypted_message_cpy.size() > 0)
 	{
-		BigNum encryptedBlock(std::vector<u_char>(encrypted_message_cpy.begin(), std::find(encrypted_message_cpy.begin(), encrypted_message_cpy.end(), 'P')));
-		encrypted_message_cpy = std::vector<u_char>(std::find(encrypted_message_cpy.begin(), encrypted_message_cpy.end(), 'P') + 1, encrypted_message_cpy.end());
+		BigNum encryptedBlock(encrypted_message_cpy.substr(0, encrypted_message_cpy.find('P')));
+		encrypted_message_cpy = encrypted_message_cpy.substr(encrypted_message_cpy.find('P') + 1);
 		BigNum decryptedBlock = RSA_KEY::power(encryptedBlock, privateKey, modulus);
-		std::vector<u_char> decryptedBlockStr(decryptedBlock.getSizeThatIsFull() * BigNum::UINT_T_SIZE, '\0');
+		std::string decryptedBlockStr(decryptedBlock.getSizeThatIsFull() * BigNum::UINT_T_SIZE, '\0');
 		memcpy(decryptedBlockStr.data(), decryptedBlock.data.data(), decryptedBlock.getSizeThatIsFull() * BigNum::UINT_T_SIZE);
-		decryptedBlockStr.erase(std::remove(decryptedBlockStr.begin(), decryptedBlockStr.end(), '\0'), decryptedBlockStr.end());
-		result.insert(result.end(), decryptedBlockStr.begin(), decryptedBlockStr.end());
+		decryptedBlockStr.erase(decryptedBlockStr.find_last_not_of('\0') + 1);
+		result += decryptedBlockStr;
 	}
 
 	return result;

@@ -7,6 +7,9 @@
 {
 	BigNum publicKey, privateKey, modulus;
 	generate_keys(publicKey, privateKey, modulus, bits / 2);
+	if(publicKey == 0 || privateKey == 0 || modulus == 0){
+		return HSM::HSM_STATUS::HSM_InternalErr;
+	}
 	std::vector<u_char> public_key1 = publicKey.toVectorChar();
 	std::vector<u_char> private_key1 = privateKey.toVectorChar();
 	std::vector<u_char> modulus_str = modulus.toVectorChar();
@@ -19,6 +22,7 @@
 
 	public_key = result1;
 	private_key = result2;
+	
 
 
 	return HSM::HSM_STATUS::HSM_Good;
@@ -74,7 +78,7 @@ BigNum RSA_KEY::power(const BigNum &x, const BigNum &y, const BigNum &p)
 	while (exp > 0)
 	{
 		if ((exp.data[0] & 1) == 1)
-		{ // If exp is odd
+		{ 
 			res = (res * base) % p;
 		}
 		exp = exp >> 1;

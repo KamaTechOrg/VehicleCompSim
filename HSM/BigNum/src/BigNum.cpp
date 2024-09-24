@@ -299,35 +299,13 @@ BigNum BigNum::operator/=(uint32_t num)
 	*this = *this / num;
 	return *this;
 }
-
 // BigNum barrett_reduce(const BigNum& x, const BigNum& n, const BigNum& mu) {
-//     int k = n.getSizeThatIsFull() * BigNum::UINT_T_SIZE;
+//     // Calculate k as the bit-length of n
+//     int k = n.bit_length(); // Assuming there's a function bit_length()
 
 //     BigNum q = x >> (k - 1);  // q = x / 2^k
 //     q = q * mu;               // q = q * mu
 //     q = q >> (k + 1);         // q = q / 2^(k+1)
-
-//     BigNum r1 = q * n;        // r1 = q * n
-//     BigNum r = x - r1;   // r = x - q * n
-
-//     while (r >= n) {
-//         r = r - n;            // Correct if r >= n
-//     }
-
-//     return r;
-// }
-
-// Modulus operator
-// BigNum barrett_reduce(const BigNum& x, const BigNum& n, const BigNum& mu) {
-// 	BigNum tmp(n);
-//     int k = 0;
-// 	while(tmp > 0) {
-// 		tmp = tmp >> 1;
-// 		++k;
-// 	}
-//     BigNum q = x >> (k - 1);  // q = x / 2^k
-//     q = q * mu;               // q = q * mu
-//     q = q >> (k + 1);         // q = q / 2^k
 
 //     BigNum r = x - (q * n);   // r = x - q * n
 
@@ -335,7 +313,7 @@ BigNum BigNum::operator/=(uint32_t num)
 //         r = r - n;            // Correct if r >= n
 //     }
 
-//     return r;
+//     return r; 
 // }
 
 // BigNum BigNum::operator%(const BigNum& other) const {
@@ -343,10 +321,10 @@ BigNum BigNum::operator/=(uint32_t num)
 //         return *this; // If this is less than the modulus, return this
 //     }
 
-//     BigNum mu(1, this->size);
 //     // Compute mu = 2^(2k) / n
-//     BigNum two_k = BigNum(1, this->size) << (2 * other.getSizeThatIsFull() * UINT_T_SIZE);
-//     mu = two_k / other;  // Calculate mu
+//     int k = other.bit_length(); // Assuming other has a bit_length function
+//     BigNum two_k = BigNum(1) << (2 * k);  // 2^(2k)
+//     BigNum mu = two_k / other;  // Calculate mu
 
 //     BigNum remainder = barrett_reduce(*this, other, mu);
 
@@ -378,6 +356,7 @@ BigNum BigNum::operator/=(uint32_t num)
 // 	return remainder;
 // }
 
+
 BigNum BigNum::operator%(const BigNum &other) const
 {
 	if (other == BigNum("0"))
@@ -386,6 +365,8 @@ BigNum BigNum::operator%(const BigNum &other) const
 	}
 
 	BigNum num = *this;
+	num.size++;
+	num.data.push_back(0);
 	BigNum mod = other;
 	BigNum temp1 = mod;
 	BigNum temp2 = mod;
