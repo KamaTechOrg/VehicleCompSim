@@ -109,16 +109,21 @@ void Editor::initializeScenariosExplorer()
 {
 	_explorer = new ExplorerBox;
 
-	// temp, need to change it with the list from the json file:
 	std::vector<std::string> names;
-	for (int i = 1; i <= _scenariosEditors.size(); i++)
-		names.push_back("scenario " + std::to_string(i));
+	nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
+	for (nlohmann::json scenario : guiData)
+	{
+		if (scenario.contains("scenarioName"))
+			names.push_back(scenario["scenarioName"]);
+		else
+			names.push_back("invalid data");
+	}
 	_explorer->setScenariosList(names);
-	// end temp
 
 	connect(_explorer, &ExplorerBox::scenarioClicked, this, &Editor::handleScenarioClicked);
 	connect(_explorer, &ExplorerBox::scenarioAdded, this, &Editor::handleAddScenario);
 	connect(_explorer, &ExplorerBox::scenarioDeleted, this, &Editor::handleDeleteScenario);
+
 	_HLayout->addWidget(_explorer);
 }
 
