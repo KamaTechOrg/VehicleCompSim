@@ -9,84 +9,121 @@
 #include <sstream>
 #include <string>
 
-
 using namespace HSM;
 
-const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
-KeyStorage* KeyStorage::instance = nullptr;
-
-KeyStorage::KeyStorage(){
-
-    std::cout << "KeyStorage constructor" << std::endl;
-
+std::string vectorToString(std::vector<u_char> vec)
+{
+    std::stringstream ss;
+    for (auto c : vec)
+    {
+        ss << c;
+    }
+    return ss.str();
 }
 
-void HSM::KeyStorage::writeToStorage()
+std::vector<std::vector<u_char>> keyStingToVector(std::string str)
 {
-    std::ofstream file(KeyStorageFileName, std::ios_base::app);
 
-    if (!file.is_open()) {
+    std::vector<std::vector<u_char>> vec;
+    std::stringstream ss(str);
+    std::string word;
+    while (std::getline(ss, word, ','))
+    {
+        std::stringstream ss2(word);
+        std::string word2 = ss2.str();
+        std::vector<u_char> v;
+        for(u_char c: word2){
+            v.emplace_back(c);
+        }
+        vec.push_back(v);
+    }
+
+    return vec;
+}
+
+const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
+KeyStorage *KeyStorage::instance = nullptr;
+
+KeyStorage::KeyStorage()
+{
+
+    std::cout << "KeyStorage constructor" << std::endl;
+    //create file if not exists
+    std::ofstream file(KeyStorageFileName, std::ios_base::app);
+    if (!file.is_open())
+    {
         std::cerr << "Failed to open the file for writing\n";
         return;
     }
-
-    // Writing data to the CSV file
-    file << "Name, Age, Country\n";  // Writing headers
-    file << "John, 25, USA\n";
-    file << "Emma, 30, UK\n";
-    file << "Akira, 22, Japan\n";
-
-    file.close();  // Close the file after writing
-    std::cout << "Data written to " << KeyStorageFileName << " successfully!\n";
-}
-
-
-
-
-void HSM::KeyStorage::searchInStorage(const std::string &searchTerm) {
-    std::ifstream file(KeyStorageFileName);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open the file for reading\n";
-        return;
-    }
-
-    std::string line, word;
-    bool found = false;
-    
-    // Reading file line by line
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        while (std::getline(ss, word, ',')) {
-            // Check if the word matches the search term
-            if (word == searchTerm) {
-                std::cout << "Found: " << line << "\n";
-                found = true;
-                break;  // Stop searching after the first match
-            }
-        }
-        if (found) break;
-    }
-
-    if (!found) {
-        std::cout << "Search term not found in the file\n";
-    }
-
     file.close();
 }
 
+HSM::KeyStorage::~KeyStorage()
+{
+    //erase file
+    std::remove(KeyStorageFileName.c_str());
+}
 
+HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
+{
+    std::ofstream file(KeyStorageFileName, std::ios_base::app);
 
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open the file for writing\n";
+        return HSM_STATUS::HSM_InternalErr;
+    }
 
+    file << info + "\n";
+
+    file.close(); // Close the file after writing
+    return HSM_STATUS::HSM_Good;
+}
+
+HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+{
+    std::ifstream file(KeyStorageFileName);
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open the file for reading\n";
+        return HSM_STATUS::HSM_InternalErr;
+    }
+
+    std::string line, word, searchTerm = vectorToString(myId);
+
+    // Reading file line by line
+    while (std::getline(file, line))
+    {
+        std::stringstream ss(line);
+        // std::cout << line << std::endl;
+        while (std::getline(ss, word, ','))
+        {
+            if (word == searchTerm)
+            {
+                std::cout << "Found: " << line << "\n";
+                file.close();
+                std::vector<std::vector<u_char>> vec = keyStingToVector(line);
+                publicKey = vec[3];
+                privateKey = vec[4];
+                file.close();
+                return HSM_STATUS::HSM_Good;
+            }
+        }
+    }
+    file.close();
+    return HSM_STATUS::HSM_NoSuchKey;
+}
 
 HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
+    HSM_STATUS status = HSM_STATUS();
     switch (type)
     {
     case RSA:
 
-        return RSA_KEY::generateKeys(publicKey, privateKey, bits);
+        status = RSA_KEY::generateKeys(publicKey, privateKey, bits);
 
         break;
 
@@ -98,25 +135,32 @@ HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyI
         break;
 
     default:
-        break;
+        return HSM_STATUS::HSM_InvalidAlg;
     }
-    return HSM_STATUS();
+
+    if (status == HSM_STATUS::HSM_Good)
+    {
+        keyId = KeyStorage::getInstance().keyIdCounter++;
+        std::stringstream ss;
+        ss << vectorToString(myId) << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(privateKey);
+        status = KeyStorage::getInstance().writeToStorage(ss.str());
+    }
+    return status;
 }
 
 HSM::KeyStorage &HSM::KeyStorage::getInstance()
 {
-    if(instance == nullptr)
+    if (instance == nullptr)
         instance = new KeyStorage();
     return *instance;
 }
 
-
-
 HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
 {
-    return HSM_STATUS();
+    HSM_STATUS status = HSM_STATUS();
+    status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey);
+    return status;
 }
-
 
 HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId)
 {
@@ -130,17 +174,16 @@ HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char>
     case RSA:
         encrypted_message = RSA_ENC::encrypt(message, publicKey);
 
-
         break;
 
     case AES:
         encrypted_message = AES::encrypt(message, publicKey);
         break;
-    
+
     default:
-        break;
+        return HSM_STATUS();
     }
-    return HSM_STATUS();
+    return HSM_STATUS::HSM_Good;
 }
 
 HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId)
@@ -173,7 +216,6 @@ HSM_STATUS Algo::signMessage(const std::vector<u_char> &message, std::vector<u_c
     if (status != HSM_STATUS::HSM_Good)
         return status;
 
-
     // if(hashAlg == ENCRYPTION_ALGORITHM_TYPE::SHA3_256) return Signature::sha3_256_sign(message, sigAlg, key);
     // if(hashAlg == ENCRYPTION_ALGORITHM_TYPE::SHA256) return Signature::sha256_sign(message, sigAlg, key);
     return HSM_STATUS();
@@ -186,6 +228,6 @@ HSM_STATUS Algo::verify(const std::vector<u_char> &message, const std::vector<u_
     HSM_STATUS status = getKeyFromKeyStorage(myIdForSign, keyIdForSign, sigAlg, publicKey, privateKey);
     if (status != HSM_STATUS::HSM_Good)
         return status;
-        
+
     return HSM_STATUS();
 }
