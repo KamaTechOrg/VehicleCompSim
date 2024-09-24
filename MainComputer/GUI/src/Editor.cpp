@@ -1,11 +1,11 @@
 #include "Editor.h"
-
 #include "JsonLoader.h"
+
+#include <QDebug>
 
 Editor::Editor()
 {
 	setWindowTitle("Conditions Editor");
-
 	nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
 	for (nlohmann::json scenario : guiData)
 	{
@@ -14,7 +14,6 @@ Editor::Editor()
 		scenarioEditor->hide();
 		_scenariosEditors.push_back(scenarioEditor);
 	}
-
 	initializeGuiFields();
 }
 
@@ -33,15 +32,15 @@ Editor::~Editor()
 
 void Editor::save()
 {
-	std::vector<std::string> scenarioNames = _explorer->scenariosNames();
-	for (const auto scenarioName : scenarioNames)
-		qInfo() << scenarioName;
-
-	bool success = saveLogicDataToJson() && saveGuiDataToJson();
+	bool success = false;
+	success = saveLogicDataToJson();
+	success &= saveGuiDataToJson();
 	if (success)
 		showSaveSuccessFeedback();
 	else
 		showSaveFailedFeedback();
+
+	// TODO: load the main computer "backend" in running time with the new conditions
 }
 
 bool Editor::saveLogicDataToJson()
@@ -51,7 +50,24 @@ bool Editor::saveLogicDataToJson()
 
 bool Editor::saveGuiDataToJson()
 {
-	return false;
+	std::vector<std::string> scenarioNames = _explorer->scenariosNames();
+
+	if (scenarioNames.size() != _scenariosEditors.size())
+	{
+		qWarning() << "scenarioNames.size() = " << scenarioNames.size() << "_scenariosEditors.size() = " << "_scenariosEditors.size()";
+		return false;
+	}
+
+	nlohmann::json::array_t jsonData;
+	for (int i = 0; i < _scenariosEditors.size(); i++)
+	{
+		nlohmann::json current = _scenariosEditors[i]->getGuiDataAsJson();
+		current["scenarioName"] = scenarioNames[i];
+		jsonData.push_back(current);
+	}
+
+	JsonLoader().saveGuiData(jsonData);
+	return true;
 }
 
 void Editor::showSaveSuccessFeedback()
@@ -92,6 +108,14 @@ void Editor::initializeGuiFields()
 void Editor::initializeScenariosExplorer()
 {
 	_explorer = new ExplorerBox;
+
+	// temp, need to change it with the list from the json file:
+	std::vector<std::string> names;
+	for (int i = 1; i <= _scenariosEditors.size(); i++)
+		names.push_back("scenario " + std::to_string(i));
+	_explorer->setScenariosList(names);
+	// end temp
+
 	connect(_explorer, &ExplorerBox::scenarioClicked, this, &Editor::handleScenarioClicked);
 	connect(_explorer, &ExplorerBox::scenarioAdded, this, &Editor::handleAddScenario);
 	connect(_explorer, &ExplorerBox::scenarioDeleted, this, &Editor::handleDeleteScenario);

@@ -14,14 +14,14 @@ class ConditionsEditor : public QGroupBox
 public:
 	ConditionsEditor();
 	
+	nlohmann::json getLogicDataAsJson();
+	nlohmann::json getGuiDataAsJson();
 	void setView(nlohmann::json jsonData);
 
 private:
 	void showSaveSuccessFeedback();
 	void showSaveFailedFeedback();
 	void loadGuiDataFromJson();
-	bool saveLogicDataToJson();
-	bool saveGuiDataToJson();
 
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;

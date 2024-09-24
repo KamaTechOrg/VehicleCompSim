@@ -15,6 +15,7 @@ public:
 	ExplorerBox();
 
 	std::vector<std::string> scenariosNames() const;
+	void setScenariosList(std::vector<std::string> scenariosNames);
 
 signals:
 	void scenarioClicked(int index);
@@ -24,6 +25,7 @@ signals:
 private:
 	QVBoxLayout* _layout;
 	QListView* _scenariosList;
+	QStringList _scenariosListItems;
 
 	void onItemClicked(const QModelIndex& index);
 	void showContextMenu(const QPoint& pos);

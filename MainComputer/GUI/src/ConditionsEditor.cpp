@@ -64,15 +64,15 @@ void ConditionsEditor::loadGuiDataFromJson()
     _actionGroupBox->setView(jsonData["actions"]);
 }
 
-bool ConditionsEditor::saveLogicDataToJson() {
+nlohmann::json ConditionsEditor::getLogicDataAsJson() {
     std::shared_ptr<ConditionBase> conditionsTree = _conditionsGroup->logicData();
     if (conditionsTree == nullptr)
-        return false;
+        return nlohmann::json();
 
     // get action (that will be executed if conditon were validated at some point)
     std::vector<std::shared_ptr<Action>> actions = _actionGroupBox->data();
     if (actions.empty())
-        return false;
+        return nlohmann::json();
 
     nlohmann::json jsonData;
     jsonData["conditions"] = conditionsTree->toJson();
@@ -80,15 +80,15 @@ bool ConditionsEditor::saveLogicDataToJson() {
     for (const auto& action : actions) {
         jsonData["actions"].push_back(action->toJson());
     }
-    JsonLoader().saveConditionsLogic(jsonData);
-    ConditionsManager().loadFromJson();
-    return true;
+    //JsonLoader().saveConditionsLogic(jsonData);
+    //ConditionsManager().loadFromJson();
+    return jsonData;
 }
 
-bool ConditionsEditor::saveGuiDataToJson() {
+nlohmann::json ConditionsEditor::getGuiDataAsJson() {
     nlohmann::json jsonData;
     jsonData["conditions"] = _conditionsGroup->GuiData();
     jsonData["actions"] = _actionGroupBox->GuiData();
-    JsonLoader().saveGuiData(jsonData);
-    return true;
+    //JsonLoader().saveGuiData(jsonData);
+    return jsonData;
 }

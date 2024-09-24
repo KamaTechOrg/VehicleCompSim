@@ -12,10 +12,7 @@ ExplorerBox::ExplorerBox()
 	_scenariosList = new QListView;
 
 	QStringListModel* model = new QStringListModel(this);
-	QStringList scenarioList;
-	scenarioList << "New Scenario";
-
-	model->setStringList(scenarioList);
+	model->setStringList(_scenariosListItems);
 	_scenariosList->setModel(model);
 	connect(_scenariosList, &QListView::clicked, this, &ExplorerBox::onItemClicked);
 	_scenariosList->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
@@ -38,6 +35,17 @@ std::vector<std::string> ExplorerBox::scenariosNames() const
 		}
 	}
 	return scenariosNames;
+}
+
+void ExplorerBox::setScenariosList(std::vector<std::string> scenariosNames)
+{
+	QStringListModel* model = qobject_cast<QStringListModel*>(_scenariosList->model());
+	if (model) {
+		QStringList newScenariosList;
+		for (auto scenarioName : scenariosNames)
+			newScenariosList << QString::fromStdString(scenarioName);
+		model->setStringList(newScenariosList);
+	}
 }
 
 void ExplorerBox::onItemClicked(const QModelIndex& index)
