@@ -7,8 +7,10 @@
 #include "globalstate.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
+#include "globalconstant.h"
 
 #include <qrandom.h>
+using namespace globalConstant;
 
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
@@ -38,7 +40,7 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     // Set up timer for live updates
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
-    connect(&GlobalState::getInstance(), &GlobalState::newParsedData, this, &SensorItem::update_new_data);
+    connect(&GlobalState::getInstance(), &GlobalState::parsedData, this, &SensorItem::update_new_data);
 
     setZValue(1);
 
@@ -48,11 +50,18 @@ SensorItem::~SensorItem() {
 }
 void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
     auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == data[1].second || sensor->getModel().priority() == data[2].second){
-        for(const auto& pair : data){
-            qInfo() << pair.first << pair.second;
-        }
+    if(sensor->getModel().priority() == data[bufferInfo::SourceId].second){
+        qInfo() << "src" << sensor->getModel().priority();
+    }else if(sensor->getModel().priority() == data[bufferInfo::DestinationId].second) {
+        qInfo() << "dest" << sensor->getModel().priority();
     }
+//
+//
+//    if(sensor->getModel().priority() == data[1].second || sensor->getModel().priority() == data[2].second){
+//        for(const auto& pair : data){
+//            qInfo() << pair.first << pair.second;
+//        }
+//    }
 
     // todo update sensor data
 }
@@ -290,13 +299,18 @@ void SensorItem::update_data(const QString& sensorId, QList<QVariant> data){
 //void SensorItem::update_data_new(const QByteArray &buffer) {
 //    QList<QByteArray> pieces = buffer.split(',');
 //    auto *sensor = dynamic_cast<SensorItem *>(this);
-//    if(sensor->getModel().priority() == pieces[1] || sensor->getModel().priority() == pieces[2]){
-//
-//        // need to parse before
-//        all_data.emplace_back(buffer);
+//    if(sensor->getModel().priority() == pieces[1]){
+//        qInfo() << "src" << sensor->getModel().priority();
+//    }else if(sensor->getModel().priority() == pieces[2]) {
+//        qInfo() << "dest" << sensor->getModel().priority();
 //    }
 //
+////        if(sensor->getModel().priority() == pieces[1] || sensor->getModel().priority() == pieces[2]){
+////        qInfo() << sensor->getModel().priority();
+//        // need to parse before
+//        all_data.emplace_back(buffer);
 //}
+
 
 
 

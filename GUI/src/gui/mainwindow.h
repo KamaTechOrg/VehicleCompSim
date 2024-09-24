@@ -66,7 +66,7 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
-    void buffer_listener(const QByteArray& new_buffer);
+    void buffer_listener(const QString& data);
 private slots:
     void onOnlineStatusChanged(bool online);
     void onCurrentProjectChanged(ProjectModel* project);

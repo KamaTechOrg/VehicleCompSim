@@ -45,14 +45,14 @@ public:
     void setMyClientId(QString value);
 
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newData(const QByteArray& new_buffer);
+    void newData(const QString& data);
     void newParsedData(QList<QPair<QString, QString>> data);
 
     void saveData();
     void loadData();
 
     // for test only
-    void new_test_buffer(QByteArray buffer);
+    void new_test_buffer(const QString& data);
 
 
 signals:
@@ -66,13 +66,13 @@ signals:
     void currentProjectPublished(ProjectModel* project);
 
     void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newDataArrived(const QByteArray& new_buffer);
+    void newDataArrived(const QString& data);
     void parsedData(QList<QPair<QString, QString>> data);
     void saveBtnPressed();
     void loadBtnPressed();
 
     // for test only
-    void new_test_buffer_arrived(QByteArray buffer);
+    void new_test_buffer_arrived(const QString& data);
 
 
 

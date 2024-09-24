@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
+///#include "../Communication/User_Directory/client/client.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -294,8 +295,17 @@ void MainWindow::onRunEnd()
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
 }
-void MainWindow:: buffer_listener(const QByteArray& new_buffer){
-    m_globalState.newData(new_buffer);
+
+
+//ClientSocket client(id);
+// use listen asynchronously
+// char buffer[MAXRECV];
+// auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
+// client.listenAsync(buffer , sizeof(buffer),func);
+// std::string mm = buffer;
+
+void MainWindow:: buffer_listener(const QString& data){
+    m_globalState.newData(data);
 }
 
 //void MainWindow::update_view() {

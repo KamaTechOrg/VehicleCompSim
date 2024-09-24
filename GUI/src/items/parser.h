@@ -14,7 +14,7 @@ Q_OBJECT
 public:
     parser();
 public slots:
-    void parseBuffer(const QByteArray& buffer);
+    void parseBuffer(const QString& data);
     void setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap);
 private:
     QMap<int, QList<QList<QString>>> sensorInfoMap;

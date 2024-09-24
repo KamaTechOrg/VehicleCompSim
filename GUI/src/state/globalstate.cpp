@@ -87,8 +87,8 @@ void GlobalState::setMyClientId(QString value)
     }
 }
 
-void GlobalState::newData(const QByteArray& new_buffer){
-    emit newDataArrived(new_buffer);
+void GlobalState::newData(const QString& data){
+    emit newDataArrived(data);
 }
 void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
     emit ParserInfoArrived(parseInfoMap);
@@ -109,8 +109,8 @@ GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
 }
 
-void GlobalState::new_test_buffer(QByteArray buffer) {
-    emit new_test_buffer_arrived(buffer);
+void GlobalState::new_test_buffer(const QString& data) {
+    emit new_test_buffer_arrived(data);
 }
 
 

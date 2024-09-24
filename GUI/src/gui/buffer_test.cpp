@@ -4,6 +4,13 @@
 
 #include "buffer_test.h"
 #include "state/globalstate.h"
+#include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <cstring>
 
 buffer_test::buffer_test(QObject *parent) : QObject(parent), m_logFile(QDir::currentPath() + "/A.log"), msg_counter(0) {
 //    if (m_logFile.exists()) {
@@ -17,7 +24,7 @@ buffer_test::buffer_test(QObject *parent) : QObject(parent), m_logFile(QDir::cur
 //        return;
 //    }
     m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &buffer_test::generate_buffer);
+    connect(m_timer, &QTimer::timeout, this, &buffer_test::my_new_buffer);
     m_timer->start(1000);
 }
 buffer_test::~buffer_test() {
@@ -221,4 +228,87 @@ void buffer_test::generate_buffer() {
 
     GlobalState::getInstance().new_test_buffer(message);
 
+}
+
+void buffer_test::my_new_buffer() {
+    // Get current timestamp
+    auto now = std::chrono::system_clock::now();
+    auto itt = std::chrono::system_clock::to_time_t(now);
+    std::ostringstream ss;
+    ss << std::put_time(std::gmtime(&itt), "%Y-%m-%dT%H:%M:%S");
+    std::string timestamp = ss.str();
+
+//    GlobalState::getInstance().currentProject()->models()
+
+    int src = 3;
+    int dest = 4;
+    int buffer_len = 200;
+
+    char buffer[200];
+    int index = 0;
+
+    // Serialize int
+    int age = 5678;
+    std::memcpy(buffer + index, &age, sizeof(age));
+    index += sizeof(age);
+
+    // Serialize double
+    double high = 4.555;
+    std::memcpy(buffer + index, &high, sizeof(high));
+    index += sizeof(high);
+
+    // Serialize string
+    std::string name = "yossi goldberg";
+    std::strcpy(buffer + index, name.c_str());
+    index += name.length() + 1;  // Include null terminator
+
+    // Update buffer_len to actual used size
+    buffer_len = index;
+
+    // Create CSV string
+    std::stringstream my_stream;
+    my_stream << timestamp << ","
+              << src << ","
+              << dest << ","
+              << buffer_len << ","
+              << std::string(buffer, buffer_len);  // Convert buffer to string
+
+    // Split CSV string
+    std::vector<std::string> split_pieces;
+    std::string piece;
+    while (std::getline(my_stream, piece, ',')) {
+        split_pieces.push_back(piece);
+    }
+
+    // Print first 4 pieces
+    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
+        std::cout << split_pieces[i] << std::endl;
+    }
+
+    // Deserialize buffer
+    if (split_pieces.size() > 4) {
+        const std::string& buffer_str = split_pieces[4];
+        const char* exit_buffer = buffer_str.c_str();
+        int exit_index = 0;
+
+        // Extract int (age)
+        int exit_age;
+        std::memcpy(&exit_age, exit_buffer + exit_index, sizeof(exit_age));
+        exit_index += sizeof(exit_age);
+
+        // Extract double (high)
+        double exit_high;
+        std::memcpy(&exit_high, exit_buffer + exit_index, sizeof(exit_high));
+        exit_index += sizeof(exit_high);
+
+        // Extract string (name)
+        std::string exit_name(exit_buffer + exit_index);
+
+        // Print extracted values
+        std::cout << "Extracted age: " << exit_age << std::endl;
+        std::cout << "Extracted high: " << exit_high << std::endl;
+        std::cout << "Extracted name: " << exit_name << std::endl;
+    }
+    QString converted_data = QString::fromStdString(my_stream.str());
+    GlobalState::getInstance().new_test_buffer(converted_data);
 }
