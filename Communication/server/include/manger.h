@@ -3,7 +3,6 @@
 #include <thread>
 
 #include "server.h"
-#include "mang_req.h"
 #include "receive_manger.h"
 #include "send_menger.h"
 
@@ -24,8 +23,8 @@ private:
     std::pair<int, FD> create_kay_value_id(int fd);
     FD get_sock(int id);
 
+
     Server m_server;
-    Mamge_req m_req;
     Socket m_server_socket;
     Receive_manger m_connect;
     Send_manager m_send_manager;

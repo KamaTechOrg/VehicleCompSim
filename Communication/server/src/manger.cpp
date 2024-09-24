@@ -7,7 +7,7 @@
 #define close_socket ::close
 #endif
 
-MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{}, m_send_manager{}
+MangServer::MangServer() : m_server{PORTSERVER}, m_connect{}, m_send_manager{}
 {
 }
 

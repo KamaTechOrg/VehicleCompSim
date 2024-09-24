@@ -40,3 +40,14 @@ void writeCanMessageToLog(CanBus & message , const std::string & filename)
         std::cerr << "Error: Unable to open log file!" << std::endl;
     }
 }
+
+
+std::string CanMessageToLog(CanBus &message)
+{
+    std::ostringstream oss;
+
+    oss << Data_manipulator::getCurrentTime();
+    oss << message.getFormattedMessage();
+
+    return oss.str();  // Convert ostringstream to string
+}

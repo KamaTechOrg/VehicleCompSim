@@ -19,6 +19,7 @@
 
 #include "constants.h"
 #include "canbus.h"
+#include "data_manipulator.h"
 
 class Socket
 {
