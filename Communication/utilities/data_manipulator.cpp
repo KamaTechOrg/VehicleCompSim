@@ -128,3 +128,27 @@ std::string Data_manipulator::get_ip_server(const std::string &filename)
    std::filesystem::path p = getTempFilePath(filename);
    return readFileContents(p);
 }
+
+bool Data_manipulator::validateCRC(const std::string &input, int pos1, const char *buf, void *data)
+{
+       std::string input1 = input.substr(0, pos1);
+    int EXcrc = std::stoi(input.substr(pos1 + 1, input.length() - pos1 - 1));
+    char* message = const_cast<char*>(input1.c_str());
+
+    if (Data_manipulator::CRCalgo(message) == EXcrc) {
+        memcpy(data, buf, pos1);
+
+        std::cout << "received = ";
+        for (int i = 0; i < pos1; ++i) {
+            std::cout << buf[i];
+        }
+        std::cout << std::endl;
+
+        return true;
+    } else {
+        std::cout << "CRC check failed" << std::endl;
+        memcpy(data, buf, input.length());
+        return false;
+    }
+}
+
