@@ -13,6 +13,7 @@ set(ITEMS_SOURCES
     actionsblocker.cpp
     qemusensoritem.h
     qemusensoritem.cpp
+    customellipseItem.h
 )
 
 set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)

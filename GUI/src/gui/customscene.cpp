@@ -13,10 +13,20 @@
 #include "client/websocketclient.h"
 #include "customwidget.h"
 
+#include <cstdlib>
+#include <ctime>
+
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()),
     m_globalState(GlobalState::getInstance()) {
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &CustomScene::applyRandomFlowAnimation);
+    timer->start(100);
+
+    // Seed the random number generator
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
 void CustomScene::addItemToScene(BaseItem *item) 
@@ -44,9 +54,12 @@ void CustomScene::removeItemFromScene(BaseItem *item)
 }
 
 void CustomScene::clearScene() {
+    // cancelAllAnimations();
     for (QGraphicsItem* item : items()) {
-        removeItem(item);
-        delete item;
+        if (BaseItem* baseItem = dynamic_cast<BaseItem*>(item)) {
+            removeItem(baseItem);
+            delete baseItem;
+        }
     }
 }
 
@@ -259,6 +272,7 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             SensorModel* sensorModel = new SensorModel();
             sensorModel->setOwnerID(m_globalState.myClientId());
             SensorItem* sensorItem = new SensorItem(sensorModel);
+            sensorItem->setPos(event->scenePos());
             m_network->addElement(sensorItem);
             addItemToScene(sensorItem);
             m_globalState.setCurrentSensorModel(sensorModel);
@@ -267,6 +281,7 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
             QemuSensorModel* qemuModel = new QemuSensorModel();
             qemuModel->setOwnerID(m_globalState.myClientId());
             QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
+            qemuItem->setPos(event->scenePos());
             m_network->addElement(qemuItem);
             addItemToScene(qemuItem);
             m_globalState.setCurrentSensorModel(qemuModel);
@@ -299,6 +314,41 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
         }
     }
 }
+
+void CustomScene::applyRandomFlowAnimation() {
+    // Collect all SensorItems in the scene
+    QList<SensorItem*> sensorItems;
+    for (QGraphicsItem* item : items()) {
+        SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+        if (sensorItem) {
+            sensorItems.append(sensorItem);
+        }
+    }
+
+    // Ensure there are at least two SensorItems to create a flow animation
+    if (sensorItems.size() < 2) {
+        return;
+    }
+
+    // Select two random SensorItems
+    int index1 = std::rand() % sensorItems.size();
+    int index2;
+    do {
+        index2 = std::rand() % sensorItems.size();
+    } while (index1 == index2);
+
+    SensorItem* src = sensorItems[index1];
+    SensorItem* dest = sensorItems[index2];
+
+    src->updateIndicatorValue(0);
+    dest->updateIndicatorValue(0);
+
+    // Create and start the FlowAnimation
+    FlowAnimation* flowAnimation = new FlowAnimation(this);
+    flowAnimation->setPoints(src->pos(), dest->pos());
+    flowAnimation->startAnimation();
+}
+
 
 void CustomScene::handleProjectConnections(ProjectModel* newProject) {
     if (m_currentProject) {

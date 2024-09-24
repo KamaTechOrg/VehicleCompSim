@@ -139,6 +139,7 @@ void MainWindow::setupRunService()
 
 void MainWindow::setupView() {
     m_view = new QGraphicsView(m_scene);
+    m_view->setRenderHint(QPainter::Antialiasing);
     m_sceneBox = new QGroupBox(this);
 
     // Initialize the title and conditional button
