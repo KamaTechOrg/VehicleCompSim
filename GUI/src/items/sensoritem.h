@@ -20,6 +20,7 @@ public:
     bool isExludeFromProject() const;
     virtual SensorModel& getModel();
     void confirmRemove() override;
+    void updateIndicatorValue(int value);
     class Editor;
 
 protected:

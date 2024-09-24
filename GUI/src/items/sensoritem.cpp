@@ -127,8 +127,6 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     } else{
         hideButtons();
     }
-
-    m_verticalIndicator->setValue(QRandomGenerator::global()->bounded(200));
 }
 
 bool SensorItem::isInitialized() const
@@ -153,6 +151,11 @@ void SensorItem::confirmRemove()
         return;
     }
     BaseItem::confirmRemove();
+}
+
+void SensorItem::updateIndicatorValue(int value)
+{
+    m_verticalIndicator->setValue(QRandomGenerator::global()->bounded(200));
 }
 
 void SensorItem::showButtons()

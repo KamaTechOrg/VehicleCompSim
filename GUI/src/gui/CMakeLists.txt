@@ -29,10 +29,13 @@ set(CLIENT_SOURCES
     CustomInfoWindow.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
-    widgets/verticalindicator.h
-    widgets/verticalindicator.cpp
     saveAndLoad.cpp
     saveAndLoad.h
+    
+    widgets/verticalindicator.h
+    widgets/verticalindicator.cpp
+    widgets/flowanimation.h
+    widgets/flowanimation.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)
