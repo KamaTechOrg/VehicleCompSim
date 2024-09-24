@@ -23,15 +23,14 @@ namespace HSM
     public:
         static HSM_STATUS get_keys(const std::vector<u_char> &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
         static KeyStorage &getInstance();
+        void writeToStorage();
+        void searchInStorage(const std::string &searchTerm);
 
     protected:
         static HSM_STATUS getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey);
 
     private:
-        KeyStorage()
-        {
-            std::cout << "KeyStorage constructor" << std::endl;
-        }
+        KeyStorage();
         static KeyStorage *instance;
 
         ~KeyStorage()

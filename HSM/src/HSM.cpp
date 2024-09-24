@@ -5,10 +5,76 @@
 #include <vector>
 #include <iostream>
 #include <ostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
 
 using namespace HSM;
 
 const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
+KeyStorage* KeyStorage::instance = nullptr;
+
+KeyStorage::KeyStorage(){
+
+    std::cout << "KeyStorage constructor" << std::endl;
+
+}
+
+void HSM::KeyStorage::writeToStorage()
+{
+    std::ofstream file(KeyStorageFileName, std::ios_base::app);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open the file for writing\n";
+        return;
+    }
+
+    // Writing data to the CSV file
+    file << "Name, Age, Country\n";  // Writing headers
+    file << "John, 25, USA\n";
+    file << "Emma, 30, UK\n";
+    file << "Akira, 22, Japan\n";
+
+    file.close();  // Close the file after writing
+    std::cout << "Data written to " << KeyStorageFileName << " successfully!\n";
+}
+
+
+
+
+void HSM::KeyStorage::searchInStorage(const std::string &searchTerm) {
+    std::ifstream file(KeyStorageFileName);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open the file for reading\n";
+        return;
+    }
+
+    std::string line, word;
+    bool found = false;
+    
+    // Reading file line by line
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        while (std::getline(ss, word, ',')) {
+            // Check if the word matches the search term
+            if (word == searchTerm) {
+                std::cout << "Found: " << line << "\n";
+                found = true;
+                break;  // Stop searching after the first match
+            }
+        }
+        if (found) break;
+    }
+
+    if (!found) {
+        std::cout << "Search term not found in the file\n";
+    }
+
+    file.close();
+}
+
+
 
 
 
@@ -37,12 +103,14 @@ HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyI
     return HSM_STATUS();
 }
 
-KeyStorage &HSM::KeyStorage::getInstance()
+HSM::KeyStorage &HSM::KeyStorage::getInstance()
 {
     if(instance == nullptr)
         instance = new KeyStorage();
     return *instance;
 }
+
+
 
 HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
 {
