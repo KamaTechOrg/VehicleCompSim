@@ -27,5 +27,5 @@ private:
 	ConditionsGroup* _conditionsGroup;
 	ThenGroupBox* _actionGroupBox;
 
-	void save();
+	//void save();
 };

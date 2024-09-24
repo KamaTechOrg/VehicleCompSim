@@ -28,14 +28,14 @@ void ConditionsEditor::setView(nlohmann::json jsonData)
     _actionGroupBox->setView(jsonData["actions"]);
 }
 
-void ConditionsEditor::save()
-{
-    bool success = saveLogicDataToJson() && saveGuiDataToJson();
-    if (success)
-        showSaveSuccessFeedback();
-    else
-        showSaveFailedFeedback();
-}
+//void ConditionsEditor::save()
+//{
+//    bool success = saveLogicDataToJson() && saveGuiDataToJson();
+//    if (success)
+//        showSaveSuccessFeedback();
+//    else
+//        showSaveFailedFeedback();
+//}
 
 void ConditionsEditor::showSaveSuccessFeedback()
 {

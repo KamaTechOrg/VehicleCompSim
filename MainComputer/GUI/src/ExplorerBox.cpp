@@ -86,6 +86,7 @@ void ExplorerBox::deleteSelectedItem()
 			model->removeRow(index.row());
 		}
 	}
+	emit scenarioDeleted(index.row());
 }
 
 void ExplorerBox::addNewItem()
@@ -99,4 +100,5 @@ void ExplorerBox::addNewItem()
 			model->setStringList(scenariosList);
 		}
 	}
+	emit scenarioAdded();
 }

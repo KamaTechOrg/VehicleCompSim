@@ -18,6 +18,8 @@ public:
 
 signals:
 	void scenarioClicked(int index);
+	void scenarioAdded();
+	void scenarioDeleted(int index);
 
 private:
 	QVBoxLayout* _layout;
