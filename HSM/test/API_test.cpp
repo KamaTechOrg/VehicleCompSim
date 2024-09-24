@@ -15,10 +15,10 @@
 //   EXPECT_EQ(AES::decrypt("AES-128-ECB", key, expected_encrypted_msg), msg);
 // }
 
-// TEST(API_TEST, write_end_read_test)
-// {
-//     HSM::KeyStorage& keyStorage = HSM::KeyStorage::getInstance();
-//     keyStorage.writeToStorage();
-//     keyStorage.searchInStorage("jjjj");
+TEST(API_TEST, write_end_read_test)
+{
+    HSM::KeyStorage& keyStorage = HSM::KeyStorage::getInstance();
+    keyStorage.writeToStorage();
+    keyStorage.searchInStorage("jjjj");
 
-// }
+}

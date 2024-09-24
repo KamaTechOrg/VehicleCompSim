@@ -1,6 +1,7 @@
 add_library(RSA src/RSA_ENC.cpp src/RSA_KEY.cpp)
 target_include_directories(RSA PUBLIC include)
 target_link_libraries(RSA PRIVATE HsmStatus)
+target_link_libraries(RSA PRIVATE BigNum)
 
 
 
