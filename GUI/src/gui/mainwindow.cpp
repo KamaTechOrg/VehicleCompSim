@@ -275,8 +275,9 @@ void MainWindow::onRunStart()
 //    }
 //    change_view_timer = new QTimer(this);
 //    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
-//    change_view_timer->start(2000);
+//    change_view_timer-
 
+    m_globalState.setIsRunning(true);
     startBtn->hide();
     timer->hide();
 

@@ -3,34 +3,34 @@
     {
       "id": 1,
       "data": [
-        { "name": "msg sensor 1", "numBits": "20", "type": "char" },
         { "name": "msg sensor 1", "numBits": "4", "type": "int" },
         { "name": "msg sensor 1", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 1", "numBits": "30", "type": "char" }
+        { "name": "msg sensor 1", "numBits": "14", "type": "string" }
       ]
     },
     {
       "id": 2,
       "data": [
+        { "name": "msg sensor 2", "numBits": "14", "type": "string" },
         { "name": "msg sensor 2", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 2", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 2", "numBits": "20", "type": "char" },
-        { "name": "msg sensor 2", "numBits": "30", "type": "char" }
+        { "name": "msg sensor 2", "numBits": "8", "type": "double" }
       ]
     },
     {
       "id": 3,
       "data": [
-        { "name": "msg sensor 3", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 3", "numBits": "20", "type": "char" },
         { "name": "msg sensor 3", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 3", "numBits": "30", "type": "char" }
+        { "name": "msg sensor 3", "numBits": "8", "type": "double" },
+        { "name": "msg sensor 3", "numBits": "14", "type": "string" }
       ]
     },
     {
       "id": 4,
       "data": [
-        { "name": "msg sensor 4", "numBits": "20", "type": "char" }
+        { "name": "msg sensor 4", "numBits": "14", "type": "string" },
+        { "name": "msg sensor 4", "numBits": "4", "type": "int" },
+        { "name": "msg sensor 4", "numBits": "8", "type": "double" },
+        { "name": "msg sensor 4", "numBits": "14", "type": "string" }
       ]
     }
   ]

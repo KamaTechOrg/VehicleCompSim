@@ -51,23 +51,22 @@ private:
     QTimer* m_updateWindowTimer;
     QGraphicsProxyWidget* m_infoWindowProxy = nullptr;
     CustomInfoWindow* m_infoWindow = nullptr;
+
+    QList<QList<QPair<QString, QString>>>  all_data_final;
+    QList<QPair<QString, QString>>  last_data_final;
+
+
     QList<QVariant> last_data;
     QList<QVariant> all_data;
     PersistentTooltip* m_persistentTooltip = nullptr;
-    bool playMode = false;
     bool m_isOwnedByMe = false;
+    bool mouse_pressed = false;
 
 public slots:
     void onModelUpdated();
 
 private slots:
     void update_new_data(QList<QPair<QString, QString>> data);
-//    void update_data_new(const QByteArray& buffer);
-
-
-    void update_data(const QString& sensorId, QList<QVariant> data);
-    void update_column_names(const QString& sensorId, QList<QString> data);
-
     void onCustomWindowClosed();
 
 };
