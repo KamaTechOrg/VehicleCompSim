@@ -23,6 +23,10 @@ private:
 	QPushButton* _saveButton;
 
 	void save();
+	bool saveLogicDataToJson();
+	bool saveGuiDataToJson();
+	void showSaveSuccessFeedback();
+	void showSaveFailedFeedback();
 	void initializeGuiFields();
 	void initializeScenariosExplorer();
 	void initializeSaveButton();

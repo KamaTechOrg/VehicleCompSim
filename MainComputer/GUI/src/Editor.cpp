@@ -37,11 +37,41 @@ void Editor::save()
 	for (const auto scenarioName : scenarioNames)
 		qInfo() << scenarioName;
 
-	/*bool success = saveLogicDataToJson() && saveGuiDataToJson();
+	bool success = saveLogicDataToJson() && saveGuiDataToJson();
 	if (success)
 		showSaveSuccessFeedback();
 	else
-		showSaveFailedFeedback();*/
+		showSaveFailedFeedback();
+}
+
+bool Editor::saveLogicDataToJson()
+{
+	return false;
+}
+
+bool Editor::saveGuiDataToJson()
+{
+	return false;
+}
+
+void Editor::showSaveSuccessFeedback()
+{
+	_saveButton->setStyleSheet("background-color: #4CAF50;"); // Green
+	_saveButton->setText("success");
+	QTimer::singleShot(3000, [this]() {
+	    _saveButton->setStyleSheet("");
+	    _saveButton->setText("save");
+	    });
+}
+
+void Editor::showSaveFailedFeedback()
+{
+	_saveButton->setStyleSheet("background-color: #F44336;"); // Red
+	_saveButton->setText("failed");
+	QTimer::singleShot(3000, [this]() {
+	    _saveButton->setStyleSheet("");
+	    _saveButton->setText("save");
+	    });
 }
 
 void Editor::initializeGuiFields()
