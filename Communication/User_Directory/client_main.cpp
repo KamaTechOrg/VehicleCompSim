@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// this page is example of how to use the client socket library
+
+
 bool is_valid_id(int id)
 {
     return id > 0;
