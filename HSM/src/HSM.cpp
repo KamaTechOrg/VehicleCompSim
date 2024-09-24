@@ -62,6 +62,8 @@ HSM::KeyStorage::~KeyStorage()
 {
     //erase file
     std::remove(KeyStorageFileName.c_str());
+    // delete instance; 
+    // KeyStorage::instance = nullptr;
 }
 
 HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
@@ -95,19 +97,21 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_i
     while (std::getline(file, line))
     {
         std::stringstream ss(line);
-        // std::cout << line << std::endl;
+        //convert line to vector string split by comma
+        std::vector<std::string> vec;
         while (std::getline(ss, word, ','))
         {
-            if (word == searchTerm)
-            {
-                std::cout << "Found: " << line << "\n";
-                file.close();
-                std::vector<std::vector<u_char>> vec = keyStingToVector(line);
-                publicKey = vec[3];
-                privateKey = vec[4];
-                file.close();
-                return HSM_STATUS::HSM_Good;
-            }
+            vec.push_back(word);
+        }
+        if (vec[0] == searchTerm && vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type))
+        {
+            std::cout << "Found: " << line << "\n";
+            file.close();
+            std::vector<std::vector<u_char>> vec = keyStingToVector(line);
+            publicKey = vec[3];
+            privateKey = vec[4];
+            file.close();
+            return HSM_STATUS::HSM_Good;
         }
     }
     file.close();

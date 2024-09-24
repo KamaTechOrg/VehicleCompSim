@@ -6,7 +6,7 @@
     HSM::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
-	generate_keys(publicKey, privateKey, modulus, bits / 2);
+	generate_keys(publicKey, privateKey, modulus, bits);
 	if(publicKey == 0 || privateKey == 0 || modulus == 0){
 		return HSM::HSM_STATUS::HSM_InternalErr;
 	}
@@ -161,17 +161,17 @@ std::vector<u_char> RSA_KEY::generateRandomBits(size_t length)
 
 	// Trim the string to the specified length
 	std::string binaryString = oss.str();
-	return std::vector<u_char>(binaryString.begin(), binaryString.begin() + (length / 16));
+	return std::vector<u_char>(binaryString.begin(), binaryString.end());
 }
 
 BigNum RSA_KEY::generateLargePrime(int bits)
 {
 	BigNum prime;
-	int count = 0;
 	int k = 40; // Number of iterations for Miller-Rabin test
 	do
 	{
 		prime = generateRandomNumber(bits);
+		// std::cout << "Prime: " << prime << std::endl;
 	} while (!isPrime(prime, k));
 	return prime;
 }

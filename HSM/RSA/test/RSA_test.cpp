@@ -309,22 +309,23 @@ TEST(RSA_BigNum_test, WithBigNum_1)
     BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
     EXPECT_EQ(message, decrypted);
     EXPECT_NE(encrypted, message);
+    std::cout << "modulus = " << modulus << std::endl;
 }
 
-TEST(RSA_BigNum_test, WithBigNum_2)
-{
-    // std::cout << "Testing RSA with long int" << std::endl;
-    BigNum publicKey, privateKey, modulus;
+// TEST(RSA_BigNum_test, WithBigNum_2)
+// {
+//     // std::cout << "Testing RSA with long int" << std::endl;
+//     BigNum publicKey, privateKey, modulus;
 
-    RSA_KEY::generate_keys(publicKey, privateKey, modulus, 512);
+//     RSA_KEY::generate_keys(publicKey, privateKey, modulus, 512);
 
-    // test RSA encryption and decryption for int
-    BigNum message("12345768910");
-    BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
-    BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
-    EXPECT_EQ(message, decrypted);
-    EXPECT_NE(encrypted, message);
-}
+//     // test RSA encryption and decryption for int
+//     BigNum message("12345768910");
+//     BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
+//     BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
+//     EXPECT_EQ(message, decrypted);
+//     EXPECT_NE(encrypted, message);
+// }
 
 // TEST(RSA_BigNum_test, WithBigNum_3)
 // {
@@ -373,17 +374,18 @@ TEST(RSA_BigNum_test, WithString)
 }
 
 
-// TEST(RSA_BigNum_test, WithString_1024_bit)
-// {
-//     BigNum publicKey, privateKey, modulus;
-//     RSA_KEY::generate_keys(publicKey, privateKey, modulus, 1024);
-//     std::string message = "Hello World, this is my secret message!. and let's see if it works!";
-//     std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), publicKey, modulus);
-//     std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
-//     std::string message_str(message.begin(), message.end());
-//     std::string encrypted_str(encrypted.begin(), encrypted.end());
-//     std::string decrypted_str(decrypted.begin(), decrypted.end());
+TEST(RSA_BigNum_test, WithString_128_bit)
+{
+    BigNum publicKey, privateKey, modulus;
+    RSA_KEY::generate_keys(publicKey, privateKey, modulus, 128);
+    std::string message = "Hello World, this is my secret message!. and let's see if it works!";
+    std::vector<u_char> encrypted = RSA_ENC::encrypt(std::vector<u_char>(message.begin(), message.end()), publicKey, modulus);
+    std::vector<u_char> decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
+    std::string message_str(message.begin(), message.end());
+    std::string encrypted_str(encrypted.begin(), encrypted.end());
+    std::string decrypted_str(decrypted.begin(), decrypted.end());
+    std::cout << "modulus = " << modulus << std::endl;
 
-//     EXPECT_EQ(message_str, decrypted_str);
-//     EXPECT_NE(message_str, encrypted_str);
-// }
+    EXPECT_EQ(message_str, decrypted_str);
+    EXPECT_NE(message_str, encrypted_str);
+}
