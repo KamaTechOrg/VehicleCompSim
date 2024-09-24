@@ -39,13 +39,24 @@ void Editor::save()
 		showSaveSuccessFeedback();
 	else
 		showSaveFailedFeedback();
-
-	// TODO: load the main computer "backend" in running time with the new conditions
 }
 
 bool Editor::saveLogicDataToJson()
 {
-	return false;
+	nlohmann::json::array_t jsonData;
+	for (auto scenario : _scenariosEditors)
+	{
+		nlohmann::json current = scenario->getLogicDataAsJson();
+		if (!current.contains("conditions") && !current.contains("actions"))
+			return false;
+		if (!current["actions"].is_array() || current["actions"].empty())
+			return false;
+		jsonData.push_back(current);
+	}
+	JsonLoader().saveConditionsLogic(jsonData);
+	return true;
+	// TODO: save and then load the main computer "backend" in running time with the new conditions
+	//ConditionsManager().loadFromJson();
 }
 
 bool Editor::saveGuiDataToJson()

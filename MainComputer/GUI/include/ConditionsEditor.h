@@ -19,13 +19,10 @@ public:
 	void setView(nlohmann::json jsonData);
 
 private:
-	void showSaveSuccessFeedback();
-	void showSaveFailedFeedback();
 	void loadGuiDataFromJson();
 
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;
 	ThenGroupBox* _actionGroupBox;
 
-	//void save();
 };
