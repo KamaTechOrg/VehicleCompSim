@@ -32,7 +32,8 @@ ClientSocket::ClientSocket(int id)
     }
     
     m_clientSocket->create();
-    m_clientSocket->connect(IPSERVER, PORTSERVER);
+    std::string ip_server = Data_manipulator::get_ip_server(IPFILENAME);
+    m_clientSocket->connect(ip_server, PORTSERVER);
     
     send_yuor_id(id, *this);
 }

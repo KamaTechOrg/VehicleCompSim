@@ -99,3 +99,32 @@ std::string Data_manipulator:: getCurrentTime() {
     
     return oss.str();
 }
+
+std::filesystem::path Data_manipulator::getTempFilePath(const std::string& fileName) {
+    std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+    return tempDir / fileName; 
+}
+
+
+std::string Data_manipulator::readFileContents(const std::filesystem::path& filePath) {
+    std::ifstream file(filePath);
+    if (!file) {
+        std::cerr << "Error: Unable to open file " << filePath << std::endl;
+        return "";
+    }
+
+    std::string content;
+    std::string line;
+    while (std::getline(file, line)) {
+        content += line + "\n"; 
+    }
+
+    file.close();
+    return content; 
+}
+
+std::string Data_manipulator::get_ip_server(const std::string &filename)
+{
+   std::filesystem::path p = getTempFilePath(filename);
+   return readFileContents(p);
+}
