@@ -21,6 +21,7 @@ public:
 
 public slots:
     void generate_buffer();
+    void my_new_buffer();
 
 private:
     QList<QString> msg = {"Alice", "Bob", "Charlie", "David", "Eve",

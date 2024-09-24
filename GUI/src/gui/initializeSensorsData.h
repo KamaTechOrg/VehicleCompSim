@@ -32,9 +32,8 @@ public:
     void initialize();
 
 private:
-    void fill_db_data();
+    void getSensorsInfoData();
     void read_from_json();
-    void fill_box_data();
     QJsonArray itemsArray;
 };
 

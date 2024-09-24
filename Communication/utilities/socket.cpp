@@ -21,15 +21,7 @@ Socket::Socket() : m_sock(-1)
 
 Socket::~Socket()
 {
-    if (is_valid())
-    {
-
-#ifdef _WIN32
-        WSACleanup();
-#else
-        close(m_sock);
-#endif
-    }
+  close();
 }
 
 void Socket::create()
@@ -174,9 +166,43 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        std::cout << "Received === " << buf << std::endl;
+        
 
-        memcpy(data, buf, len);
+
+        std::string input(buf, len);  
+        size_t pos1 = input.find('%');  
+
+        // Check if '!' was found
+        if (pos1 != std::string::npos) {
+        
+            std::string input1 = input.substr(0, pos1);
+            int EXcrc = std::stoi(input.substr(pos1 + 1 , len - pos1 - 1));
+            char* message = const_cast<char*>(input1.c_str());
+
+            if(Data_manipulator::CRCalgo(message) == EXcrc){
+                
+                memcpy(data, buf, pos1); 
+                
+                std::cout << "received = "; 
+                    for (int i = 0; i < pos1; ++i) {
+                    std::cout << buf[i];
+                    }
+                    std::cout << std::endl; 
+            }
+            else{
+                std::cout << "CRC check failed" << std::endl;
+                memcpy(data, buf, len);
+            }
+           
+             
+        } else {
+            
+            memcpy(data, buf, len);
+        }
+
+
+
+
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
@@ -185,6 +211,19 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 void Socket::set_FD(int fd)
 {
     m_sock = fd;
+}
+
+void Socket::close()
+{
+       if (is_valid())
+    {
+
+#ifdef _WIN32
+        WSACleanup();
+#else
+        ::close(m_sock);
+#endif
+    }
 }
 
 void Socket::connect(const std::string host, const int port)

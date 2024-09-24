@@ -87,20 +87,30 @@ void GlobalState::setMyClientId(QString value)
     }
 }
 
-void GlobalState::updateLogData(QString sensorId, QList<QVariant> data){
-    emit dataLogAdded(sensorId, data);
+void GlobalState::newData(const QString& data){
+    emit newDataArrived(data);
 }
-void GlobalState::updateColumnNames(QString sensorId, QList<QString> data){
-    emit ColumnNamesAdded(sensorId, data);
+void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
+    emit ParserInfoArrived(parseInfoMap);
 }
-void GlobalState::updateDbHandler(wint_t sensorId, QList<QList<QString>> data){
-    emit SensorDbInfoAdded(sensorId, data);
+void GlobalState::newParsedData(QList<QPair<QString, QString>> data){
+    emit parsedData(data);
+}
+void GlobalState::saveData(){
+    emit saveBtnPressed();
+}
+void GlobalState::loadData(){
+    emit loadBtnPressed();
 }
 
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");
     m_myClientId = settings.value("clientId").toString();
     m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
+}
+
+void GlobalState::new_test_buffer(const QString& data) {
+    emit new_test_buffer_arrived(data);
 }
 
 

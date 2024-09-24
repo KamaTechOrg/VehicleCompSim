@@ -18,6 +18,7 @@
 #include <string>
 
 #include "constants.h"
+#include "canbus.h"
 
 class Socket
 {
@@ -39,9 +40,10 @@ public:
     int get_FD() const { return m_sock; }
 
     bool is_valid() const { return m_sock != -1; }
+    void close();
 
 private:
-    FD m_sock;  // Use the platform-appropriate type for the socket
+    FD m_sock;  
     sockaddr_in m_addr;
 };
 

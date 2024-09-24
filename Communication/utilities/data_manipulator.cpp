@@ -65,7 +65,7 @@ std::optional<CanBus> Data_manipulator::extract_id_and_data(const char *data, in
     return std::nullopt; 
 }
 
-std::string Data_manipulator::data_and_id_to_str(void *data, size_t size, int source_id, int dest_id)
+std::pair<std::string,size_t> Data_manipulator::data_and_id_to_str(void *data, size_t size, int source_id, int dest_id)
 {   
     char *charData = static_cast<char*>(data);
     int crc = CRCalgo(charData);
@@ -78,7 +78,7 @@ std::string Data_manipulator::data_and_id_to_str(void *data, size_t size, int so
     all_data += crcstr;
 
 
-    return all_data;
+    return std::make_pair(all_data,all_data.size());
 
 }
 
@@ -98,4 +98,33 @@ std::string Data_manipulator:: getCurrentTime() {
     oss << std::put_time(&now_tm, "%Y-%m-%d%H:%M:%S");
     
     return oss.str();
+}
+
+std::filesystem::path Data_manipulator::getTempFilePath(const std::string& fileName) {
+    std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+    return tempDir / fileName; 
+}
+
+
+std::string Data_manipulator::readFileContents(const std::filesystem::path& filePath) {
+    std::ifstream file(filePath);
+    if (!file) {
+        std::cerr << "Error: Unable to open file " << filePath << std::endl;
+        return "";
+    }
+
+    std::string content;
+    std::string line;
+    while (std::getline(file, line)) {
+        content += line + "\n"; 
+    }
+
+    file.close();
+    return content; 
+}
+
+std::string Data_manipulator::get_ip_server(const std::string &filename)
+{
+   std::filesystem::path p = getTempFilePath(filename);
+   return readFileContents(p);
 }

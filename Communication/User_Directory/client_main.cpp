@@ -2,10 +2,12 @@
 #include <string>
 #include <thread>
 #include <cstring>
-#include <atomic>
 #include "client.h"
 
 using namespace std;
+
+// this page is example of how to use the client socket library
+
 
 bool is_valid_id(int id)
 {
@@ -65,10 +67,19 @@ int main()
     ClientSocket client(id);
 
     thread t1(send_thread, ref(client), id);
+    // use listen socket
     thread t2(listen_thread, ref(client));
+
+    // use listen asynchronously
+    // char buffer[MAXRECV];
+    // auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
+    // client.listenAsync(buffer , sizeof(buffer),func);
+    // std::string mm = buffer;
 
     t1.join();
     t2.join();
+
+    
 
     return 0;
 }

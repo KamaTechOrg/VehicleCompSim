@@ -62,6 +62,10 @@ public slots:
     void onModelUpdated();
 
 private slots:
+    void update_new_data(QList<QPair<QString, QString>> data);
+//    void update_data_new(const QByteArray& buffer);
+
+
     void update_data(const QString& sensorId, QList<QVariant> data);
     void update_column_names(const QString& sensorId, QList<QString> data);
 

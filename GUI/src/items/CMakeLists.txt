@@ -14,6 +14,8 @@ set(ITEMS_SOURCES
     qemusensoritem.h
     qemusensoritem.cpp
     customellipseItem.h
+    parser.cpp
+    parser.h
 )
 
 set(SOURCES ${SOURCES} ${ITEMS_SOURCES} PARENT_SCOPE)
