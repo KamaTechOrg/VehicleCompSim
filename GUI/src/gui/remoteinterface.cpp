@@ -11,6 +11,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
 
 RemoteInterface::RemoteInterface(QWidget *parent)
     : QToolBar(parent), m_globalState(GlobalState::getInstance())
@@ -39,6 +40,14 @@ void RemoteInterface::setupUI()
         bool isRemoteMode = !m_globalState.isRemoteMode();
         m_globalState.setIsRemoteMode(isRemoteMode);
     });
+
+    //add check box for enable test mode
+    QCheckBox* testModeCheckBox = new QCheckBox("Enable Test Mode", this);
+    connect(testModeCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
+        bool isTestMode = state == Qt::Checked;
+        m_globalState.setIsTest(isTestMode);
+    });
+
 
     // Add project button
     m_addProjectButton = new QPushButton("Add Project", this);
@@ -79,6 +88,7 @@ void RemoteInterface::setupUI()
     m_connectionGroupBox = new QGroupBox(this);
     QVBoxLayout *connectionLayout = new QVBoxLayout(m_connectionGroupBox);
     connectionLayout->addWidget(m_switchModeButton);
+    connectionLayout->addWidget(testModeCheckBox);
     connectionLayout->addWidget(m_addProjectButton);
     connectionLayout->addWidget(m_scrollLeftButton);
     connectionLayout->addWidget(m_scrollArea);

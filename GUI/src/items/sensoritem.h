@@ -69,7 +69,7 @@ public slots:
     void onModelUpdated();
 
 private slots:
-    void update_new_data(QList<QPair<QString, QString>> data);
+    // void update_new_data(QList<QPair<QString, QString>> data);
     void onCustomWindowClosed();
 
 };
