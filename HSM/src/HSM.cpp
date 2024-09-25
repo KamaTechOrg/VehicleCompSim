@@ -2,7 +2,6 @@
 #include "AES_API.hpp"
 #include "RSA_ENC.h"
 #include "RSA_KEY.h"
-#include "SHA_API.h"
 #include <vector>
 #include <iostream>
 #include <ostream>
@@ -222,7 +221,7 @@ HSM_STATUS HSM::Algo::signMessage(
     std::vector<u_char> &signature, 
     ENCRYPTION_ALGORITHM_TYPE sigAlg, 
     HASH_ALGORITHM_TYPE hashAlg, 
-    const std::vector<u_char> &myId, 
+    const Ident &myId, 
     u_int32_t keyId
 ){
     std::vector<u_char> publicKey;
@@ -245,7 +244,7 @@ HSM_STATUS HSM::Algo::verify(
     const std::vector<u_char> &signature, 
     ENCRYPTION_ALGORITHM_TYPE sigAlg,  
     HASH_ALGORITHM_TYPE hashAlg, 
-    const std::vector<u_char> &myId, 
+    const Ident &myId, 
     u_int32_t keyId
 ){
     std::vector<u_char> publicKey;
@@ -253,7 +252,7 @@ HSM_STATUS HSM::Algo::verify(
     HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey);
     if (status != HSM_STATUS::HSM_Good)
         return status;
-    status = decrypt(signature, signature, sigAlg, myId, keyId);
+    // status = decrypt(signature, signature, sigAlg, myId, keyId);
     if (status != HSM_STATUS::HSM_Good)
         return status;
     status = SHA_API::sha(message, hashAlg);

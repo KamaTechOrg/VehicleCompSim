@@ -5,6 +5,8 @@
 #include <iostream>
 #include <utility>
 #include "HSMStatusEnum.hpp"
+#include "SHA_API.h"
+
 
 namespace HSM
 {
@@ -18,6 +20,18 @@ namespace HSM
         Alg_Count
     };
 
+    class Ident
+    {
+    private:
+        std::vector<u_char> id;
+
+    public:
+        Ident();
+        Ident(const std::string &str);
+        std::string toString() const;
+        HSM_STATUS compareID(const Ident &other);
+    };
+
     class KeyStorage
     {
     private:
@@ -28,7 +42,7 @@ namespace HSM
 
     protected:
         static HSM_STATUS getKeyFromKeyStorage(
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t keyId, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             std::vector<u_char> &publicKey, 
@@ -41,15 +55,15 @@ namespace HSM
         ~KeyStorage();
 
         static HSM_STATUS get_keys(
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t &keyId, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             int bits = 512
         );
 
         HSM_STATUS searchInStorage(
-            const std::vector<u_char> &myId, 
-            u_int32_t &keyId, 
+            const Ident &myId, 
+            u_int32_t keyId, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             std::vector<u_char> &publicKey, 
             std::vector<u_char> &privateKey
@@ -64,7 +78,7 @@ namespace HSM
             const std::vector<u_char> &message, 
             std::vector<u_char> &encrypted_message, 
             ENCRYPTION_ALGORITHM_TYPE type, 
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t keyId
         );  
 
@@ -72,7 +86,7 @@ namespace HSM
             const std::vector<u_char> &message, 
             std::vector<u_char> &decrypted_message, 
             ENCRYPTION_ALGORITHM_TYPE type, 
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t keyId
         );
 
@@ -81,7 +95,7 @@ namespace HSM
             std::vector<u_char> &signature,
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t keyId
         );
 
@@ -90,7 +104,7 @@ namespace HSM
             const std::vector<u_char> &signature,
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
-            const std::vector<u_char> &myId, 
+            const Ident &myId, 
             u_int32_t keyId
         );
     };

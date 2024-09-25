@@ -37,7 +37,7 @@ HSM::Ident::Ident()
     this->id = std::vector<u_char>(username.begin(), username.end());
 }
 
-HSM::Ident::Ident(std::string userID)
+HSM::Ident::Ident(const std::string& userID)
 {
     this->id = std::vector<u_char>(userID.begin(), userID.end());
 }
