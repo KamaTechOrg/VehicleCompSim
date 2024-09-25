@@ -93,7 +93,7 @@ private:
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;
-    std::unique_ptr<SimulationReplayer> m_simulationReplayer;
+    SimulationReplayer * m_simulationReplayer = nullptr;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
     SimulationControlPanel* controlPanel = nullptr;

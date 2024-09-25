@@ -245,10 +245,9 @@ void MainWindow::replayer() {
     loadLayout();
     QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
-        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
-        m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, m_DB_handler, std::move(m_liveUpdate_forReplyer), m_scene, this);
+        m_simulationReplayer = new SimulationReplayer(logFilePath);
         m_simulationReplayer->startReplay();
-        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
+        controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
         m_mainLayout->addWidget(controlPanel);
         m_initializeSensorsData->initialize();
     }
