@@ -2,6 +2,7 @@
 #include "AES_API.hpp"
 #include "RSA_ENC.h"
 #include "RSA_KEY.h"
+#include "SHA_API.h"
 #include <vector>
 #include <iostream>
 #include <ostream>
@@ -246,40 +247,41 @@ HSM_STATUS HSM::Algo::signMessage(
     const std::vector<u_char> &myId, 
     u_int32_t keyId
 ){
-    return HSM_STATUS();
+    std::vector<u_char> publicKey;
+    std::vector<u_char> privateKey;
+    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey);
+
+    if (status != HSM_STATUS::HSM_Good)
+        return status;
+        
+    status = SHA_API::sha(message, hashAlg);
+
+    if (status != HSM_STATUS::HSM_Good)
+        return status;
+    
+    return encrypt(message, signature, sigAlg, myId, keyId);
 }
 
 HSM_STATUS HSM::Algo::verify(
     const std::vector<u_char> &message, 
     const std::vector<u_char> &signature, 
-    ENCRYPTION_ALGORITHM_TYPE sigAlg, 
+    ENCRYPTION_ALGORITHM_TYPE sigAlg,  
     HASH_ALGORITHM_TYPE hashAlg, 
     const std::vector<u_char> &myId, 
     u_int32_t keyId
 ){
-    return HSM_STATUS();
+    std::vector<u_char> publicKey;
+    std::vector<u_char> privateKey;
+    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey);
+    if (status != HSM_STATUS::HSM_Good)
+        return status;
+    status = decrypt(signature, signature, sigAlg, myId, keyId);
+    if (status != HSM_STATUS::HSM_Good)
+        return status;
+    status = SHA_API::sha(message, hashAlg);
+    if (status != HSM_STATUS::HSM_Good)
+        return status;
+
+    return SHA_API::comperHash(message, signature, hashAlg);
 }
 
-// HSM_STATUS Algo::signMessage(const std::vector<u_char> &message, std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign, const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash)
-// {
-//     std::vector<u_char> publicKey;
-//     std::vector<u_char> privateKey;
-//     HSM_STATUS status = getKeyFromKeyStorage(myIdForSign, keyIdForSign, sigAlg, publicKey, privateKey);
-//     if (status != HSM_STATUS::HSM_Good)
-//         return status;
-
-//     // if(hashAlg == ENCRYPTION_ALGORITHM_TYPE::SHA3_256) return Signature::sha3_256_sign(message, sigAlg, key);
-//     // if(hashAlg == ENCRYPTION_ALGORITHM_TYPE::SHA256) return Signature::sha256_sign(message, sigAlg, key);
-//     return HSM_STATUS();
-// }
-
-// HSM_STATUS Algo::verify(const std::vector<u_char> &message, const std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign, const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash)
-// {
-//     std::vector<u_char> publicKey;
-//     std::vector<u_char> privateKey;
-//     HSM_STATUS status = getKeyFromKeyStorage(myIdForSign, keyIdForSign, sigAlg, publicKey, privateKey);
-//     if (status != HSM_STATUS::HSM_Good)
-//         return status;
-
-//     return HSM_STATUS();
-// }

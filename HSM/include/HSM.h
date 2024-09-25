@@ -18,18 +18,6 @@ namespace HSM
         Alg_Count
     };
 
-    
-    enum HASH_ALGORITHM_TYPE
-    {
-        NoHash,
-        SHA1,
-        SHA256,
-        SHA512,
-        Hash_Count,
-        SHA3_256,
-        SHA3_512,
-    };
-
     class KeyStorage
     {
     private:
