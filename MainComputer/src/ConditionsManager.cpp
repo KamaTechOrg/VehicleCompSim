@@ -30,7 +30,7 @@ void ConditionsManager::addAction(const int index, const Action &action)
 }
 
 
-void ConditionsManager::executeActions(const int index)
+void ConditionsManager::executeActions(const int index) const
 {
     if (actions.size() < index || actions.at(index).empty()) {
         qWarning() << "No action found for index: " << index;
@@ -73,40 +73,30 @@ void ConditionsManager::run()
         {
             qInfo() << "running";
             std::string message = communication.getMessageFromQueue();
+            std::pair<std::string, std::string> messageContent;
             try {
-                auto [id, value] = parseMessage(message);
-
-                if (validateAll(id, value)) {
-                    qInfo() << "Validation succeeded for ID:" << id.c_str() << " with value:" << value.c_str();
-                    executeActions(0);
-                    /*
-                    * TODO: executeActions should execute the actions for the indices
-                    *       that were actualy validated as "true".
-                    *       (on the validation loop at "validateAll" if it was "true" at
-                    *       index i, then we execute all actions at index i).
-                    */
-                }
-                else {
-                    qInfo() << "Validation failed for ID:" << id.c_str() << " with value:" << value.c_str();
-                }
+                messageContent = parseMessage(message);
             }
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();
             }
+            std::string id = messageContent.first;
+            std::string value = messageContent.second;
+            validateAll(id, value);
         }
-        qInfo() << "Conditions Manager thread stopping";
-        }).detach(); // Detach the thread so it runs independently*/
+    qInfo() << "Conditions Manager thread stopping";
+    }).detach();
 }
 
 void ConditionsManager::stop()
 {
     _isRunning = false;
-    qInfo() << "stopping" << "\n----- ----- ----- ----- -----\n";
+    qInfo() << "Stopping Main Computer" << "\n----- ----- ----- ----- -----\n";
 }
 
 bool ConditionsManager::isRunning()
 {
-    qInfo() << "Running" << "\n----- ----- ----- ----- -----\n";
+    qInfo() << "Running Main Computer" << "\n----- ----- ----- ----- -----\n";
     return _isRunning;
 }
 
@@ -121,13 +111,23 @@ void ConditionsManager::addCondition(std::shared_ptr<ConditionBase> condition)
     actions.push_back(std::vector<Action>(0));
 }
 
-bool ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
+void ConditionsManager::validateAll(const std::string& senderId, const std::string& value) const
 {
-    for (const auto& condition : conditions) {
-        if (condition == nullptr || !condition->validate(senderId, value))
-            return false;
+    for (int i = 0; i < conditions.size(); i++)
+    {
+        if (conditions.at(i) == nullptr)
+            continue;
+
+        if (conditions.at(i)->validate(senderId, value))
+        {
+            qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
+            executeActions(i);
+        }
+        else
+        {
+            qInfo() << "Validation failed for ID:" << senderId.c_str() << " with value:" << value.c_str();
+        }
     }
-    return true;
 }
 
 

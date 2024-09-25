@@ -19,8 +19,8 @@ private:
 
     void addCondition(std::shared_ptr<ConditionBase> condition);
     void addAction(const int index, const Action& action);
-    bool validateAll(const std::string &senderId, const std::string &value) const;
-    void executeActions(const int index);
+    void validateAll(const std::string &senderId, const std::string &value) const;
+    void executeActions(const int index) const;
 
     bool _isRunning;
 
