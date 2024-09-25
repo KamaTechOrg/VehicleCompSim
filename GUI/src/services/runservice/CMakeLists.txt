@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 # Define the library
 add_library(services STATIC
     runservice.cpp
+
+    runner.h
+    runmanager.h runmanager.cpp
+    sensorrunner.h sensorrunner.cpp
+    IpFileHanler.cpp
+    IpFileHanler.h
 )
 
 # Include directories

@@ -1,4 +1,5 @@
 #include "SensorModel.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 #include "qmetaobject.h"
 
 SensorModel::SensorModel(QObject* parent)
@@ -52,6 +53,10 @@ void SensorModel::setCmakePath(const QString& cmakePath) {
     if (m_cmakePath != cmakePath) {
         m_cmakePath = cmakePath;
         emit cmakePathChanged();
+
+        auto commands = CMakeUtils::getBuildAndRunCommands(cmakePath);
+        setBuildCommand(commands.first);
+        setRunCommand(commands.second);
     }
 }
 

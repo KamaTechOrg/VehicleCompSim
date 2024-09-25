@@ -105,15 +105,13 @@ void MainWindow::setupRunService()
     onRunEnd();
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
         this->onRunStart();
-        this->m_runService->start([this] { this->onRunEnd(); });
-        WebSocketClient::getInstance().sendMessage(QJsonObject{
-            {"action", "run"},
-            {"command", "start"}
-        });
+        // this->m_runService->start([this] { this->onRunEnd(); });
+
     });
 
     QObject::connect(stopBtn, &QPushButton::clicked, [this] {
-        this->m_runService->stop();
+        // this->m_runService->stop();
+        //m_runService->stop();
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
             {"command", "stop"}
@@ -125,13 +123,13 @@ void MainWindow::setupRunService()
         t = t * 60 + timer->time().minute();
         t = t * 60 + timer->time().second();
 
-        this->m_runService->setTimer(t);
+        //this->m_runService->setTimer(t);
     });
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
         [this] { 
-            this->onRunStart();
-            this->m_runService->start([this] { this->onRunEnd(); });
+            //this->onRunStart();
+            this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
         [this] { this->m_runService->stop(); }
     ));
@@ -267,6 +265,12 @@ void MainWindow::saveLayout() {
 
 void MainWindow::onRunStart()
 {
+
+    m_runService->start();
+    WebSocketClient::getInstance().sendMessage(QJsonObject{
+        {"action", "run"},
+        {"command", "start"}
+    });
     m_initializeSensorsData->initialize();
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
