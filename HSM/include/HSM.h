@@ -17,19 +17,19 @@ namespace HSM
         ECC,
         Alg_Count
     };
-    
+
     class Ident
     {
-        private:
-            std::vector<u_char> id;
-        public:
-            Ident();
-            Ident(std::string userID);
-            HSM_STATUS compareID(const Ident &other);
-            std::string toString() const;
+    private:
+        std::vector<u_char> id;
+
+    public:
+        Ident();
+        Ident(std::string userID);
+        HSM_STATUS compareID(const Ident &other);
+        std::string toString() const;
     };
 
-    
     enum HASH_ALGORITHM_TYPE
     {
         NoHash,
@@ -44,14 +44,25 @@ namespace HSM
     class KeyStorage
     {
     public:
-        static HSM_STATUS get_keys(const Ident &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits = 512);
+        static HSM_STATUS get_keys(const Ident &myId,
+                                   u_int32_t &keyId,
+                                   ENCRYPTION_ALGORITHM_TYPE type,
+                                   int bits = 512);
         static KeyStorage &getInstance();
         HSM_STATUS writeToStorage(std::string info);
-        HSM_STATUS searchInStorage(const Ident &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey);
+        HSM_STATUS searchInStorage(const Ident &myId,
+                                   u_int32_t keyId,
+                                   ENCRYPTION_ALGORITHM_TYPE type,
+                                   std::vector<u_char> &publicKey,
+                                   std::vector<u_char> &privateKey);
         ~KeyStorage();
 
     protected:
-        static HSM_STATUS getKeyFromKeyStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey);
+        static HSM_STATUS getKeyFromKeyStorage(const Ident &myId,
+                                               u_int32_t keyId,
+                                               ENCRYPTION_ALGORITHM_TYPE type,
+                                               std::vector<u_char> &publicKey,
+                                               std::vector<u_char> &privateKey);
 
     private:
         KeyStorage();
@@ -61,12 +72,11 @@ namespace HSM
 
     protected:
         static HSM_STATUS getKeyFromKeyStorage(
-            const std::vector<u_char> &myId, 
-            u_int32_t keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            std::vector<u_char> &publicKey, 
-            std::vector<u_char> &privateKey
-        );
+            const std::vector<u_char> &myId,
+            u_int32_t keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            std::vector<u_char> &publicKey,
+            std::vector<u_char> &privateKey);
 
     public:
         static KeyStorage &getInstance();
@@ -74,20 +84,17 @@ namespace HSM
         ~KeyStorage();
 
         static HSM_STATUS get_keys(
-            const std::vector<u_char> &myId, 
-            u_int32_t &keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            int bits = 512
-        );
+            const std::vector<u_char> &myId,
+            u_int32_t &keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            int bits = 512);
 
         HSM_STATUS searchInStorage(
-            const std::vector<u_char> &myId, 
-            u_int32_t &keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            std::vector<u_char> &publicKey, 
-            std::vector<u_char> &privateKey
-        );
-   
+            const std::vector<u_char> &myId,
+            u_int32_t keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            std::vector<u_char> &publicKey,
+            std::vector<u_char> &privateKey);
     };
 
     class Algo : public KeyStorage
