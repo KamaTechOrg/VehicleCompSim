@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 
+
 using namespace HSM;
 
 std::string vectorToString(std::vector<u_char> vec)
@@ -82,7 +83,7 @@ HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
 {
     std::ifstream file(KeyStorageFileName);
     if (!file.is_open())
@@ -91,7 +92,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_i
         return HSM_STATUS::HSM_InternalErr;
     }
 
-    std::string line, word, searchTerm = vectorToString(myId);
+    std::string line, word;
 
     // Reading file line by line
     while (std::getline(file, line))
@@ -103,7 +104,8 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_i
         {
             vec.push_back(word);
         }
-        if (vec[0] == searchTerm && vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type))
+        Ident IdCheck = Ident(vec[0]);
+        if (IdCheck.compareID(myId) == HSM_STATUS::HSM_Good && vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type))
         {
             std::cout << "Found: " << line << "\n";
             file.close();
@@ -118,7 +120,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const std::vector<u_char> &myId, u_i
     return HSM_STATUS::HSM_NoSuchKey;
 }
 
-HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
+HSM_STATUS KeyStorage::get_keys(const Ident &myId, u_int32_t &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
@@ -146,7 +148,7 @@ HSM_STATUS KeyStorage::get_keys(const std::vector<u_char> &myId, u_int32_t &keyI
     {
         keyId = KeyStorage::getInstance().keyIdCounter++;
         std::stringstream ss;
-        ss << vectorToString(myId) << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(privateKey);
+        ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(privateKey);
         status = KeyStorage::getInstance().writeToStorage(ss.str());
     }
     return status;
@@ -159,14 +161,14 @@ HSM::KeyStorage &HSM::KeyStorage::getInstance()
     return *instance;
 }
 
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const std::vector<u_char> &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
 {
     HSM_STATUS status = HSM_STATUS();
     status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey);
     return status;
 }
 
-HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId)
+HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, u_int32_t keyId)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
@@ -190,7 +192,7 @@ HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char>
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const std::vector<u_char> &myId, u_int32_t keyId)
+HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, u_int32_t keyId)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
@@ -212,7 +214,7 @@ HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char>
     return HSM_STATUS();
 }
 
-HSM_STATUS Algo::signMessage(const std::vector<u_char> &message, std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign, const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash)
+HSM_STATUS Algo::signMessage(const std::vector<u_char> &message, std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const Ident &myIdForSign, u_int32_t keyIdForSign, const Ident &myIdForHash, u_int32_t keyIdForHash)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
@@ -225,7 +227,7 @@ HSM_STATUS Algo::signMessage(const std::vector<u_char> &message, std::vector<u_c
     return HSM_STATUS();
 }
 
-HSM_STATUS Algo::verify(const std::vector<u_char> &message, const std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const std::vector<u_char> &myIdForSign, u_int32_t keyIdForSign, const std::vector<u_char> &myIdForHash, u_int32_t keyIdForHash)
+HSM_STATUS Algo::verify(const std::vector<u_char> &message, const std::vector<u_char> &signature, ENCRYPTION_ALGORITHM_TYPE sigAlg, ENCRYPTION_ALGORITHM_TYPE hashAlg, const Ident &myIdForSign, u_int32_t keyIdForSign, const Ident &myIdForHash, u_int32_t keyIdForHash)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;

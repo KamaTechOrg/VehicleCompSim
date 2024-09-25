@@ -121,7 +121,10 @@ BigNumWithMinus BigNumWithMinus::operator/(const BigNumWithMinus &other) const
     toReturn.BigNum::operator/=(tmpOther);
     if (this->isMinus() ^ other.isMinus())
     {
-        toReturn.setToMinus();
+        BigNumWithMinus tmp(toReturn);
+        std::cout << "tmp size = " << tmp.size << std::endl;
+        tmp.setToMinus();
+        toReturn = tmp;
     }
     return toReturn;
 }

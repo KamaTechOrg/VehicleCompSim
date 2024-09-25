@@ -48,6 +48,14 @@ public:
         }
     }
 
+    BigNumWithMinus(const BigNumWithMinus &other) : BigNum(MAX_SIZE * UINT_T_SIZE)
+    {
+        for (int i = 0; i < other.size; ++i)
+        {
+            this->data[i] = other.data[i];
+        }
+    }
+
     BigNumWithMinus(int bit_size) : BigNum(MAX_SIZE * UINT_T_SIZE) {}
 
     BigNumWithMinus(uint32_t num, int bit_size) : BigNum(num, MAX_SIZE * UINT_T_SIZE) {}

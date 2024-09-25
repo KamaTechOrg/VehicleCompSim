@@ -312,35 +312,36 @@ TEST(RSA_BigNum_test, WithBigNum_1)
     std::cout << "modulus = " << modulus << std::endl;
 }
 
-// TEST(RSA_BigNum_test, WithBigNum_2)
-// {
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum_2)
+{
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSA_KEY::generate_keys(publicKey, privateKey, modulus, 512);
+    RSA_KEY::generate_keys(publicKey, privateKey, modulus, 512);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message("12345768910");
-//     BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
-// }
+    // test RSA encryption and decryption for int
+    BigNum message("12345768910");
+    BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
+    std::cout << "modulus = " << modulus << std::endl;
+}
 
-// TEST(RSA_BigNum_test, WithBigNum_3)
-// {
-//     // std::cout << "Testing RSA with long int" << std::endl;
-//     BigNum publicKey, privateKey, modulus;
+TEST(RSA_BigNum_test, WithBigNum_3)
+{
+    // std::cout << "Testing RSA with long int" << std::endl;
+    BigNum publicKey, privateKey, modulus;
 
-//     RSA_KEY::generate_keys(publicKey, privateKey, modulus, 1024);
+    RSA_KEY::generate_keys(publicKey, privateKey, modulus, 1024);
 
-//     // test RSA encryption and decryption for int
-//     BigNum message("12345768910");
-//     BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
-//     BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
-//     EXPECT_EQ(message, decrypted);
-//     EXPECT_NE(encrypted, message);
-// }
+    // test RSA encryption and decryption for int
+    BigNum message("12345768910");
+    BigNum encrypted = RSA_ENC::encrypt(message, publicKey, modulus);
+    BigNum decrypted = RSA_ENC::decrypt(encrypted, privateKey, modulus);
+    EXPECT_EQ(message, decrypted);
+    EXPECT_NE(encrypted, message);
+}
 
 // TEST(RSA_BigNum_test, WithBigNum_4)
 // {
