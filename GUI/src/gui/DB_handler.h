@@ -26,6 +26,7 @@ public:
 public:
     QSqlDatabase *sqlitedb;
     QMap<wint_t, QList<QList<QString>>> data_of_sensors;
+    QString dbFilePath;
 
 
 public slots:

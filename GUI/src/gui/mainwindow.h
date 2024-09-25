@@ -92,8 +92,8 @@ private:
     QTimeEdit *timer;
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
-    std::unique_ptr<SimulationRecorder> m_simulationRecorder = nullptr;
-    std::unique_ptr<SimulationReplayer> m_simulationReplayer;
+    SimulationRecorder * m_simulationRecorder = nullptr;
+    SimulationReplayer * m_simulationReplayer = nullptr;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
     SimulationControlPanel* controlPanel = nullptr;

@@ -6,12 +6,10 @@
 #include "globalstate.h"
 #include <QDebug>
 
-SimulationReplayer::SimulationReplayer(const QString &filePath, DB_handler *db, std::unique_ptr<LiveUpdate> liveUpdate, CustomScene* m_scene, QObject *parent)
-        : QObject(parent), m_db(db), m_logFile(filePath), m_LiveUpdate(std::move(liveUpdate)), m_lastPosition(0), m_scene_simulation(m_scene) {
+SimulationReplayer::SimulationReplayer(const QString &filePath) : m_logFile(filePath){
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Cannot open log file for reading:" << m_logFile.errorString();
     }
-
 }
 
 void SimulationReplayer::startReplay() {
@@ -20,15 +18,15 @@ void SimulationReplayer::startReplay() {
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
-            QByteArray line = in.readLine().toUtf8();
-            QList<QByteArray> parts = line.split(',');
+            QString line = in.readLine();
+            QList<QString> parts = line.split(',');
             if(first_line){
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
                 m_startTime = QDateTime::fromString(parts[0], Qt::ISODate);
                 first_line = false;
                 continue;
             }
-            if (parts.size() == 6) {
+            if (parts.size() == 5) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
                 int delay = qMax(0, m_startTime.msecsTo(timestamp));
                 scheduleEvent(line, delay);
@@ -38,7 +36,7 @@ void SimulationReplayer::startReplay() {
     }
 }
 
-void SimulationReplayer::scheduleEvent(const QByteArray &event, int delay) {
+void SimulationReplayer::scheduleEvent(const QString &event, int delay) {
     m_eventQueue.enqueue(event);
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -50,14 +48,10 @@ void SimulationReplayer::scheduleEvent(const QByteArray &event, int delay) {
 
 void SimulationReplayer::processEvent() {
     if (!m_eventQueue.isEmpty()) {
-        QByteArray event = m_eventQueue.dequeue();
-        QList<QByteArray> parts = event.split(',');
+        QString event = m_eventQueue.dequeue();
+        QList<QString> parts = event.split(',');
         m_currentTime = QDateTime::fromString(parts[0], Qt::ISODate);
-        QByteArray event_without_time = parts.mid(1, 5).join(',');
-        m_db->write_data_to_DB(event_without_time);
-        // need to call just after all the junk of lines that theire timers ended already updated in the db
-        // in this time update view is calling after every update in the db. not ok!
-        update_view();
+        GlobalState::getInstance().newData(event);
     } else {
         qWarning() << "processEvent: Event queue is empty";
     }
@@ -89,52 +83,21 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
-            QByteArray line = in.readLine().toUtf8();
+            QString line = in.readLine();
             if(first_line){
                 first_line = false;
                 continue;
             }
-            QList<QByteArray> parts = line.split(',');
-            if (parts.size() == 6) {
+            QList<QString> parts = line.split(',');
+            if (parts.size() == 5) {
                 QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
                 if (timestamp > m_startTime.addSecs(secondsToAdd)) {
                     int delay = qMax(0, m_startTime.addSecs(secondsToAdd).msecsTo(timestamp));
                     scheduleEvent(line, delay);
                 }else{
-                    QByteArray event_without_time = parts.mid(1, 5).join(',');
-                    m_db->write_data_to_DB(event_without_time);
-                    update_view();
+                    GlobalState::getInstance().newData(line);
                 }
             }
         }
     }
 }
-void SimulationReplayer::update_view() {
-//    auto models = GlobalState::getInstance().currentProject()->models();
-////    QMap<QString, QVariantList> last_changes;
-//    for (auto model: models) {
-//        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
-//            QString sensorId = sensor->priority();
-//            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
-//            GlobalState::getInstance().parsedData(sensorId, data);
-//
-////            last_changes[sensorId] = data;
-//        }
-//    }
-//    m_liveUpdate_forLogger->parse_new_data(last_changes);
-}
-
-//void SimulationReplayer::update_view() {
-//    QMap<QString, QVariantList> last_changes;
-//    for (auto item : m_scene_simulation->items()) {
-//        if (auto *sensor = dynamic_cast<SensorItem *>(item)) {
-//            QString sensorId = sensor->getPriority();
-//            QList<QVariant> data = m_db->read_all_sensor_data(sensorId);
-////            QList<QVariant> data = m_db->read_last_from_DB(sensorId);
-//            sensor->update_data(data);
-//            last_changes[sensorId] = data;
-//        }
-//    }
-//    m_LiveUpdate->parse_new_data(last_changes);
-//
-//}

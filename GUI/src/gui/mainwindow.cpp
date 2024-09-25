@@ -236,7 +236,7 @@ void MainWindow::record() {
     QString defaultFileName = "record.log";
     QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
-        m_simulationRecorder = std::make_unique<SimulationRecorder>(logFilePath);
+        m_simulationRecorder = new SimulationRecorder(logFilePath, m_DB_handler->dbFilePath);
     }
 }
 
@@ -245,10 +245,9 @@ void MainWindow::replayer() {
     loadLayout();
     QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
-        m_liveUpdate_forReplyer = std::make_unique<LiveUpdate>(m_scene);
-        m_simulationReplayer = std::make_unique<SimulationReplayer>(logFilePath, m_DB_handler, std::move(m_liveUpdate_forReplyer), m_scene, this);
+        m_simulationReplayer = new SimulationReplayer(logFilePath);
         m_simulationReplayer->startReplay();
-        controlPanel = new SimulationControlPanel(m_simulationReplayer.get(), this);
+        controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
         m_mainLayout->addWidget(controlPanel);
         m_initializeSensorsData->initialize();
     }
@@ -276,8 +275,9 @@ void MainWindow::onRunStart()
 //    }
 //    change_view_timer = new QTimer(this);
 //    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
-//    change_view_timer->start(2000);
+//    change_view_timer-
 
+    m_globalState.setIsRunning(true);
     startBtn->hide();
     timer->hide();
 
@@ -308,20 +308,6 @@ void MainWindow::onRunEnd()
 void MainWindow:: buffer_listener(const QString& data){
     m_globalState.newData(data);
 }
-
-//void MainWindow::update_view() {
-//    auto models = m_globalState.currentProject()->models();
-////    QMap<QString, QVariantList> last_changes;
-//    for (auto model: models) {
-//        if (auto *sensor = dynamic_cast<SensorModel *>(model)) {
-//            QString sensorId = sensor->priority();
-//            QList<QVariant> data = m_DB_handler->read_all_sensor_data(sensorId);
-//            m_globalState.newData(sensorId, data);
-////            last_changes[sensorId] = data;
-//        }
-//    }
-//    m_liveUpdate_forLogger->parse_new_data(last_changes);
-//}
 
 void MainWindow::saveLayout() {
     m_globalState.saveData();

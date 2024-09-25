@@ -7,15 +7,15 @@
 
 DB_handler::DB_handler() {
     sqlitedb = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
-    const QString filePath = QDir::currentPath() + "/data.db";
-    QFile file(filePath);
+    dbFilePath = QDir::currentPath() + "/data.db";
+    QFile file(dbFilePath);
     if (file.exists()) {
         if (!file.remove()) {
             qDebug() << "Could not delete existing database file:" << file.errorString();
             return;
         }
     }
-    sqlitedb->setDatabaseName(filePath);
+    sqlitedb->setDatabaseName(dbFilePath);
     if (!sqlitedb->open()) {
         qDebug() << "Could not open the database:" << sqlitedb->lastError().text();
     }

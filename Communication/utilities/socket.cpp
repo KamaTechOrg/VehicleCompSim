@@ -145,6 +145,7 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
 #else
     int status = ::recv(m_sock, buf, len, 0);
+
 #endif
 
     if (status == -1)
@@ -166,38 +167,18 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        
+        std::string input(buf, len);
+        size_t pos1 = input.find('%');
 
-
-        std::string input(buf, len);  
-        size_t pos1 = input.find('%');  
-
-        // Check if '!' was found
         if (pos1 != std::string::npos) {
-        
-            std::string input1 = input.substr(0, pos1);
-            int EXcrc = std::stoi(input.substr(pos1 + 1 , len - pos1 - 1));
-            char* message = const_cast<char*>(input1.c_str());
-
-            if(Data_manipulator::CRCalgo(message) == EXcrc){
-                
-                memcpy(data, buf, pos1); 
-                
-                std::cout << "received = "; 
-                    for (int i = 0; i < pos1; ++i) {
-                    std::cout << buf[i];
-                    }
-                    std::cout << std::endl; 
-            }
-            else{
-                std::cout << "CRC check failed" << std::endl;
-                memcpy(data, buf, len);
-            }
-           
-             
+        Data_manipulator::validateCRC(input, pos1, buf, data);
         } else {
-            
-            memcpy(data, buf, len);
+        memcpy(data, buf, len);
+        std::cout << "received = ";
+        for (int i = 0; i < len; ++i) {
+            std::cout << buf[i];
+        }
+        std::cout << std::endl;
         }
 
 

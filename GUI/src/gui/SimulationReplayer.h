@@ -20,7 +20,7 @@ class SimulationReplayer : public QObject {
 Q_OBJECT
 
 public:
-    SimulationReplayer(const QString &filePath, DB_handler *db, std::unique_ptr<LiveUpdate> liveUpdate, CustomScene* m_scene, QObject *parent = nullptr);
+    SimulationReplayer(const QString &filePath);
     void pauseSimulation();
     void playSimulation();
     void jumpToTime(const QTime &targetTime);
@@ -30,8 +30,7 @@ public:
 
 
 private:
-    void scheduleEvent(const QByteArray &event, int delay);
-    void update_view();
+    void scheduleEvent(const QString &event, int delay);
 
 private slots:
     void processEvent();
@@ -39,7 +38,7 @@ private slots:
 private:
     QFile m_logFile;
     qint64 m_lastPosition;
-    QQueue<QByteArray> m_eventQueue;
+    QQueue<QString> m_eventQueue;
     QList<QTimer *> m_timers;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;

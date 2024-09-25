@@ -52,26 +52,41 @@ VerticalIndicator *SensorItem::getVerticalIndicator() const
 {
   return m_verticalIndicator;
 }
-void SensorItem::update_new_data(QList<QPair<QString, QString>> data)
-{
-  auto *sensor = dynamic_cast<SensorItem *>(this);
-  if (sensor->getModel().priority() == data[bufferInfo::SourceId].second)
-  {
-    qInfo() << "src" << sensor->getModel().priority();
-  }
-  else if (sensor->getModel().priority() == data[bufferInfo::DestinationId].second)
-  {
-    qInfo() << "dest" << sensor->getModel().priority();
-  }
-  //
-  //
-  //    if(sensor->getModel().priority() == data[1].second || sensor->getModel().priority() == data[2].second){
-  //        for(const auto& pair : data){
-  //            qInfo() << pair.first << pair.second;
-  //        }
-  //    }
 
   // todo update sensor data
+void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
+    auto *sensor = dynamic_cast<SensorItem *>(this);
+    if(sensor->getModel().priority() == data[bufferInfo::SourceId].second || sensor->getModel().priority() == data[bufferInfo::DestinationId].second){
+        all_data_final.emplace_back(data);
+        last_data_final = data;
+        qInfo() << "sensor need update";
+    }
+}
+void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+    QPointF nearestPoint;
+    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
+        m_hoveredPoint = nearestPoint;
+        update(); // Trigger a repaint
+    }
+    if(m_globalState.isRunning() && !mouse_pressed){
+        qInfo() << "tooltip";
+        QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
+        for (const auto &item: last_data_final) {
+            tooltipHtml += QString("<th>%1</th>").arg(item.first);
+        }
+        tooltipHtml += "</tr><tr>";
+        for (const auto &item: last_data_final) {
+            tooltipHtml += QString("<td>%1</td>").arg(item.second);
+        }
+        tooltipHtml += "</tr></table>";
+        if (m_persistentTooltip == nullptr) {
+            m_persistentTooltip = new PersistentTooltip();
+        }
+        m_persistentTooltip->setText(tooltipHtml);
+        m_persistentTooltip->move(event->screenPos());
+        m_persistentTooltip->show();
+    }
+    BaseItem::hoverEnterEvent(event);
 }
 
 void SensorItem::setupCheckBoxProxy()
@@ -197,36 +212,9 @@ void SensorItem::updateColor()
     update(); // Trigger a repaint
 }
 
-void SensorItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
-    QPointF nearestPoint;
-    if (isNearConnectionPoint(event->pos(), &nearestPoint)) {
-        m_hoveredPoint = nearestPoint;
-        update(); // Trigger a repaint
-    }
-    if(m_globalState.isRunning()){
-        QString tooltipHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'><tr>";
-        for (const QString &name: columnNames) {
-            tooltipHtml += QString("<th>%1</th>").arg(name);
-        }
-        tooltipHtml += "</tr><tr>";
-        for (int i = 0; i < last_data.size(); ++i) {
-            QVariant value = last_data.value(i);
-            tooltipHtml += QString("<td>%1</td>").arg(value.toString());
-        }
-        tooltipHtml += "</tr></table>";
-        if (m_persistentTooltip == nullptr) {
-            m_persistentTooltip = new PersistentTooltip();
-        }
-        m_persistentTooltip->setText(tooltipHtml);
-        m_persistentTooltip->move(event->screenPos());
-        m_persistentTooltip->show();
-    }
-    BaseItem::hoverEnterEvent(event);
-}
-
 void SensorItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-//        if (event->button() == Qt::LeftButton && playMode) {
+        mouse_pressed = true;
         m_globalState.setCurrentSensorModel(this->m_model);
         if(m_globalState.isRunning()){
             showInfoWindow();
@@ -257,27 +245,33 @@ void SensorItem::updateInfoWindow() {
     QString info = fetchDataInTable();
     m_infoWindow->setInfo(info);
 }
-
 QString SensorItem::fetchDataInTable() {
     QString windowInfoHtml = "<table border='1' cellspacing='0' cellpadding='3' style='border-collapse: collapse;'>";
-    windowInfoHtml += "<tr>";
-    for (const QString &name: columnNames) {
-        windowInfoHtml += QString("<th>%1</th>").arg(name);
-    }
-    windowInfoHtml += "</tr>";
-    for (int i = 0; i < all_data.size(); i += columnNames.size()) {
+
+    // Iterate through each list (table)
+    for (const auto &list : all_data_final) {
+        // Add header row
         windowInfoHtml += "<tr>";
-        for (int j = 0; j < columnNames.size() && (i + j) < all_data.size(); ++j) {
-            QVariant value = all_data.value(i + j);
-            windowInfoHtml += QString("<td>%1</td>").arg(value.toString());
+        for (const auto &pair : list) {
+            windowInfoHtml += QString("<th>%1</th>").arg(pair.first);
+        }
+        windowInfoHtml += "</tr>";
+
+        // Add content row
+        windowInfoHtml += "<tr>";
+        for (const auto &pair : list) {
+            windowInfoHtml += QString("<td>%1</td>").arg(pair.second);
         }
         windowInfoHtml += "</tr>";
     }
 
     windowInfoHtml += "</table>";
+
     return windowInfoHtml;
 }
+
 void SensorItem::onCustomWindowClosed() {
+    mouse_pressed = false;
     m_updateWindowTimer->stop();
 }
 void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
@@ -286,41 +280,6 @@ void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     }
     BaseItem::hoverLeaveEvent(event);
 }
-void SensorItem::update_data(const QString& sensorId, QList<QVariant> data){
-    auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == sensorId){
-        last_data.clear();
-        all_data.clear();
-        all_data = data;
-        if(!data.empty()) {
-            for (int i = 0; i < columnNames.size(); i++) {
-                last_data.emplace_back(data[i]);
-            }
-        }
-    }
-}
-//void SensorItem::update_column_names(const QString& sensorId, QList<QString> data){
-//    auto *sensor = dynamic_cast<SensorItem *>(this);
-//    if(sensor->getModel().priority() == sensorId){
-//        columnNames = data;
-//    }
-//}
-//
-//void SensorItem::update_data_new(const QByteArray &buffer) {
-//    QList<QByteArray> pieces = buffer.split(',');
-//    auto *sensor = dynamic_cast<SensorItem *>(this);
-//    if(sensor->getModel().priority() == pieces[1]){
-//        qInfo() << "src" << sensor->getModel().priority();
-//    }else if(sensor->getModel().priority() == pieces[2]) {
-//        qInfo() << "dest" << sensor->getModel().priority();
-//    }
-//
-////        if(sensor->getModel().priority() == pieces[1] || sensor->getModel().priority() == pieces[2]){
-////        qInfo() << sensor->getModel().priority();
-//        // need to parse before
-//        all_data.emplace_back(buffer);
-//}
-
 
 
 

@@ -17,7 +17,7 @@ parser::parser(){
 }
 
 void parser::setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap) {
-    qInfo() << "setSensorInfoMap";
+//    qInfo() << "setSensorInfoMap";
     sensorInfoMap = std::move(parseInfoMap);
 }
 
@@ -34,10 +34,11 @@ void parser::parseBuffer(const QString& data) {
 
     // Deserialize buffer
     if (split_pieces.size() > 4) {
-        QByteArray buffer = split_pieces[4].toLatin1();
+        const char* buffer = split_pieces[4].toLatin1();
+//        QByteArray buffer = split_pieces[4].toLatin1();
         int exit_index = 0;
 
-        QList<QList<QString>> columnInfo = sensorInfoMap[1];
+        QList<QList<QString>> columnInfo = sensorInfoMap[split_pieces[1].toInt()];
         for (const QList<QString>& column : columnInfo) {
             if (column.size() < 3) continue;  // Skip if column info is incomplete
 
@@ -47,31 +48,28 @@ void parser::parseBuffer(const QString& data) {
 
             QPair<QString, QString> new_pair;
             new_pair.first = name;
-
             if (type == "string") {
-                new_pair.second = QString::fromLatin1(buffer.mid(exit_index, length));
+                new_pair.second = QString::fromLatin1(buffer + exit_index, length);
+//                exit_index += length;
             } else if (type == "double") {
-                if (exit_index + sizeof(double) <= buffer.size()) {
                     double value;
-                    memcpy(&value, buffer.constData() + exit_index, sizeof(double));
+                    memcpy(&value, buffer + exit_index, sizeof(double));
                     new_pair.second = QString::number(value);
-                }
+//                    exit_index += sizeof(double);
             } else if (type == "int") {
-                if (exit_index + sizeof(int) <= buffer.size()) {
                     int value;
-                    memcpy(&value, buffer.constData() + exit_index, sizeof(int));
+                    memcpy(&value, buffer + exit_index, sizeof(int));
                     new_pair.second = QString::number(value);
-                }
+//                    exit_index += sizeof(int);
             }
-
             result.append(new_pair);
             exit_index += length;
         }
     }
 
     // Use the result list as needed
-    for (const auto& pair : result) {
-        qDebug() << pair.first << ":" << pair.second;
-    }
+//    for (const auto& pair : result) {
+//        qDebug() << pair.first << ":" << pair.second;
+//    }
     GlobalState::getInstance().newParsedData(result);
 }

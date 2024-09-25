@@ -7,6 +7,7 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <cstring>
 
 #include "canbus.h"
 
@@ -21,5 +22,6 @@ namespace Data_manipulator
     std::filesystem::path getTempFilePath(const std::string &fileName);
     std::string readFileContents(const std::filesystem::path &filePath);
     std::string get_ip_server(const std::string & filename);
+    bool validateCRC(const std::string& input, int pos1, const char* buf, void* data); 
 
 }

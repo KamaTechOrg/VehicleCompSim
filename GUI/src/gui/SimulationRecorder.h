@@ -9,15 +9,24 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QDebug>
+#include <QWidget>
+#include <QObject>
 
-class SimulationRecorder {
+
+
+
+class SimulationRecorder :public QObject{
+Q_OBJECT
 public:
-    SimulationRecorder(const QString &filePath);
+    SimulationRecorder(const QString &filePath, const QString &db_file_path);
 
-    void recordEvent(const QString &event);
-
+public slots:
+    void copyDataToFile();
+    void addStartTime();
 private:
     QFile m_logFile;
+    QString db_path;
+    bool first_running = true;
 };
 
 
