@@ -12,18 +12,22 @@
 #include "popupdialog.h"
 #include "client/websocketclient.h"
 #include "customwidget.h"
+#include "globalconstant.h"
 
 #include <cstdlib>
 #include <ctime>
+
+using namespace globalConstant;
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()),
     m_globalState(GlobalState::getInstance()) {
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
+    connect(&m_globalState, &GlobalState::parsedData, this, &CustomScene::onParsedData);
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &CustomScene::applyRandomFlowAnimation);
-    timer->start(100);
+    timer->start(10);
 
     // Seed the random number generator
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -34,7 +38,6 @@ void CustomScene::addItemToScene(BaseItem *item)
     if(item == nullptr){
         return;
     }
-    // addItem(item);
     if (m_currentProject) {
         m_currentProject->addModel(item->model());
         item->model()->notifyItemAdded();
@@ -46,7 +49,6 @@ void CustomScene::removeItemFromScene(BaseItem *item)
     if(item == nullptr){
         return;
     }
-    // removeItem(item);
     if (m_currentProject) {
         m_currentProject->removeModel(item->model());
         item->model()->notifyItemDeleted();
@@ -54,13 +56,10 @@ void CustomScene::removeItemFromScene(BaseItem *item)
 }
 
 void CustomScene::clearScene() {
-    // cancelAllAnimations();
-    for (QGraphicsItem* item : items()) {
-        if (BaseItem* baseItem = dynamic_cast<BaseItem*>(item)) {
-            removeItem(baseItem);
-            delete baseItem;
-        }
+    for(auto sensor: m_sensors){
+        removeItem(sensor);
     }
+    m_sensors.clear();
 }
 
 void CustomScene::modifyItem(QGraphicsItem *item)
@@ -310,38 +309,52 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
             QGraphicsItem* item = buildBaseItemFromModel(model);
             if (item) {
                 addItem(item);
+                if(model->itemType() == ItemType::Sensor){
+                    SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+                    m_sensors[sensorItem->getModel().getId()] = sensorItem;
+                }
             }
         }
     }
 }
 
-void CustomScene::applyRandomFlowAnimation() {
-    // Collect all SensorItems in the scene
-    QList<SensorItem*> sensorItems;
-    for (QGraphicsItem* item : items()) {
-        SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
-        if (sensorItem) {
-            sensorItems.append(sensorItem);
-        }
-    }
+void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
+    SensorItem* src = m_sensors[data[bufferInfo::SourceId].second];
+    SensorItem* dest = m_sensors[data[bufferInfo::DestinationId].second];
 
-    // Ensure there are at least two SensorItems to create a flow animation
-    if (sensorItems.size() < 2) {
+    // update the sensor values
+    src->update_new_data(data);
+    dest->update_new_data(data);
+
+    // Create and start the FlowAnimation
+    FlowAnimation* flowAnimation = new FlowAnimation(this);
+    flowAnimation->setPoints(src->pos(), dest->pos());
+    flowAnimation->startAnimation();
+
+    // update the sensors' indicators
+
+}
+
+void CustomScene::applyRandomFlowAnimation() {
+    if(!m_globalState.isTest()){
+        return;
+    }
+    if (m_sensors.size() < 2) {
         return;
     }
 
     // Select two random SensorItems
-    int index1 = std::rand() % sensorItems.size();
+    int index1 = std::rand() % m_sensors.size();
     int index2;
     do {
-        index2 = std::rand() % sensorItems.size();
+        index2 = std::rand() % m_sensors.size();
     } while (index1 == index2);
 
-    SensorItem* src = sensorItems[index1];
-    SensorItem* dest = sensorItems[index2];
+    SensorItem* src = m_sensors.values()[index1];
+    SensorItem* dest = m_sensors.values()[index2];
 
-    src->updateIndicatorValue(0);
-    dest->updateIndicatorValue(0);
+    src->getVerticalIndicator()->setValue(std::rand() % 200);
+    dest->getVerticalIndicator()->setValue(std::rand() % 200);
 
     // Create and start the FlowAnimation
     FlowAnimation* flowAnimation = new FlowAnimation(this);
@@ -366,6 +379,10 @@ void CustomScene::onModelAdded(SerializableItem* model) {
     BaseItem* item = buildBaseItemFromModel(model);
     if (item) {
         addItem(item);
+        if(model->itemType() == ItemType::Sensor){
+            SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+            m_sensors[sensorItem->getModel().getId()] = sensorItem;
+        }
     }
 }
 
@@ -374,6 +391,10 @@ void CustomScene::onModelRemoved(SerializableItem* model) {
         BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
         if (baseItem && baseItem->model()->getId() == model->getId()) {
             removeItem(baseItem);
+            if(model->itemType() == ItemType::Sensor){
+                SensorModel* sensorModel = dynamic_cast<SensorModel*>(model);
+                m_sensors.remove(sensorModel->priority());
+            }
             delete baseItem;
             break;
         }

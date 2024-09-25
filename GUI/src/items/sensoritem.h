@@ -15,12 +15,13 @@ class SensorItem : public BaseItem {
 public:
     SensorItem(SensorModel* model, QGraphicsItem* parent = nullptr);
     ~SensorItem();
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    virtual SensorModel& getModel() const;
+    VerticalIndicator* getVerticalIndicator() const; 
+
     bool isInitialized() const;
     bool isExludeFromProject() const;
-    virtual SensorModel& getModel();
     void confirmRemove() override;
-    void updateIndicatorValue(int value);
+    void update_new_data(QList<QPair<QString, QString>> data);
     class Editor;
 
 protected:
@@ -32,6 +33,7 @@ public:
     QList<QString> columnNames;
 
 private:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void setupCheckBoxProxy();
     void showButtons();
     void hideButtons();
@@ -62,7 +64,6 @@ public slots:
     void onModelUpdated();
 
 private slots:
-    void update_new_data(QList<QPair<QString, QString>> data);
 //    void update_data_new(const QByteArray& buffer);
 
 

@@ -53,6 +53,9 @@ public:
 
     // for test only
     void new_test_buffer(const QString& data);
+    void setIsTest(bool value) { m_isTest = value; }
+    bool isTest() const { return m_isTest; }
+
 
 
 signals:
@@ -89,5 +92,7 @@ private:
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
     SensorModel* m_currentSensorModel = nullptr;
+
+    bool m_isTest = false;
 
 };

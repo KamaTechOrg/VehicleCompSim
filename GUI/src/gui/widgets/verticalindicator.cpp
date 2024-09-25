@@ -16,6 +16,9 @@ QColor VerticalIndicator::endColor() const { return m_endColor; }
 
 void VerticalIndicator::setValue(qreal value)
 {
+    if (value > m_maxValue) {
+        value = m_maxValue;
+    }
     if (qFuzzyCompare(m_value, value))
         return;
     m_value = value;
