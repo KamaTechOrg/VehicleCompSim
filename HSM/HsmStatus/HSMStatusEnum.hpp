@@ -12,6 +12,7 @@ namespace HSM {
     HSM_NoSuchKey,
     HSM_KeyNotValid,
     HSM_WrongDataSize,
+    HSM_WrongPadding,
     HSM_BadOutputBufSize,
     HSM_InternalErr,
     // Add more here

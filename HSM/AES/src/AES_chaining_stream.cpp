@@ -42,7 +42,7 @@ std::vector<uint8_t> AES_ChainingStream::encrypt_ecb(AES_block_encrypt const& ae
 
 std::vector<uint8_t> AES_ChainingStream::decrypt_ecb(AES_block_encrypt const& aes, std::vector<uint8_t> const& encrypted_message) {
   if(encrypted_message.size() % 16 != 0){
-    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
+    throw std::length_error("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
   std::vector<uint8_t> message = encrypted_message;
   auto states_buf = reinterpret_cast<AES_State*>(message.data());
@@ -91,7 +91,7 @@ std::vector<uint8_t> AES_ChainingStream::encrypt_ecb(sycl::queue& q, AES_block_e
 
 std::vector<uint8_t> AES_ChainingStream::decrypt_ecb(sycl::queue& q, AES_block_encrypt const& aes, std::vector<uint8_t> const& encrypted_message) {
   if(encrypted_message.size() % 16 != 0){
-    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
+    throw std::length_error("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
   std::vector<uint8_t> message = encrypted_message;
 
@@ -164,7 +164,7 @@ std::vector<uint8_t> AES_ChainingStream::decrypt_cbc(AES_block_encrypt const& ae
   auto Nb = AES_block_encrypt::Nb;
 
   if(encrypted_message.size() % 16 != 0){
-    throw std::invalid_argument("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
+    throw std::length_error("encrypted_message.size() most be N*16 not " + std::to_string(encrypted_message.size()));
   }
   AES_State prev_state;
   for (uint col = 0; col < Nb; ++col) {

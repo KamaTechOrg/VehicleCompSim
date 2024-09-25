@@ -187,17 +187,13 @@ HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char>
 
     switch (type)
     {
-    case RSA:
+    case RSA: 
         encrypted_message = RSA_ENC::encrypt(message, publicKey);
-
         break;
-
     case AES:
-        encrypted_message = AES::encrypt(message, publicKey);
-        break;
-
+        return AES::encrypt(message, encrypted_message, publicKey);
     default:
-        return HSM_STATUS();
+        return HSM_STATUS::HSM_InvalidAlg;
     }
     return HSM_STATUS::HSM_Good;
 }
@@ -216,11 +212,9 @@ HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char>
         decrypted_message = RSA_ENC::decrypt(message, privateKey);
         break;
     case AES:
-        decrypted_message = AES::decrypt(message, privateKey);
-        break;
-
+        return AES::decrypt(message, decrypted_message, privateKey);
     default:
-        break;
+        return HSM_InvalidAlg;
     }
     return HSM_STATUS();
 }
