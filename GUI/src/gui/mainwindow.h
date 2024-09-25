@@ -92,7 +92,7 @@ private:
     QTimeEdit *timer;
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
-    std::unique_ptr<SimulationRecorder> m_simulationRecorder = nullptr;
+    SimulationRecorder * m_simulationRecorder = nullptr;
     std::unique_ptr<SimulationReplayer> m_simulationReplayer;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
     std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
