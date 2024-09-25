@@ -83,7 +83,7 @@ HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey, bool needPrivilege)
 {
     std::ifstream file(KeyStorageFileName);
     if (!file.is_open())
@@ -112,6 +112,15 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, u_int32_t keyId, 
             std::vector<std::vector<u_char>> vec = keyStingToVector(line);
             publicKey = vec[3];
             privateKey = vec[4];
+            file.close();
+            return HSM_STATUS::HSM_Good;
+        }
+        else if (vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type) && !needPrivilege)
+        {
+            std::cout << "Found: " << line << "\n";
+            file.close();
+            std::vector<std::vector<u_char>> vec = keyStingToVector(line);
+            publicKey = vec[3];
             file.close();
             return HSM_STATUS::HSM_Good;
         }
@@ -161,18 +170,18 @@ HSM::KeyStorage &HSM::KeyStorage::getInstance()
     return *instance;
 }
 
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, u_int32_t keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey, bool needPrivilege)
 {
     HSM_STATUS status = HSM_STATUS();
     status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey);
     return status;
 }
 
-HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, u_int32_t keyId)
+HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, u_int32_t keyId, bool needPrivilege)
 {
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
-    HSM_STATUS status = KeyStorage::getInstance().getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey);
+    HSM_STATUS status = KeyStorage::getInstance().getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);
     if (status != HSM_STATUS::HSM_Good)
         return status;
 
@@ -245,11 +254,12 @@ HSM_STATUS HSM::Algo::verify(
     ENCRYPTION_ALGORITHM_TYPE sigAlg,  
     HASH_ALGORITHM_TYPE hashAlg, 
     const Ident &myId, 
-    u_int32_t keyId
+    u_int32_t keyId,
+    bool needPrivilege
 ){
     std::vector<u_char> publicKey;
     std::vector<u_char> privateKey;
-    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey);
+    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey, needPrivilege);
     if (status != HSM_STATUS::HSM_Good)
         return status;
     // status = decrypt(signature, signature, sigAlg, myId, keyId);

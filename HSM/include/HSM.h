@@ -46,7 +46,8 @@ namespace HSM
             u_int32_t keyId, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             std::vector<u_char> &publicKey, 
-            std::vector<u_char> &privateKey
+            std::vector<u_char> &privateKey,
+            bool needPrivilege = true
         );
 
     public:
@@ -66,7 +67,8 @@ namespace HSM
             u_int32_t keyId, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             std::vector<u_char> &publicKey, 
-            std::vector<u_char> &privateKey
+            std::vector<u_char> &privateKey,
+            bool needPrivilege = true
         );
    
     };
@@ -79,7 +81,8 @@ namespace HSM
             std::vector<u_char> &encrypted_message, 
             ENCRYPTION_ALGORITHM_TYPE type, 
             const Ident &myId, 
-            u_int32_t keyId
+            u_int32_t keyId,
+            bool needPrivilege = true
         );  
 
         static HSM_STATUS decrypt(
@@ -105,7 +108,8 @@ namespace HSM
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
             const Ident &myId, 
-            u_int32_t keyId
+            u_int32_t keyId,
+            bool needPrivilege = true
         );
     };
 }
