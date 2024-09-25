@@ -302,8 +302,8 @@ void MainWindow::onRunStart()
     timer->hide();
 
     stopBtn->show();
-    m_toolbar_blocker->show();
-    m_scene_blocker->show();
+    //m_toolbar_blocker->show();
+    //m_scene_blocker->show();
     stopBtn->raise();
 }
 
