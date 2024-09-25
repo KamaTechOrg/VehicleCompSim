@@ -20,6 +20,8 @@ void RunService::start()
         if (auto model = dynamic_cast<SensorModel*>(item))
             runManager->addRunner(std::make_shared<SensorRunner>(model));
     }
+    QObject::connect(runManager.get(), &RunManager::startBegin, [this](){emit startBegin();});
+    QObject::connect(runManager.get(), &RunManager::stopFinished, [this](){emit stopFinished();});
     runManager->start();
 }
 

@@ -110,10 +110,28 @@ void MainWindow::setupRunService()
     m_parser = new parser();
 
     onRunEnd();
-    QObject::connect(startBtn, &QPushButton::clicked, [this] {
-        this->onRunStart();
-        // this->m_runService->start([this] { this->onRunEnd(); });
+    QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
+        onRunEnd();
+    });
+    QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
+        int t = timer->time().hour();
+        t = t * 60 + timer->time().minute();
+        t = t * 60 + timer->time().second();
 
+        if (t)
+        {
+            std::thread([this](){
+                // sleep for t seconds
+                // verify session before stopping
+            }).detach();
+        }
+    });
+    QObject::connect(startBtn, &QPushButton::clicked, [this] {
+        WebSocketClient::getInstance().sendMessage(QJsonObject{
+            {"action", "run"},
+            {"command", "start"}
+        });
+        onRunStart();
     });
 
     QObject::connect(stopBtn, &QPushButton::clicked, [this] {
@@ -123,6 +141,7 @@ void MainWindow::setupRunService()
             {"action", "run"},
             {"command", "stop"}
         });
+        m_runService->stop();
     });
 
     QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
@@ -135,8 +154,8 @@ void MainWindow::setupRunService()
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
         [this] { 
-            //this->onRunStart();
-            this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
+            this->onRunStart();
+            //this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
         [this] { this->m_runService->stop(); }
     ));
@@ -264,10 +283,7 @@ void MainWindow::onRunStart()
 {
 
     m_runService->start();
-    WebSocketClient::getInstance().sendMessage(QJsonObject{
-        {"action", "run"},
-        {"command", "start"}
-    });
+
     m_initializeSensorsData->initialize();
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log

@@ -4,8 +4,9 @@
 #include <QObject>
 #include "runmanager.h"
 
-class RunService
+class RunService : public QObject
 {
+    Q_OBJECT
     std::shared_ptr<RunManager> runManager;
 
 public:
