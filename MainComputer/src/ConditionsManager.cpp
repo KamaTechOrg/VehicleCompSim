@@ -136,15 +136,20 @@ void ConditionsManager::loadFromJson()
     nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
     conditions.clear();
     actions.clear();
-    if (jsonData.is_array() && !jsonData.empty())
+    if (!jsonData.is_array() || !jsonData.empty())
+        return;
+    
+    for (int i = 0; i < jsonData.size(); i++)
     {
-        addCondition(ConditionsFactory().createConditionsFromJson(jsonData.at(0)["conditions"]));
-        for (const auto& actionJson : jsonData.at(0)["actions"]) {
+        if (!jsonData.at(i).contains("conditions") || !jsonData.at(i).contains("actions"))
+            continue;
+
+        addCondition(ConditionsFactory().createConditionsFromJson(jsonData.at(i)["conditions"]));
+        for (const auto& actionJson : jsonData.at(i)["actions"]) {
             std::string target = actionJson["target"];
             std::string message = actionJson["message"];
             Action action(target, message);
-            addAction(0, action);
+            addAction(i, action);
         }
     }
 }
-
