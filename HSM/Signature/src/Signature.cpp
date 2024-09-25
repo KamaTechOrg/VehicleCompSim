@@ -5,35 +5,35 @@
 
 using namespace std;
 
-string Signature::sha256_sign(
-    const string &message, const string &sigAlg, const string &key)
+vector<u_char> Signature::sha256_sign(
+    const vector<u_char> &message, const vector<u_char> &sigAlg, const vector<u_char> &key)
 {
     std::vector<uint32_t> hash = SHA256::sha256(message);
-    string string_hash = SHA256::toHexString(hash);
+    vector<u_char> vector<u_char>_hash = SHA256::toHexvector<u_char>(hash);
 
-    if(sigAlg.find("RSA") != std::string::npos){
-        // return RSA_ENC::encrypt(string_hash, key);
+    if(sigAlg.find("RSA") != std::vector<u_char>::npos){
+        // return RSA_ENC::encrypt(vector<u_char>_hash, key);
     }
 
-    return string();
+    return vector<u_char>();
 }
 
 bool Signature::sha256_verify(
-    const string &message, const string &signature, const string &sigAlg, const string &key)
+    const vector<u_char> &message, const vector<u_char> &signature, const vector<u_char> &sigAlg, const vector<u_char> &key)
 {
-    if(sigAlg.find("RSA") != std::string::npos){
-        // return RSA_ENC::decrypt(signature, key) == SHA256::toHexString(SHA256::sha256(message));
+    if(sigAlg.find("RSA") != std::vector<u_char>::npos){
+        // return RSA_ENC::decrypt(signature, key) == SHA256::toHexvector<u_char>(SHA256::sha256(message));
     }
     return false;
 }
 
-string Signature::sha3_256_sign(
-    const string &message, const string &sigAlg, const string &key)
+vector<u_char> Signature::sha3_256_sign(
+    const vector<u_char> &message, const vector<u_char> &sigAlg, const vector<u_char> &key)
 {
-    return std::string();
+    return std::vector<u_char>();
 }
 
-bool Signature::sha3_256_verify(const string &message, const string &signature, const string &sigAlg, const string &key)
+bool Signature::sha3_256_verify(const vector<u_char> &message, const vector<u_char> &signature, const vector<u_char> &sigAlg, const vector<u_char> &key)
 {
     return false;
 }
