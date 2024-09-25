@@ -5,8 +5,9 @@
 #include <QGraphicsView>
 #include "baseitem.h"
 #include "sensormodel.h"
-#include "gui/PersistentTootip.h"
-#include "gui/CustomInfoWindow.h"
+#include "PersistentTootip.h"
+#include "CustomInfoWindow.h"
+#include "widgets/verticalindicator.h"
 
 class PopupDialog;
 
@@ -19,6 +20,7 @@ public:
     bool isExludeFromProject() const;
     virtual SensorModel& getModel();
     void confirmRemove() override;
+    void updateIndicatorValue(int value);
     class Editor;
 
 protected:
@@ -42,25 +44,30 @@ private:
     GlobalState &m_globalState;
 
     QGraphicsProxyWidget* m_checkBoxProxy;
+    QGraphicsProxyWidget* m_verticalIndicatorProxy;
+    VerticalIndicator* m_verticalIndicator;
     QColor m_disabledColor = QColor(192, 192, 192); // Gray for disabled
     QColor m_excludedColor = QColor(250, 165, 142); // Red for excluded
     QColor m_availableColor = QColor(160, 253, 143); // Green for available
     QTimer* m_updateWindowTimer;
     QGraphicsProxyWidget* m_infoWindowProxy = nullptr;
     CustomInfoWindow* m_infoWindow = nullptr;
+
+    QList<QList<QPair<QString, QString>>>  all_data_final;
+    QList<QPair<QString, QString>>  last_data_final;
+
+
     QList<QVariant> last_data;
     QList<QVariant> all_data;
     PersistentTooltip* m_persistentTooltip = nullptr;
-    bool playMode = false;
     bool m_isOwnedByMe = false;
+    bool mouse_pressed = false;
 
 public slots:
     void onModelUpdated();
 
 private slots:
-    void update_data(const QString& sensorId, QList<QVariant> data);
-    void update_column_names(const QString& sensorId, QList<QString> data);
-
+    void update_new_data(QList<QPair<QString, QString>> data);
     void onCustomWindowClosed();
 
 };

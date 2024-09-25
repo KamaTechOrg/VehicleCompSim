@@ -7,7 +7,7 @@
 #define close_socket ::close
 #endif
 
-MangServer::MangServer() : m_server{PORTSERVER}, m_req{}, m_connect{}, m_send_manager{}
+MangServer::MangServer() : m_server{PORTSERVER}, m_connect{}, m_send_manager{}
 {
 }
 
@@ -54,7 +54,8 @@ void MangServer::run_connect()
 void MangServer::init_inner()
 {
     m_server_socket.create();
-    m_server_socket.connect(IPSERVER, PORTSERVER);
+    std::string ip_server = Data_manipulator::get_ip_server(IPFILENAME);
+    m_server_socket.connect(ip_server, PORTSERVER);
 
     std::string idStr = Data_manipulator::int_to_str(IDINNER);
 

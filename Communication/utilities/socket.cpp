@@ -21,15 +21,7 @@ Socket::Socket() : m_sock(-1)
 
 Socket::~Socket()
 {
-    if (is_valid())
-    {
-
-#ifdef _WIN32
-        WSACleanup();
-#else
-        close(m_sock);
-#endif
-    }
+  close();
 }
 
 void Socket::create()
@@ -153,6 +145,7 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
 #else
     int status = ::recv(m_sock, buf, len, 0);
+
 #endif
 
     if (status == -1)
@@ -174,9 +167,23 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        std::cout << "Received === " << buf << std::endl;
+        std::string input(buf, len);
+        size_t pos1 = input.find('%');
 
+        if (pos1 != std::string::npos) {
+        Data_manipulator::validateCRC(input, pos1, buf, data);
+        } else {
         memcpy(data, buf, len);
+        std::cout << "received = ";
+        for (int i = 0; i < len; ++i) {
+            std::cout << buf[i];
+        }
+        std::cout << std::endl;
+        }
+
+
+
+
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
@@ -185,6 +192,19 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 void Socket::set_FD(int fd)
 {
     m_sock = fd;
+}
+
+void Socket::close()
+{
+       if (is_valid())
+    {
+
+#ifdef _WIN32
+        WSACleanup();
+#else
+        ::close(m_sock);
+#endif
+    }
 }
 
 void Socket::connect(const std::string host, const int port)

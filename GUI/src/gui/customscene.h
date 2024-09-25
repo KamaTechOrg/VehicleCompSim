@@ -10,6 +10,7 @@
 #include "serializableitem.h"
 #include "projectmodel.h"
 #include "globalstate.h"
+#include "widgets/flowanimation.h"
 
 class CustomScene : public QGraphicsScene {
     Q_OBJECT
@@ -22,6 +23,8 @@ public slots:
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
     void onModelUpdated(SerializableItem* model);
+
+    void applyRandomFlowAnimation();
 
     
 private:

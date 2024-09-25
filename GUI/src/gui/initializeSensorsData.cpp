@@ -6,24 +6,9 @@
 
 void initializeSensorsData::initialize(){
     read_from_json();
-    fill_db_data();
-    fill_box_data();
+    getSensorsInfoData();
 }
 
-void initializeSensorsData::fill_box_data() {
-    for (auto value: itemsArray) {
-        QJsonObject obj = value.toObject();
-        int id = obj["id"].toInt(); // Assuming 'id' is an integer
-        QString idString = QString::number(id); // Convert the integer ID to a QString
-        QJsonArray dataArray = obj["data"].toArray();
-        QList<QString> namesList;
-        for (auto dataValue: dataArray) {
-            QJsonObject dataObj = dataValue.toObject();
-            namesList << dataObj["name"].toString();
-        }
-        GlobalState::getInstance().updateColumnNames(idString, namesList);
-    }
-}
 void initializeSensorsData::read_from_json() {
     const QString& filePath = R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\box_info.json)";
     QFile file(filePath);
@@ -51,13 +36,12 @@ void initializeSensorsData::read_from_json() {
     qInfo() << "Successfully read from JSON. Number of items:" << itemsArray.size();
 }
 
-void initializeSensorsData::fill_db_data() {
+void initializeSensorsData::getSensorsInfoData() {
+    QMap<int, QList<QList<QString>>> parseInfoMap;
     for (const auto &value: itemsArray) {
         QJsonObject obj = value.toObject();
-        wint_t id = obj["id"].toInt();
-//        qInfo() << "wint_t id" << id;
+        int id = obj["id"].toInt();
         QJsonArray dataArray = obj["data"].toArray();
-
         QList<QList<QString>> itemData;
         for (const auto &dataValue: dataArray) {
             QJsonObject dataObj = dataValue.toObject();
@@ -67,6 +51,7 @@ void initializeSensorsData::fill_db_data() {
                 << dataObj["type"].toString();
             itemData.append(row);
         }
-        GlobalState::getInstance().updateDbHandler(id, itemData);
+        parseInfoMap[id] = itemData;
     }
+    GlobalState::getInstance().ParserInfo(parseInfoMap);
 }
