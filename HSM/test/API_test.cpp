@@ -14,10 +14,18 @@
 //   EXPECT_EQ(AES::decrypt("AES-128-ECB", key, expected_encrypted_msg), msg);
 // }
 
+TEST(API_TEST, get_ID)
+{
+    HSM::Ident myId = HSM::Ident();
+    std::string str = myId.toString();
+    std::cout << "myId:" << str << std::endl;
+    EXPECT_TRUE(str.length() > 0);
+}
+
 TEST(API_TEST, get_kye_rsa_64_bit)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    std::vector<u_char> myId = {'y', 'm'};
+    HSM::Ident myId = HSM::Ident();
     u_int32_t keyId = 0;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
@@ -34,7 +42,7 @@ TEST(API_TEST, get_kye_rsa_64_bit)
 TEST(API_TEST, get_kye_rsa_128_bit)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    std::vector<u_char> myId = {'y', 'm'};
+    HSM::Ident myId = HSM::Ident();
     u_int32_t keyId = 0;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 128);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
@@ -52,7 +60,7 @@ TEST(API_TEST, get_kye_rsa_128_bit)
 TEST(API_TEST, get_kye_invalid_type)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    std::vector<u_char> myId = {'y', 'm'};
+    HSM::Ident myId = HSM::Ident();
     u_int32_t keyId = 0;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::NoAlg, 128);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_InvalidAlg);

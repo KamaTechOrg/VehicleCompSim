@@ -256,32 +256,78 @@ BigNum BigNum::operator*=(uint32_t num)
 	return *this;
 }
 
+// BigNum BigNum::operator/(const BigNum &other) const
+// {
+// 	if (other == BigNum(0, 1))
+// 	{
+// 		throw std::runtime_error("Division by zero error");
+// 	}
+
+// 	BigNum dividend = *this;
+// 	BigNum divisor = other;
+// 	BigNum quotient(size * UINT_T_SIZE);
+// 	BigNum remainder(size * UINT_T_SIZE);
+
+// 	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
+// 	{
+// 		remainder = remainder << 1;
+// 		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
+
+// 		if (remainder >= divisor)
+// 		{
+// 			remainder = remainder - divisor;
+// 			quotient.data[i / UINT_T_SIZE] |= (1 << (i % UINT_T_SIZE));
+// 		}
+// 	}
+
+// 	return quotient;
+// }
+
+
 BigNum BigNum::operator/(const BigNum &other) const
 {
-	if (other == BigNum(0, 1))
-	{
-		throw std::runtime_error("Division by zero error");
-	}
+    // Check for division by zero
+    if (other == BigNum(0, 1))
+    {
+        throw std::runtime_error("Division by zero error");
+    }
 
-	BigNum dividend = *this;
-	BigNum divisor = other;
-	BigNum quotient(size * UINT_T_SIZE);
-	BigNum remainder(size * UINT_T_SIZE);
+    // Handle the case when the numerator is smaller than the divisor
+    if (*this < other)
+    {
+        return BigNum("0"); // Division result is zero if num < divisor
+    }
 
-	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
-	{
-		remainder = remainder << 1;
-		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
+    BigNum num = *this;        // Copy of the numerator
+    BigNum divisor = other;    // Divisor
+    BigNum result("0");        // Stores the result (quotient)
+    BigNum currentDivisor = divisor;
+    BigNum quotient("1");
 
-		if (remainder >= divisor)
-		{
-			remainder = remainder - divisor;
-			quotient.data[i / UINT_T_SIZE] |= (1 << (i % UINT_T_SIZE));
-		}
-	}
+    // Left shift the divisor to the highest possible multiple less than or equal to num
+    while ((currentDivisor << 1) <= num)
+    {
+        currentDivisor = currentDivisor << 1;
+        quotient = quotient << 1;
+    }
 
-	return quotient;
+    // Perform the division by subtracting and accumulating quotient
+    while (num >= other)
+    {
+        if (num >= currentDivisor)
+        {
+            num = num - currentDivisor;
+            result = result + quotient;
+        }
+
+        // Right shift to reduce the currentDivisor and quotient for the next step
+        currentDivisor = currentDivisor >> 1;
+        quotient = quotient >> 1;
+    }
+
+    return result;
 }
+
 
 BigNum BigNum::operator/(uint32_t num) const
 {
@@ -331,70 +377,41 @@ BigNum BigNum::operator/=(uint32_t num)
 //     return remainder; // Return the remainder
 // }
 
-// BigNum BigNum::operator%(const BigNum &other) const
-// {
-// 	if (other == BigNum("0"))
-// 	{
-// 		throw std::runtime_error("Division by zero error");
-// 	}
-
-// 	BigNum dividend = *this;
-// 	BigNum divisor = other;
-// 	BigNum remainder(size * UINT_T_SIZE);
-
-// 	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
-// 	{
-// 		remainder = remainder << 1;
-// 		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
-
-// 		if (remainder >= divisor)
-// 		{
-// 			remainder = remainder - divisor;
-// 		}
-// 	}
-
-// 	return remainder;
-// }
 
 
 BigNum BigNum::operator%(const BigNum &other) const
 {
-	if (other == BigNum("0"))
-	{
-		throw std::runtime_error("Division by zero error");
-	}
+    // Check for division by zero
+    if (other == BigNum("0"))
+    {
+        throw std::runtime_error("Division by zero error");
+    }
+    BigNum num = *this;
+    
+    if (num < other) {
+        return num;
+    }
 
-	BigNum num = *this;
-	num.size++;
-	num.data.push_back(0);
-	BigNum mod = other;
-	BigNum temp1 = mod;
-	BigNum temp2 = mod;
-	temp2 = temp2 << 1;
-	while (temp2 <= num)
-	{
-		temp1 = temp2;
-		temp2 = temp2 << 1;
-	}
-	while (temp1 >= other && num > 0)
-	{
-		BigNum temp3 = num - temp1;
-		if (temp3 > 0 || num == temp1)
-		{
-			num = temp3;
-		}
-		else
-		{
-			temp1 = temp1 >> 1;
-		}
-	}
-	while (num >= mod)
-	{
-		num = num - mod;
-	}
+    BigNum mod = other;
+    BigNum shiftedMod = mod;
+    while (shiftedMod <= num)
+    {
+        mod = shiftedMod;
+        shiftedMod = shiftedMod << 1;
+    }
 
-	return num;
+    while (num >= other)
+    {
+        if (num >= mod)
+        {
+            num = num - mod;
+        }
+        mod = mod >> 1;
+    }
+
+    return num;
 }
+
 
 BigNum BigNum::operator%(uint32_t num) const
 {

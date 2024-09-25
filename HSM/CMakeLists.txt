@@ -59,7 +59,7 @@ add_subdirectory(Signature)
 add_subdirectory(HsmStatus)
 
 # API
-add_library(HSM src/HSM.cpp)
+add_library(HSM src/HSM.cpp src/ID.cpp)
 target_include_directories(HSM PUBLIC include)
 target_link_libraries(HSM AES RSA Signature HsmStatus)
 
