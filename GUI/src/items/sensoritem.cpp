@@ -55,8 +55,7 @@ VerticalIndicator *SensorItem::getVerticalIndicator() const
 
   // todo update sensor data
 void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
-    auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == data[bufferInfo::SourceId].second || sensor->getModel().priority() == data[bufferInfo::DestinationId].second){
+    if(m_model->priority() == data[bufferInfo::SourceId].second || m_model->priority() == data[bufferInfo::DestinationId].second){
         all_data_final.emplace_back(data);
         last_data_final = data;
         qInfo() << "sensor need update";

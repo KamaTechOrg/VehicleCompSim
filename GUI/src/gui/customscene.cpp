@@ -321,7 +321,12 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
 void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
     SensorItem* src = m_sensors[data[bufferInfo::SourceId].second];
     SensorItem* dest = m_sensors[data[bufferInfo::DestinationId].second];
-
+    
+    if (!src || !dest) {
+        qWarning() << "Source or Destination sensor not found.";
+        return;
+    }
+    
     // update the sensor values
     src->update_new_data(data);
     dest->update_new_data(data);
@@ -388,14 +393,11 @@ void CustomScene::onModelAdded(SerializableItem* model) {
 
 void CustomScene::onModelRemoved(SerializableItem* model) {
     for (QGraphicsItem* item : items()) {
-        BaseItem* baseItem = buildBaseItemFromModel(model);
-        if (baseItem && baseItem->model()->getId() == model->getId()) {
-            removeItem(baseItem);
-            if(model->itemType() == ItemType::Sensor){
-                SensorModel* sensorModel = dynamic_cast<SensorModel*>(model);
-                m_sensors.remove(sensorModel->priority());
-            }
-            delete baseItem;
+        SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+        if (sensorItem && sensorItem->model()->getId() == model->getId()) {
+            m_sensors.remove(sensorItem->getModel().priority());
+            removeItem(sensorItem);
+            delete sensorItem;
             break;
         }
     }
