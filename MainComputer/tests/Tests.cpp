@@ -14,6 +14,7 @@
 #include "StartsWithCondition.h"
 #include "EndsWithCondition.h"
 #include "ConditionsFactory.h"
+#include "JsonLoader.h"
 
 TEST_CASE("SimpleCondition Tests") {
     const std::string senderId = "testSender";
@@ -425,5 +426,12 @@ TEST_CASE("Extended Failing AndCondition Test Cases") {
 
         CHECK_FALSE(andCond.validate(senderId, "non-empty"));
     }
+}
+
+TEST_CASE("Loading Json files") {
+    JsonLoader jsonLoader;
+
+    SUBCASE("Load a file") {
 
     }
+}
