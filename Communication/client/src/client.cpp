@@ -40,6 +40,7 @@ ClientSocket::ClientSocket(int id)
 
 ClientSocket::~ClientSocket()
 {
+    if(m_clientSocket)
     m_clientSocket->close();
 }
 
@@ -112,7 +113,7 @@ bool ClientSocket::is_valid_size(size_t size)
 
 void ClientSocket::shut_down()
 {
-    m_clientSocket =nullptr;
+    m_clientSocket = nullptr;
 }
 
 bool ClientSocket::is_valid_d_id(int d_id)

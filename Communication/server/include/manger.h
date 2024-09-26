@@ -12,6 +12,7 @@ public:
     MangServer();
     void init();
     
+    // get_map();
     std::unordered_map<int, FD> m_connections;
 
 private:
@@ -24,11 +25,12 @@ private:
     FD get_sock(int id);
 
 
-    Server m_server;
-    Socket m_server_socket;
-    Receive_manger m_connect;
+    Server m_server_eccept_socket;
+    // 
+    Socket m_controll_socket;
+    Receive_manger m_recv_manger;
     Send_manager m_send_manager;
-    std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> m_min_heap;
-    std::mutex m_heap_mutex;
+    std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> m_prioritysed_masseges_queue;
+    std::mutex m_queue_mutex;
     std::mutex m_map_mutex;
 };

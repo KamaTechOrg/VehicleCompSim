@@ -138,7 +138,7 @@ sendErrorCode Socket::send(void *data, size_t size) const
 std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 {
     ListenErrorCode errorCode;
-    char buf[len]; 
+    char buf[MAXRECV]; 
     memset(buf, 0, len);
 
 #ifdef _WIN32

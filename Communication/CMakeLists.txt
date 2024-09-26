@@ -15,11 +15,12 @@ include_directories(client/include)
 include_directories(server/include)
 include_directories(tests/test_server)
 include_directories(utilities)
+include_directories(utilities/log_API/include)
 
 # Gather all .cpp files for client, server, utilities, and tests
 file(GLOB_RECURSE CLIENT_SRC_FILES "client/src/*.cpp")
 file(GLOB_RECURSE SERVER_SRC_FILES "server/src/*.cpp")
-file(GLOB_RECURSE UTILITIES_SRC_FILES "utilities/*.cpp")
+file(GLOB_RECURSE UTILITIES_SRC_FILES "utilities/*.cpp" "utilities/log_API/src/*.cpp")
 file(GLOB_RECURSE TESTS_SRC_FILES "tests/*.cpp")
 
 # Create client library
