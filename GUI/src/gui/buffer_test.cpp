@@ -44,11 +44,16 @@ std::string buffer_test::random_msg(){
     std::string name = msg[content_nsg] + " goldberg";
     return name;
 }
-std::string buffer_test::timeStamp(){
+std::string buffer_test::timeStamp() {
     auto now = std::chrono::system_clock::now();
     auto itt = std::chrono::system_clock::to_time_t(now);
+
+    // Adjust for your local time zone (e.g., UTC+3)
+    std::tm* localTime = std::gmtime(&itt);
+    localTime->tm_hour += 3; // Add your time zone offset
+
     std::ostringstream ss;
-    ss << std::put_time(std::gmtime(&itt), "%Y-%m-%dT%H:%M:%S");
+    ss << std::put_time(localTime, "%Y-%m-%dT%H:%M:%S");
     std::string timestamp = ss.str();
     return timestamp;
 }
@@ -94,9 +99,9 @@ void buffer_test::sensor1() {
     while (std::getline(my_stream, piece, ',')) {
         split_pieces.push_back(piece);
     }
-    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
-        std::cout << split_pieces[i] << std::endl;
-    }
+//    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
+//        std::cout << split_pieces[i] << std::endl;
+//    }
 
     // Deserialize buffer
     if (split_pieces.size() > 4) {
@@ -167,9 +172,9 @@ void buffer_test::sensor2() {
     while (std::getline(my_stream, piece, ',')) {
         split_pieces.push_back(piece);
     }
-    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
-        std::cout << split_pieces[i] << std::endl;
-    }
+//    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
+//        std::cout << split_pieces[i] << std::endl;
+//    }
 
     // Deserialize buffer
     if (split_pieces.size() > 4) {
@@ -241,9 +246,9 @@ void buffer_test::sensor3() {
     while (std::getline(my_stream, piece, ',')) {
         split_pieces.push_back(piece);
     }
-    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
-        std::cout << split_pieces[i] << std::endl;
-    }
+//    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
+//        std::cout << split_pieces[i] << std::endl;
+//    }
 
     // Deserialize buffer
     if (split_pieces.size() > 4) {
@@ -324,9 +329,9 @@ void buffer_test::sensor4() {
     while (std::getline(my_stream, piece, ',')) {
         split_pieces.push_back(piece);
     }
-    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
-        std::cout << split_pieces[i] << std::endl;
-    }
+//    for (int i = 0; i < 4 && i < split_pieces.size(); i++) {
+//        std::cout << split_pieces[i] << std::endl;
+//    }
 
     // Deserialize buffer
     if (split_pieces.size() > 4) {

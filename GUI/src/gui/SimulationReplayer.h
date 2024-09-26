@@ -17,29 +17,29 @@
 #include "customscene.h"
 
 class SimulationReplayer : public QObject {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SimulationReplayer(const QString &filePath);
     void pauseSimulation();
     void playSimulation();
-    void jumpToTime(const QTime &targetTime);
+    void jumpToTime(const QTime &targetTime, bool isManualJump);
     void startReplay();
     QDateTime start() const { return m_startTime; }
     void clear_current_events();
 
 
 private:
-    void scheduleEvent(const QString &event, int delay);
+    void scheduleEvent(const QString &message, int delay);
 
 private slots:
-    void processEvent();
+            void processMessage();
 
 private:
     QFile m_logFile;
     qint64 m_lastPosition;
-    QQueue<QString> m_eventQueue;
-    QList<QTimer *> m_timers;
+    QQueue<QString> m_messagesQueue;
+    QQueue<QTimer *> m_timers;
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;
     DB_handler *m_db;

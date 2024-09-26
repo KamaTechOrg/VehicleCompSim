@@ -17,16 +17,18 @@
 class SimulationReplayer;
 
 class SimulationControlPanel : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SimulationControlPanel(SimulationReplayer* replayer, QWidget* parent = nullptr);
 
 private slots:
     void play();
-    void pause();
+    void pause(bool from_slider_pressed);
     void seek(int value);
     void updateSlider();
+    void onSliderPressed();
+    void onSliderReleased();
 
 private:
     SimulationReplayer* m_replayer;
@@ -38,6 +40,8 @@ private:
     QTimer* m_updateTimer;
     QTime currentTime = (QDate(1970, 1, 1), QTime(0, 0, 0));
     QTime delayTime;
+    bool m_isManualSliderChange;
+    bool play_mode = false;
 
 
 

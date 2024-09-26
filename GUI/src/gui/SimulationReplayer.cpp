@@ -7,14 +7,11 @@
 #include <QDebug>
 
 SimulationReplayer::SimulationReplayer(const QString &filePath) : m_logFile(filePath){
-    if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Cannot open log file for reading:" << m_logFile.errorString();
-    }
+    startReplay();
 }
 
 void SimulationReplayer::startReplay() {
-    if (m_logFile.isOpen()) {
-        m_logFile.seek(m_lastPosition);
+    if (m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&m_logFile);
         bool first_line = true;
         while (!in.atEnd()) {
@@ -33,32 +30,33 @@ void SimulationReplayer::startReplay() {
                 m_totalTime = timestamp;
             }
         }
+        m_logFile.close();
     }
 }
 
-void SimulationReplayer::scheduleEvent(const QString &event, int delay) {
-    m_eventQueue.enqueue(event);
+void SimulationReplayer::scheduleEvent(const QString &message, int delay) {
+    m_messagesQueue.enqueue(message);
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, this, &SimulationReplayer::processEvent);
+    connect(timer, &QTimer::timeout, this, &SimulationReplayer::processMessage);
+    m_timers.enqueue(timer);
     timer->start(delay);
-    m_timers.append(timer);
 
 }
 
-void SimulationReplayer::processEvent() {
-    if (!m_eventQueue.isEmpty()) {
-        QString event = m_eventQueue.dequeue();
-        QList<QString> parts = event.split(',');
-        m_currentTime = QDateTime::fromString(parts[0], Qt::ISODate);
-        GlobalState::getInstance().newData(event);
+void SimulationReplayer::processMessage() {
+    if (!m_messagesQueue.isEmpty()) {
+        QTimer * timer = m_timers.dequeue();
+        timer->deleteLater();
+        QString message = m_messagesQueue.dequeue();
+        GlobalState::getInstance().newData(message);
     } else {
-        qWarning() << "processEvent: Event queue is empty";
+        qWarning() << "processMessage: Event queue is empty";
     }
 }
 
 void SimulationReplayer::clear_current_events(){
-    m_eventQueue.clear();
+    m_messagesQueue.clear();
     for (QTimer *timer : m_timers) {
         timer->stop();
         timer->deleteLater();
@@ -75,10 +73,13 @@ void SimulationReplayer::playSimulation() {
         timer->start();
     }
 }
-void SimulationReplayer::jumpToTime(const QTime &targetTime) {
+void SimulationReplayer::jumpToTime(const QTime &targetTime, bool isManualJump) {
+    if (!isManualJump) {
+        return;
+    }
     int secondsToAdd = targetTime.hour() * 3600 + targetTime.minute() * 60 + targetTime.second();
     clear_current_events();
-    if (m_logFile.isOpen()) {
+    if (m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         m_logFile.seek(0);
         QTextStream in(&m_logFile);
         bool first_line = true;
@@ -99,5 +100,6 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
                 }
             }
         }
+        m_logFile.close();
     }
 }

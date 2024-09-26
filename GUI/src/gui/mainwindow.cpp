@@ -263,7 +263,6 @@ void MainWindow::replayer() {
     QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
         m_simulationReplayer = new SimulationReplayer(logFilePath);
-        m_simulationReplayer->startReplay();
         controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
         m_mainLayout->addWidget(controlPanel);
         m_initializeSensorsData->initialize();
@@ -288,15 +287,6 @@ void MainWindow::onRunStart()
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
-//    const QString& filePath = QDir::currentPath() + "/A.log";
-//    m_logReader = std::make_unique<LogReader>(filePath, m_DB_handler, nullptr, this);
-//    if(m_simulationRecorder != nullptr){
-//        m_logReader->m_simulationRecorder = std::move(m_simulationRecorder);
-//    }
-//    change_view_timer = new QTimer(this);
-//    connect(change_view_timer, &QTimer::timeout, this, &MainWindow::update_view);
-//    change_view_timer-
-
     m_globalState.setIsRunning(true);
     startBtn->hide();
     timer->hide();

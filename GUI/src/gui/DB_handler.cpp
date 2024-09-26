@@ -19,7 +19,7 @@ DB_handler::DB_handler() {
     if (!sqlitedb->open()) {
         qDebug() << "Could not open the database:" << sqlitedb->lastError().text();
     }
-    connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &DB_handler::write_data_to_DB);
+    connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &DB_handler::write_data_to_DB, Qt::QueuedConnection);
 }
 void DB_handler::write_data_to_DB(const QString& data) const {
     const QStringList columnInfo = {"time", "src_id", "dest_id", "len", "buffer"};
