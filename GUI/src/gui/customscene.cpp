@@ -12,12 +12,12 @@
 #include "popupdialog.h"
 #include "client/websocketclient.h"
 #include "customwidget.h"
-#include "globalconstant.h"
+#include "globalconstants.h"
 
 #include <cstdlib>
 #include <ctime>
 
-using namespace globalConstant;
+using namespace globalConstants;
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()),

@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QVector>
 #include "projectmodel.h"
+#include "globalconstants.h"
 #include "sensorModel.h"
 
 class GlobalState : public QObject
@@ -12,6 +13,7 @@ class GlobalState : public QObject
     Q_PROPERTY(bool isRemoteMode READ isRemoteMode WRITE setIsRemoteMode NOTIFY isRemoteModeChanged)
     Q_PROPERTY(bool isConnecting READ isConnecting WRITE setIsConnecting NOTIFY isConnectingChanged)
     Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning NOTIFY isRunningChanged)
+    Q_PROPERTY(globalConstants::ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ProjectModel* currentProject READ currentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
     Q_PROPERTY(SensorModel* currentSensorModel READ currentSensorModel WRITE setCurrentSensorModel NOTIFY currentSensorModelChanged)
     Q_PROPERTY(QString myClientId READ myClientId WRITE setMyClientId)
@@ -27,6 +29,9 @@ public:
 
     bool isConnecting() const { return m_isConnecting; }
     void setIsConnecting(bool value);
+
+    globalConstants::ConnectionState connectionState() const { return m_connectionState; }
+    void setConnectionState(globalConstants::ConnectionState value);
 
     bool isRunning() const { return m_isRunning; }
     void setIsRunning(bool value);
@@ -62,6 +67,7 @@ signals:
     void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
     void isConnectingChanged(bool isConnecting);
+    void connectionStateChanged(globalConstants::ConnectionState connectionState);
     void isRunningChanged(bool isRunning);
     void currentProjectChanged(ProjectModel* project);
     void currentSensorModelChanged(SensorModel* sensorModel);
@@ -88,6 +94,7 @@ private:
     bool m_isRemoteMode = false;
     bool m_isConnecting = false;
     bool m_isRunning = false;
+    globalConstants::ConnectionState m_connectionState = globalConstants::ConnectionState::Offline;
     QString m_myClientId;
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;

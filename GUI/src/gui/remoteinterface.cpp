@@ -1,5 +1,4 @@
 #include "RemoteInterface.h"
-#include "projectmodel.h"
 #include <QRandomGenerator>
 #include <QInputDialog>
 #include <QStandardItem>
@@ -13,6 +12,9 @@
 #include <QPushButton>
 #include <QCheckBox>
 
+#include "projectmodel.h"
+
+
 RemoteInterface::RemoteInterface(QWidget *parent)
     : QToolBar(parent), m_globalState(GlobalState::getInstance())
 {
@@ -21,15 +23,13 @@ RemoteInterface::RemoteInterface(QWidget *parent)
 
     // Connect to GlobalState signals
     connect(&m_globalState, &GlobalState::isRemoteModeChanged, this, &RemoteInterface::onRemoteModeChanged);
-    connect(&m_globalState, &GlobalState::isOnlineChanged, this, &RemoteInterface::onConnectionStatusChanged);
-    connect(&m_globalState, &GlobalState::isConnectingChanged, this, &RemoteInterface::onConnectingStatusChanged);
+    connect(&m_globalState, &GlobalState::connectionStateChanged, this, &RemoteInterface::onConnectionStatusChanged);
     connect(&m_globalState, &GlobalState::projectAdded, this, &RemoteInterface::onProjectAdded);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &RemoteInterface::onCurrentProjectPublished);
 
     // Initial update
     onRemoteModeChanged(m_globalState.isRemoteMode());
-    onConnectionStatusChanged(m_globalState.isOnline());
-    onConnectingStatusChanged(m_globalState.isConnecting());
+    onConnectionStatusChanged(m_globalState.connectionState());
 }
 
 void RemoteInterface::setupUI()
@@ -119,6 +119,9 @@ void RemoteInterface::populateProjectList()
     m_projectItemMap.clear(); // Clear the map
 
     for (const auto &project : m_globalState.projects()) {
+        if(project->isPublished() &&  m_globalState.connectionState() != ConnectionState::Online){
+            continue;
+        }
         QStandardItem *item = new QStandardItem(project->name());
         item->setSizeHint(QSize(100, 50)); 
         item->setTextAlignment(Qt::AlignCenter);
@@ -136,24 +139,30 @@ void RemoteInterface::populateProjectList()
     }
 }
 
-void RemoteInterface::updateConnectionStatus()
+void RemoteInterface::onConnectionStatusChanged(ConnectionState state)
 {
     QString statusText;
     QString color;
 
-    if (m_globalState.isConnecting()) {
-        statusText = "Connecting...";
-        color = "orange";
-    } else if (m_globalState.isOnline()) {
-        statusText = "Online";
-        color = "green";
-    } else {
-        statusText = "Offline";
-        color = "red";
+    switch (state) {
+        case ConnectionState::Connecting:
+            statusText = "Connecting...";
+            color = "orange";
+            break;
+        case ConnectionState::Online:
+            statusText = "Online";
+            color = "green";
+            break;
+        case ConnectionState::Offline:
+            statusText = "Offline";
+            color = "red";
+            break;
     }
 
     m_connectionGroupBox->setTitle(statusText);
     m_connectionGroupBox->setStyleSheet(QString("QGroupBox { color: %1; }").arg(color));
+
+    populateProjectList();
 }
 
 void RemoteInterface::onProjectItemClicked(const QModelIndex &index)
@@ -174,17 +183,6 @@ void RemoteInterface::onRemoteModeChanged(bool isRemoteMode)
     } else {
         m_switchModeButton->setText("Switch to Remote Mode");
     }
-    updateConnectionStatus();
-}
-
-void RemoteInterface::onConnectionStatusChanged(bool isOnline)
-{
-    updateConnectionStatus();
-}
-
-void RemoteInterface::onConnectingStatusChanged(bool isConnecting)
-{
-    updateConnectionStatus();
 }
 
 void RemoteInterface::onProjectAdded(ProjectModel* project)

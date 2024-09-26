@@ -31,6 +31,14 @@ void GlobalState::setIsConnecting(bool value)
     }
 }
 
+void GlobalState::setConnectionState(globalConstants::ConnectionState value)
+{
+    if (m_connectionState != value) {
+        m_connectionState = value;
+        emit connectionStateChanged(m_connectionState);
+    }
+}
+
 void GlobalState::setIsRunning(bool value)
 {
     if (m_isRunning != value) {

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "globalconstants.h"
 #include "../../MainComputer/src/maincomputer.h"
 ///#include "../Communication/User_Directory/client/client.h"
 
@@ -152,7 +153,7 @@ void MainWindow::setupView() {
 
     // Initialize the title and conditional button
     m_publishButton = new QPushButton("Publish project", m_sceneBox);
-    m_publishButton->setDisabled(!m_globalState.isOnline());
+    m_publishButton->setDisabled(m_globalState.connectionState() != globalConstants::ConnectionState::Online);
     QObject::connect(m_publishButton, &QPushButton::clicked, [this] {
         m_globalState.publishCurrentProject();
     });

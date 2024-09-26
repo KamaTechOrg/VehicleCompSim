@@ -6,9 +6,11 @@
 #include <QDebug>
 
 #include "clientconstants.h"
+#include "globalconstants.h"
 #include "globalstate.h"
 
 class CustomScene;
+using namespace globalConstants;
 
 WebSocketClient& WebSocketClient::getInstance(const QUrl &url, bool debug)
 {
@@ -44,12 +46,12 @@ WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
 
 void WebSocketClient::connectToServer()
 {
-    m_globalState.setIsConnecting(true);
+    m_globalState.setConnectionState(ConnectionState::Connecting);
     if (m_webSocket.isValid())
     {
         if (m_debug)
             qDebug() << "WebSocket is already connected.";
-        m_globalState.setIsConnecting(false);
+        m_globalState.setConnectionState(ConnectionState::Online);
         return;
     }
     if (m_debug)
@@ -64,7 +66,7 @@ void WebSocketClient::disconnectFromServer()
         qDebug() << "Disconnecting from server...";
 
     m_webSocket.close();
-    m_globalState.setIsOnline(false);
+    m_globalState.setConnectionState(ConnectionState::Offline);
 }
 
 void WebSocketClient::onRemoteModeChanged(bool remoteMode)
@@ -96,8 +98,7 @@ void WebSocketClient::onConnected() {
     disconnect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
 
-    m_globalState.setIsConnecting(false);
-    m_globalState.setIsOnline(true);
+    m_globalState.setConnectionState(ConnectionState::Online);
 }
 
 void WebSocketClient::onDisconnected()
@@ -105,7 +106,7 @@ void WebSocketClient::onDisconnected()
     if (m_debug)
         qDebug() << "WebSocket disconnected.";
 
-    m_globalState.setIsOnline(false);
+    m_globalState.setConnectionState(ConnectionState::Offline);
 
     if(m_globalState.isRemoteMode()) {
         m_reconnectTimer->start(5000);
@@ -117,7 +118,7 @@ void WebSocketClient::attemptReconnection()
     if (m_debug)
         qDebug() << "Attempting to reconnect...";
 
-    m_globalState.setIsConnecting(true);
+    m_globalState.setConnectionState(ConnectionState::Connecting);
 
     if (!m_webSocket.isValid())
     {

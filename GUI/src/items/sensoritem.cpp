@@ -7,10 +7,10 @@
 #include "globalstate.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
-#include "globalconstant.h"
+#include "globalconstants.h"
 
 #include <qrandom.h>
-using namespace globalConstant;
+using namespace globalConstants;
 
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
