@@ -14,6 +14,8 @@ link_directories(../build)
 include_directories(../client/include)
 include_directories(../server/include)
 include_directories(../utilities)
+include_directories(../utilities/log_API/include)
+
 
 
 # Create the server executable

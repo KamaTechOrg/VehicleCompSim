@@ -7,20 +7,20 @@
 #define close_socket ::close
 #endif
 
-MangServer::MangServer() : m_server{PORTSERVER}, m_connect{}, m_send_manager{}
+MangServer::MangServer() : m_server_eccept_socket{PORTSERVER}, m_recv_manger{}, m_send_manager{}
 {
 }
 
 void MangServer::init()
 {
 
-    std::thread t_s(&MangServer::run_server, this);
-    std::thread t_select(&MangServer::run_connect, this);
+    std::thread t_server(&MangServer::run_server, this);
+    std::thread t_selector(&MangServer::run_connect, this);
     std::thread t_sender(&MangServer::run_sender, this);
     init_inner();
 
-    t_s.join();
-    t_select.join();
+    t_server.join();
+    t_selector.join();
     t_sender.join();
 }
 
@@ -29,7 +29,7 @@ void MangServer::run_server()
 
     while (true)
     {
-        int fd = m_server.wait_next_client();
+        int fd = m_server_eccept_socket.wait_next_client();
 
         if (fd > 0)
         {
@@ -38,9 +38,9 @@ void MangServer::run_server()
             if (id != IDINNER)
             {
                 char buf[10] = "msg";
-                m_server_socket.send(buf, sizeof(buf));
+                m_controll_socket.send(buf, sizeof(buf));
 
-                m_connect.m_condition.notify_one();
+                m_recv_manger.m_condition.notify_one();
             }
         }
     }
@@ -48,18 +48,18 @@ void MangServer::run_server()
 
 void MangServer::run_connect()
 {
-    m_connect.select_menger(m_min_heap, m_heap_mutex, m_map_mutex, m_connections);
+    m_recv_manger.select_menger(m_prioritysed_masseges_queue, m_queue_mutex, m_map_mutex, m_connections);
 }
 
 void MangServer::init_inner()
 {
-    m_server_socket.create();
+    m_controll_socket.create();
     std::string ip_server = Data_manipulator::get_ip_server(IPFILENAME);
-    m_server_socket.connect(ip_server, PORTSERVER);
+    m_controll_socket.connect(ip_server, PORTSERVER);
 
     std::string idStr = Data_manipulator::int_to_str(IDINNER);
 
-    m_server_socket.send((char *)idStr.c_str(), idStr.size());
+    m_controll_socket.send((char *)idStr.c_str(), idStr.size());
 }
 
 void MangServer::run_sender()
@@ -72,7 +72,7 @@ void MangServer::run_sender()
 
     while (true)
     {
-        m_send_manager.extract_heap(m_min_heap, m_heap_mutex , vec_canbus);
+        m_send_manager.extract_heap(m_prioritysed_masseges_queue, m_queue_mutex , vec_canbus);
         m_send_manager.send_vector(m_map_mutex , get_sock_func , vec_canbus);
         vec_canbus.clear();
         std::this_thread::sleep_for(std::chrono::seconds(3));

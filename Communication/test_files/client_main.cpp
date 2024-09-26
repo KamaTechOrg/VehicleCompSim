@@ -3,6 +3,10 @@
 #include <thread>
 #include <cstring>
 #include <atomic>
+
+#include "Logger.h"
+#include "Consol_sink.h"
+#include "File_sink.h"
 #include "client.h"
 
 using namespace std;
@@ -52,6 +56,16 @@ void listen_thread(ClientSocket &client)
 
 int main()
 {
+    
+    // Configure logger with different sinks and levels
+    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Error));  // Console logs only Error and above
+    Logger::addSink(std::make_unique<FileSink>("app.log", LogLevel::Debug)); // File logs Debug and above
+
+    LOG_INFO("Application started");
+    LOG_DEBUG("This is a debug message");
+    LOG_ERROR("An error occurred!");
+    
+
     int id = 0;
 
     cout << "Enter id: ";
