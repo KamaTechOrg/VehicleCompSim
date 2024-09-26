@@ -19,6 +19,7 @@ endif()
 # Include directories for your library headers
 include_directories(client)
 include_directories(utilities)
+include_directories(utilities/log_API)
 
 # Create the client executable
 add_executable(client_exec client_main.cpp)
