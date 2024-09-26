@@ -4,6 +4,7 @@
 
 #include <QFileDialog>
 #include "saveAndLoad.h"
+#include "sensoritem.h"
 #include <QWidget>
 
 
@@ -13,93 +14,73 @@ saveAndLoad::saveAndLoad(GlobalState *globalState) : m_globalState(globalState){
 }
 
 void saveAndLoad::bson_to_qemu(const bson_t *bsonDocument) {
-    auto *new_qemu = new QemuSensorModel();
+    auto *qemuModel = new QemuSensorModel();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
-    // location
     bson_iter_next(&iter);
-    new_qemu->setX(bson_iter_double(&iter));
+    qemuModel->setOwnerID(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setY(bson_iter_double(&iter));
-    // qemu id name
+    qemuModel->setId(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setPriority(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setX(bson_iter_double(&iter));
     bson_iter_next(&iter);
-    new_qemu->setName(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setY(bson_iter_double(&iter));
+    bson_iter_next(&iter);
+    qemuModel->setPriority(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    qemuModel->setName(bson_iter_utf8(&iter, nullptr));
     // qemu info
     bson_iter_next(&iter);
-    new_qemu->setPlatform(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setPlatform(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setMachine(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setMachine(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setCpu(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setCpu(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setMemory_MB(bson_iter_int64(&iter));
+    qemuModel->setMemory_MB(bson_iter_int64(&iter));
     bson_iter_next(&iter);
-    new_qemu->setKernal(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setKernal(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setHarddrive(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setHarddrive(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setCdrom(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setCdrom(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setBoot(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setBoot(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setNet(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setNet(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setAppend(bson_iter_utf8(&iter, nullptr));
+    qemuModel->setAppend(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_qemu->setNographic(bson_iter_bool(&iter));
-    m_globalState->currentProject()->addModel(new_qemu);
+    qemuModel->setNographic(bson_iter_bool(&iter));
+    m_globalState->currentProject()->addModel(qemuModel);
 }
-// todo check the creation of items after the update to model type
-//void ssss(){
-//    if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
-//        SensorModel* sensorModel = new SensorModel();
-//        sensorModel->setOwnerID(m_globalState.myClientId());
-//        SensorItem* sensorItem = new SensorItem(sensorModel);
-//        sensorItem->setPos(event->scenePos());
-//        m_network->addElement(sensorItem);
-//        addItemToScene(sensorItem);
-//        m_globalState.setCurrentSensorModel(sensorModel);
-//    }
-//    else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
-//        QemuSensorModel* qemuModel = new QemuSensorModel();
-//        qemuModel->setOwnerID(m_globalState.myClientId());
-//        QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
-//        qemuItem->setPos(event->scenePos());
-//        m_network->addElement(qemuItem);
-//        addItemToScene(qemuItem);
-//        m_globalState.setCurrentSensorModel(qemuModel);
-//    }
-//}
 
 void saveAndLoad::bson_to_sensor(const bson_t *bsonDocument) {
-    auto *new_sensor = new SensorModel();
+    SensorModel* sensorModel = new SensorModel();
     bson_iter_t iter;
     bson_iter_init(&iter, bsonDocument);
     bson_iter_next(&iter);
     bson_iter_next(&iter);
-    new_sensor->setOwnerID(bson_iter_utf8(&iter, nullptr));
+    sensorModel->setOwnerID(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_sensor->setId(bson_iter_utf8(&iter, nullptr));
-    // location
+    sensorModel->setId(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_sensor->setX(bson_iter_double(&iter));
+    sensorModel->setX(bson_iter_double(&iter));
     bson_iter_next(&iter);
-    new_sensor->setY(bson_iter_double(&iter));
+    sensorModel->setY(bson_iter_double(&iter));
+    bson_iter_next(&iter);
+    sensorModel->setPriority(bson_iter_utf8(&iter, nullptr));
+    bson_iter_next(&iter);
+    sensorModel->setName(bson_iter_utf8(&iter, nullptr));
     // sensor info
     bson_iter_next(&iter);
-    new_sensor->setPriority(bson_iter_utf8(&iter, nullptr));
+    sensorModel->setBuildCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_sensor->setName(bson_iter_utf8(&iter, nullptr));
+    sensorModel->setRunCommand(bson_iter_utf8(&iter, nullptr));
     bson_iter_next(&iter);
-    new_sensor->setBuildCommand(bson_iter_utf8(&iter, nullptr));
-    bson_iter_next(&iter);
-    new_sensor->setRunCommand(bson_iter_utf8(&iter, nullptr));
-    bson_iter_next(&iter);
-    new_sensor->setCmakePath(bson_iter_utf8(&iter, nullptr));
-    m_globalState->currentProject()->addModel(new_sensor);
+    sensorModel->setCmakePath(bson_iter_utf8(&iter, nullptr));
+    m_globalState->currentProject()->addModel(sensorModel);
 }
 
 void saveAndLoad::loadLayout() {
@@ -147,10 +128,12 @@ bson_t* saveAndLoad::sensor_to_bson(SensorModel* sensor) {
 bson_t* saveAndLoad::qemu_to_bson(QemuSensorModel* qemu){
     bson_t* base_BSON = bson_new();
     BSON_APPEND_UTF8(base_BSON, "type", "Qemu");
-    BSON_APPEND_UTF8(base_BSON, "priority", qemu->priority().toUtf8().constData());
-    BSON_APPEND_UTF8(base_BSON, "name", qemu->name().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "ownerId", qemu->ownerID().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "id", qemu->getId().toUtf8().constData());
     BSON_APPEND_DOUBLE(base_BSON, "pos_x", qemu->x());
     BSON_APPEND_DOUBLE(base_BSON, "pos_y", qemu->y());
+    BSON_APPEND_UTF8(base_BSON, "priority", qemu->priority().toUtf8().constData());
+    BSON_APPEND_UTF8(base_BSON, "name", qemu->name().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "platform", qemu->platform().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "machine", qemu->machine().toUtf8().constData());
     BSON_APPEND_UTF8(base_BSON, "cpu", qemu->cpu().toUtf8().constData());

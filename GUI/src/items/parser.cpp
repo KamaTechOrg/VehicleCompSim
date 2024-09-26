@@ -12,7 +12,7 @@
 #include <QStringList>
 
 parser::parser(){
-    connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &parser::parseBuffer);
+    connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &parser::parseBuffer, Qt::QueuedConnection);
     connect(&GlobalState::getInstance(), &GlobalState::ParserInfoArrived, this, &parser::setSensorInfoMap);
 }
 
