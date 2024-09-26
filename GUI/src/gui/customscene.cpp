@@ -311,7 +311,7 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
                 addItem(item);
                 if(model->itemType() == ItemType::Sensor){
                     SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
-                    m_sensors[sensorItem->getModel().getId()] = sensorItem;
+                    m_sensors[sensorItem->getModel().priority()] = sensorItem;
                 }
             }
         }
@@ -381,14 +381,14 @@ void CustomScene::onModelAdded(SerializableItem* model) {
         addItem(item);
         if(model->itemType() == ItemType::Sensor){
             SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
-            m_sensors[sensorItem->getModel().getId()] = sensorItem;
+            m_sensors[sensorItem->getModel().priority()] = sensorItem;
         }
     }
 }
 
 void CustomScene::onModelRemoved(SerializableItem* model) {
     for (QGraphicsItem* item : items()) {
-        BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
+        BaseItem* baseItem = buildBaseItemFromModel(model);
         if (baseItem && baseItem->model()->getId() == model->getId()) {
             removeItem(baseItem);
             if(model->itemType() == ItemType::Sensor){
