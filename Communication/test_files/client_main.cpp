@@ -5,7 +5,7 @@
 #include <atomic>
 
 #include "Logger.h"
-#include "Consol_sink.h"
+#include "Console_sink.h"
 #include "File_sink.h"
 #include "client.h"
 

@@ -1,4 +1,4 @@
-#include "Consol_sink.h"
+#include "Console_sink.h"
 
 
 // Constructor for ConsoleSink
