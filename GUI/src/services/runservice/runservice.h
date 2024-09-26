@@ -8,11 +8,13 @@ class RunService : public QObject
 {
     Q_OBJECT
     std::shared_ptr<RunManager> runManager;
-
+    static int newSessionId();
+    int session;
+    void startTimer(int timer);
 public:
     RunService();
 
-    void start();
+    void start(int timer);
     void stop();
 
 signals:

@@ -114,17 +114,7 @@ void MainWindow::setupRunService()
         onRunEnd();
     });
     QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
-        int t = timer->time().hour();
-        t = t * 60 + timer->time().minute();
-        t = t * 60 + timer->time().second();
 
-        if (t)
-        {
-            std::thread([this](){
-                // sleep for t seconds
-                // verify session before stopping
-            }).detach();
-        }
     });
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
@@ -144,13 +134,7 @@ void MainWindow::setupRunService()
         m_runService->stop();
     });
 
-    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
-        int t = timer->time().hour();
-        t = t * 60 + timer->time().minute();
-        t = t * 60 + timer->time().second();
 
-        //this->m_runService->setTimer(t);
-    });
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
         [this] { 
@@ -281,8 +265,11 @@ void MainWindow::close_previous_replay(){
 
 void MainWindow::onRunStart()
 {
+    int t = timer->time().hour();
+    t = t * 60 + timer->time().minute();
+    t = t * 60 + timer->time().second();
 
-    m_runService->start();
+    m_runService->start(t);
 
     m_initializeSensorsData->initialize();
     // for test only

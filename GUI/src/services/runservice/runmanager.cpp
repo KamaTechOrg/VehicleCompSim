@@ -4,8 +4,13 @@ void RunManager::nextStep()
 {
     if (currentStep < Runner::START){
         currentStep = Runner::RunSteps(((int)currentStep) + 1);
+        countRunnersFinishedStep = 0;
         if (currentStep == Runner::RUN_STEPS_COUNT) stop();
         emit step(currentStep);
+    }
+    else
+    {
+        emit startBegin();
     }
 }
 
