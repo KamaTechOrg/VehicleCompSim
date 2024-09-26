@@ -1,4 +1,5 @@
 #include "./SensorItem_Editor.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 #include <GlobalState.h>
 #include <QMessageBox>
 #include <vector>
@@ -92,13 +93,23 @@ void SensorItem::Editor::onSaveBtnClicked()
         QMessageBox::warning(this, "Error", "Only the owner can modify the sensor");
         return;
     }
-    model.setPriority(priority->text());
-    model.setName(name->text());
-    model.setBuildCommand(buildCommand->text());
-    model.setRunCommand(runCommand->text());
-    model.setisUseCmakePath(isUseCmakePath->checkState() == Qt::Checked);
-    model.setCmakePath(cmakePath);
+    auto itemData = model.serialize();
 
+    itemData["priority"] = priority->text();
+    itemData["name"] = name->text();
+    itemData["buildCommand"] = buildCommand->text();
+    itemData["runCommand"] = runCommand->text();
+    itemData["cmakePath"] = cmakePath;
+    itemData["isUseCmakePath"] = isUseCmakePath->checkState() == Qt::Checked;
+
+    if (isUseCmakePath->checkState() == Qt::Checked)
+    {
+        auto commands = CMakeUtils::getBuildAndRunCommands(cmakePath);
+        itemData["buildCommand"] = commands.first;
+        itemData["runCommand"] = commands.second;
+    }
+
+    model.deserialize(itemData);
     model.notifyItemModified();
     onCancelBtnCliked();
 }

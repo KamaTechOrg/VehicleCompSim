@@ -45,8 +45,7 @@ void Receive_manger::readFromSocket(int sd, std::unordered_map<int, FD>::iterato
                                     std::vector<CanBus> &vec_canbus, std::unordered_map<int, FD> &m_connections)
 {
     int valread = Cross_platform::cress_read(sd, buffer, 0);
-    
-    if (valread == 0)
+    if (valread <= 0)
     {
         close_socket(sd);
         it = m_connections.erase(it); // Remove connection if socket is closed

@@ -36,7 +36,7 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
         crcstr += Data_manipulator::int_to_str(canbus.crc);
 
         size_t crc_len = crcstr.size();
-        char data[message_len + crc_len];
+        char data[MAXRECV];
 
 
         memcpy(data, canbus.getMessage().c_str(), message_len);

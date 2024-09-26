@@ -44,7 +44,7 @@ public:
     // Override SerializableItem methods
     QJsonObject serialize() const override;
     void deserialize(const QJsonObject &itemData) override;
-    void autoConnectPropertySignals();
+
 
 signals:
     void priorityChanged();
