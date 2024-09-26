@@ -1,4 +1,5 @@
 #include "SensorModel.h"
+#include "CMakeUtils/getBuildAndRunCommands.h"
 #include "qmetaobject.h"
 
 SensorModel::SensorModel(QObject* parent)
@@ -100,19 +101,5 @@ void SensorModel::deserialize(const QJsonObject &itemData) {
     emit anyPropertyChanged();
 }
 
-void SensorModel::autoConnectPropertySignals()
-{
-    const QMetaObject *metaObj = this->metaObject();
-    for (int i = 0; i < metaObj->propertyCount(); ++i) {
-        QMetaProperty property = metaObj->property(i);
-        if (property.hasNotifySignal()) {
-            // Get the notify signal for the property
-            QMetaMethod notifySignal = property.notifySignal();
-
-            // Connect the notify signal to anyPropertyChanged()
-            connect(this, notifySignal, this, metaObj->method(metaObj->indexOfSignal("anyPropertyChanged()")));
-        }
-    }
-}
 
 

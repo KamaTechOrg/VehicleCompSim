@@ -1,60 +1,25 @@
 #ifndef RUNSERVICE_H
 #define RUNSERVICE_H
 
-#include "customscene.h"
-#include "sensormodel.h"
-#include <QProcess>
-#include <future>
+#include <QObject>
+#include "runmanager.h"
 
-#ifdef _WIN32
-#include <minwindef.h>
-#endif
-
-class RunService
+class RunService : public QObject
 {
-
-    struct RunControllData
-    {
-        static int RunControllCounter;
-        int controllerId = ++RunControllCounter;
-        QVector<std::shared_ptr<QProcess>> sensorsProcesses;
-        bool isRunning = false;
-        bool isStarted = false;
-        bool isFinished = false;
-        bool isErrorAccure = false;
-        int successfulStartedProcesses = 0;
-        int successfulFinishedProcesses = 0;
-        int timer = 0;
-        std::future<void> timer_async_return;
-        void start(bool simultaneously = false);
-        void stop();
-        void startTimer();
-        void reset();
-    };
-
-    QVector<SensorModel*> sensors;
-    RunControllData runControl;
-    int timer = 0;
-    bool isRunning = false;
-
-    std::shared_ptr<QProcess> processInit(const QString &program, const QStringList& arguments);
-    std::shared_ptr<QProcess> processInit(const QString &command);
-    void extarctSensorsFromScene();
-    void compile();
-    void run();
-    void dump(unsigned long long pid);
-    void runAndBuildServer();
-
-
-
+    Q_OBJECT
+    std::shared_ptr<RunManager> runManager;
+    static int newSessionId();
+    int session;
+    void startTimer(int timer);
 public:
     RunService();
-    ~RunService();
 
-    void start();
-    void start(const std::function<void ()> onFinish);
+    void start(int timer);
     void stop();
-    void setTimer(int t);
+
+signals:
+    void startBegin();
+    void stopFinished();
 
 };
 

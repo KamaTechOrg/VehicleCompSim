@@ -38,9 +38,9 @@ QString extractProjectName(const QString &sourcePath) {
 }
 
 std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
-    QString projectPath = QDir(cmakePath.trimmed()).path();
-    QString debugPath = QDir(cmakePath).filePath("Debug");
-    QString relesePath = QDir(cmakePath).filePath("Release");
+    QString projectPath = QFileInfo(cmakePath.trimmed()).absolutePath();
+    QString debugPath = QDir(projectPath).filePath("Debug");
+    QString relesePath = QDir(projectPath).filePath("Release");
     //QDir().mkdir(buildPath); // Ensure the build directory exists
 
     QString projectName = extractProjectName(projectPath);
@@ -50,12 +50,12 @@ std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
     }
 
     QStringList buildlist;
-    buildlist <<
-#ifdef Q_OS_WIN
-        "cmd.exe" << "/c";
-#else
-        "sh" << "-c";
-#endif
+//     buildlist <<
+// #ifdef Q_OS_WIN
+//         "cmd.exe" << "/c";
+// #else
+//         "sh" << "-c";
+// #endif
 
     buildlist << "cmake" << "-S" << projectPath << "-B" << projectPath;
 

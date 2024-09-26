@@ -110,35 +110,36 @@ void MainWindow::setupRunService()
     m_parser = new parser();
 
     onRunEnd();
+    QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
+        onRunEnd();
+    });
+    QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
+
+    });
     QObject::connect(startBtn, &QPushButton::clicked, [this] {
-        this->onRunStart();
-        this->m_runService->start([this] { this->onRunEnd(); });
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
             {"command", "start"}
         });
+        onRunStart();
     });
 
     QObject::connect(stopBtn, &QPushButton::clicked, [this] {
-        this->m_runService->stop();
+        // this->m_runService->stop();
+        //m_runService->stop();
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
             {"command", "stop"}
         });
+        m_runService->stop();
     });
 
-    QObject::connect(timer, &QTimeEdit::userTimeChanged, [this] {
-        int t = timer->time().hour();
-        t = t * 60 + timer->time().minute();
-        t = t * 60 + timer->time().second();
 
-        this->m_runService->setTimer(t);
-    });
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
         [this] { 
             this->onRunStart();
-            this->m_runService->start([this] { this->onRunEnd(); });
+            //this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
         [this] { this->m_runService->stop(); }
     ));
@@ -264,6 +265,12 @@ void MainWindow::close_previous_replay(){
 
 void MainWindow::onRunStart()
 {
+    int t = timer->time().hour();
+    t = t * 60 + timer->time().minute();
+    t = t * 60 + timer->time().second();
+
+    m_runService->start(t);
+
     m_initializeSensorsData->initialize();
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
@@ -282,8 +289,8 @@ void MainWindow::onRunStart()
     timer->hide();
 
     stopBtn->show();
-    m_toolbar_blocker->show();
-    m_scene_blocker->show();
+    //m_toolbar_blocker->show();
+    //m_scene_blocker->show();
     stopBtn->raise();
 }
 
