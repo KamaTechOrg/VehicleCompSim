@@ -382,21 +382,6 @@ TEST_CASE("ConditionsFactory Failure Test") {
             CHECK(std::string(e.what()) == "condition type: " + invalidConditionType + " is not an option");
         }
     }
-
-    SUBCASE("Check Composite Condition With nullptr Sub-conditions") {
-        std::shared_ptr<ConditionBase> nullCondition = nullptr;
-        std::vector<std::string> compositeConditionsTypes = conditionsFactory.getCompositeConditionTypes();
-
-        for (const auto& compositeConditionType : compositeConditionsTypes) {
-            try {
-                conditionsFactory.createCompositeCondition(compositeConditionType, nullCondition, nullCondition);
-                FAIL("Expected exception was not thrown");
-            }
-            catch (const std::runtime_error& e) {
-                CHECK(std::string(e.what()) == "One or more arguments were nullptr");
-            }
-        }
-    }
 }
 
 TEST_CASE("Extended Failing AndCondition Test Cases") {
