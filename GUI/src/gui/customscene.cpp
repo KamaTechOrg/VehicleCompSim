@@ -322,22 +322,25 @@ void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
     SensorItem* src = m_sensors[data[bufferInfo::SourceId].second];
     SensorItem* dest = m_sensors[data[bufferInfo::DestinationId].second];
     
+    // update the sensor values
+    if(src) {
+        src->update_new_data(data);
+    }
+    if(dest) {
+        dest->update_new_data(data);
+    }
+
     if (!src || !dest) {
         qWarning() << "Source or Destination sensor not found.";
         return;
     }
-    
-    // update the sensor values
-    src->update_new_data(data);
-    dest->update_new_data(data);
 
     // Create and start the FlowAnimation
-    FlowAnimation* flowAnimation = new FlowAnimation(this);
+    FlowAnimation* flowAnimation = new FlowAnimation(this, [dest]() {
+        dest->getVerticalIndicator()->incrementValue();
+    });
     flowAnimation->setPoints(src->pos(), dest->pos());
     flowAnimation->startAnimation();
-
-    // update the sensors' indicators
-
 }
 
 void CustomScene::applyRandomFlowAnimation() {
@@ -358,11 +361,13 @@ void CustomScene::applyRandomFlowAnimation() {
     SensorItem* src = m_sensors.values()[index1];
     SensorItem* dest = m_sensors.values()[index2];
 
-    src->getVerticalIndicator()->setValue(std::rand() % 200);
-    dest->getVerticalIndicator()->setValue(std::rand() % 200);
+    src->getVerticalIndicator()->incrementValue();
+    dest->getVerticalIndicator()->incrementValue();
 
     // Create and start the FlowAnimation
-    FlowAnimation* flowAnimation = new FlowAnimation(this);
+    FlowAnimation* flowAnimation = new FlowAnimation(this, [dest]() {
+        dest->getVerticalIndicator()->incrementValue();
+    });
     flowAnimation->setPoints(src->pos(), dest->pos());
     flowAnimation->startAnimation();
 }

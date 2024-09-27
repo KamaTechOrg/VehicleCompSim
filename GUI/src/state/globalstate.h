@@ -49,6 +49,9 @@ public:
     QString myClientId() const { return m_myClientId; }
     void setMyClientId(QString value);
 
+    int maxMessageCount() const { return m_maxMessageCount; }
+    void setMaxMessageCount(int value);
+
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newData(const QString& data);
     void newParsedData(QList<QPair<QString, QString>> data);
@@ -74,6 +77,7 @@ signals:
     void projectAdded(ProjectModel* project);
     void currentProjectPublished(ProjectModel* project);
 
+    void maxMessageCountChanged(int maxMessageCount);
     void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newDataArrived(const QString& data);
     void parsedData(QList<QPair<QString, QString>> data);
@@ -101,5 +105,5 @@ private:
     SensorModel* m_currentSensorModel = nullptr;
 
     bool m_isTest = false;
-
+    int m_maxMessageCount = 100;
 };

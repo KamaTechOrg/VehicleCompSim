@@ -95,6 +95,14 @@ void GlobalState::setMyClientId(QString value)
     }
 }
 
+void GlobalState::setMaxMessageCount(int value)
+{
+    if (m_maxMessageCount != value) {
+        m_maxMessageCount = value;
+        emit maxMessageCountChanged(m_maxMessageCount);
+    }
+}
+
 void GlobalState::newData(const QString& data){
     emit newDataArrived(data);
 }

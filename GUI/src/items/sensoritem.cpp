@@ -27,8 +27,6 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
     setupCheckBoxProxy();
     // Set up vertical indicator
-    m_verticalIndicator->setMaxValue(200); // Set max value
-    m_verticalIndicator->setValue(50);
     m_verticalIndicatorProxy->setWidget(m_verticalIndicator);
     m_verticalIndicatorProxy->setPos(QPointF(boundingRect().right(), boundingRect().top() + 5));
     m_verticalIndicatorProxy->setZValue(1);

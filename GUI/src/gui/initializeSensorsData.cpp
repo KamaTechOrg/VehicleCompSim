@@ -10,7 +10,7 @@ void initializeSensorsData::initialize(){
 }
 
 void initializeSensorsData::read_from_json() {
-    const QString& filePath = R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\box_info.json)";
+    QString filePath = "C:/Users/msm77/Desktop/UltraCode/bootcamp/main-branch/mid-integration/GUI/src/gui/box_info.json";
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Couldn't open file" << filePath << ": " << file.errorString();
