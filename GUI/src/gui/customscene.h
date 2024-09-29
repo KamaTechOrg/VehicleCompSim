@@ -23,10 +23,10 @@ public slots:
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
     void onModelUpdated(SerializableItem* model);
+    void onParsedData(QList<QPair<QString, QString>> data);
 
     void applyRandomFlowAnimation();
 
-    
 private:
     QToolBar* rightToolBar;  // ToolBar for draggable items
     PopupDialog* popupDialog;
@@ -53,6 +53,7 @@ private:
     void handleProjectConnections(ProjectModel* newProject);
 
     ProjectModel* m_currentProject = nullptr;
+    QHash<QString, SensorItem*> m_sensors;
     Network<SensorItem, ConnectorItem>* m_network;
     EdgeItem* m_currentEdge = nullptr;
     BaseItem* m_startItem = nullptr;

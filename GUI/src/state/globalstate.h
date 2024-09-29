@@ -3,15 +3,15 @@
 #include <QObject>
 #include <QVector>
 #include "projectmodel.h"
+#include "globalconstants.h"
 #include "sensorModel.h"
 
 class GlobalState : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool isOnline READ isOnline WRITE setIsOnline NOTIFY isOnlineChanged)
     Q_PROPERTY(bool isRemoteMode READ isRemoteMode WRITE setIsRemoteMode NOTIFY isRemoteModeChanged)
-    Q_PROPERTY(bool isConnecting READ isConnecting WRITE setIsConnecting NOTIFY isConnectingChanged)
     Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning NOTIFY isRunningChanged)
+    Q_PROPERTY(globalConstants::ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ProjectModel* currentProject READ currentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
     Q_PROPERTY(SensorModel* currentSensorModel READ currentSensorModel WRITE setCurrentSensorModel NOTIFY currentSensorModelChanged)
     Q_PROPERTY(QString myClientId READ myClientId WRITE setMyClientId)
@@ -19,14 +19,11 @@ class GlobalState : public QObject
 public:
     static GlobalState& getInstance();
 
-    bool isOnline() const { return m_isOnline; }
-    void setIsOnline(bool value);
-
     bool isRemoteMode() const { return m_isRemoteMode; }
     void setIsRemoteMode(bool value);
 
-    bool isConnecting() const { return m_isConnecting; }
-    void setIsConnecting(bool value);
+    globalConstants::ConnectionState connectionState() const { return m_connectionState; }
+    void setConnectionState(globalConstants::ConnectionState value);
 
     bool isRunning() const { return m_isRunning; }
     void setIsRunning(bool value);
@@ -44,6 +41,9 @@ public:
     QString myClientId() const { return m_myClientId; }
     void setMyClientId(QString value);
 
+    int maxMessageCount() const { return m_maxMessageCount; }
+    void setMaxMessageCount(int value);
+
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newData(const QString& data);
     void newParsedData(QList<QPair<QString, QString>> data);
@@ -53,18 +53,21 @@ public:
 
     // for test only
     void new_test_buffer(const QString& data);
+    void setIsTest(bool value) { m_isTest = value; }
+    bool isTest() const { return m_isTest; }
+
 
 
 signals:
-    void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
-    void isConnectingChanged(bool isConnecting);
+    void connectionStateChanged(globalConstants::ConnectionState connectionState);
     void isRunningChanged(bool isRunning);
     void currentProjectChanged(ProjectModel* project);
     void currentSensorModelChanged(SensorModel* sensorModel);
     void projectAdded(ProjectModel* project);
     void currentProjectPublished(ProjectModel* project);
 
+    void maxMessageCountChanged(int maxMessageCount);
     void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newDataArrived(const QString& data);
     void parsedData(QList<QPair<QString, QString>> data);
@@ -81,13 +84,14 @@ private:
     GlobalState(const GlobalState&) = delete;
     GlobalState& operator=(const GlobalState&) = delete;
 
-    bool m_isOnline = false;
     bool m_isRemoteMode = false;
-    bool m_isConnecting = false;
     bool m_isRunning = false;
+    globalConstants::ConnectionState m_connectionState = globalConstants::ConnectionState::Offline;
     QString m_myClientId;
     QHash<QString, ProjectModel*> m_projects;
     ProjectModel* m_currentProject = nullptr;
     SensorModel* m_currentSensorModel = nullptr;
 
+    bool m_isTest = false;
+    int m_maxMessageCount = 100;
 };

@@ -7,10 +7,10 @@
 #include "globalstate.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "editors/SensorItem_Editor.h"
-#include "globalconstant.h"
+#include "globalconstants.h"
 
 #include <qrandom.h>
-using namespace globalConstant;
+using namespace globalConstants;
 
 SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     : BaseItem(model, parent), m_model(model),
@@ -27,8 +27,6 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
     setupCheckBoxProxy();
     // Set up vertical indicator
-    m_verticalIndicator->setMaxValue(200); // Set max value
-    m_verticalIndicator->setValue(50);
     m_verticalIndicatorProxy->setWidget(m_verticalIndicator);
     m_verticalIndicatorProxy->setPos(QPointF(boundingRect().right(), boundingRect().top() + 5));
     m_verticalIndicatorProxy->setZValue(1);
@@ -40,7 +38,6 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     // Set up timer for live updates
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
-    connect(&GlobalState::getInstance(), &GlobalState::parsedData, this, &SensorItem::update_new_data);
 
     setZValue(1);
 
@@ -48,9 +45,14 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
 SensorItem::~SensorItem() {
     delete m_persistentTooltip;
 }
+VerticalIndicator *SensorItem::getVerticalIndicator() const
+{
+  return m_verticalIndicator;
+}
+
+  // todo update sensor data
 void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
-    auto *sensor = dynamic_cast<SensorItem *>(this);
-    if(sensor->getModel().priority() == data[bufferInfo::SourceId].second || sensor->getModel().priority() == data[bufferInfo::DestinationId].second){
+    if(m_model->priority() == data[bufferInfo::SourceId].second || m_model->priority() == data[bufferInfo::DestinationId].second){
         all_data_final.emplace_back(data);
         last_data_final = data;
         qInfo() << "sensor need update";
@@ -117,11 +119,16 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->drawRect(boundingRect());
 
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setBrush(m_color);
+
+    QColor colorToUse = m_color;
     if (!m_isOwnedByMe) {
-        painter->setOpacity(0.5);
+        QColor backgroundColor = Qt::white;
+        colorToUse.setRed((colorToUse.red() + backgroundColor.red()) / 2);
+        colorToUse.setGreen((colorToUse.green() + backgroundColor.green()) / 2);
+        colorToUse.setBlue((colorToUse.blue() + backgroundColor.blue()) / 2);
     }
 
+    painter->setBrush(colorToUse);
     painter->drawRoundedRect(QRectF(-m_width / 2, -m_height / 2, m_width, m_height), 10, 10);
 
     painter->setPen(Qt::black);
@@ -145,7 +152,6 @@ void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         hideButtons();
     }
 }
-
 bool SensorItem::isInitialized() const
 {
     return !m_model->priority().isEmpty() && !m_model->name().isEmpty() && !m_model->buildCommand().isEmpty() && !m_model->runCommand().isEmpty();
@@ -156,7 +162,7 @@ bool SensorItem::isExludeFromProject() const
     return m_model->isExcludeFromProject();
 }
 
-SensorModel &SensorItem::getModel()
+SensorModel &SensorItem::getModel() const
 {
     return *m_model;
 }
@@ -168,11 +174,6 @@ void SensorItem::confirmRemove()
         return;
     }
     BaseItem::confirmRemove();
-}
-
-void SensorItem::updateIndicatorValue(int value)
-{
-    m_verticalIndicator->setValue(QRandomGenerator::global()->bounded(200));
 }
 
 void SensorItem::showButtons()

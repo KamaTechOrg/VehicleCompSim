@@ -7,14 +7,6 @@ GlobalState& GlobalState::getInstance()
     return instance;
 }
 
-void GlobalState::setIsOnline(bool value)
-{
-    if (m_isOnline != value) {
-        m_isOnline = value;
-        emit isOnlineChanged(m_isOnline);
-    }
-}
-
 void GlobalState::setIsRemoteMode(bool value)
 {
     if (m_isRemoteMode != value) {
@@ -23,11 +15,11 @@ void GlobalState::setIsRemoteMode(bool value)
     }
 }
 
-void GlobalState::setIsConnecting(bool value)
+void GlobalState::setConnectionState(globalConstants::ConnectionState value)
 {
-    if (m_isConnecting != value) {
-        m_isConnecting = value;
-        emit isConnectingChanged(m_isConnecting);
+    if (m_connectionState != value) {
+        m_connectionState = value;
+        emit connectionStateChanged(m_connectionState);
     }
 }
 
@@ -84,6 +76,14 @@ void GlobalState::setMyClientId(QString value)
         m_myClientId = value;
         QSettings settings("VehicleCompSim", "GUI");
         settings.setValue("clientId", m_myClientId);
+    }
+}
+
+void GlobalState::setMaxMessageCount(int value)
+{
+    if (m_maxMessageCount != value) {
+        m_maxMessageCount = value;
+        emit maxMessageCountChanged(m_maxMessageCount);
     }
 }
 

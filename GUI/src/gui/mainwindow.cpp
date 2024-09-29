@@ -7,11 +7,14 @@ MainWindow::MainWindow(QWidget* parent)
         m_scene(new CustomScene()),
         m_runService(std::make_shared<RunService>()),
         m_globalState(GlobalState::getInstance()),
-        m_initializeSensorsData(new initializeSensorsData())
+        m_initializeSensorsData(new initializeSensorsData()),
+        m_mainWindowTitle("Vhiecal sensors simulator")
 {
     std::thread([this](){server.init();}).detach();
 
     setupToolBar();
+
+    setWindowTitle(m_mainWindowTitle);
 
     auto mainWidget = new QWidget(this);
     m_mainLayout = new QVBoxLayout();
@@ -50,7 +53,7 @@ MainWindow::MainWindow(QWidget* parent)
     setupView();
 
     // Connect to GlobalState
-    connect(&m_globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onOnlineStatusChanged);
+    connect(&m_globalState, &GlobalState::connectionStateChanged, this, &MainWindow::onConnectionStatusChanged);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
 
@@ -152,7 +155,7 @@ void MainWindow::setupView() {
 
     // Initialize the title and conditional button
     m_publishButton = new QPushButton("Publish project", m_sceneBox);
-    m_publishButton->setDisabled(!m_globalState.isOnline());
+    m_publishButton->setDisabled(m_globalState.connectionState() != globalConstants::ConnectionState::Online);
     QObject::connect(m_publishButton, &QPushButton::clicked, [this] {
         m_globalState.publishCurrentProject();
     });
@@ -185,14 +188,24 @@ void MainWindow::onCurrentProjectPublished(ProjectModel* project) {
     m_publishButton->hide();
 }
 
-void MainWindow::onOnlineStatusChanged(bool online) {
-    if (online) {
-        mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
-    } else {
-        mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
+void MainWindow::onConnectionStatusChanged(globalConstants::ConnectionState state) {
+    switch (state){
+        case globalConstants::ConnectionState::Online:
+            setWindowTitle(m_mainWindowTitle + " - Online");
+            mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
+            break;
+        case globalConstants::ConnectionState::Offline:
+            setWindowTitle(m_mainWindowTitle);
+            mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
+            break;
+        case globalConstants::ConnectionState::Connecting:
+            setWindowTitle(m_mainWindowTitle + " - Connecting...");
+            mainFrame->setStyleSheet("QFrame { border: 2px solid orange; }");
+            break;
     }
-    m_publishButton->setDisabled(!online);
+    m_publishButton->setDisabled(state != globalConstants::ConnectionState::Online);
 }
+
 
 void MainWindow::background_Layout() {
 //    QString imagePath1 = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
