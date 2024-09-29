@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "HSM.h"
-// #include "AES_API.hpp"
+#include "AES_API.hpp"
 
 // TEST(AesTest, Aes_128_ecb_encrypt_decrypt_string_with_size_16) {
 //   std::string key ="\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
@@ -64,4 +64,39 @@ TEST(API_TEST, get_kye_invalid_type)
     u_int32_t keyId = 0;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::NoAlg, 128);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_InvalidAlg);
+}
+
+TEST(API_AES, auto_generated)
+{
+    std::array<HSM::ENCRYPTION_ALGORITHM_TYPE, 9> aes_types = {
+      ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB,
+      ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC,
+      ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR,
+      ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB,
+      ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC,
+      ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR,     
+      ENCRYPTION_ALGORITHM_TYPE::AES_256_ECB,
+      ENCRYPTION_ALGORITHM_TYPE::AES_256_CBC,
+      ENCRYPTION_ALGORITHM_TYPE::AES_256_CTR
+    };
+
+    std::vector<size_t> msg_sizes {0, 1, 2, 15, 16, 17, 31, 32, 33, 1234, 5678};
+    srand(0);
+
+    for(auto msg_size: msg_sizes){
+        std::vector<uint8_t> msg(msg_size);
+        for(auto& c: msg) c=rand();
+        
+        for(ENCRYPTION_ALGORITHM_TYPE aes_type: aes_types){
+            std::vector<uint8_t> key;
+            std::string status = "fail on aes_type: " + std::to_string(aes_type) + ",  msg_size: " + std::to_string(msg_size);
+            ASSERT_EQ(AES::generateKey(key, aes_type), HSM_STATUS::HSM_Good) << status;
+            std::vector<uint8_t> enc_msg;
+            std::vector<uint8_t> clr_msg;
+            ASSERT_EQ(AES::encrypt(key, msg, enc_msg, aes_type), HSM_STATUS::HSM_Good) << status;
+            ASSERT_EQ(AES::decrypt(key, enc_msg, clr_msg, aes_type), HSM_STATUS::HSM_Good) << status;
+            EXPECT_EQ(msg, clr_msg) << status;
+        }
+    }
+
 }

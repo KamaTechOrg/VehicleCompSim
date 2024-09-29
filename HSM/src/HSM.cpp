@@ -137,16 +137,22 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, u_int32_t &keyId, ENCRYPTION_
     switch (type)
     {
     case RSA:
-
         status = RSA_KEY::generateKeys(publicKey, privateKey, bits);
-
         break;
 
-    case ECC:
+    // case ECC:
+    //     break;
 
-        break;
-
-    case AES:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CTR:
+        status = AES::generateKey(privateKey, type);
         break;
 
     default:
@@ -190,8 +196,17 @@ HSM_STATUS Algo::encrypt(const std::vector<u_char> &message, std::vector<u_char>
     case RSA: 
         encrypted_message = RSA_ENC::encrypt(message, publicKey);
         break;
-    case AES:
-        return AES::encrypt(message, encrypted_message, publicKey);
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CTR:
+        return AES::encrypt(message, encrypted_message, publicKey, type);
+
     default:
         return HSM_STATUS::HSM_InvalidAlg;
     }
@@ -211,8 +226,18 @@ HSM_STATUS Algo::decrypt(const std::vector<u_char> &message, std::vector<u_char>
     case RSA:
         decrypted_message = RSA_ENC::decrypt(message, privateKey);
         break;
-    case AES:
-        return AES::decrypt(message, decrypted_message, privateKey);
+
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_ECB:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CBC:
+    case ENCRYPTION_ALGORITHM_TYPE::AES_256_CTR:
+        return AES::decrypt(message, decrypted_message, privateKey, type);
+
     default:
         return HSM_InvalidAlg;
     }

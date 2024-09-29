@@ -9,7 +9,12 @@
 
 namespace aes {
 
-enum class AesVariant {Aes128, Aes192, Aes256};
+enum class AesVariant {
+    NoAesVariant,
+    Aes128, 
+    Aes192, 
+    Aes256
+};
 
 class AES_block_encrypt {
 public:

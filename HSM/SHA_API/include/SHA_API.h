@@ -3,7 +3,7 @@
 #ifndef SHA_API_H
 #define SHA_API_H
 
-#include "HSMStatusEnum.hpp"
+#include "HSMEnums.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>

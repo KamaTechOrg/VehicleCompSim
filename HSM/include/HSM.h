@@ -4,22 +4,12 @@
 #include <vector>
 #include <iostream>
 #include <utility>
-#include "HSMStatusEnum.hpp"
+#include "HSMEnums.hpp"
 #include "SHA_API.h"
 
 
 namespace HSM
 {
-
-    enum ENCRYPTION_ALGORITHM_TYPE
-    {
-        NoAlg,
-        RSA,
-        AES,
-        ECC,
-        Alg_Count
-    };
-
     class Ident
     {
     private:
