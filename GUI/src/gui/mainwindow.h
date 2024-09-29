@@ -42,6 +42,7 @@
 #include "../../../Communication/server/include/manger.h"
 #include "saveAndLoad.h"
 #include "items/parser.h"
+#include "globalconstants.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -68,7 +69,7 @@ private:
     void resizeEvent(QResizeEvent* event) override;
     void buffer_listener(const QString& data);
 private slots:
-    void onOnlineStatusChanged(bool online);
+    void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
@@ -82,6 +83,8 @@ private:
     QGraphicsView* m_view;
     GlobalState &m_globalState;
 
+    QString m_mainWindowTitle;
+    
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
     PopupDialog* m_popupDialog;

@@ -38,7 +38,6 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
     // Set up timer for live updates
     m_updateWindowTimer = new QTimer(this);
     connect(m_updateWindowTimer, &QTimer::timeout, this, &SensorItem::showInfoWindow);
-    // connect(&m_globalState, &GlobalState::parsedData, this, &SensorItem::update_new_data);
 
     setZValue(1);
 

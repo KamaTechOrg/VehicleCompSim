@@ -7,27 +7,11 @@ GlobalState& GlobalState::getInstance()
     return instance;
 }
 
-void GlobalState::setIsOnline(bool value)
-{
-    if (m_isOnline != value) {
-        m_isOnline = value;
-        emit isOnlineChanged(m_isOnline);
-    }
-}
-
 void GlobalState::setIsRemoteMode(bool value)
 {
     if (m_isRemoteMode != value) {
         m_isRemoteMode = value;
         emit isRemoteModeChanged(m_isRemoteMode);
-    }
-}
-
-void GlobalState::setIsConnecting(bool value)
-{
-    if (m_isConnecting != value) {
-        m_isConnecting = value;
-        emit isConnectingChanged(m_isConnecting);
     }
 }
 

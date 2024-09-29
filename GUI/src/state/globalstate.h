@@ -9,9 +9,7 @@
 class GlobalState : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool isOnline READ isOnline WRITE setIsOnline NOTIFY isOnlineChanged)
     Q_PROPERTY(bool isRemoteMode READ isRemoteMode WRITE setIsRemoteMode NOTIFY isRemoteModeChanged)
-    Q_PROPERTY(bool isConnecting READ isConnecting WRITE setIsConnecting NOTIFY isConnectingChanged)
     Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning NOTIFY isRunningChanged)
     Q_PROPERTY(globalConstants::ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ProjectModel* currentProject READ currentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
@@ -21,14 +19,8 @@ class GlobalState : public QObject
 public:
     static GlobalState& getInstance();
 
-    bool isOnline() const { return m_isOnline; }
-    void setIsOnline(bool value);
-
     bool isRemoteMode() const { return m_isRemoteMode; }
     void setIsRemoteMode(bool value);
-
-    bool isConnecting() const { return m_isConnecting; }
-    void setIsConnecting(bool value);
 
     globalConstants::ConnectionState connectionState() const { return m_connectionState; }
     void setConnectionState(globalConstants::ConnectionState value);
@@ -67,9 +59,7 @@ public:
 
 
 signals:
-    void isOnlineChanged(bool isOnline);
     void isRemoteModeChanged(bool isRemoteMode);
-    void isConnectingChanged(bool isConnecting);
     void connectionStateChanged(globalConstants::ConnectionState connectionState);
     void isRunningChanged(bool isRunning);
     void currentProjectChanged(ProjectModel* project);
@@ -94,9 +84,7 @@ private:
     GlobalState(const GlobalState&) = delete;
     GlobalState& operator=(const GlobalState&) = delete;
 
-    bool m_isOnline = false;
     bool m_isRemoteMode = false;
-    bool m_isConnecting = false;
     bool m_isRunning = false;
     globalConstants::ConnectionState m_connectionState = globalConstants::ConnectionState::Offline;
     QString m_myClientId;

@@ -56,8 +56,8 @@ void CustomScene::removeItemFromScene(BaseItem *item)
 }
 
 void CustomScene::clearScene() {
-    for(auto sensor: m_sensors){
-        removeItem(sensor);
+    for(auto item: items()){
+        removeItem(item);
     }
     m_sensors.clear();
 }
@@ -219,7 +219,7 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         connector->addEdge(edge2);
         dest->addEdge(edge2);
 
-        addItemToScene(connector); // TODO : notify to server
+        addItem(connector); // TODO : notify to server
         addItem(edge1); // TODO : notify to server
         addItem(edge2); // TODO : notify to server
 
@@ -270,19 +270,17 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
         if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
             SensorModel* sensorModel = new SensorModel();
             sensorModel->setOwnerID(m_globalState.myClientId());
-            SensorItem* sensorItem = new SensorItem(sensorModel);
-            sensorItem->setPos(event->scenePos());
-            m_network->addElement(sensorItem);
-            addItemToScene(sensorItem);
+            sensorModel->setX(event->scenePos().x());
+            sensorModel->setY(event->scenePos().y());
+            m_globalState.currentProject()->addModel(sensorModel);
             m_globalState.setCurrentSensorModel(sensorModel);
         }
         else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
             QemuSensorModel* qemuModel = new QemuSensorModel();
             qemuModel->setOwnerID(m_globalState.myClientId());
-            QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
-            qemuItem->setPos(event->scenePos());
-            m_network->addElement(qemuItem);
-            addItemToScene(qemuItem);
+            qemuModel->setX(event->scenePos().x());
+            qemuModel->setY(event->scenePos().y());
+            m_globalState.currentProject()->addModel(qemuModel);
             m_globalState.setCurrentSensorModel(qemuModel);
         }
         else if (itemType == CustomWidget::BUS_ITEM) {

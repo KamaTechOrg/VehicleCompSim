@@ -18,6 +18,8 @@ public:
     virtual SensorModel& getModel() const;
     VerticalIndicator* getVerticalIndicator() const; 
 
+    QList<QString> columnNames;
+
     bool isInitialized() const;
     bool isExludeFromProject() const;
     void confirmRemove() override;
@@ -29,15 +31,17 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
-public:
-    QList<QString> columnNames;
+
+private slots:
+    void onModelUpdated();
+    void showInfoWindow();
+    void onCustomWindowClosed();
 
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void setupCheckBoxProxy();
     void showButtons();
     void hideButtons();
-    void showInfoWindow();
     QString fetchDataInTable();
     void updateInfoWindow();
     void updateColor();
@@ -65,11 +69,5 @@ private:
     bool m_isOwnedByMe = false;
     bool mouse_pressed = false;
 
-public slots:
-    void onModelUpdated();
-
-private slots:
-    // void update_new_data(QList<QPair<QString, QString>> data);
-    void onCustomWindowClosed();
 
 };

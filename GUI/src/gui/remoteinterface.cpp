@@ -171,7 +171,7 @@ void RemoteInterface::onProjectItemClicked(const QModelIndex &index)
         QStandardItem *item = m_projectListModel->itemFromIndex(index);
         ProjectModel* project = m_projectItemMap.value(item, nullptr);
         if (project) {
-            emit m_globalState.setCurrentProject(project);
+            m_globalState.setCurrentProject(project);
         }
     }
 }
