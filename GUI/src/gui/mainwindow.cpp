@@ -91,18 +91,18 @@ void MainWindow::setupRunService()
 {
     // m_runService->setScene(m_scene);
 
-    startBtn = new QPushButton("start", m_toolBar);
-    // m_toolBar->addWidget(startBtn);
-    stopBtn = new QPushButton("stop", m_toolBar);
-    // m_toolBar->addWidget(stopBtn);
-    timer = new QTimeEdit(m_toolBar);
-    timer->setDisplayFormat("hh:mm:ss");
-    timer->setFixedSize(120, 30);
-    timer->setCurrentSection(QDateTimeEdit::MinuteSection);
+    m_startBtn = new QPushButton("start", m_toolBar);
+    // m_toolBar->addWidget(m_startBtn);
+    m_stopBtn = new QPushButton("stop", m_toolBar);
+    // m_toolBar->addWidget(m_stopBtn);
+    m_timer = new QTimeEdit(m_toolBar);
+    m_timer->setDisplayFormat("hh:mm:ss");
+    m_timer->setFixedSize(120, 30);
+    m_timer->setCurrentSection(QDateTimeEdit::MinuteSection);
 
-    m_toolBar->addWidget(startBtn);
-    m_toolBar->addWidget(stopBtn);
-    m_toolBar->addWidget(timer);
+    m_toolBar->addWidget(m_startBtn);
+    m_toolBar->addWidget(m_stopBtn);
+    m_toolBar->addWidget(m_timer);
 
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
@@ -119,15 +119,16 @@ void MainWindow::setupRunService()
     QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
 
     });
-    QObject::connect(startBtn, &QPushButton::clicked, [this] {
+    QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
-            {"command", "start"}
+            {"command", "start"},
+            {"timer", m_timer->time().toString("hh:mm:ss")}
         });
         onRunStart();
     });
 
-    QObject::connect(stopBtn, &QPushButton::clicked, [this] {
+    QObject::connect(m_stopBtn, &QPushButton::clicked, [this] {
         // this->m_runService->stop();
         //m_runService->stop();
         WebSocketClient::getInstance().sendMessage(QJsonObject{
@@ -140,7 +141,8 @@ void MainWindow::setupRunService()
 
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
-        [this] { 
+        [this](const QString& timer) { 
+            m_timer->setTime(QTime::fromString(timer, "hh:mm:ss"));
             this->onRunStart();
             //this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
@@ -277,9 +279,9 @@ void MainWindow::close_previous_replay(){
 
 void MainWindow::onRunStart()
 {
-    int t = timer->time().hour();
-    t = t * 60 + timer->time().minute();
-    t = t * 60 + timer->time().second();
+    int t = m_timer->time().hour();
+    t = t * 60 + m_timer->time().minute();
+    t = t * 60 + m_timer->time().second();
 
     m_runService->start(t);
 
@@ -288,21 +290,21 @@ void MainWindow::onRunStart()
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
     m_globalState.setIsRunning(true);
-    startBtn->hide();
-    timer->hide();
+    m_startBtn->hide();
+    m_timer->hide();
 
-    stopBtn->show();
+    m_stopBtn->show();
     //m_toolbar_blocker->show();
     //m_scene_blocker->show();
-    stopBtn->raise();
+    m_stopBtn->raise();
 }
 
 void MainWindow::onRunEnd()
 {
-    startBtn->show();
-    timer->show();
+    m_startBtn->show();
+    m_timer->show();
 
-    stopBtn->hide();
+    m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
 }

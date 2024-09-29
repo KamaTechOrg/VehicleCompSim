@@ -90,9 +90,9 @@ private:
     PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
-    QPushButton *startBtn;
-    QPushButton *stopBtn ;
-    QTimeEdit *timer;
+    QPushButton *m_startBtn;
+    QPushButton *m_stopBtn ;
+    QTimeEdit *m_timer;
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;
