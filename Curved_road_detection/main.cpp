@@ -10,13 +10,15 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-//std::string videoPath = "lane_vid2.mp4";
-std::string videoPath = "project_video.mp4";
+std::string videoPath = "dashcam4.mp4";
 
 std::vector<cv::Point> departure_video_roi_points =
 { cv::Point(200, 690) ,cv::Point(610, 530), cv::Point(1200, 690) };
+//std::vector<cv::Point> curved_video_roi_points =
+//{ cv::Point(300, 615), cv::Point(630, 445), cv::Point(1200, 655) };
+
 std::vector<cv::Point> curved_video_roi_points =
-{ cv::Point(300, 615), cv::Point(630, 445), cv::Point(1200, 655) };
+{ cv::Point(300, 690), cv::Point(630, 480), cv::Point(1100, 690) };
 
 float calculateSlope(const std::vector<int>& line) {
 	if (line.size() != 4) {
@@ -28,6 +30,7 @@ float calculateSlope(const std::vector<int>& line) {
 
 	// Checking if the points are on the same vertical line (division by zero case)
 	if (x2 - x1 == 0) {
+		return 0;
 		throw std::invalid_argument("The points create a vertical line, so the slope is undefined.");
 	}
 
@@ -51,12 +54,12 @@ int main() {
 		}
 
 		// Detect lanes and optionally display them on the frame
-		std::vector<std::vector<int>> lanes = detect_lanes(frame, departure_video_roi_points, true);
+		std::vector<std::vector<int>> lanes = detect_lanes(frame, curved_video_roi_points, true);
 
 		if (lanes.size() != 2)
 			continue;
 
-		std::cout << "frame number: " << i++ << " slope = " << calculateSlope(lanes[1]) << std::endl;
+		//std::cout << "frame number: " << i++ << " slope = " << calculateSlope(lanes[1]) << std::endl;
 
 		float left_slope = calculateSlope(lanes[0]);
 		float right_slope = calculateSlope(lanes[1]);

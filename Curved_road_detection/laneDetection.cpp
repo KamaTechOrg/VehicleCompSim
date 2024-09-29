@@ -27,7 +27,7 @@ std::pair<float, float> polyfit(const std::vector<float>& x, const std::vector<f
 std::vector<int> make_points(const cv::Mat& image, const std::pair<float, float>& line) {
 	float slope = line.first, intercept = line.second;
 	int y1 = image.rows;  // Bottom of the image
-	int y2 = static_cast<int>(y1 * 3 / 4);  // Slightly lower than the middle
+	int y2 = static_cast<int>(y1 * 3 / 5);  // Slightly lower than the middle
 	int x1 = static_cast<int>((y1 - intercept) / slope);
 	int x2 = static_cast<int>((y2 - intercept) / slope);
 
@@ -105,12 +105,25 @@ cv::Mat display_lines(cv::Mat& img, const std::vector<std::vector<int>>& lines) 
 	return img;
 }
 
+//// מונה לספירת פריימים
+//int frameCount = 0;
+
 // Function to define the region of interest
 cv::Mat region_of_interest(const cv::Mat& img, const std::vector<cv::Point>& points) {
 	cv::Mat mask = cv::Mat::zeros(img.size(), img.type());
 	fillPoly(mask, std::vector<std::vector<cv::Point>>{points}, cv::Scalar(255, 255, 255));
 	cv::Mat masked_image;
 	bitwise_and(img, mask, masked_image);
+
+
+	//imshow("Lane Departure", masked_image);
+	//if (cv::waitKey(1) == 'q') return masked_image;
+
+	//// בתוך הלולאה, אחרי העיבוד של כל פריים:
+	//std::string filename = "frame_" + std::to_string(frameCount) + ".jpg";
+	//cv::imwrite("pic1/" + filename, masked_image);  // שמירת הפריים לקובץ
+	//frameCount++;  // הגדלת המונה של הפריימים
+
 	return masked_image;
 }
 
