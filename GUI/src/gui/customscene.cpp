@@ -359,8 +359,10 @@ void CustomScene::applyRandomFlowAnimation() {
     SensorItem* src = m_sensors.values()[index1];
     SensorItem* dest = m_sensors.values()[index2];
 
-    src->getVerticalIndicator()->incrementValue();
-    dest->getVerticalIndicator()->incrementValue();
+    if (!src || !dest) {
+        qWarning() << "Source or Destination sensor not found.";
+        return;
+    }
 
     // Create and start the FlowAnimation
     FlowAnimation* flowAnimation = new FlowAnimation(this, [dest]() {
@@ -400,7 +402,7 @@ void CustomScene::onModelRemoved(SerializableItem* model) {
         if (sensorItem && sensorItem->model()->getId() == model->getId()) {
             m_sensors.remove(sensorItem->getModel().priority());
             removeItem(sensorItem);
-            delete sensorItem;
+            sensorItem->deleteLater();
             break;
         }
     }

@@ -30,6 +30,9 @@ BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsIte
     QGraphicsProxyWidget* closeProxy = new QGraphicsProxyWidget(this);
     closeProxy->setWidget(closeButton);
     connect(closeButton, &QPushButton::clicked, this, &BaseItem::confirmRemove);
+
+    // closeButton->setAttribute(Qt::WA_NoMousePropagation);
+
     // Store proxies for visibility management
     m_closeProxy = closeProxy;
 }
@@ -212,9 +215,9 @@ void BaseItem::removeItem() {
 
 
         // Remove this item
-        scene()->removeItem(this);
+        // scene()->removeItem(this);
         m_model->notifyItemDeleted();// TODO - CHECK IF TO DELETE THIS
         GlobalState::getInstance().currentProject()->removeModel(m_model);
-        deleteLater();
+        // deleteLater();
     }
 }
