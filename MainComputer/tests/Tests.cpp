@@ -1,5 +1,6 @@
 #include <memory>
 #include <chrono>
+#include <cstdio>
 
 #include "doctest.h"
 
@@ -427,11 +428,34 @@ TEST_CASE("Extended Failing AndCondition Test Cases") {
         CHECK_FALSE(andCond.validate(senderId, "non-empty"));
     }
 }
-
+/*
+* In order to make this test reliable, we need to change
+* constants::CONDITIONS_JSON_FILE_NAME to something more
+* generic like C:/path/to/file and not just a file name
+* AND WHILE DOING SO, we need to consider windows/linux differences
+* 
 TEST_CASE("Loading Json files") {
-    JsonLoader jsonLoader;
+    std::string tempFileName = "ConditionLogicTemp.json";
+    int success = std::rename(constants::CONDITIONS_JSON_FILE_NAME.c_str(), tempFileName.c_str());
+    if (success != 0)
+        FAIL("std::rename() failed");
 
-    SUBCASE("Load a file") {
-
+    nlohmann::json::array_t jsonData;
+    for (int i = 0; i < 100; i++)
+    {
+        jsonData.push_back({
+            {"scenario", std::to_string(i)},
+            {"data", "some data"}
+            });
     }
+
+    SUBCASE("Save and Load a file") {
+        JsonLoader().saveConditionsLogic(jsonData);
+        nlohmann::json::array_t fileData = JsonLoader().loadConditionsLogic();
+        CHECK(fileData == jsonData);
+    }
+
+    std::remove(constants::CONDITIONS_JSON_FILE_NAME.c_str());
+    std::rename(tempFileName.c_str(), constants::CONDITIONS_JSON_FILE_NAME.c_str());
 }
+*/
