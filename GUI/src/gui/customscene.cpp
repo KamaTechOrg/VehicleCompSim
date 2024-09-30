@@ -267,21 +267,15 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
 
         SerializableItem* item; // = new SerializableItem();
 
-        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
-            SensorModel* sensorModel = new SensorModel();
+        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM || itemType == CustomWidget::QEMU_SENSOR_ITEM) {
+            SensorModel* sensorModel = (itemType == CustomWidget::REGULAR_SENSOR_ITEM ? new SensorModel() : new QemuSensorModel());
+
             sensorModel->setOwnerID(m_globalState.myClientId());
             sensorModel->setX(event->scenePos().x());
             sensorModel->setY(event->scenePos().y());
             m_globalState.currentProject()->addModel(sensorModel);
             m_globalState.setCurrentSensorModel(sensorModel);
-        }
-        else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
-            QemuSensorModel* qemuModel = new QemuSensorModel();
-            qemuModel->setOwnerID(m_globalState.myClientId());
-            qemuModel->setX(event->scenePos().x());
-            qemuModel->setY(event->scenePos().y());
-            m_globalState.currentProject()->addModel(qemuModel);
-            m_globalState.setCurrentSensorModel(qemuModel);
+            sensorModel->notifyItemAdded();
         }
         else if (itemType == CustomWidget::BUS_ITEM) {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
