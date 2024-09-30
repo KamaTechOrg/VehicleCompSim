@@ -52,14 +52,15 @@ void SensorRunner::abort()
     if (process.state() == QProcess::Starting ||
         process.state() == QProcess::Running)
     {
-        process.terminate();
-        if (!process.waitForFinished(3000)) { // wait for 3 seconds
-            process.close();
-        }
-        if (process.exitCode())
-        {
-            onError();
-        }
+        // process.terminate();
+        // if (!process.waitForFinished(3000)) { // wait for 3 seconds
+        //     process.close();
+        // }
+        // if (process.exitCode())
+        // {
+        //     onError();
+        // }
+        process.kill(); // not good option
     }
     if (state = RUNNING) state = NOT_RUNNING;
 }
