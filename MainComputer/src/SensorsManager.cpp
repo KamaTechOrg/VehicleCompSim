@@ -8,10 +8,9 @@ std::vector<std::string> SensorsManager::getSensorsIDS() const
     return ids;
 }
 
-std::vector<int> SensorsManager::getSensorsPortNumbers() const
+std::vector<std::string> SensorsManager::getSensorOptions(std::string sensorID) const
 {
-    std::vector<int> ports;
-    for (const auto& sensor : _sensors)
-        ports.push_back(sensor.second);
-    return ports;
+    if (_sensors.find(sensorID) != _sensors.end())
+        return _sensors.at("sensorID");
+    return std::vector<std::string>();
 }
