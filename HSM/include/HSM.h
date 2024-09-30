@@ -7,9 +7,9 @@
 #include "HSMEnums.hpp"
 #include "SHA_API.h"
 
-
 namespace HSM
 {
+    typedef uint32_t KeyId;
     class Ident
     {
     private:
@@ -32,13 +32,12 @@ namespace HSM
 
     protected:
         static HSM_STATUS getKeyFromKeyStorage(
-            const Ident &myId, 
-            u_int32_t keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            std::vector<u_char> &publicKey, 
+            const Ident &myId,
+            const KeyId &keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            std::vector<u_char> &publicKey,
             std::vector<u_char> &privateKey,
-            bool needPrivilege = true
-        );
+            bool needPrivilege = true);
 
     public:
         static KeyStorage &getInstance();
@@ -46,60 +45,53 @@ namespace HSM
         ~KeyStorage();
 
         static HSM_STATUS get_keys(
-            const Ident &myId, 
-            u_int32_t &keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            int bits = 512
-        );
+            const Ident &myId,
+            KeyId &keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            int bits = 512);
 
         HSM_STATUS searchInStorage(
-            const Ident &myId, 
-            u_int32_t keyId, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            std::vector<u_char> &publicKey, 
+            const Ident &myId,
+            const KeyId &keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            std::vector<u_char> &publicKey,
             std::vector<u_char> &privateKey,
-            bool needPrivilege = true
-        );
-   
+            bool needPrivilege = true);
     };
 
     class Algo : public KeyStorage
     {
     public:
         static HSM_STATUS encrypt(
-            const std::vector<u_char> &message, 
-            std::vector<u_char> &encrypted_message, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            const Ident &myId, 
-            u_int32_t keyId,
-            bool needPrivilege = true
-        );  
+            const std::vector<u_char> &message,
+            std::vector<u_char> &encrypted_message,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            const Ident &myId,
+            const KeyId &keyId,
+            bool needPrivilege = true);
 
         static HSM_STATUS decrypt(
-            const std::vector<u_char> &message, 
-            std::vector<u_char> &decrypted_message, 
-            ENCRYPTION_ALGORITHM_TYPE type, 
-            const Ident &myId, 
-            u_int32_t keyId
-        );
+            const std::vector<u_char> &message,
+            std::vector<u_char> &decrypted_message,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            const Ident &myId,
+            const KeyId &keyId);
 
         static HSM_STATUS signMessage(
             const std::vector<u_char> &message,
             std::vector<u_char> &signature,
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
-            const Ident &myId, 
-            u_int32_t keyId
-        );
+            const Ident &myId,
+            const KeyId &keyId);
 
         static HSM_STATUS verify(
             const std::vector<u_char> &message,
             const std::vector<u_char> &signature,
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
-            const Ident &myId, 
-            u_int32_t keyId,
-            bool needPrivilege = true
-        );
+            const Ident &myId,
+            const KeyId &keyId,
+            bool needPrivilege = true);
     };
 }
