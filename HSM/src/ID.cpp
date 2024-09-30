@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 #include "HSM.h"
 
 #ifdef _WIN32
@@ -33,11 +34,13 @@ HSM::Ident::Ident()
         std::cerr << "Failed to get user information" << std::endl;
     }
 #endif
+    // remove "," from username
+    std::replace(username.begin(), username.end(), ',', ' ');
     std::cout << "username:" << username << std::endl;
     this->id = std::vector<u_char>(username.begin(), username.end());
 }
 
-HSM::Ident::Ident(const std::string& userID)
+HSM::Ident::Ident(const std::string &userID)
 {
     this->id = std::vector<u_char>(userID.begin(), userID.end());
 }
