@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "socket.h"
+#include "Logger.h"
 
 
 Socket::Socket() : m_sock(-1)
@@ -11,9 +12,8 @@ Socket::Socket() : m_sock(-1)
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-    {
-        std::cerr << "WSAStartup failed\n";
-        // throw...
+    {   
+        LOG_WARN("WSAStartup failed");
     }
 #endif
     memset(&m_addr, 0, sizeof(m_addr));
@@ -30,15 +30,13 @@ void Socket::create()
 
     if (!is_valid())
     {
-        std::cerr << "Socket creation failed\n";
-        // throw...
+        LOG_WARN("Socket creation failed");
     }
 
     int on = 1;
     if (setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on)) == -1)
     {
-        std::cerr << "setsockopt failed\n";
-        // throw...
+        LOG_WARN("setsockopt failed");
     }
 }
 
@@ -46,8 +44,7 @@ void Socket::bind(const int port)
 {
     if (!is_valid())
     {
-        std::cerr << "Invalid socket\n";
-        // throw...
+        LOG_WARN("Invalid socket");
     }
 
     m_addr.sin_family = AF_INET;
@@ -59,11 +56,15 @@ void Socket::bind(const int port)
     if (bind_return == -1)
     {
 #ifdef _WIN32
-        std::cerr << "bind failed with error: " << WSAGetLastError() << "\n";
-#else
-        std::cout << "bind failed with errno: " << errno << "\n";
+        std::stringstream ss;
+        ss << "bind failed with errno: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
+#else   
+        std::stringstream ss;
+        ss << "bind failed with errno: " << errno;
+        LOG_ERROR(ss.str());
 #endif
-        // throw...
+
     }
 }
 
@@ -71,8 +72,7 @@ void Socket::listen() const
 {
     if (!is_valid())
     {
-        std::cerr << "Invalid socket\n";
-        // throw...
+        LOG_WARN("Invalid socket");
     }
 
     int listen_return = ::listen(m_sock, SOMAXCONN);
@@ -80,11 +80,14 @@ void Socket::listen() const
     if (listen_return == -1)
     {
 #ifdef _WIN32
-        std::cerr << "listen failed with error: " << WSAGetLastError() << "\n";
+        std::stringstream ss;
+        ss << "listen failed with errno: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
 #else
-        std::cerr << "listen failed with errno: " << errno << "\n";
+        std::stringstream ss;
+        ss << "listen failed with errno: " << errno;
+        LOG_ERROR(ss.str());
 #endif
-        // throw...
     }
 }
 
@@ -96,15 +99,18 @@ FD Socket::accept()
     if (fd == -1)
     {
 #ifdef _WIN32
-        std::cerr << "accept failed with error: " << WSAGetLastError() << "\n";
+        std::stringstream ss;
+        ss << "accept failed with errno: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
 #else
-        std::cerr << "accept failed with errno: " << errno << "\n";
+        std::stringstream ss;
+        ss << "accept failed with errno: " << errno;
+        LOG_ERROR(ss.str());
 #endif
-        // throw...
     }
     else
     {
-        std::cout << "Connection established with FD: " << fd << std::endl;
+        LOG_INFO("New connection established");
     }
     return fd;
 }
@@ -121,11 +127,15 @@ sendErrorCode Socket::send(void *data, size_t size) const
     if (status == -1)
     {
 #ifdef _WIN32
-        std::cerr << "send failed with error: " << WSAGetLastError() << "\n";
+        std::stringstream ss;
+        ss << "send failed with errno: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
         code = sendErrorCode::SENDFAILED;
         return code;
-#else
-        std::cerr << "send failed with errno: " << errno << "\n";
+#else   
+        std::stringstream ss;
+        ss << "send failed with errno: " << errno;
+        LOG_ERROR(ss.str());
         code = sendErrorCode::SENDFAILED;
         return code;
 #endif
@@ -151,11 +161,16 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     if (status == -1)
     {
 #ifdef _WIN32
-        std::cerr << "recv failed with error: " << WSAGetLastError() << "\n";
+        std::stringstream ss;
+        ss << "recv failed with errno: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
         errorCode = ListenErrorCode::RECEIVE_ERROR;
         return std::make_pair(errorCode, status);
-#else
-        std::cerr << "recv failed with errno: " << errno << "\n";
+
+#else   
+        std::stringstream ss;
+        ss << "recv failed with errno: " << errno;
+        LOG_ERROR(ss.str());
         errorCode = ListenErrorCode::RECEIVE_ERROR;
         return std::make_pair(errorCode, status);
 #endif
@@ -174,11 +189,11 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
         Data_manipulator::validateCRC(input, pos1, buf, data);
         } else {
         memcpy(data, buf, len);
-        std::cout << "received = ";
+        std::string result = "received == ";
         for (int i = 0; i < len; ++i) {
-            std::cout << buf[i];
+         result += buf[i];
         }
-        std::cout << std::endl;
+        LOG_INFO(result);
         }
 
 
@@ -211,8 +226,7 @@ void Socket::connect(const std::string host, const int port)
 {
     if (!is_valid())
     {
-        std::cerr << "Invalid socket\n";
-        // throw...
+        LOG_ERROR("Invalid socket");
     }
 
     m_addr.sin_family = AF_INET;
@@ -225,17 +239,17 @@ void Socket::connect(const std::string host, const int port)
     if (status == -1)
     {
 #ifdef _WIN32
-        std::cerr << "connect failed with error: " << WSAGetLastError() << "\n";
+    std::stringstream ss;
+    ss << "connect failed with error: " << WSAGetLastError();
+    LOG_ERROR(ss.str());
 #else
-        std::cerr << "connect failed with errno: " << errno << "\n";
-        const char* errorStr = strerror(errno);
-        std::cout << errorStr << "\n";
-
+    std::stringstream ss;
+    ss << "connect failed with errno: " << errno;
+    LOG_ERROR(ss.str());
 #endif
-        // throw...
     }
     else
     {
-        std::cout << "Successfully connected to server\n";
+        LOG_INFO("Successfully connected to server");
     }
 }

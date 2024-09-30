@@ -1,5 +1,6 @@
 
 #include "send_menger.h"
+#include <Logger.h>
 
 void Send_manager::extract_heap(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap,
             std::mutex &heap_mutex,
@@ -43,6 +44,14 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
 
 
         memcpy(data + message_len, crcstr.c_str(), crc_len);
+
+
+        std::string result = "reccccccc == ";
+        for (int i = 0; i < message_len + crc_len + 2; ++i) {
+         result += data[i];
+        }
+        LOG_INFO(result);
+
         if (d_s)
         {   
 
