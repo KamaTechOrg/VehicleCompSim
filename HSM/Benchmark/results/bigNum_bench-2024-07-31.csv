@@ -1,0 +1,8 @@
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message
+"BN_128_bit_modulu",55818,11645.3,11643.9,ns,,,,,
+"BN_128_bit_division",58914,12005.8,12005.7,ns,,,,,
+"BN_128_bit_addition",21974843,31.67,31.6691,ns,,,,,
+"BN_128_bit_subtraction",19556954,35.7503,35.7502,ns,,,,,
+"BN_multiplication_128_bit",13186352,53.807,53.8067,ns,,,,,
+"BN_left_shift_128_bit",18286982,39.3152,39.3144,ns,,,,,
+"BN_right_shift_128_bit",21185475,33.5548,33.5466,ns,,,,,
