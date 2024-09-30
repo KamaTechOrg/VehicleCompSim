@@ -7,7 +7,7 @@
 #define close_socket ::close
 #endif
 
-MangServer::MangServer() : m_server_eccept_socket{PORTSERVER}, m_recv_manger{}, m_send_manager{}
+MangServer::MangServer() : m_server_eccept_socket{PORTSERVER}, m_recv_manger{*this}, m_send_manager{}
 {
 }
 
@@ -15,9 +15,9 @@ void MangServer::init()
 {
 
     std::thread t_server(&MangServer::run_server, this);
-    std::thread t_selector(&MangServer::run_connect, this);
+    std::thread t_selector(&MangServer::run_recver, this);
     std::thread t_sender(&MangServer::run_sender, this);
-    init_inner();
+    initialize_control();
 
     t_server.join();
     t_selector.join();
@@ -40,18 +40,18 @@ void MangServer::run_server()
                 char buf[10] = "msg";
                 m_controll_socket.send(buf, sizeof(buf));
 
-                m_recv_manger.m_condition.notify_one();
+                m_recv_manger.notify();
             }
         }
     }
 }
 
-void MangServer::run_connect()
+void MangServer::run_recver()
 {
-    m_recv_manger.select_menger(m_prioritysed_masseges_queue, m_queue_mutex, m_map_mutex, m_connections);
+    m_recv_manger.schedule();
 }
 
-void MangServer::init_inner()
+void MangServer::initialize_control()
 {
     m_controll_socket.create();
     std::string ip_server = Data_manipulator::get_ip_server(IPFILENAME);
@@ -72,8 +72,8 @@ void MangServer::run_sender()
 
     while (true)
     {
-        m_send_manager.extract_heap(m_prioritysed_masseges_queue, m_queue_mutex , vec_canbus);
-        m_send_manager.send_vector(m_map_mutex , get_sock_func , vec_canbus);
+        m_send_manager.extractFromHeap(m_prioritysed_masseges_queue, m_queue_mutex , vec_canbus);
+        m_send_manager.sendCanBusMessages(m_map_mutex , get_sock_func , vec_canbus);
         vec_canbus.clear();
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
@@ -84,10 +84,10 @@ int MangServer::add_socket(int new_socket)
     auto pair = create_kay_value_id(new_socket);
 
     std::unique_lock<std::mutex> lock(m_map_mutex);
-    auto it = m_connections.find(pair.first);
-    if (it == m_connections.end())
+    auto it = m_socket_connections.find(pair.first);
+    if (it == m_socket_connections.end())
     {
-        m_connections[pair.first] = pair.second;
+        m_socket_connections[pair.first] = pair.second;
         Cross_platform::cress_send(pair.second, "OK", 3);
         std::cout << "Adding new socket with FD: " << new_socket << std::endl;
     }
@@ -113,8 +113,8 @@ std::pair<int, FD> MangServer::create_kay_value_id(int fd)
 
 FD MangServer::get_sock(int id)
 {
-    auto it = m_connections.find(id);
-    if (it != m_connections.end())
+    auto it = m_socket_connections.find(id);
+    if (it != m_socket_connections.end())
     {
         return it->second;
     }

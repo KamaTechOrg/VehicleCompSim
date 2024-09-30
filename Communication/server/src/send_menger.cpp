@@ -2,7 +2,7 @@
 #include "send_menger.h"
 #include <Logger.h>
 
-void Send_manager::extract_heap(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap,
+void SendManager::extractFromHeap(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap,
             std::mutex &heap_mutex,
             std::vector<CanBus> &vec_can
             )
@@ -13,7 +13,7 @@ void Send_manager::extract_heap(std::priority_queue<CanBus, std::vector<CanBus>,
     {
         CanBus topElement = min_heap.top();
 
-        if(check_crc(topElement)){
+        if(isCrcValid(topElement)){
             vec_can.push_back(topElement);
         }
         else{
@@ -25,7 +25,7 @@ void Send_manager::extract_heap(std::priority_queue<CanBus, std::vector<CanBus>,
     heap_lock.unlock();
 }
 
-void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get_sock, std::vector<CanBus> &vec_can)
+void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int)> get_sock, std::vector<CanBus> &vec_can)
 {
     std::unique_lock<std::mutex> lock(map_mutex);
 
@@ -80,7 +80,7 @@ void Send_manager::send_vector(std::mutex &map_mutex, std::function<FD(int)> get
     lock.unlock();
 }
 
-bool Send_manager::check_crc(CanBus can)
+bool SendManager::isCrcValid(CanBus can)
 {
     
     std::string myString(can.getMessage());

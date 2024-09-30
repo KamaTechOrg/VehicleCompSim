@@ -11,32 +11,57 @@
 #include <memory>
 #include <queue>
 
-
-
 #include "socket.h"
 #include "canbus.h"
 #include "constants.h"
 #include "data_manipulator.h"
 #include "socket_cross_platform.h"
 
-class Receive_manger
+typedef std::unordered_map<int, FD>::iterator ItMap;
+
+
+class MangServer ;
+
+// Manager class for handling receiving operations using select()
+class ReceiveManager
 {
 public:
-    void select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap, std::mutex &heap_mutex, std::mutex &map_mutex, std::unordered_map<int, FD> &m_connections);
-    std::condition_variable m_condition;
+    //ctor
+    ReceiveManager(MangServer & server):m_mangServer{server}{};
+    // Function to manage socket activity using the select() mechanism
+    void schedule();
 
+     // Function to notify threads waiting on the condition variable
+    void notify();
 private:
-    void wait_connect(std::mutex &map_mutex,std::unordered_map<int, FD> &m_connections);
-    void print_arr(std::unordered_map<int, FD> & m_connections);
-    void handleActivity(fd_set &readfds, std::unordered_map<int, FD> &m_connections, char *buffer,
-                        std::vector<CanBus> &vec_canbus, std::mutex &map_mutex);
+    // reference to db contaner
+    MangServer & m_mangServer;
+    // Condition variable to notify waiting threads of changes
+    std::condition_variable m_connection_cv;
+
+    // Function to wait until there's a connection to handle
+    void waitForConnection();
+
+    // Function to print details of the connection map
+    void printConnectionMap();
+
+    // Function to handle activity on the sockets in the read file descriptor set
+    void handleActivity(fd_set &readfds,std::vector<CanBus> &vec_canbus);
     
-    void readFromSocket(int sd, std::unordered_map<int, FD>::iterator &it, char *buffer,
-                        std::vector<CanBus> &vec_canbus, std::unordered_map<int, FD> &m_connections);
+    // Function to read data from a socket and process it
+    void readFromSocket(int sd, ItMap& it_map, char *buffer,
+                        std::vector<CanBus> &vec_canbus);
     
+    // Function to perform the select operation and return the number of active file descriptors
     int performSelect(fd_set &readfds, int max_sd);
     
-    void insert_fd(fd_set &set, int &max_fd, const std::unordered_map<int, FD> &unordered_map_fd);
+    // Function to insert file descriptors into the set for the select call and update the max file descriptor value
+    void insert_fd(fd_set &set, int &max_fd);
     
-    void reset_in_loop(fd_set &set, int &fd, char *buf, int size);
+    // Function to reset the file descriptor set, file descriptor, and buffer during each loop iteration
+    void reset_in_loop(fd_set &set, int &fd);
+
+    // Insert CanBus data into the priority queue
+    void insertCanBusFromvectorToQueue(std::vector<CanBus>& vec_canbus);
+
 };
