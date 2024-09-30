@@ -5,15 +5,11 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#define QUOTE_STR  QString("\"")
+
 namespace CMakeUtils {
 
-QString getExecutablePath(const QString &buildPath, const QString &projectName) {
-    QString executablePath = QDir(buildPath).filePath(projectName);
-#ifdef Q_OS_WIN
-    executablePath += ".exe";
-#endif
-    return executablePath;
-}
+
 
 QString extractProjectName(const QString &sourcePath) {
     QFile cmakeFile(QDir(sourcePath).filePath("CMakeLists.txt"));
@@ -39,8 +35,9 @@ QString extractProjectName(const QString &sourcePath) {
 
 std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
     QString projectPath = QFileInfo(cmakePath.trimmed()).absolutePath();
-    QString debugPath = QDir(projectPath).filePath("Debug");
-    QString relesePath = QDir(projectPath).filePath("Release");
+    QString buildPath = QDir(projectPath).filePath("build");
+    QString debugPath = QDir(buildPath).filePath("Debug");
+    QString relesePath = QDir(buildPath).filePath("Release");
     //QDir().mkdir(buildPath); // Ensure the build directory exists
 
     QString projectName = extractProjectName(projectPath);
@@ -50,21 +47,16 @@ std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
     }
 
     QStringList buildlist;
-//     buildlist <<
-// #ifdef Q_OS_WIN
-//         "cmd.exe" << "/c";
-// #else
-//         "sh" << "-c";
-// #endif
 
-    buildlist << "cmake" << "-S" << projectPath << "-B" << projectPath;
 
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + projectPath);
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=" + debugPath);
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=" + relesePath);
+    buildlist << "cmake" << "-S" <<  QUOTE_STR + projectPath + QUOTE_STR << "-B" << QUOTE_STR + buildPath + QUOTE_STR;
+
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=") + QUOTE_STR +  buildPath + QUOTE_STR);
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=") + QUOTE_STR + debugPath +  QUOTE_STR);
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=") +  QUOTE_STR + relesePath +  QUOTE_STR);
 
     buildlist << "&&";
-    buildlist << "cmake" <<  "--build" << projectPath;
+    buildlist << "cmake" <<  "--build" << QUOTE_STR + buildPath + QUOTE_STR;
 
     QString buildCommand = buildlist.join(' ');
     QString runCommand = QDir(debugPath).filePath(projectName);
