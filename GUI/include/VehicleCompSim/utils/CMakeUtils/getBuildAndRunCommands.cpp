@@ -5,6 +5,8 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#define QUOTE_STR  QString("\"")
+
 namespace CMakeUtils {
 
 QString getExecutablePath(const QString &buildPath, const QString &projectName) {
@@ -57,14 +59,14 @@ std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
 //         "sh" << "-c";
 // #endif
 
-    buildlist << "cmake" << "-S" << projectPath << "-B" << projectPath;
+    buildlist << "cmake" << "-S" <<  QUOTE_STR + projectPath + QUOTE_STR << "-B" << QUOTE_STR + projectPath + QUOTE_STR;
 
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + projectPath);
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=" + debugPath);
-    buildlist << ("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=" + relesePath);
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=") + QUOTE_STR +  projectPath + QUOTE_STR);
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=") + QUOTE_STR + debugPath +  QUOTE_STR);
+    buildlist << (QString("-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=") +  QUOTE_STR + relesePath +  QUOTE_STR);
 
     buildlist << "&&";
-    buildlist << "cmake" <<  "--build" << projectPath;
+    buildlist << "cmake" <<  "--build" << QUOTE_STR + projectPath + QUOTE_STR;
 
     QString buildCommand = buildlist.join(' ');
     QString runCommand = QDir(debugPath).filePath(projectName);
