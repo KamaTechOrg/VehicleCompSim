@@ -66,6 +66,9 @@ void ConditionsManager::run()
     _isRunning = true;
     std::thread([this]() {
         Communication communication;
+
+        communication.sendAndReceiveLoop("172.232.208.10", 8080);
+        communication.sendTo(8080, "Hello, Server!");
         communication.connectToSensors();
 
         std::string count;
@@ -73,7 +76,9 @@ void ConditionsManager::run()
         {
             qInfo() << "running";
             std::string message = communication.getMessageFromQueue();
+            qInfo() << "Message received from sensor: " << QString::fromStdString(message);  // Print to GUI
             std::pair<std::string, std::string> messageContent;
+
             try {
                 messageContent = parseMessage(message);
             }

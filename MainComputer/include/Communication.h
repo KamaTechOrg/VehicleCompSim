@@ -16,6 +16,9 @@ public:
     void connectToSensors();
     std::string getMessageFromQueue();
 
+    std::string sendAndReceiveLoop(const std::string& serverIP, int portNumber);
+    void processServerResponse(const std::string& response);
+
 private:
     std::queue<std::string> _messagesQueue;
 
