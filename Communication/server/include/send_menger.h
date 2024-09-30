@@ -6,6 +6,7 @@
 
 #include "canbus.h"
 #include "socket.h"
+#include "helpers.h"
 #include "constants.h"
 #include "socket_cross_platform.h"
 

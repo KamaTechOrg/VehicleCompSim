@@ -7,27 +7,24 @@ void SendManager::extractFromHeap(std::priority_queue<CanBus, std::vector<CanBus
             std::vector<CanBus> &vec_can
             )
 {
-    std::unique_lock<std::mutex> heap_lock(heap_mutex);
+    Locker lock(heap_mutex);
 
     while (!min_heap.empty())
     {
         CanBus topElement = min_heap.top();
-
         if(isCrcValid(topElement)){
             vec_can.push_back(topElement);
         }
         else{
             std::cout << "CRC check failed for canbus" << std::endl;
         }
-
         min_heap.pop();
     }
-    heap_lock.unlock();
 }
 
 void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int)> get_sock, std::vector<CanBus> &vec_can)
 {
-    std::unique_lock<std::mutex> lock(map_mutex);
+    Locker lock(map_mutex);
 
     for (auto canbus : vec_can)
     {
@@ -77,7 +74,7 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
             }
         }
     }
-    lock.unlock();
+    vec_can.clear();
 }
 
 bool SendManager::isCrcValid(CanBus can)

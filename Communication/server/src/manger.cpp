@@ -26,20 +26,17 @@ void MangServer::init()
 
 void MangServer::run_server()
 {
-
     while (true)
     {
         int fd = m_server_eccept_socket.wait_next_client();
 
         if (fd > 0)
         {
-
             int id = add_socket(fd);
             if (id != IDINNER)
             {
                 char buf[10] = "msg";
                 m_controll_socket.send(buf, sizeof(buf));
-
                 m_recv_manger.notify();
             }
         }
@@ -64,17 +61,15 @@ void MangServer::initialize_control()
 
 void MangServer::run_sender()
 {
+    std::vector<CanBus> vec_canbus;
     auto get_sock_func = [this](int id) -> FD {
         return get_sock(id);
     };
-
-    std::vector<CanBus> vec_canbus;
 
     while (true)
     {
         m_send_manager.extractFromHeap(m_prioritysed_masseges_queue, m_queue_mutex , vec_canbus);
         m_send_manager.sendCanBusMessages(m_map_mutex , get_sock_func , vec_canbus);
-        vec_canbus.clear();
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
