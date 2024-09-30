@@ -1,42 +1,46 @@
 ﻿cmake_minimum_required(VERSION 3.10)
 project(OPENCV_PROJECT)
 
-# הגדרת נתיב OpenCV
-set(OpenCV_DIR "C:/opencv/build/x64/vc16/lib")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# חיפוש אחר OpenCV
+set(OpenCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../data/opencv_library_backup/install/x64/vc17/lib")
+
 find_package(OpenCV REQUIRED)
-
 if(OpenCV_FOUND)
   message(STATUS "OpenCV version: ${OpenCV_VERSION}")
 else()
   message(FATAL_ERROR "OpenCV not found")
 endif()
 
-
-# הגדרת נתיב לדאטה נוסף
-set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
-
-# הגדרת קבצי מקור וכתובת
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../data")
 
-# הוספת קבצי מקור
 set(SOURCES
-    src/main.cpp
+    src/ApproachDangerZone.cpp
+    src/Distance.cpp
+    src/Manager.cpp
+    src/NewPrediction.cpp
+    src/Poligon.cpp
+    src/Prediction.cpp
+    src/tracking.cpp
+    src/Visualization.cpp
     src/yolov3.cpp
+    src/lane_departure.cpp
+    src/laneDetection.cpp
+    src/runLaneDetection.cpp
+    src/sendWarning.cpp
+    src/SafeQueue.cpp
 )
 
-# יצירת הבינארי
-add_executable(CMakeProjectOPENCV ${SOURCES})
+# Add the static library
+add_library(CMakeProjectOPENCV STATIC ${SOURCES})
 
-
-# הגדרת תקן C++
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMakeProjectOPENCV PROPERTY CXX_STANDARD 20)
 endif()
 
-# חיבור ספריות OpenCV לפרויקט
 target_link_libraries(CMakeProjectOPENCV ${OpenCV_LIBS})
 
-# הגדרת משתנה סביבה לקבצים
 target_compile_definitions(CMakeProjectOPENCV PRIVATE DATA_DIR="${DATA_DIR}")
