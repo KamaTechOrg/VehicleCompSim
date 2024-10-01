@@ -9,6 +9,7 @@ add_library(VehicleCompSimUtils STATIC
     CMakeUtils/getBuildAndRunCommands.h
     processControls.cpp
     processControls.h
+    app_utils.h app_utils.cpp
 )
 
 # Set include directories for the library

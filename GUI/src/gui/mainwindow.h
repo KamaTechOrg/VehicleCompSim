@@ -39,7 +39,6 @@
 #include "items/qemusensoritem.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
-#include "../../../Communication/server/include/manger.h"
 #include "saveAndLoad.h"
 #include "items/parser.h"
 #include "globalconstants.h"
@@ -49,7 +48,6 @@ class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-    MangServer server;
 public:
     MainWindow(QWidget* parent = nullptr);
 
@@ -60,7 +58,7 @@ private:
     void setupToolBar();
     void setupRunService();
     void setupView();
-    void onRunStart();
+    void onRunStart(QString com_server_ip = "");
     void onRunEnd();
     void record();
     void replayer();

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include "ClientConstants.h"
 
-RunHandler::RunHandler(const std::function<void(const QString&)> startFunction, const std::function<void()> stopFunction)
+RunHandler::RunHandler(const std::function<void(const QString&, const QString&)> startFunction, const std::function<void()> stopFunction)
   : m_startFunction(startFunction), m_stopFunction(stopFunction)
 {
 }
@@ -13,7 +13,8 @@ void RunHandler::handle(const QJsonObject &message)
   QString command = message[ClientConstants::KEY_COMMAND].toString();
   if (command == ClientConstants::COMMAND_START) {
     QString timer = message["timer"].toString();
-    m_startFunction(timer);
+      QString com_server_ip = message["com_server_ip"].toString();
+    m_startFunction(timer, com_server_ip);
     qDebug() << "Run started";
   } else if (command == ClientConstants::COMMAND_STOP) {
     m_stopFunction();

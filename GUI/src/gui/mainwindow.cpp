@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
+#include "app_utils.h"
 ///#include "../Communication/User_Directory/client/client.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -10,7 +11,6 @@ MainWindow::MainWindow(QWidget* parent)
         m_initializeSensorsData(new initializeSensorsData()),
         m_mainWindowTitle("Vhiecal sensors simulator")
 {
-    std::thread([this](){server.init();}).detach();
 
     setupToolBar();
 
@@ -123,7 +123,8 @@ void MainWindow::setupRunService()
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
             {"command", "start"},
-            {"timer", m_timer->time().toString("hh:mm:ss")}
+            {"timer", m_timer->time().toString("hh:mm:ss")},
+            {"com_server_ip", QString::fromStdString(App_Utils::getPublicIp()) }
         });
         onRunStart();
     });
@@ -141,9 +142,9 @@ void MainWindow::setupRunService()
 
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
-        [this](const QString& timer) { 
+        [this](const QString& timer, const QString& com_server_ip) {
             m_timer->setTime(QTime::fromString(timer, "hh:mm:ss"));
-            this->onRunStart();
+            this->onRunStart(com_server_ip);
             //this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
         [this] { this->m_runService->stop(); }
@@ -277,13 +278,13 @@ void MainWindow::close_previous_replay(){
     }
 }
 
-void MainWindow::onRunStart()
+void MainWindow::onRunStart(QString com_server_ip)
 {
     int t = m_timer->time().hour();
     t = t * 60 + m_timer->time().minute();
     t = t * 60 + m_timer->time().second();
 
-    m_runService->start(t);
+    m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
     // for test only

@@ -29,8 +29,6 @@ void clearIpFile() {
         } else {
             std::cout << "File deleted successfully." << std::endl;
         }
-    } else {
-        std::cout << "File does not exist: " << filePath << std::endl;
     }
 }
 

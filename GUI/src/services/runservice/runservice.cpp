@@ -24,11 +24,13 @@ void RunService::startTimer(int timer)
 RunService::RunService()
 {
     clearIpFile();
+    std::thread([this](){server.init();}).detach();
+
 }
 
 
 
-void RunService::start(int timer)
+void RunService::start(int timer, QString& com_server_ip)
 {
     // write the coms server's ip
     session = newSessionId();
@@ -50,7 +52,24 @@ void RunService::start(int timer)
 void RunService::stop()
 {
     if (!runManager) return;
-
     runManager->stop();
+    closeComServer();
+}
+
+void RunService::initComServer(QString com_server_ip)
+{
+    if (com_server_ip.isEmpty())
+    {
+        // should load the     comunication server here
+    }
+    else
+    {
+        writeIpFile(com_server_ip.toStdString());
+    }
+}
+
+void RunService::closeComServer()
+{
+    clearIpFile();
 }
 
