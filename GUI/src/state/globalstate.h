@@ -2,9 +2,11 @@
 
 #include <QObject>
 #include <QVector>
+#include <QVariant>
 #include "projectmodel.h"
 #include "globalconstants.h"
 #include "sensorModel.h"
+#include "constants.h"
 
 class GlobalState : public QObject
 {
@@ -45,14 +47,15 @@ public:
     void setMaxMessageCount(int value);
 
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newData(const QString& data);
+    void newData(const char buffer[], size_t bufferSize);
     void newParsedData(QList<QPair<QString, QString>> data);
 
     void saveData();
     void loadData();
 
     // for test only
-    void new_test_buffer(const QString& data);
+    void new_test_buffer(const char data[], size_t bufferSize);
+//        void new_test_buffer(const QString& data);
     void setIsTest(bool value) { m_isTest = value; }
     bool isTest() const { return m_isTest; }
 
@@ -69,13 +72,13 @@ signals:
 
     void maxMessageCountChanged(int maxMessageCount);
     void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newDataArrived(const QString& data);
+    void newDataArrived(const char buffer[], size_t bufferSize);
     void parsedData(QList<QPair<QString, QString>> data);
     void saveBtnPressed();
     void loadBtnPressed();
 
     // for test only
-    void new_test_buffer_arrived(const QString& data);
+    void new_test_buffer_arrived(const char data[], size_t bufferSize);
 
 
 

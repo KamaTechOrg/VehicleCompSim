@@ -4,6 +4,7 @@
 
 #include "buffer_test.h"
 #include "state/globalstate.h"
+#include "constants.h"
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -26,63 +27,93 @@ void buffer_test::testExtractBufferData() {
     QDataStream stream(&testBuffer, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::LittleEndian);
 
-    int time = 222;
     int src_id = 1;
     int dest_id = 2;
     int len = 50;
-    stream << time << ',' << src_id << ',' << dest_id << ',' << len << ',';
 
-    // int32_t
-    qint32 testInt32 = -12345;
-    stream << testInt32;
-
-    // uint32_t
-    quint32 testUint32 = 54321;
-    stream << testUint32;
-
-    // char*
-    const char *testString = "Hello, World!";
-    stream.writeRawData(testString, 14); // Including null terminator
-
-    // float
-    float testFloat = 3.14159f;
-    stream.writeRawData(reinterpret_cast<const char *>(&testFloat), sizeof(float));
-
-    // double
-    double testDouble = 2.71828182845904;
-    stream.writeRawData(reinterpret_cast<const char *>(&testDouble), sizeof(double));
-
-    // bool (3 booleans)
-    quint8 testBools = 0b00000101; // true, false, true
-    stream << testBools;
-    QFile outputFile(R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\buffer)");
-    if (outputFile.open(QIODevice::WriteOnly)) {
-        QDataStream outStream(&outputFile);
-        outStream.setByteOrder(QDataStream::LittleEndian);
-        outStream << testBuffer;
-        outputFile.close();
-        // Successfully wrote serialized data to the file!
-    } else {
-        // Handle the error (e.g., file couldn't be opened)
-    }
-    QByteArray buffer;
-    QFile inputFile(R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\buffer)");
-    if (inputFile.open(QIODevice::ReadOnly)) {
-        QDataStream inStream(&inputFile);
-        inStream.setByteOrder(QDataStream::LittleEndian);
-        inStream >> buffer;
-        inputFile.close();
-        // Successfully read data into buffer!
-    } else {
-        // Handle the error (e.g., file couldn't be opened)
-    }
+// Compose the melody:
+    std::ostringstream oss;
+    oss << time << ',' << src_id << ',' << dest_id << ',' << len << ',';
+    std::string data = oss.str();
+    char buffer[1024];
+    buffer[0] = 'b';
+    buffer[1] = ',';
+    qInfo() << buffer[0];
+//
+//    QString tt = "yossi";
+//    QByteArray ttBytes = tt.toUtf8();
+//    int startPos = 2;
+//    memcpy(buffer + startPos, ttBytes.constData(), ttBytes.size());
+//    // Optionally, null-terminate the string in the buffer
+//    buffer[startPos + ttBytes.size()] = '\0';
+//    startPos + ttBytes.size();
+//    buffer[startPos] = ',';
+//    startPos + 1;
+//    int time = 222;
+//    qint32 littleEndianTime = qToLittleEndian(static_cast<qint32>(time));
+//    memcpy(buffer + startPos, &littleEndianTime, sizeof(qint32));
+//
+    GlobalState::getInstance().new_test_buffer(buffer, 1024);
 
 
 
+//    int time = 222;
+//    int src_id = 1;
+//    int dest_id = 2;
+//    int len = 50;
+//    bufferr << time << ',' << src_id << ',' << dest_id << ',' << len << ',';
+//
+//    // int32_t
+//    qint32 testInt32 = -12345;
+//    bufferr << testInt32;
 
-    // Convert the buffer to base64
-    QString base64String = testBuffer.toBase64();
-    GlobalState::getInstance().new_test_buffer(base64String);
+//    // uint32_t
+//    quint32 testUint32 = 54321;
+//    bufferr << testUint32;
+//
+//    // char*
+//    const char *testString = "Hello, World!";
+//    bufferr.writeRawData(testString, 14); // Including null terminator
+//
+//    // float
+//    float testFloat = 3.14159f;
+//    bufferr.writeRawData(reinterpret_cast<const char *>(&testFloat), sizeof(float));
+//
+//    // double
+//    double testDouble = 2.71828182845904;
+//    bufferr.writeRawData(reinterpret_cast<const char *>(&testDouble), sizeof(double));
+//
+//    // bool (3 booleans)
+//    quint8 testBools = 0b00000101; // true, false, true
+//    bufferr << testBools;
+//    QFile outputFile(R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\buffer)");
+//    if (outputFile.open(QIODevice::WriteOnly)) {
+//        QDataStream outStream(&outputFile);
+//        outStream.setByteOrder(QDataStream::LittleEndian);
+//        outStream << testBuffer;
+//        outputFile.close();
+//        // Successfully wrote serialized data to the file!
+//    } else {
+//        // Handle the error (e.g., file couldn't be opened)
+//    }
+//    QByteArray buffer;
+//    QFile inputFile(R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\buffer)");
+//    if (inputFile.open(QIODevice::ReadOnly)) {
+//        QDataStream inStream(&inputFile);
+//        inStream.setByteOrder(QDataStream::LittleEndian);
+//        inStream >> buffer;
+//        inputFile.close();
+//        // Successfully read data into buffer!
+//    } else {
+//        // Handle the error (e.g., file couldn't be opened)
+//    }
+//
+//
+//
+//
+//    // Convert the buffer to base64
+//    QString base64String = testBuffer.toBase64();
+//    GlobalState::getInstance().new_test_buffer(base64String);
 }
 //    QByteArray originalData; // Your original QByteArray
 //    QString base64String = QString::fromLatin1(originalData.toBase64());

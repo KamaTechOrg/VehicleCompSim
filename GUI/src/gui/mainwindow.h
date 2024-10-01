@@ -43,6 +43,7 @@
 #include "items/parser.h"
 #include "globalconstants.h"
 #include "../../../Communication/User_Directory/client/client.h"
+#include "../../../Communication/utilities/constants.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -67,7 +68,7 @@ private:
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
     void listener();
-    void buffer_listener(const QString& data);
+    void buffer_listener(const char buffer[], size_t bufferSize);
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);

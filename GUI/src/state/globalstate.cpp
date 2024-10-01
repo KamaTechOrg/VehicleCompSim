@@ -1,4 +1,6 @@
 #include "globalstate.h"
+//#include "constants.h"
+//#include "constants.h"
 #include <QSettings>
 
 GlobalState& GlobalState::getInstance()
@@ -87,8 +89,9 @@ void GlobalState::setMaxMessageCount(int value)
     }
 }
 
-void GlobalState::newData(const QString& data){
-    emit newDataArrived(data);
+void GlobalState::newData(const char buffer[], size_t bufferSize){
+    qInfo() << "newData" << buffer[0];
+    emit newDataArrived(buffer, bufferSize);
 }
 void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
     emit ParserInfoArrived(parseInfoMap);
@@ -108,9 +111,18 @@ GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     m_myClientId = settings.value("clientId").toString();
     m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
 }
+void GlobalState::new_test_buffer(const char data[], size_t bufferSize) {
+    qInfo() << "new_test_buffer" << data[0];
+    emit new_test_buffer_arrived(data, bufferSize);
 
-void GlobalState::new_test_buffer(const QString& data) {
-    emit new_test_buffer_arrived(data);
+    // Your logic here to handle the char buffer
+    // For example, emit a signal or process the data directly
+    // ...
 }
+
+
+//void GlobalState::new_test_buffer(const QString& data) {
+//    emit new_test_buffer_arrived(data);
+//}
 
 

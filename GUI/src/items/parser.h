@@ -8,15 +8,16 @@
 
 #include <QVariant>
 #include <QByteArray>
+#include "constants.h"
 
 class parser :public QObject{
 Q_OBJECT
 public:
     parser();
-    QList<QPair<QString, QString>> extractBufferData(const QByteArray& buffer, const QList<QList<QString>>& columnInfo);
+    QList<QPair<QString, QString>> extractBufferData(const char buffer[], size_t bufferSize, const QList<QList<QString>>& columnInfo);
     void create_buffer();
 public slots:
-    void parseBuffer(const QString& data);
+    void parseBuffer(const char buffer[], size_t bufferSize);
     void setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap);
 private:
     QMap<int, QList<QList<QString>>> sensorInfoMap = {};

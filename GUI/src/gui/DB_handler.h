@@ -9,6 +9,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QGraphicsView>
 #include "globalstate.h"
+#include "../../../Communication/utilities/constants.h"
 #include <QWidget>
 #include <QObject>
 
@@ -19,7 +20,7 @@ class DB_handler :public QObject{
 Q_OBJECT
 public:
     DB_handler();
-    void write_data_to_DB(const QString& data) const;
+    void write_data_to_DB(const char buffer[], size_t bufferSize) const;
 //    QList<QVariant> read_last_from_DB(const QString& table_name);
 //    QList<QVariant> read_all_sensor_data(const QString& table_name);
 //    void update_sensor_data(const QString& sensorId, QList<QList<QString>> data);

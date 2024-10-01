@@ -21,9 +21,13 @@ DB_handler::DB_handler() {
     }
     connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &DB_handler::write_data_to_DB, Qt::QueuedConnection);
 }
-void DB_handler::write_data_to_DB(const QString& data) const {
+void DB_handler::write_data_to_DB(const char buffer[], size_t bufferSize) const {
+    qInfo() << "write_data_to_DB" << buffer[0];
     const QStringList columnInfo = {"time", "src_id", "dest_id", "len", "buffer"};
-    const QStringList pieces = data.split(',');
+    QString dataString = QString::fromLatin1(buffer, MAXRECV);
+
+    // Split the string by commas
+    QStringList pieces = dataString.split(',', Qt::SkipEmptyParts);
 
     if (!sqlitedb->isOpen() && !sqlitedb->open()) {
         qCritical() << "Database connection failed:" << sqlitedb->lastError().text();
@@ -54,7 +58,6 @@ void DB_handler::write_data_to_DB(const QString& data) const {
         sqlitedb->rollback();
         return;
     }
-
     // Bind values
     for (int i = 0; i < columnInfo.size(); ++i) {
         query.addBindValue(i < pieces.size() ? pieces[i] : QString());

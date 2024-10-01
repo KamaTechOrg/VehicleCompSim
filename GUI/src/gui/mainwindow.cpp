@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
+#include <QThread>
 #include <thread>
 #include "app_utils.h"
-///#include "../Communication/User_Directory/client/client.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -117,14 +117,13 @@ void MainWindow::setupRunService()
     auto func = [](ListenErrorCode error) {
         std::cout << "listen" << std::endl;
     };
-    std::thread t([&func]() {
-        while (true) {
-            char buffer[MAXRECV];
-            listenAsync(buffer, sizeof(buffer), func);
-        }
-    });
-
-    t.join();
+//    std::thread t([&func, this](){
+//        while (true) {
+//            char buffer[MAXRECV];
+//            clientSocket->listenAsync(buffer, sizeof(buffer), func);
+//        }
+//    });
+//    t.join();
 
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
@@ -333,8 +332,9 @@ void MainWindow::onRunEnd()
 // std::string mm = buffer;
 
 // for test only
-void MainWindow:: buffer_listener(const QString& data) {
-    m_globalState.newData(data);
+void MainWindow:: buffer_listener(const char buffer[], size_t bufferSize) {
+    qInfo() << "buffer_listener" << buffer[0];
+    m_globalState.newData(buffer, bufferSize);
 }
 
 void MainWindow:: listener(){
