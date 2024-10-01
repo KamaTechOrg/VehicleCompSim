@@ -5,9 +5,8 @@ CompositeCondition::CompositeCondition(std::shared_ptr<ConditionBase> lhs,
     std::chrono::milliseconds elapsedTime)
     : LHS(lhs), RHS(rhs), _elapsedTime(elapsedTime)
 {
-    if (!lhs || !rhs) {
-        throw std::runtime_error("One or more arguments were nullptr");
-    }
+    assert((lhs && rhs) && "One or more arguments were nullptr");
+
 }
 
 const std::shared_ptr<ConditionBase> &CompositeCondition::getLHS() const {

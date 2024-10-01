@@ -1,5 +1,6 @@
 #include <memory>
 #include <chrono>
+#include <cstdio>
 
 #include "doctest.h"
 
@@ -14,6 +15,7 @@
 #include "StartsWithCondition.h"
 #include "EndsWithCondition.h"
 #include "ConditionsFactory.h"
+#include "JsonLoader.h"
 
 TEST_CASE("SimpleCondition Tests") {
     const std::string senderId = "testSender";
@@ -382,19 +384,78 @@ TEST_CASE("ConditionsFactory Failure Test") {
             CHECK(std::string(e.what()) == "condition type: " + invalidConditionType + " is not an option");
         }
     }
+}
 
-    SUBCASE("Check Composite Condition With nullptr Sub-conditions") {
-        std::shared_ptr<ConditionBase> nullCondition = nullptr;
-        std::vector<std::string> compositeConditionsTypes = conditionsFactory.getCompositeConditionTypes();
+TEST_CASE("Extended Failing AndCondition Test Cases") {
+    const std::string senderId = "testSender";
 
-        for (const auto& compositeConditionType : compositeConditionsTypes) {
-            try {
-                conditionsFactory.createCompositeCondition(compositeConditionType, nullCondition, nullCondition);
-                FAIL("Expected exception was not thrown");
-            }
-            catch (const std::runtime_error& e) {
-                CHECK(std::string(e.what()) == "One or more arguments were nullptr");
-            }
-        }
+    SUBCASE("Both Conditions True") {
+        auto trueCond1 = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto trueCond2 = std::make_shared<EndsWithCondition>(senderId, "world");
+        AndCondition andCond(trueCond1, trueCond2, std::chrono::milliseconds(100));
+        CHECK(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Both Conditions False") {
+        auto falseCond1 = std::make_shared<StartsWithCondition>(senderId, "world");
+        auto falseCond2 = std::make_shared<EndsWithCondition>(senderId, "hello");
+        AndCondition andCond(falseCond1, falseCond2, std::chrono::milliseconds(100));
+        CHECK_FALSE(andCond.validate(senderId, "hello world"));
+    }
+
+    SUBCASE("One Condition True, One False") {
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "unknown");
+        AndCondition andCond(trueCond, falseCond, std::chrono::milliseconds(100));
+        CHECK_FALSE(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Elapsed Time Exceeds") {
+        auto trueCond = std::make_shared<StartsWithCondition>(senderId, "hello");
+        auto falseCond = std::make_shared<EndsWithCondition>(senderId, "unknown");
+        AndCondition andCond(trueCond, falseCond, std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        CHECK_FALSE(andCond.validate(senderId, "hello world")); 
+    }
+
+    SUBCASE("Conditions with Empty Strings") {
+        auto emptyCond1 = std::make_shared<StartsWithCondition>(senderId, "");
+        auto emptyCond2 = std::make_shared<EndsWithCondition>(senderId, "");
+        AndCondition andCond(emptyCond1, emptyCond2, std::chrono::milliseconds(100));
+
+        CHECK(andCond.validate(senderId, ""));
+
+        CHECK_FALSE(andCond.validate(senderId, "non-empty"));
     }
 }
+/*
+* In order to make this test reliable, we need to change
+* constants::CONDITIONS_JSON_FILE_NAME to something more
+* generic like C:/path/to/file and not just a file name
+* AND WHILE DOING SO, we need to consider windows/linux differences
+* 
+TEST_CASE("Loading Json files") {
+    std::string tempFileName = "ConditionLogicTemp.json";
+    int success = std::rename(constants::CONDITIONS_JSON_FILE_NAME.c_str(), tempFileName.c_str());
+    if (success != 0)
+        FAIL("std::rename() failed");
+
+    nlohmann::json::array_t jsonData;
+    for (int i = 0; i < 100; i++)
+    {
+        jsonData.push_back({
+            {"scenario", std::to_string(i)},
+            {"data", "some data"}
+            });
+    }
+
+    SUBCASE("Save and Load a file") {
+        JsonLoader().saveConditionsLogic(jsonData);
+        nlohmann::json::array_t fileData = JsonLoader().loadConditionsLogic();
+        CHECK(fileData == jsonData);
+    }
+
+    std::remove(constants::CONDITIONS_JSON_FILE_NAME.c_str());
+    std::rename(tempFileName.c_str(), constants::CONDITIONS_JSON_FILE_NAME.c_str());
+}
+*/

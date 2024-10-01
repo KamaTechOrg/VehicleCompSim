@@ -49,49 +49,93 @@ void ConditionsGroup::setBoxTitle(const char* title)
 	_conditionsBox->setTitle(title);
 }
 
-void ConditionsGroup::addSingleCondition()
+void ConditionsGroup::addSingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue,
+	const std::string& conditionType, const int elapsedTime)
+{
+	SingleCondition* conditionLayout = new SingleCondition(currentSourceIndex, currentTypeIndex, currentValidationValue);
+	connect(conditionLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
+	addGenericCondition(conditionLayout, conditionType, elapsedTime);
+}
+
+void ConditionsGroup::addConditionsGroup(nlohmann::json jsonData)
+{
+	for (size_t i = 0; i < jsonData.size(); i += 2)
+	{
+		const auto& item = jsonData[i];
+		ConditionLayoutBase* newCondition;
+
+		// If the item is a single condition
+		if (item.is_object())
+		{
+			int sourceIndex = item["inputSource"];
+			int typeIndex = item["conditionType"];
+			std::string validationValue = item["validationValue"];
+
+			newCondition = new SingleCondition(sourceIndex, typeIndex, validationValue);
+			connect(dynamic_cast<SingleCondition*>(newCondition), &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
+
+		}
+		// If the item is a list (group of conditions)
+		else if (item.is_array())
+		{
+			newCondition = new ConditionsGroup();
+			dynamic_cast<ConditionsGroup*>(newCondition)->addConditionsGroup(item);
+			connect(dynamic_cast<ConditionsGroup*>(newCondition), &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
+		}
+		else
+		{
+			throw std::runtime_error("invalid JSON GUI file");
+		}
+
+		// Add the operation between two conditons (And/Or, elapsedTime)
+		if (i == 0)
+		{
+			addGenericCondition(newCondition);
+		}
+		else
+		{
+			addGenericCondition(newCondition, jsonData[i - 1]["type"], jsonData[i - 1]["elapsedTime"]);
+		}
+	}
+}
+
+void ConditionsGroup::setConditionsGroup(nlohmann::json jsonData)
+{
+	for (auto conditionLayout : _conditions)
+		deleteCondition(conditionLayout);
+	addConditionsGroup(jsonData);
+}
+
+void ConditionsGroup::addEmptySingleCondition()
 {
 	SingleCondition* conditionLayout = new SingleCondition;
 	connect(conditionLayout, &SingleCondition::requestDelete, this, &ConditionsGroup::deleteCondition);
 	addGenericCondition(conditionLayout);
 }
 
-void ConditionsGroup::addConditionsGroup()
+void ConditionsGroup::addEmptyConditionsGroup()
 {
 	ConditionsGroup* conditionLayout = new ConditionsGroup;
 	connect(conditionLayout, &ConditionsGroup::requestDelete, this, &ConditionsGroup::deleteCondition);
 	addGenericCondition(conditionLayout);
 }
 
-void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition)
+void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition,
+	const std::string& andOrValue, const int elapsedTimeValue)
 {
 	_conditions.push_back(condition);
 	if (_conditions.size() > 1) // it's not the first condition added
 	{
-		// create and/or button
-		QPushButton* andOrButton = new QPushButton("and");
-		connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
-			andOrButton->setText(andOrButton->text() == "and" ? "or" : "and");
-			});
-		int defaultHeight = andOrButton->sizeHint().height();
-		andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
+		QPushButton* andOrButton = createAndOrButton(andOrValue);
+		QSpinBox* elapsedTime = createElapsedTimeWidget(elapsedTimeValue);
 
-		// create elapsedTime edit line
-		QSpinBox* elapsedTime = new QSpinBox;
-		elapsedTime->setRange(0, constants::MAX_ELAPSED_TIME);
-		elapsedTime->setSuffix(" ms");
-		defaultHeight = elapsedTime->sizeHint().height();
-		elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);
-
-		// push the both to a horizontal layout
 		QHBoxLayout* operationLayout = new QHBoxLayout;
 		operationLayout->addWidget(andOrButton);
 		operationLayout->addWidget(elapsedTime);
 		operationLayout->addStretch(1);
-
-		// instert the layout to the _operations vector and to the _conditionsLayout
-		_operations.push_back(operationLayout);
 		_conditionsLayout->addLayout(operationLayout);
+
+		_operations.push_back(operationLayout);
 	}
 	_conditionsLayout->addLayout(condition);
 }
@@ -159,12 +203,12 @@ void ConditionsGroup::deleteCondition(ConditionLayoutBase* layout)
 
 void ConditionsGroup::addSingleButtonClicked()
 {
-	addSingleCondition();
+	addEmptySingleCondition();
 }
 
 void ConditionsGroup::addGroupButtonClicked()
 {
-	addConditionsGroup();
+	addEmptyConditionsGroup();
 }
 
 std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std::shared_ptr<ConditionBase>>& conditions)
@@ -187,10 +231,10 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 		std::shared_ptr<ConditionBase> next = conditions[i];
 		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i - 1]->itemAt(0)->widget());
 		QSpinBox* elapsedTime = qobject_cast<QSpinBox*>(_operations[i - 1]->itemAt(1)->widget());
-		if (andOrButton->text() == "and") {
+		if (andOrButton->text() == "And") {
 			current = std::make_shared<AndCondition>(AndCondition(current, next, std::chrono::milliseconds(elapsedTime->value())));
 		}
-		else if (andOrButton->text() == "or") {
+		else if (andOrButton->text() == "Or") {
 			current = std::make_shared<OrCondition>(OrCondition(current, next, std::chrono::milliseconds(elapsedTime->value())));
 		}
 		root = current; // Update root to the current node for the next iteration
@@ -198,14 +242,64 @@ std::shared_ptr<ConditionBase> ConditionsGroup::buildTree(const std::vector<std:
 
 	return root;
 }
-std::shared_ptr<ConditionBase> ConditionsGroup::data()
+
+std::shared_ptr<ConditionBase> ConditionsGroup::logicData()
 {
 	std::vector<std::shared_ptr<ConditionBase>> conditions;
 	for (auto it : _conditions)
 	{
-		std::shared_ptr<ConditionBase> condition = it->data();
+		std::shared_ptr<ConditionBase> condition = it->logicData();
 		if (condition == nullptr) return nullptr;
 		conditions.push_back(condition);
 	}
 	return buildTree(conditions);
+}
+
+QPushButton* ConditionsGroup::createAndOrButton(const std::string& buttonValue)
+{
+	QPushButton* andOrButton = new QPushButton(buttonValue.c_str());
+	connect(andOrButton, &QPushButton::clicked, [andOrButton]() {
+		andOrButton->setText(andOrButton->text() == "And" ? "Or" : "And");
+		});
+	int defaultHeight = andOrButton->sizeHint().height();
+	andOrButton->setFixedSize(defaultHeight * 3, defaultHeight);
+
+	return andOrButton;
+}
+
+QSpinBox* ConditionsGroup::createElapsedTimeWidget(const int value)
+{
+	QSpinBox* elapsedTime = new QSpinBox;
+	elapsedTime->setRange(0, constants::MAX_ELAPSED_TIME);
+	elapsedTime->setValue(value);
+	elapsedTime->setSuffix(" ms");
+	int defaultHeight = elapsedTime->sizeHint().height();
+	elapsedTime->setFixedSize(defaultHeight * 5, defaultHeight);
+
+	return elapsedTime;
+}
+
+nlohmann::json ConditionsGroup::GuiData()
+{
+	nlohmann::json conditionsArray = nlohmann::json::array();
+
+	for (int i = 0; i < _conditions.size(); i++) {
+		conditionsArray.push_back(_conditions[i]->GuiData());
+
+		if (i == _operations.size()) {
+			continue;
+		}
+		
+		QPushButton* andOrButton = qobject_cast<QPushButton*>(_operations[i]->itemAt(0)->widget());
+		QSpinBox* elapsedTime = qobject_cast<QSpinBox*>(_operations[i]->itemAt(1)->widget());
+
+		nlohmann::json operation = {
+			{"type", andOrButton->text().toStdString()},
+			{"elapsedTime", elapsedTime->value()}
+		};
+
+		conditionsArray.push_back(operation);
+	}
+
+	return conditionsArray;
 }

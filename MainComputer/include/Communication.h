@@ -8,10 +8,16 @@
 
 class Communication {
 public:
+    Communication();
+    ~Communication();
+
     std::string listenTo(int portNumber);
     void sendTo(int portNumber, const std::string& message);
-    void connectToSensor(int portNumber);
+    void connectToSensors();
     std::string getMessageFromQueue();
+
+    std::string sendAndReceiveLoop(const std::string& serverIP, int portNumber);
+    void processServerResponse(const std::string& response);
 
 private:
     std::queue<std::string> _messagesQueue;

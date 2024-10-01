@@ -14,15 +14,15 @@ class ConditionsEditor : public QGroupBox
 public:
 	ConditionsEditor();
 	
-	void save();
+	nlohmann::json getLogicDataAsJson();
+	nlohmann::json getGuiDataAsJson();
+	void setView(nlohmann::json jsonData);
 
 private:
-	void showSaveFeedback(bool success);
-	void loadDataFromJson(const std::string& filename);
-
+	void loadGuiDataFromJson();
 
 	QVBoxLayout* _ConditionsEditorLayout;
 	ConditionsGroup* _conditionsGroup;
-	ThenGroupBox* _thenGroupBox;
-	QPushButton* _saveButton;
+	ThenGroupBox* _actionGroupBox;
+
 };

@@ -15,5 +15,6 @@ public:
 		And, Or, Null
 	};
 
-	virtual std::shared_ptr<ConditionBase> data()  = 0;
+	virtual std::shared_ptr<ConditionBase> logicData()  = 0;
+	virtual nlohmann::json GuiData() = 0;
 };

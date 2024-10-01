@@ -8,16 +8,17 @@
 class Action
 {
 public:
-	Action(unsigned targetUnit, std::string messageToSend);
+	Action(std::string targetUnit, std::string messageToSend);
+	Action(const Action& other);
 	Action() = default;
 	~Action() = default;
 
-	unsigned getTargetUnit() const;     
+	std::string getTargetUnit() const;
 	std::string getMessageToSend() const;
 	nlohmann::json toJson() const;
 
 private:
-	unsigned _targetUnit;
+	std::string _targetUnit;
 	std::string _messageToSend;
 };
 

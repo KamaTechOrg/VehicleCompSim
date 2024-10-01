@@ -1,14 +1,46 @@
-#include "ConditionBase.h"
-#include "ConditionsFactory.h"
-#include "SingleCondition.h"
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QString>
 #include <QPushButton>
 
+#include "ConditionBase.h"
+#include "ConditionsFactory.h"
+#include "SingleCondition.h"
+#include "SensorsManager.h"
+
 
 SingleCondition::SingleCondition()
+{
+	initializeFields();
+}
+
+SingleCondition::SingleCondition(const int currentSourceIndex, const int currentTypeIndex, const std::string& currentValidationValue)
+{
+	initializeFields();
+
+	_inputSource->setCurrentIndex(currentSourceIndex);
+	_conditionType->setCurrentIndex(currentTypeIndex);
+	_validationValue->setText(currentValidationValue.c_str());
+}
+
+SingleCondition::~SingleCondition()
+{
+	if (_inputSource != nullptr)
+		delete _inputSource;
+	if (_conditionType != nullptr)
+		delete _conditionType;
+	if (_validationValue != nullptr)
+		delete _validationValue;
+	if (_messageFrom != nullptr)
+		delete _messageFrom;
+	if (_deleteButton != nullptr)
+		delete _deleteButton;
+	if (_layout != nullptr)
+		delete _layout;
+}
+
+void SingleCondition::initializeFields()
 {
 	_layout = new QHBoxLayout;
 
@@ -17,19 +49,17 @@ SingleCondition::SingleCondition()
 
 	_inputSource = new QComboBox();
 	_inputSource->setPlaceholderText("input source");
-	_inputSource->addItem("id 1");
-	_inputSource->addItem("id 2");
-	_inputSource->addItem("id 3");
-	_inputSource->addItem("id 4");
-	_inputSource->addItem("id 5");
+	std::vector<std::string> sensorsList = SensorsManager().getSensorsIDS();
+	for (const auto& sensor : sensorsList)
+		_inputSource->addItem(sensor.c_str());
 	_layout->addWidget(_inputSource);
 
 	_conditionType = new QComboBox();
 	_conditionType->setPlaceholderText("condition");
 	std::vector<std::string> conditionTypes = ConditionsFactory().getSimpleConditionTypes();
-	for (const auto& type : conditionTypes)
+	for (const auto& type : conditionTypes) {
 		_conditionType->addItem(QString(type.c_str()));
-
+	}
 	_layout->addWidget(_conditionType);
 
 	_validationValue = new QLineEdit();
@@ -51,27 +81,11 @@ SingleCondition::SingleCondition()
 	addStretch(1);
 }
 
-SingleCondition::~SingleCondition()
-{
-	if (_inputSource != nullptr)
-		delete _inputSource;
-	if (_conditionType != nullptr)
-		delete _conditionType;
-	if (_validationValue != nullptr)
-		delete _validationValue;
-	if (_messageFrom != nullptr)
-		delete _messageFrom;
-	if (_deleteButton != nullptr)
-		delete _deleteButton;
-	if (_layout != nullptr)
-		delete _layout;
-}
-
 std::string to_string(const QString& qstr) {
 	return qstr.toStdString();
 }
 
-std::shared_ptr<ConditionBase> SingleCondition::data()
+std::shared_ptr<ConditionBase> SingleCondition::logicData()
 {
 	std::string input = _inputSource->currentText().toStdString();
 	std::string conditionType = _conditionType->currentText().toStdString();
@@ -81,8 +95,8 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	bool conditionTypeHasError = conditionType.empty();
 	bool validationValueHasError = validationValue.empty();
 
-	setBorderColor(_inputSource, inputHasError);
-	setBorderColor(_conditionType, conditionTypeHasError);
+	/*setBorderColor(_inputSource, inputHasError);
+	setBorderColor(_conditionType, conditionTypeHasError);*/
 	setBorderColor(_validationValue, validationValueHasError);
 
 	if (input.empty() || conditionType.empty() || validationValue.empty()) {
@@ -98,15 +112,23 @@ std::shared_ptr<ConditionBase> SingleCondition::data()
 	return ConditionsFactory().createSimpleCondition(input, conditionType, validationValue);
 }
 
-
-void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
+nlohmann::json SingleCondition::GuiData()
 {
-	comboBox->setStyleSheet(
-		hasError
-		? "QComboBox { border: 2px solid red; } QComboBox::drop-down { border: none; }"
-		: "QComboBox { border: none; }"
-	);
+	return {
+		{"inputSource", _inputSource->currentIndex()},
+		{"conditionType", _conditionType->currentIndex()},
+		{"validationValue", _validationValue->text().toStdString()}
+	};
 }
+
+//void SingleCondition::setBorderColor(QComboBox* comboBox, bool hasError)
+//{
+//	comboBox->setStyleSheet(
+//		hasError
+//		? "QComboBox { border: 2px solid red; } QComboBox::drop-down { border: none; }"
+//		: "QComboBox { border: none; }"
+//	);
+//}
 
 void SingleCondition::setBorderColor(QLineEdit* lineEdit, bool hasError)
 {

@@ -6,7 +6,9 @@ OrCondition::OrCondition(std::shared_ptr<ConditionBase> lhs,
     : CompositeCondition(lhs, rhs, elapsedTime) {}
 
 bool OrCondition::validate(const std::string &senderId, const std::string &value) const {
-    return LHS->validate(senderId, value) || RHS->validate(senderId, value);
+    bool lhsValid = LHS ? LHS->validate(senderId, value) : false;
+    bool rhsValid = RHS ? RHS->validate(senderId, value) : false;
+    return lhsValid || rhsValid;
 }
 
 nlohmann::json OrCondition::toJson() const {
