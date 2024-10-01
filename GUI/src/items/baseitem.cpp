@@ -6,6 +6,9 @@
 #include <QMessageBox>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QIcon>
+#include <QCoreApplication>
+#include "globalconstants.h"
 
 BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsItem(parent) {
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -22,12 +25,15 @@ BaseItem::BaseItem(SerializableItem* item, QGraphicsItem* parent) : QGraphicsIte
     m_color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 64, 192);
 
     // Create close button
-    QPushButton* closeButton = new QPushButton("X");
-    //closeButton->setIcon(QIcon(":/icons/delete.png"));
-    closeButton->setFixedSize(20, 20);
+    QPushButton* closeButton = new QPushButton();
+    closeButton->setIcon(QIcon("resources/icons/delete.svg"));
     closeButton->setToolTip("Remove Item");
+    closeButton->setAttribute(Qt::WA_TranslucentBackground);
 
     QGraphicsProxyWidget* closeProxy = new QGraphicsProxyWidget(this);
+    //remove the background of the closeProxy
+    closeProxy->setWindowFlags(Qt::FramelessWindowHint);
+    closeProxy->setAttribute(Qt::WA_TranslucentBackground);
     closeProxy->setWidget(closeButton);
     connect(closeButton, &QPushButton::clicked, this, &BaseItem::confirmRemove);
 
@@ -211,13 +217,13 @@ void BaseItem::removeItem() {
             }
         }
         m_edges.clear();
-//        qInfo() << "after clear";
+        if(m_model->itemType() == ItemType::Connector){
+            scene()->removeItem(this);
+            deleteLater();
+            return;
+        }
 
-
-        // Remove this item
-        // scene()->removeItem(this);
         m_model->notifyItemDeleted();// TODO - CHECK IF TO DELETE THIS
         GlobalState::getInstance().currentProject()->removeModel(m_model);
-        // deleteLater();
     }
 }

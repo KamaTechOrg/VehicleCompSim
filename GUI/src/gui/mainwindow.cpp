@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget* parent)
         m_runService(std::make_shared<RunService>()),
         m_globalState(GlobalState::getInstance()),
         m_initializeSensorsData(new initializeSensorsData()),
-        m_mainWindowTitle("Vhiecal sensors simulator")
+        m_mainWindowTitle("Vehicle sensors simulator")
 {
 
     setupToolBar();
