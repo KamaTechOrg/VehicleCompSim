@@ -42,6 +42,7 @@
 #include "saveAndLoad.h"
 #include "items/parser.h"
 #include "globalconstants.h"
+#include "../../MainComputer/src/maincomputer.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -115,5 +116,6 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
+    MainComputer mainComputer;
 };
 

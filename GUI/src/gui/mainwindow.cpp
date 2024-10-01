@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
-    toolBar->addAction("mainComp", [this] { MainComputer().openEditor(); });
+    toolBar->addAction("mainComp", [this] { mainComputer.openEditor(); });
 
     setupView();
 

@@ -2,11 +2,11 @@
 #define MAINCOMPUTER_H
 
 #include "ConditionsManager.h"
-#include "Window.h"
+#include "Editor.h"
 
 class MainComputer
 {
-    Window editor;
+    Editor editor;
     ConditionsManager manager;
 public:
     MainComputer();
