@@ -18,6 +18,7 @@ target_include_directories(VehicleCompSimCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/models
     ${CMAKE_CURRENT_SOURCE_DIR}/state
     ${CMAKE_SOURCE_DIR}/GUI/include/VehicleCompSim/utils
+    ${CMAKE_SOURCE_DIR}/GUI/resources/icons
     ${CMAKE_SOURCE_DIR}/MainComputer/include
     ${CMAKE_SOURCE_DIR}/Communication/server/include
     ${CMAKE_SOURCE_DIR}/Communication/utilities
