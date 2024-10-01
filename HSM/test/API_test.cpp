@@ -26,7 +26,7 @@ TEST(API_TEST, get_kye_rsa_64_bit)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
     HSM::Ident myId = HSM::Ident();
-    u_int32_t keyId = 0;
+    HSM::KeyId keyId;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
     std::string massage = "hello world";
@@ -43,7 +43,7 @@ TEST(API_TEST, get_kye_rsa_128_bit)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
     HSM::Ident myId = HSM::Ident();
-    u_int32_t keyId = 0;
+    HSM::KeyId keyId;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 128);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
     std::string massage = "hello world";
@@ -57,11 +57,29 @@ TEST(API_TEST, get_kye_rsa_128_bit)
     HSM::KeyStorage::getInstance().~KeyStorage();
 }
 
+TEST(API_TEST, rsa_encrypt_without_user_id)
+{
+    HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
+    HSM::KeyId keyId;
+    HSM::Ident myId = HSM::Ident();
+    HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
+    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    std::string massage = "hello world";
+    std::vector<u_char> encrypted_massage;
+    status = HSM::Algo::encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, HSM::Ident{"notMyId"}, keyId, false);
+    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    std::vector<u_char> decrypted_massage;
+    status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
+    HSM::KeyStorage::getInstance().~KeyStorage();
+}
+
 TEST(API_TEST, get_kye_invalid_type)
 {
     HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
     HSM::Ident myId = HSM::Ident();
-    u_int32_t keyId = 0;
+    HSM::KeyId keyId;
     HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::NoAlg, 128);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_InvalidAlg);
 }

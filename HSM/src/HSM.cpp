@@ -117,7 +117,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
         }
         else if (vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type) && !needPrivilege)
         {
-            std::cout << "Found: " << line << "\n";
+            std::cout << "Found !needPrivilege: " << line << "\n";
             file.close();
             std::vector<std::vector<u_char>> vec = keyStingToVector(line);
             publicKey = vec[3];
@@ -179,7 +179,7 @@ HSM::KeyStorage &HSM::KeyStorage::getInstance()
 HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey, bool needPrivilege)
 {
     HSM_STATUS status = HSM_STATUS();
-    status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey);
+    status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);
     return status;
 }
 
