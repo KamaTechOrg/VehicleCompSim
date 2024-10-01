@@ -12,18 +12,22 @@
 #include "popupdialog.h"
 #include "client/websocketclient.h"
 #include "customwidget.h"
+#include "globalconstants.h"
 
 #include <cstdlib>
 #include <ctime>
+
+using namespace globalConstants;
 
 CustomScene::CustomScene(QObject* parent)
     : QGraphicsScene(parent), m_network(new Network<SensorItem, ConnectorItem>()),
     m_globalState(GlobalState::getInstance()) {
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &CustomScene::onCurrentProjectChanged);
+    connect(&m_globalState, &GlobalState::parsedData, this, &CustomScene::onParsedData);
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &CustomScene::applyRandomFlowAnimation);
-    timer->start(100);
+    timer->start(10);
 
     // Seed the random number generator
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -34,7 +38,6 @@ void CustomScene::addItemToScene(BaseItem *item)
     if(item == nullptr){
         return;
     }
-    // addItem(item);
     if (m_currentProject) {
         m_currentProject->addModel(item->model());
         item->model()->notifyItemAdded();
@@ -46,7 +49,6 @@ void CustomScene::removeItemFromScene(BaseItem *item)
     if(item == nullptr){
         return;
     }
-    // removeItem(item);
     if (m_currentProject) {
         m_currentProject->removeModel(item->model());
         item->model()->notifyItemDeleted();
@@ -54,13 +56,10 @@ void CustomScene::removeItemFromScene(BaseItem *item)
 }
 
 void CustomScene::clearScene() {
-    // cancelAllAnimations();
-    for (QGraphicsItem* item : items()) {
-        if (BaseItem* baseItem = dynamic_cast<BaseItem*>(item)) {
-            removeItem(baseItem);
-            delete baseItem;
-        }
+    for(auto item: items()){
+        removeItem(item);
     }
+    m_sensors.clear();
 }
 
 void CustomScene::modifyItem(QGraphicsItem *item)
@@ -220,7 +219,7 @@ void CustomScene::buildConnection(BaseItem *src, BaseItem *dest)
         connector->addEdge(edge2);
         dest->addEdge(edge2);
 
-        addItemToScene(connector); // TODO : notify to server
+        addItem(connector); // TODO : notify to server
         addItem(edge1); // TODO : notify to server
         addItem(edge2); // TODO : notify to server
 
@@ -268,23 +267,15 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
 
         SerializableItem* item; // = new SerializableItem();
 
-        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM) {
-            SensorModel* sensorModel = new SensorModel();
+        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM || itemType == CustomWidget::QEMU_SENSOR_ITEM) {
+            SensorModel* sensorModel = (itemType == CustomWidget::REGULAR_SENSOR_ITEM ? new SensorModel() : new QemuSensorModel());
+
             sensorModel->setOwnerID(m_globalState.myClientId());
-            SensorItem* sensorItem = new SensorItem(sensorModel);
-            sensorItem->setPos(event->scenePos());
-            m_network->addElement(sensorItem);
-            addItemToScene(sensorItem);
+            sensorModel->setX(event->scenePos().x());
+            sensorModel->setY(event->scenePos().y());
+            m_globalState.currentProject()->addModel(sensorModel);
             m_globalState.setCurrentSensorModel(sensorModel);
-        }
-        else if (itemType == CustomWidget::QEMU_SENSOR_ITEM) {
-            QemuSensorModel* qemuModel = new QemuSensorModel();
-            qemuModel->setOwnerID(m_globalState.myClientId());
-            QemuSensorItem* qemuItem = new QemuSensorItem(qemuModel);
-            qemuItem->setPos(event->scenePos());
-            m_network->addElement(qemuItem);
-            addItemToScene(qemuItem);
-            m_globalState.setCurrentSensorModel(qemuModel);
+            sensorModel->notifyItemAdded();
         }
         else if (itemType == CustomWidget::BUS_ITEM) {
             // m_network->addConnector(dynamic_cast<ConnectorItem*>(item));
@@ -310,41 +301,67 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
             QGraphicsItem* item = buildBaseItemFromModel(model);
             if (item) {
                 addItem(item);
+                if(model->itemType() == ItemType::Sensor){
+                    SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+                    m_sensors[sensorItem->getModel().priority()] = sensorItem;
+                }
             }
         }
     }
 }
 
-void CustomScene::applyRandomFlowAnimation() {
-    // Collect all SensorItems in the scene
-    QList<SensorItem*> sensorItems;
-    for (QGraphicsItem* item : items()) {
-        SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
-        if (sensorItem) {
-            sensorItems.append(sensorItem);
-        }
+void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
+    SensorItem* src = m_sensors[data[bufferInfo::SourceId].second];
+    SensorItem* dest = m_sensors[data[bufferInfo::DestinationId].second];
+    
+    // update the sensor values
+    if(src) {
+        src->update_new_data(data);
+    }
+    if(dest) {
+        dest->update_new_data(data);
     }
 
-    // Ensure there are at least two SensorItems to create a flow animation
-    if (sensorItems.size() < 2) {
+    if (!src || !dest) {
+        qWarning() << "Source or Destination sensor not found.";
+        return;
+    }
+
+    // Create and start the FlowAnimation
+    FlowAnimation* flowAnimation = new FlowAnimation(this, [dest]() {
+        dest->getVerticalIndicator()->incrementValue();
+    });
+    flowAnimation->setPoints(src->pos(), dest->pos());
+    flowAnimation->startAnimation();
+}
+
+void CustomScene::applyRandomFlowAnimation() {
+    if(!m_globalState.isTest()){
+        return;
+    }
+    if (m_sensors.size() < 2) {
         return;
     }
 
     // Select two random SensorItems
-    int index1 = std::rand() % sensorItems.size();
+    int index1 = std::rand() % m_sensors.size();
     int index2;
     do {
-        index2 = std::rand() % sensorItems.size();
+        index2 = std::rand() % m_sensors.size();
     } while (index1 == index2);
 
-    SensorItem* src = sensorItems[index1];
-    SensorItem* dest = sensorItems[index2];
+    SensorItem* src = m_sensors.values()[index1];
+    SensorItem* dest = m_sensors.values()[index2];
 
-    src->updateIndicatorValue(0);
-    dest->updateIndicatorValue(0);
+    if (!src || !dest) {
+        qWarning() << "Source or Destination sensor not found.";
+        return;
+    }
 
     // Create and start the FlowAnimation
-    FlowAnimation* flowAnimation = new FlowAnimation(this);
+    FlowAnimation* flowAnimation = new FlowAnimation(this, [dest]() {
+        dest->getVerticalIndicator()->incrementValue();
+    });
     flowAnimation->setPoints(src->pos(), dest->pos());
     flowAnimation->startAnimation();
 }
@@ -366,15 +383,20 @@ void CustomScene::onModelAdded(SerializableItem* model) {
     BaseItem* item = buildBaseItemFromModel(model);
     if (item) {
         addItem(item);
+        if(model->itemType() == ItemType::Sensor){
+            SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+            m_sensors[sensorItem->getModel().priority()] = sensorItem;
+        }
     }
 }
 
 void CustomScene::onModelRemoved(SerializableItem* model) {
     for (QGraphicsItem* item : items()) {
-        BaseItem* baseItem = dynamic_cast<BaseItem*>(item);
-        if (baseItem && baseItem->model()->getId() == model->getId()) {
-            removeItem(baseItem);
-            delete baseItem;
+        SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+        if (sensorItem && sensorItem->model()->getId() == model->getId()) {
+            m_sensors.remove(sensorItem->getModel().priority());
+            removeItem(sensorItem);
+            sensorItem->deleteLater();
             break;
         }
     }

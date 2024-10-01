@@ -1,8 +1,8 @@
 #include "flowanimation.h"
 #include "CustomEllipseItem.h"
 
-FlowAnimation::FlowAnimation(QGraphicsScene *scene, QObject *parent)
-    : QObject(parent), scene(scene), lineItem(nullptr), lightItem(nullptr), animationGroup(nullptr), isDeleting(false) {
+FlowAnimation::FlowAnimation(QGraphicsScene *scene, std::function<void()> onFinishedCallback, QObject *parent)
+    : QObject(parent), scene(scene), lineItem(nullptr), lightItem(nullptr), animationGroup(nullptr), isDeleting(false), onFinishedCallback(onFinishedCallback) {
     setupItems();
     setupAnimations();
     connect(&GlobalState::getInstance(), &GlobalState::currentProjectChanged, this, &FlowAnimation::cancelAnimation);
@@ -82,6 +82,9 @@ void FlowAnimation::onAnimationFinished() {
             delete lightItem;
             lightItem = nullptr;
         }
+    }
+    if (onFinishedCallback) {
+        onFinishedCallback();
     }
     deleteLater();  // Clean up the FlowAnimation object
 }

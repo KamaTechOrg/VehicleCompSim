@@ -15,12 +15,12 @@
 class ConditionsManager {
 private:
     static std::vector<std::shared_ptr<ConditionBase>> conditions;
-    static std::unordered_map<std::string, Action> actions; 
+    static std::vector<std::vector<Action>> actions;
 
     void addCondition(std::shared_ptr<ConditionBase> condition);
-    void addAction(const std::string &id, const Action &action);     
-    bool validateAll(const std::string &senderId, const std::string &value) const;
-    void executeAction(const std::string &id);  // Execute the action associated with the ID
+    void addAction(const int index, const Action& action);
+    void validateAll(const std::string &senderId, const std::string &value) const;
+    void executeActions(const int index) const;
 
     bool _isRunning;
 
@@ -29,7 +29,7 @@ public:
     void run();
     void stop();
     bool isRunning();
-    void loadFromJson(const std::string &filename);
+    void loadFromJson();
     std::pair<std::string, std::string> parseMessage(const std::string &message);  // Parse the message to extract ID and value
 };
 

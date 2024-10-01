@@ -3,6 +3,7 @@
 //
 
 #include "initializeSensorsData.h"
+#include <qstandardpaths.h>
 
 void initializeSensorsData::initialize(){
     read_from_json();
@@ -10,7 +11,18 @@ void initializeSensorsData::initialize(){
 }
 
 void initializeSensorsData::read_from_json() {
-    const QString& filePath = R"(C:\mobileye_project\VehicleCompSim\GUI\src\gui\box_info.json)";
+    QString dataDir;
+    QString relativeFilePath = "../../GUI/src/gui/box_info.json";
+
+    // TOTO:
+    // if (qEnvironmentVariableIsSet("DEV_MODE")) {
+    //     dataDir = QDir::currentPath(); // Use current directory in development mode
+    // } else {
+    //     dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation); // Use AppDataLocation in production
+    // }
+    dataDir = QDir::currentPath();
+    QString filePath = QDir::cleanPath(QDir(dataDir).filePath(relativeFilePath));
+    
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Couldn't open file" << filePath << ": " << file.errorString();

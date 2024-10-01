@@ -3,12 +3,11 @@
 // Helper function to convert log level to string
 std::string Logger::logLevelToString(LogLevel level) {
     switch (level) {
-        case LogLevel::Trace: return "TRACE";
-        case LogLevel::Debug: return "DEBUG";
+     
         case LogLevel::Info: return "INFO";
         case LogLevel::Warn: return "WARN";
         case LogLevel::Error: return "ERROR";
-        case LogLevel::Critical: return "CRITICAL";
+        
         default: return "UNKNOWN";
     }
 }

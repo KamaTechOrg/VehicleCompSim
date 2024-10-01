@@ -28,7 +28,8 @@ target_sources(tests PRIVATE
     ${CMAKE_SOURCE_DIR}/MainComputer/src/StartsWithCondition.cpp
     ${CMAKE_SOURCE_DIR}/MainComputer/src/EndsWithCondition.cpp
     ${CMAKE_SOURCE_DIR}/MainComputer/src/EqualsToCondition.cpp
-    ${CMAKE_SOURCE_DIR}/MainComputer/src/ConditionsFactory.cpp)
+    ${CMAKE_SOURCE_DIR}/MainComputer/src/ConditionsFactory.cpp
+    ${CMAKE_SOURCE_DIR}/MainComputer/src/JsonLoader.cpp)
 # Set compile definitions for Doctest
 target_compile_definitions(tests PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
 

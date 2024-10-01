@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "client.h"
+#include <Logger.h>
 
 static void send_yuor_id(int id , ClientSocket &socket)
 {
@@ -30,6 +31,7 @@ ClientSocket::ClientSocket(int id)
     {
         throw std::invalid_argument("Invalid ID: must be a positive integer.");
     }
+    
     
     m_clientSocket->create();
     std::string ip_server = Data_manipulator::get_ip_server(IPFILENAME);

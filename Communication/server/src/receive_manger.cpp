@@ -9,46 +9,45 @@
 #define close_socket close
 #endif
 
-
 #include "receive_manger.h"
+#include "manger.h"
+#include "helpers.h"
 
-void Receive_manger::print_arr(std::unordered_map<int, FD> &m_connections)
+void ReceiveManager::printConnectionMap()
 {
-    for (const auto &fd : m_connections)
+    for (const auto &fd : m_mangServer.m_socket_connections)
     {
         std::cout << fd.second << "," << std::flush;
     }
 }
 
-void Receive_manger::handleActivity(fd_set &readfds, std::unordered_map<int, FD> &m_connections, char *buffer, 
-                                    std::vector<CanBus> &vec_canbus, std::mutex &map_mutex)
+void ReceiveManager::handleActivity(fd_set &readfds, std::vector<CanBus> &vec_canbus)
 {
-    std::unique_lock<std::mutex> unordered_map_lock(map_mutex);
+    char buffer[MAXRECV];
+    Locker lock(m_mangServer.m_map_mutex);
 
-    for (auto it = m_connections.begin(); it != m_connections.end();)
+    for (auto it = m_mangServer.m_socket_connections.begin(); it != m_mangServer.m_socket_connections.end();)
     {
         int sd = it->second;
         if (FD_ISSET(sd, &readfds) && it->first != IDINNER)
         {
-            readFromSocket(sd, it, buffer, vec_canbus, m_connections);
+            readFromSocket(sd, it, buffer, vec_canbus);
         }
         else if (FD_ISSET(sd, &readfds) && it->first == IDINNER)
         {
-            Cross_platform::cress_read(it->second, buffer, 0); // Read for internal purposes
+            Cross_platform::cress_read(sd, buffer, 0); // Read for internal purposes
         }
         ++it;
     }
-    unordered_map_lock.unlock();
 }
 
-void Receive_manger::readFromSocket(int sd, std::unordered_map<int, FD>::iterator &it, char *buffer, 
-                                    std::vector<CanBus> &vec_canbus, std::unordered_map<int, FD> &m_connections)
+void ReceiveManager::readFromSocket(int sd, ItMap & it_map, char *buffer,std::vector<CanBus> &vec_canbus)
 {
     int valread = Cross_platform::cress_read(sd, buffer, 0);
     if (valread <= 0)
     {
         close_socket(sd);
-        it = m_connections.erase(it); // Remove connection if socket is closed
+        it_map = m_mangServer.m_socket_connections.erase(it_map); // Remove connection if socket is closed
     }
     else if (valread > 0)
     {
@@ -63,7 +62,7 @@ void Receive_manger::readFromSocket(int sd, std::unordered_map<int, FD>::iterato
     }
 }
 
-int Receive_manger::performSelect(fd_set &readfds, int max_sd)
+int ReceiveManager::performSelect(fd_set &readfds, int max_sd)
 {
     int activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
     if ((activity < 0) && (errno != EINTR))
@@ -73,76 +72,78 @@ int Receive_manger::performSelect(fd_set &readfds, int max_sd)
     return activity;
 }
 
-void Receive_manger::insert_fd(fd_set &set, int &max_fd, const std::unordered_map<int, FD> &unordered_map_fd)
+void ReceiveManager::insert_fd(fd_set &set, int &max_fd)
 {
-    for (const auto &pair : unordered_map_fd)
+    Locker locker(m_mangServer.m_map_mutex);
+    for (const auto &pair : m_mangServer.m_socket_connections)
     {
         int fd = pair.second;
         if (fd > 0)
         {
             FD_SET(fd, &set);
-        }
-        if (fd > max_fd)
-        {
-            max_fd = fd;
+            if (fd > max_fd)
+            {
+                max_fd = fd;
+            }
         }
     }
 }
 
-void Receive_manger::reset_in_loop(fd_set &set, int &fd, char *buf, int size)
+void ReceiveManager::reset_in_loop(fd_set &set, int &fd)
 {
-    memset(buf, 0, size);
     FD_ZERO(&set);
     fd = 0;
 }
 
-void Receive_manger::wait_connect(std::mutex &map_mutex,std::unordered_map<int, FD> &m_connections){
-    std::unique_lock<std::mutex> unordered_map_lock(map_mutex);
+void ReceiveManager::waitForConnection()
+{
+    std::unique_lock<std::mutex> unordered_map_lock(m_mangServer.m_map_mutex);
 
     // Wait until there's a connection to handle
-    while (m_connections.empty())
+    while (m_mangServer.m_socket_connections.empty())
     {
-        m_condition.wait(unordered_map_lock);
+        m_connection_cv.wait(unordered_map_lock);
     }
-    
-
 }
 
-void Receive_manger::select_menger(std::priority_queue<CanBus, std::vector<CanBus>, std::greater<CanBus>> &min_heap, 
-                                      std::mutex &heap_mutex, 
-                                      std::mutex &map_mutex, 
-                                      std::unordered_map<int, FD> &m_connections)
+void ReceiveManager::schedule()
 {
     int max_sd;
     fd_set readfds;
-    char buffer[MAXRECV];
     std::vector<CanBus> vec_canbus;
-    wait_connect(map_mutex , m_connections);
+    waitForConnection();
 
     // Main loop
     while (true)
     {
-        reset_in_loop(readfds, max_sd, buffer, sizeof(buffer));
-        print_arr(m_connections);
+        reset_in_loop(readfds, max_sd);
+        printConnectionMap();
 
         // Insert file descriptors to be monitored
-        std::unique_lock<std::mutex> unordered_map_lock(map_mutex);
-        insert_fd(readfds, max_sd, m_connections);
-        unordered_map_lock.unlock();
+        insert_fd(readfds, max_sd);
 
         // Perform select and handle activity
         int activity = performSelect(readfds, max_sd);
-        if (activity <= 0) continue;
+        if (activity <= 0)
+            continue;
 
-        handleActivity(readfds, m_connections, buffer, vec_canbus, map_mutex);
+        handleActivity(readfds, vec_canbus);
 
-        // Insert CanBus data into the priority queue
-        std::unique_lock<std::mutex> lock(heap_mutex);
-        for (const auto &canbus : vec_canbus)
-        {
-            min_heap.push(canbus);
-        }
-        vec_canbus.clear();
-        lock.unlock();
+        insertCanBusFromvectorToQueue(vec_canbus);
     }
+}
+
+void ReceiveManager::insertCanBusFromvectorToQueue(std::vector<CanBus> &vec_canbus)
+{
+    Locker lock(m_mangServer.m_queue_mutex);
+    for (const auto &canbus : vec_canbus)
+    {
+        m_mangServer.m_prioritysed_masseges_queue.push(canbus);
+    }
+    vec_canbus.clear();
+}
+
+void ReceiveManager::notify()
+{
+    m_connection_cv.notify_one();
 }

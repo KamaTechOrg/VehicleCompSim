@@ -1,4 +1,5 @@
 #include "verticalindicator.h"
+#include "globalstate.h"
 
 VerticalIndicator::VerticalIndicator(QWidget *parent)
     : QWidget(parent), m_value(0), m_maxValue(100),
@@ -6,21 +7,25 @@ VerticalIndicator::VerticalIndicator(QWidget *parent)
 {
     setFixedWidth(10);
     setFixedHeight(90);
+    connect(&GlobalState::getInstance(), &GlobalState::maxMessageCountChanged, this, &VerticalIndicator::onMaxValueChanged);
 }
 
 qreal VerticalIndicator::value() const { return m_value; }
 qreal VerticalIndicator::maxValue() const { return m_maxValue; }
-QColor VerticalIndicator::startColor() const { return m_startColor; }
-QColor VerticalIndicator::midColor() const { return m_midColor; }
-QColor VerticalIndicator::endColor() const { return m_endColor; }
 
-void VerticalIndicator::setValue(qreal value)
+void VerticalIndicator::incrementValue()
 {
-    if (qFuzzyCompare(m_value, value))
+    qreal newValue = m_value + 1;
+    if (qFuzzyCompare(m_value, newValue))
         return;
-    m_value = value;
+    if (newValue > m_maxValue) {
+        GlobalState::getInstance().setMaxMessageCount(m_maxValue + m_maxValue / 2);
+    }
+    if (newValue < 0) {
+        newValue = 0;
+    }
+    m_value = newValue;
     update();
-    emit valueChanged(m_value);
 }
 
 void VerticalIndicator::setMaxValue(qreal maxValue)
@@ -29,34 +34,6 @@ void VerticalIndicator::setMaxValue(qreal maxValue)
         return;
     m_maxValue = maxValue;
     update();
-    emit maxValueChanged(m_maxValue);
-}
-
-void VerticalIndicator::setStartColor(const QColor &color)
-{
-    if (m_startColor == color)
-        return;
-    m_startColor = color;
-    update();
-    emit startColorChanged(m_startColor);
-}
-
-void VerticalIndicator::setMidColor(const QColor &color)
-{
-    if (m_midColor == color)
-        return;
-    m_midColor = color;
-    update();
-    emit midColorChanged(m_midColor);
-}
-
-void VerticalIndicator::setEndColor(const QColor &color)
-{
-    if (m_endColor == color)
-        return;
-    m_endColor = color;
-    update();
-    emit endColorChanged(m_endColor);
 }
 
 void VerticalIndicator::paintEvent(QPaintEvent *event)
@@ -86,4 +63,9 @@ void VerticalIndicator::paintEvent(QPaintEvent *event)
     painter.setBrush(gradient);
     painter.setClipRect(visibleRect);
     painter.drawRoundedRect(rect(), 5, 5);
+}
+
+void VerticalIndicator::onMaxValueChanged(qreal maxValue)
+{
+    setMaxValue(maxValue);
 }

@@ -13,6 +13,9 @@
 #include <QGroupBox>
 #include "globalstate.h"
 #include "projectmodel.h"
+#include "globalconstants.h"
+
+using namespace globalConstants;
 
 class RemoteInterface : public QToolBar
 {
@@ -24,8 +27,7 @@ public:
 private slots:
     void onProjectItemClicked(const QModelIndex &index);
     void onRemoteModeChanged(bool isRemoteMode);
-    void onConnectionStatusChanged(bool isOnline);
-    void onConnectingStatusChanged(bool isConnecting);
+    void onConnectionStatusChanged(ConnectionState state);
     void onProjectAdded(ProjectModel* project);
     void onAddProjectClicked();
     void onCurrentProjectPublished(ProjectModel* project);

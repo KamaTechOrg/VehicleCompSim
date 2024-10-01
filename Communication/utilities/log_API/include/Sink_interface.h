@@ -3,13 +3,11 @@
 #include <string>
 
 enum class LogLevel {
-    Trace,
-    Debug,
+ 
     Info,
     Warn,
     Error,
-    Critical,
-    Off
+ 
 };
 
 // Base class for log sinks (Console, File, etc.)

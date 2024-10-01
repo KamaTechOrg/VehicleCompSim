@@ -29,10 +29,8 @@ public:
 };
 
 // Macros for easier logging
-#define LOG_TRACE(message) Logger::log(LogLevel::Trace, message)
-#define LOG_DEBUG(message) Logger::log(LogLevel::Debug, message)
 #define LOG_INFO(message) Logger::log(LogLevel::Info, message)
 #define LOG_WARN(message) Logger::log(LogLevel::Warn, message)
 #define LOG_ERROR(message) Logger::log(LogLevel::Error, message)
-#define LOG_CRITICAL(message) Logger::log(LogLevel::Critical, message)
+
 

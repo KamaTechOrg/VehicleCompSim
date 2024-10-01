@@ -39,9 +39,9 @@
 #include "items/qemusensoritem.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
-#include "../../../Communication/server/include/manger.h"
 #include "saveAndLoad.h"
 #include "items/parser.h"
+#include "globalconstants.h"
 #include "../../../Communication/User_Directory/client/client.h"
 
 class QGraphicsView;
@@ -49,7 +49,6 @@ class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-    MangServer server;
 public:
     MainWindow(QWidget* parent = nullptr);
 
@@ -60,7 +59,7 @@ private:
     void setupToolBar();
     void setupRunService();
     void setupView();
-    void onRunStart();
+    void onRunStart(QString com_server_ip = "");
     void onRunEnd();
     void record();
     void replayer();
@@ -70,7 +69,7 @@ private:
     void listener();
     void buffer_listener(const QString& data);
 private slots:
-    void onOnlineStatusChanged(bool online);
+    void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
@@ -84,14 +83,16 @@ private:
     QGraphicsView* m_view;
     GlobalState &m_globalState;
 
+    QString m_mainWindowTitle;
+
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
     PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
-    QPushButton *startBtn;
-    QPushButton *stopBtn ;
-    QTimeEdit *timer;
+    QPushButton *m_startBtn;
+    QPushButton *m_stopBtn ;
+    QTimeEdit *m_timer;
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;

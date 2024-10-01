@@ -1,0 +1,4 @@
+data/videos/*
+data/weights/*
+
+[Bb]uild/

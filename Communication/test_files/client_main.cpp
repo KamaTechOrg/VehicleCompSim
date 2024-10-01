@@ -46,6 +46,7 @@ void listen_thread(ClientSocket &client)
     {
         memset(buffer, 0, sizeof(buffer));
         auto pair_recv = client.listen(buffer, sizeof(buffer));
+
         if (pair_recv.first != ListenErrorCode::SUCCESS)
         {
             client.shut_down();
@@ -58,12 +59,10 @@ int main()
 {
     
     // Configure logger with different sinks and levels
-    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Error));  // Console logs only Error and above
-    Logger::addSink(std::make_unique<FileSink>("app.log", LogLevel::Debug)); // File logs Debug and above
+    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Info));  // Console logs only Error and above
 
     LOG_INFO("Application started");
-    LOG_DEBUG("This is a debug message");
-    LOG_ERROR("An error occurred!");
+
     
 
     int id = 0;

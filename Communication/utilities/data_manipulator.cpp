@@ -1,4 +1,5 @@
 #include "data_manipulator.h"
+#include "Logger.h"
 
 int Data_manipulator::CRCalgo(char *data)
 {
@@ -138,11 +139,11 @@ bool Data_manipulator::validateCRC(const std::string &input, int pos1, const cha
     if (Data_manipulator::CRCalgo(message) == EXcrc) {
         memcpy(data, buf, pos1);
 
-        std::cout << "received = ";
+        std::string result = "received == ";
         for (int i = 0; i < pos1; ++i) {
-            std::cout << buf[i];
+         result += buf[i];
         }
-        std::cout << std::endl;
+        LOG_INFO(result);
 
         return true;
     } else {

@@ -1,17 +1,21 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
 #include <thread>
+#include "app_utils.h"
+///#include "../Communication/User_Directory/client/client.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
         m_scene(new CustomScene()),
         m_runService(std::make_shared<RunService>()),
         m_globalState(GlobalState::getInstance()),
-        m_initializeSensorsData(new initializeSensorsData())
+        m_initializeSensorsData(new initializeSensorsData()),
+        m_mainWindowTitle("Vhiecal sensors simulator")
 {
-    std::thread([this](){server.init();}).detach();
 
     setupToolBar();
+
+    setWindowTitle(m_mainWindowTitle);
 
     auto mainWidget = new QWidget(this);
     m_mainLayout = new QVBoxLayout();
@@ -50,7 +54,7 @@ MainWindow::MainWindow(QWidget* parent)
     setupView();
 
     // Connect to GlobalState
-    connect(&m_globalState, &GlobalState::isOnlineChanged, this, &MainWindow::onOnlineStatusChanged);
+    connect(&m_globalState, &GlobalState::connectionStateChanged, this, &MainWindow::onConnectionStatusChanged);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
 
@@ -88,18 +92,18 @@ void MainWindow::setupRunService()
 {
     // m_runService->setScene(m_scene);
 
-    startBtn = new QPushButton("start", m_toolBar);
-    // m_toolBar->addWidget(startBtn);
-    stopBtn = new QPushButton("stop", m_toolBar);
-    // m_toolBar->addWidget(stopBtn);
-    timer = new QTimeEdit(m_toolBar);
-    timer->setDisplayFormat("hh:mm:ss");
-    timer->setFixedSize(120, 30);
-    timer->setCurrentSection(QDateTimeEdit::MinuteSection);
+    m_startBtn = new QPushButton("start", m_toolBar);
+    // m_toolBar->addWidget(m_startBtn);
+    m_stopBtn = new QPushButton("stop", m_toolBar);
+    // m_toolBar->addWidget(m_stopBtn);
+    m_timer = new QTimeEdit(m_toolBar);
+    m_timer->setDisplayFormat("hh:mm:ss");
+    m_timer->setFixedSize(120, 30);
+    m_timer->setCurrentSection(QDateTimeEdit::MinuteSection);
 
-    m_toolBar->addWidget(startBtn);
-    m_toolBar->addWidget(stopBtn);
-    m_toolBar->addWidget(timer);
+    m_toolBar->addWidget(m_startBtn);
+    m_toolBar->addWidget(m_stopBtn);
+    m_toolBar->addWidget(m_timer);
 
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
@@ -129,15 +133,17 @@ void MainWindow::setupRunService()
     QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
 
     });
-    QObject::connect(startBtn, &QPushButton::clicked, [this] {
+    QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
-            {"command", "start"}
+            {"command", "start"},
+            {"timer", m_timer->time().toString("hh:mm:ss")},
+            {"com_server_ip", QString::fromStdString(App_Utils::getPublicIp()) }
         });
         onRunStart();
     });
 
-    QObject::connect(stopBtn, &QPushButton::clicked, [this] {
+    QObject::connect(m_stopBtn, &QPushButton::clicked, [this] {
         // this->m_runService->stop();
         //m_runService->stop();
         WebSocketClient::getInstance().sendMessage(QJsonObject{
@@ -150,8 +156,9 @@ void MainWindow::setupRunService()
 
 
     WebSocketClient::getInstance().addActionHandler("run", std::make_unique<RunHandler>(
-        [this] { 
-            this->onRunStart();
+        [this](const QString& timer, const QString& com_server_ip) {
+            m_timer->setTime(QTime::fromString(timer, "hh:mm:ss"));
+            this->onRunStart(com_server_ip);
             //this->m_runService->start(/*[this] { this->onRunEnd(); }*/);
          },
         [this] { this->m_runService->stop(); }
@@ -165,7 +172,7 @@ void MainWindow::setupView() {
 
     // Initialize the title and conditional button
     m_publishButton = new QPushButton("Publish project", m_sceneBox);
-    m_publishButton->setDisabled(!m_globalState.isOnline());
+    m_publishButton->setDisabled(m_globalState.connectionState() != globalConstants::ConnectionState::Online);
     QObject::connect(m_publishButton, &QPushButton::clicked, [this] {
         m_globalState.publishCurrentProject();
     });
@@ -198,14 +205,24 @@ void MainWindow::onCurrentProjectPublished(ProjectModel* project) {
     m_publishButton->hide();
 }
 
-void MainWindow::onOnlineStatusChanged(bool online) {
-    if (online) {
-        mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
-    } else {
-        mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
+void MainWindow::onConnectionStatusChanged(globalConstants::ConnectionState state) {
+    switch (state){
+        case globalConstants::ConnectionState::Online:
+            setWindowTitle(m_mainWindowTitle + " - Online");
+            mainFrame->setStyleSheet("QFrame { border: 2px solid green; }");
+            break;
+        case globalConstants::ConnectionState::Offline:
+            setWindowTitle(m_mainWindowTitle);
+            mainFrame->setStyleSheet("QFrame { border: 2px solid red; }");
+            break;
+        case globalConstants::ConnectionState::Connecting:
+            setWindowTitle(m_mainWindowTitle + " - Connecting...");
+            mainFrame->setStyleSheet("QFrame { border: 2px solid orange; }");
+            break;
     }
-    m_publishButton->setDisabled(!online);
+    m_publishButton->setDisabled(state != globalConstants::ConnectionState::Online);
 }
+
 
 void MainWindow::background_Layout() {
 //    QString imagePath1 = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
@@ -275,36 +292,34 @@ void MainWindow::close_previous_replay(){
     }
 }
 
-void MainWindow::onRunStart()
+void MainWindow::onRunStart(QString com_server_ip)
 {
-    int t = timer->time().hour();
-    t = t * 60 + timer->time().minute();
-    t = t * 60 + timer->time().second();
+    int t = m_timer->time().hour();
+    t = t * 60 + m_timer->time().minute();
+    t = t * 60 + m_timer->time().second();
 
-    m_runService->start(t);
+    m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
     m_globalState.setIsRunning(true);
-    startBtn->hide();
-    timer->hide();
+    m_startBtn->hide();
+    m_timer->hide();
 
-    stopBtn->show();
+    m_stopBtn->show();
     //m_toolbar_blocker->show();
     //m_scene_blocker->show();
-    stopBtn->raise();
+    m_stopBtn->raise();
 }
 
 void MainWindow::onRunEnd()
 {
-    startBtn->show();
-    timer->show();
-//    m_globalState.setIsRunning(false);
+    m_startBtn->show();
+    m_timer->show();
 
-
-    stopBtn->hide();
+    m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
 }

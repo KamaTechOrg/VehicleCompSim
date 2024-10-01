@@ -15,20 +15,21 @@ class FlowAnimation : public QObject {
     Q_OBJECT
 
 public:
-    FlowAnimation(QGraphicsScene *scene, QObject *parent = nullptr);
+    FlowAnimation(QGraphicsScene *scene, std::function<void()> onFinishedCallback, QObject *parent = nullptr);
 
     void setPoints(const QPointF &src, const QPointF &dest);
     void startAnimation();
-    void cancelAnimation(ProjectModel* project); // New method to cancel the animation
-    bool isRunning() const; // New method to check if the animation is running
+    void cancelAnimation(ProjectModel* project);
+    bool isRunning() const;
 
 private:
     QGraphicsScene *scene;
     QGraphicsLineItem *lineItem;
-    CustomEllipseItem *lightItem; // Change type to CustomEllipseItem
+    CustomEllipseItem *lightItem;
     QSequentialAnimationGroup *animationGroup;
     QPointF sourcePt, destPt;
     bool isDeleting;
+    std::function<void()> onFinishedCallback;
 
     void setupItems();
     void setupAnimations();
