@@ -13,6 +13,8 @@ class parser :public QObject{
 Q_OBJECT
 public:
     parser();
+    QList<QPair<QString, QString>> extractBufferData(const QByteArray& buffer, const QList<QList<QString>>& columnInfo);
+    void create_buffer();
 public slots:
     void parseBuffer(const QString& data);
     void setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap);

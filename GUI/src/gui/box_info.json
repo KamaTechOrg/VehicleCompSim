@@ -3,9 +3,12 @@
     {
       "id": 1,
       "data": [
-        { "name": "msg sensor 1", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 1", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 1", "numBits": "14", "type": "string" }
+        { "name": "TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "TestString", "numBits": "14", "type": "char*"},
+        { "name": "TestFloat", "numBits": "4", "type": "float"},
+        { "name": "TestDouble", "numBits": "8", "type": "double"},
+        { "name": "TestBools", "numBits": "3", "type": "bool"}
       ]
     },
     {
