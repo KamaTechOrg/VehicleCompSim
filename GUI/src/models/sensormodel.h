@@ -7,6 +7,7 @@ class SensorModel : public SerializableItem {
     Q_PROPERTY(QString priority READ priority WRITE setPriority NOTIFY priorityChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString ownerID READ ownerID WRITE setOwnerID NOTIFY ownerIDChanged)
+    Q_PROPERTY(bool isOwnerOnline READ isOwnerOnline NOTIFY isOwnerOnlineChanged)
     Q_PROPERTY(QString buildCommand READ buildCommand WRITE setBuildCommand NOTIFY buildCommandChanged)
     Q_PROPERTY(QString runCommand READ runCommand WRITE setRunCommand NOTIFY runCommandChanged)
     Q_PROPERTY(QString cmakePath READ cmakePath WRITE setCmakePath NOTIFY cmakePathChanged)
@@ -24,6 +25,9 @@ public:
 
     QString ownerID() const;
     void setOwnerID(const QString& ownerID);
+
+    bool isOwnerOnline() const;
+    void setIsOwnerOnline(bool isOwnerOnline);
 
     QString buildCommand() const;
     void setBuildCommand(const QString& buildCommand);
@@ -50,6 +54,7 @@ signals:
     void priorityChanged();
     void nameChanged();
     void ownerIDChanged();
+    void isOwnerOnlineChanged();
     void buildCommandChanged();
     void runCommandChanged();
     void cmakePathChanged();
@@ -66,8 +71,7 @@ private:
     QString m_cmakePath;
     bool m_isUseCmakePath;
     bool m_isExcludeFromProject;
+    bool m_isOwnerOnline;
     qreal m_x;
     qreal m_y;
-
-
 };
