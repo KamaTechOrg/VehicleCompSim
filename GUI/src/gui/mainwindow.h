@@ -42,6 +42,7 @@
 #include "../../../Communication/server/include/manger.h"
 #include "saveAndLoad.h"
 #include "items/parser.h"
+#include "../../../Communication/User_Directory/client/client.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -66,6 +67,7 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
+    void listener();
     void buffer_listener(const QString& data);
 private slots:
     void onOnlineStatusChanged(bool online);
@@ -114,5 +116,6 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
+    ClientSocket * clientSocket;
 };
 

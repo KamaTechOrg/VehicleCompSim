@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
-///#include "../Communication/User_Directory/client/client.h"
+#include <thread>
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -108,6 +108,19 @@ void MainWindow::setupRunService()
     m_DB_handler = new DB_handler();
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
+
+    clientSocket = new ClientSocket(100);
+    auto func = [](ListenErrorCode error) {
+        std::cout << "listen" << std::endl;
+    };
+    std::thread t([&func]() {
+        while (true) {
+            char buffer[MAXRECV];
+            listenAsync(buffer, sizeof(buffer), func);
+        }
+    });
+
+    t.join();
 
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
@@ -288,6 +301,8 @@ void MainWindow::onRunEnd()
 {
     startBtn->show();
     timer->show();
+//    m_globalState.setIsRunning(false);
+
 
     stopBtn->hide();
     m_toolbar_blocker->hide();
@@ -302,8 +317,19 @@ void MainWindow::onRunEnd()
 // client.listenAsync(buffer , sizeof(buffer),func);
 // std::string mm = buffer;
 
-void MainWindow:: buffer_listener(const QString& data){
+// for test only
+void MainWindow:: buffer_listener(const QString& data) {
     m_globalState.newData(data);
+}
+
+void MainWindow:: listener(){
+//    ClientSocket client(100);
+////    use listen asynchronously
+//    char buffer[MAXRECV];
+//    auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
+//    client.listenAsync(buffer , sizeof(buffer),func);
+//    QString data = buffer;
+//    m_globalState.newData(data);
 }
 
 void MainWindow::saveLayout() {
