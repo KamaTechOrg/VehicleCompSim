@@ -59,7 +59,7 @@ add_subdirectory(SHA_API)
 add_subdirectory(HSM_Enums)
 
 # API
-add_library(HSM src/HSM.cpp src/ID.cpp)
+add_library(HSM src/HSM.cpp src/KeyStorage.cpp src/ID.cpp)
 target_include_directories(HSM PUBLIC include)
 target_link_libraries(HSM AES_API RSA SHA_API HSM_Enums)
 
