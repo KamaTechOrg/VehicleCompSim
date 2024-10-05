@@ -12,7 +12,7 @@ void initializeSensorsData::initialize(){
 
 void initializeSensorsData::read_from_json() {
     QString dataDir;
-    QString relativeFilePath = "../../GUI/src/gui/box_info.json";
+    QString relativeFilePath = "resources/jsons/box_info.json";
 
     // TOTO:
     // if (qEnvironmentVariableIsSet("DEV_MODE")) {
