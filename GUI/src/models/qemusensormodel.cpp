@@ -333,7 +333,7 @@ void QemuSensorModel::updateRunCommand()
 
 const char* QemuSensorModel::FLAG_MACHINE = "-machine";
 const char* QemuSensorModel::FLAG_CPU = "-cpu";
-const char* QemuSensorModel::FLAG_MEMORY_MB = "-memory";
+const char* QemuSensorModel::FLAG_MEMORY_MB = "-m";
 const char* QemuSensorModel::FLAG_KERNAL = "-kernal";
 const char* QemuSensorModel::FLAG_HARDDRIVE = "";
 const char* QemuSensorModel::FLAG_CDROM = "";
