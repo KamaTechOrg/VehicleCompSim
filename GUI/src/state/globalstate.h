@@ -47,7 +47,7 @@ public:
     void setMaxMessageCount(int value);
 
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newData(const QString& buffer, size_t bufferSize);
+    void newData(const QString& newData);
     void newParsedData(QList<QPair<QString, QString>> data);
 
     void saveData();

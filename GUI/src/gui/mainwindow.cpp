@@ -352,7 +352,7 @@ void MainWindow::onRunEnd()
 
 // for test only
 void MainWindow:: buffer_listener(const QString &data) {
-    m_globalState.newData(data, 1024);
+    m_globalState.newData(data);
 }
 
 void MainWindow::saveLayout() {

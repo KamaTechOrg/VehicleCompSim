@@ -89,8 +89,8 @@ void GlobalState::setMaxMessageCount(int value)
     }
 }
 
-void GlobalState::newData(const QString& buffer, size_t bufferSize){
-    emit newDataArrived(buffer, bufferSize);
+void GlobalState::newData(const QString& newData){
+    emit newDataArrived(newData, 1024);
 }
 void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
     emit ParserInfoArrived(parseInfoMap);
