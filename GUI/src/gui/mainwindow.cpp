@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "../../MainComputer/src/maincomputer.h"
+#include <QThread>
+#include <thread>
 #include "app_utils.h"
-///#include "../Communication/User_Directory/client/client.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -315,9 +316,11 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
+
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
-    // end text
+    // end test
+
     m_globalState.setIsRunning(true);
 
     // m_startBtn->hide();
@@ -347,16 +350,9 @@ void MainWindow::onRunEnd()
     m_countdownTimer->stop();
 }
 
-
-//ClientSocket client(id);
-// use listen asynchronously
-// char buffer[MAXRECV];
-// auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
-// client.listenAsync(buffer , sizeof(buffer),func);
-// std::string mm = buffer;
-
-void MainWindow:: buffer_listener(const QString& data){
-    m_globalState.newData(data);
+// for test only
+void MainWindow:: buffer_listener(const QString &data) {
+    m_globalState.newData(data, 1024);
 }
 
 void MainWindow::saveLayout() {

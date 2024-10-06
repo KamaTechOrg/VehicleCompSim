@@ -1,4 +1,6 @@
 #include "globalstate.h"
+//#include "constants.h"
+//#include "constants.h"
 #include <QSettings>
 
 GlobalState& GlobalState::getInstance()
@@ -87,8 +89,8 @@ void GlobalState::setMaxMessageCount(int value)
     }
 }
 
-void GlobalState::newData(const QString& data){
-    emit newDataArrived(data);
+void GlobalState::newData(const QString& buffer, size_t bufferSize){
+    emit newDataArrived(buffer, bufferSize);
 }
 void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
     emit ParserInfoArrived(parseInfoMap);
@@ -108,9 +110,9 @@ GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     m_myClientId = settings.value("clientId").toString();
     m_myClientId = (m_myClientId.isNull() || m_myClientId.isEmpty()) ? "-1" : m_myClientId;
 }
-
-void GlobalState::new_test_buffer(const QString& data) {
-    emit new_test_buffer_arrived(data);
+void GlobalState::new_test_buffer(const char data[], size_t bufferSize) {
+    emit new_test_buffer_arrived(data, bufferSize);
 }
+
 
 

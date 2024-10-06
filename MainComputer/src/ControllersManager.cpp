@@ -1,4 +1,5 @@
 #include "ControllersManager.h"
+#include <vector>
 
 std::vector<std::string> ControllersManager::getControllersIDS() const
 {

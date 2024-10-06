@@ -76,10 +76,6 @@ private slots:
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
     void updateTimer();
-//    void update_view();
-//    void fill_db_data();
-//    void read_from_json();
-//    void fill_box_data();
 
 private:
     CustomScene* m_scene;

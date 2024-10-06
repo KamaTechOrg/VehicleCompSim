@@ -21,6 +21,7 @@ target_include_directories(VehicleCompSimCore PUBLIC
     ${CMAKE_SOURCE_DIR}/GUI/resources/icons
     ${CMAKE_SOURCE_DIR}/MainComputer/include
     ${CMAKE_SOURCE_DIR}/Communication/server/include
+    ${CMAKE_SOURCE_DIR}/Communication/User_Directory/client
     ${CMAKE_SOURCE_DIR}/Communication/utilities
 )
 
@@ -31,6 +32,7 @@ target_link_libraries(VehicleCompSimCore PUBLIC
     Qt::Sql
     MainComputer
     server_lib
+    client_lib
 
 )
 
