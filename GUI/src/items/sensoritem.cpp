@@ -58,7 +58,7 @@ VerticalIndicator *SensorItem::getVerticalIndicator() const
 
   // todo update sensor data
 void SensorItem::update_new_data(QList<QPair<QString, QString>> data){
-    if(m_model->priority() == data[bufferInfo::SourceId].second || m_model->priority() == data[bufferInfo::DestinationId].second){
+    if(m_model->priority() == data[BufferInfo::SourceId].second || m_model->priority() == data[BufferInfo::DestinationId].second){
         all_data_final.emplace_back(data);
         last_data_final = data;
         qInfo() << "sensor need update";
@@ -104,11 +104,26 @@ void SensorItem::setupCheckBoxProxy()
     }
 
     // Create checkbox for excluding from project
-    QCheckBox* excludeCheckBox = new QCheckBox("Exclude");
+    QCheckBox* excludeCheckBox = new QCheckBox();
     excludeCheckBox->setToolTip("Exclude this sensor from the project");
     excludeCheckBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
     excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
     excludeCheckBox->setEnabled(isInitialized());// && m_isOwnedByMe);
+
+    // Set custom icons for the checkbox
+    excludeCheckBox->setStyleSheet(
+        "QCheckBox::indicator {"
+        "    width: 20px;"
+        "    height: 20px;"
+        "}"
+        "QCheckBox::indicator:unchecked {"
+        "    image: url('resources/icons/eye.svg');"
+        "}"
+        "QCheckBox::indicator:checked {"
+        "    image: url('resources/icons/eye-off.svg');"
+        "}"
+    );
+
     connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
         m_model->setisExcludeFromProject(state == Qt::Checked);
         m_model->notifyItemModified();
