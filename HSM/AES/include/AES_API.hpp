@@ -15,5 +15,6 @@ namespace HSM
         static HSM_STATUS decrypt(std::vector<uint8_t> const &key, std::vector<uint8_t> const &encMsg, std::vector<uint8_t> &clrMsg, ENCRYPTION_ALGORITHM_TYPE const &type);
 
         static HSM_STATUS generateKey(std::vector<uint8_t> &generated_key, ENCRYPTION_ALGORITHM_TYPE const &type);
+        static HSM_STATUS generateAndPrintKey(std::vector<uint8_t> &generated_key, ENCRYPTION_ALGORITHM_TYPE const &type);
     };
 }

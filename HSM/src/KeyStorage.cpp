@@ -7,7 +7,7 @@
 
 using namespace HSM;
 
-std::string vectorToString(std::vector<u_char> vec)
+std::string vectorToString(std::vector<u_int8_t> vec)
 {
     std::stringstream ss;
     for (auto c : vec)
@@ -17,28 +17,58 @@ std::string vectorToString(std::vector<u_char> vec)
     return ss.str();
 }
 
-std::vector<std::vector<u_char>> keyStingToVector(std::string str)
+std::string binaryVectorToString(std::vector<u_int8_t> vec)
+{
+    std::stringstream ss;
+    for (auto const &b : vec)
+        ss << std::hex << std::setfill('0') << std::setw(2) << (int)b;
+    std::string tmp = ss.str();
+    return ss.str();
+}
+
+std::vector<u_int8_t> stringToBinaryVector(std::string str)
+{
+    std::vector<u_int8_t> vec;
+    for (int i = 0; i < str.size(); i += 2)
+    {
+        std::string c = str.substr(i, 2);
+        int n = std::stoi(c, nullptr, 16);
+        vec.emplace_back(n);
+    }
+    return vec;
+}
+
+std::vector<std::vector<u_int8_t>> keyStingToVector(std::string str)
 {
 
-    std::vector<std::vector<u_char>> vec;
+    std::vector<std::vector<u_int8_t>> vec;
     std::stringstream ss(str);
     std::string word;
+    int count = 0;
     while (std::getline(ss, word, ','))
     {
         std::stringstream ss2(word);
         std::string word2 = ss2.str();
-        std::vector<u_char> v;
-        for (u_char c : word2)
+        std::vector<u_int8_t> v;
+        if (count == 4)
         {
-            v.emplace_back(c);
+            v = stringToBinaryVector(word2);
+        }
+        else
+        {
+            for (u_char c : word2)
+            {
+                v.emplace_back(c);
+            }
         }
         vec.push_back(v);
+        count++;
     }
 
     return vec;
 }
 
-const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
+const std::string KeyStorage::KeyStorageFileName = "KeyStorage17.csv";
 KeyStorage *KeyStorage::instance = nullptr;
 
 KeyStorage::KeyStorage()
@@ -54,9 +84,9 @@ KeyStorage::KeyStorage()
     }
     file.close();
     HSM_STATUS status;
-    kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB;
+    kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC;
     // kekAlgType = kekAlgorithmType;
-    // keyForKek = std::vector<u_char>(stringKeyForKek.begin(), stringKeyForKek.end());
+    // keyForKek = std::vector<u_int8_t>(stringKeyForKek.begin(), stringKeyForKek.end());
     status = AES::generateKey(keyForKek, kekAlgType);
     if (status != HSM_STATUS::HSM_Good)
     {
@@ -67,8 +97,11 @@ KeyStorage::KeyStorage()
 
 HSM::KeyStorage::~KeyStorage()
 {
-    // erase file
-    std::remove(KeyStorageFileName.c_str());
+    // erase teh csv file
+    // std::ofstream file(KeyStorageFileName, std::ofstream::out | std::ofstream::trunc);
+    // file.close();
+    
+    // delete instance;
     // delete instance;
     // KeyStorage::instance = nullptr;
 }
@@ -89,7 +122,7 @@ HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey, bool needPrivilege)
+HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
 {
     std::ifstream file(KeyStorageFileName);
     if (!file.is_open())
@@ -115,10 +148,10 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
         {
             std::cout << "Found: " << line << "\n";
             file.close();
-            std::vector<std::vector<u_char>> vec = keyStingToVector(line);
+            std::vector<std::vector<u_int8_t>> vec = keyStingToVector(line);
             publicKey = vec[3];
-            std::vector<u_char> encryptedPrivateKey = vec[4];
-            file.close();
+            std::vector<u_int8_t> encryptedPrivateKey = vec[4];
+            // file.close();
             HSM_STATUS status = AES::decrypt(getInstance().keyForKek, encryptedPrivateKey, privateKey, getInstance().kekAlgType);
             if (status != HSM_STATUS::HSM_Good)
                 return status;
@@ -128,7 +161,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
         {
             std::cout << "Found !needPrivilege: " << line << "\n";
             file.close();
-            std::vector<std::vector<u_char>> vec = keyStingToVector(line);
+            std::vector<std::vector<u_int8_t>> vec = keyStingToVector(line);
             publicKey = vec[3];
             file.close();
             return HSM_STATUS::HSM_Good;
@@ -140,8 +173,8 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
 
 HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
 {
-    std::vector<u_char> publicKey;
-    std::vector<u_char> privateKey;
+    std::vector<u_int8_t> publicKey;
+    std::vector<u_int8_t> privateKey;
     HSM_STATUS status = HSM_STATUS();
     switch (type)
     {
@@ -173,9 +206,10 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
         keyId = KeyStorage::getInstance().keyIdCounter++;
         std::stringstream ss;
         // encrypt private key using kek
-        std::vector<u_char> encryptedPrivateKey;
+        std::vector<u_int8_t> encryptedPrivateKey;
         status = AES::encrypt(getInstance().keyForKek, privateKey, encryptedPrivateKey, getInstance().kekAlgType);
-        ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(encryptedPrivateKey);
+        ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << binaryVectorToString(encryptedPrivateKey);
+        std::string tmp = ss.str();
         status = KeyStorage::getInstance().writeToStorage(ss.str());
     }
     return status;
@@ -188,7 +222,7 @@ HSM::KeyStorage &HSM::KeyStorage::getInstance()
     return *instance;
 }
 
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_char> &publicKey, std::vector<u_char> &privateKey, bool needPrivilege)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
 {
     HSM_STATUS status = HSM_STATUS();
     status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);

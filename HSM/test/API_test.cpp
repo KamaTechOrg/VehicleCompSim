@@ -1,6 +1,5 @@
 #include <string>
 #include <gtest/gtest.h>
-
 #include "HSM.h"
 #include "AES_API.hpp"
 
@@ -117,4 +116,11 @@ TEST(API_AES, auto_generated)
         }
     }
 
+}
+
+TEST(API_AES, printAESKye)
+{
+    ENCRYPTION_ALGORITHM_TYPE aes_type = ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB;
+    std::vector<uint8_t> key;
+    EXPECT_EQ(AES::generateAndPrintKey(key, aes_type), HSM_STATUS::HSM_Good);
 }

@@ -1,6 +1,7 @@
 #include <memory>
 #include <fstream>
 #include <stdexcept>
+#include <iomanip>
 
 #include "AES_API.hpp"
 #include "AES_chaining_stream.hpp"
@@ -192,4 +193,21 @@ HSM_STATUS AES::generateKey( std::vector<uint8_t>& generated_key, ENCRYPTION_ALG
 // #endif
     } catch (std::exception const&) {}
     return HSM_STATUS::HSM_InternalErr;
+}
+
+
+HSM_STATUS AES::generateAndPrintKey( std::vector<uint8_t>& generated_key, ENCRYPTION_ALGORITHM_TYPE const &type)
+{
+  HSM_STATUS status = generateKey(generated_key, type);
+  if(status != HSM_STATUS::HSM_Good)
+    return status;
+  std::stringstream ss;
+  for(auto const& b : generated_key)
+    ss << std::hex << std::setfill('0') << std::setw(2) << (int)b;
+  std::cout << ss.str() << std::dec << std::endl;
+  return status;
+  // for(auto const& b : generated_key)
+  //   std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)b;
+  // std::cout << std::dec << std::endl;
+  // return status;
 }
