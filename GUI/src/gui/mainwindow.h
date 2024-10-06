@@ -67,17 +67,13 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
-    void listener();
-    void buffer_listener(const char buffer[], size_t bufferSize);
+    void buffer_listener(const QString &data);
+
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
-//    void update_view();
-//    void fill_db_data();
-//    void read_from_json();
-//    void fill_box_data();
 
 private:
     CustomScene* m_scene;
@@ -104,7 +100,6 @@ private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
     DB_handler *m_DB_handler;
-//    QTimer *change_view_timer;
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;

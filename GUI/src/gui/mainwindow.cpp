@@ -113,18 +113,6 @@ void MainWindow::setupRunService()
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
 
-    clientSocket = new ClientSocket(100);
-    auto func = [](ListenErrorCode error) {
-        std::cout << "listen" << std::endl;
-    };
-//    std::thread t([&func, this](){
-//        while (true) {
-//            char buffer[MAXRECV];
-//            clientSocket->listenAsync(buffer, sizeof(buffer), func);
-//        }
-//    });
-//    t.join();
-
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
         onRunEnd();
@@ -300,9 +288,11 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
+
     // for test only
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
-    // end text
+    // end test
+
     m_globalState.setIsRunning(true);
     m_startBtn->hide();
     m_timer->hide();
@@ -323,28 +313,9 @@ void MainWindow::onRunEnd()
     m_scene_blocker->hide();
 }
 
-
-//ClientSocket client(id);
-// use listen asynchronously
-// char buffer[MAXRECV];
-// auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
-// client.listenAsync(buffer , sizeof(buffer),func);
-// std::string mm = buffer;
-
 // for test only
-void MainWindow:: buffer_listener(const char buffer[], size_t bufferSize) {
-    qInfo() << "buffer_listener" << buffer[0];
-    m_globalState.newData(buffer, bufferSize);
-}
-
-void MainWindow:: listener(){
-//    ClientSocket client(100);
-////    use listen asynchronously
-//    char buffer[MAXRECV];
-//    auto func = [](ListenErrorCode){std::cout << "listen" << std::endl; };
-//    client.listenAsync(buffer , sizeof(buffer),func);
-//    QString data = buffer;
-//    m_globalState.newData(data);
+void MainWindow:: buffer_listener(const QString &data) {
+    m_globalState.newData(data, 1024);
 }
 
 void MainWindow::saveLayout() {

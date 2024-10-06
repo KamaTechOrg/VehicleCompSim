@@ -80,5 +80,5 @@ void buffer_test::testExtractBufferData() {
 
     QString qstr = QString::fromStdString(ss.str());
 
-    GlobalState::getInstance().newData(qstr, 1024);
+//    GlobalState::getInstance().newData(qstr, 1024);
 }
