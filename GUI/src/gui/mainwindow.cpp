@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget* parent)
         m_runService(std::make_shared<RunService>()),
         m_globalState(GlobalState::getInstance()),
         m_initializeSensorsData(new initializeSensorsData()),
-        m_mainWindowTitle("Vehicle sensors simulator")
+        m_mainWindowTitle("Vehicle sensors simulator"),
+        m_countdownTimer(new QTimer(this))
 {
 
     setupToolBar();
@@ -57,6 +58,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
 
+    connect(m_countdownTimer, &QTimer::timeout, this, &MainWindow::updateTimer);
+
     // for test only
     connect(&m_globalState, &GlobalState::new_test_buffer_arrived, this, &MainWindow::buffer_listener);
 
@@ -97,17 +100,33 @@ void MainWindow::setupRunService()
 
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, &GlobalState::getInstance(), &GlobalState::newData);
 
-    m_startBtn = new QPushButton("start", m_toolBar);
-    // m_toolBar->addWidget(m_startBtn);
-    m_stopBtn = new QPushButton("stop", m_toolBar);
-    // m_toolBar->addWidget(m_stopBtn);
+    m_startBtn = new QPushButton(m_toolBar);
+    m_startBtn->setIcon(QIcon("resources/icons/start.svg"));
+    m_startBtn->setToolTip("Start");
+    m_startBtn->setStyleSheet("QPushButton { border: none; background: none; }");
+    m_startBtn->setFixedSize(50, 50);
+    m_startBtn->setIconSize(QSize(50, 50));
+
+    m_stopBtn = new QPushButton(m_toolBar);
+    m_stopBtn->setIcon(QIcon("resources/icons/stop.svg"));
+    m_stopBtn->setToolTip("Stop");
+    m_stopBtn->setStyleSheet("QPushButton { border: none; background: none; }");
+    m_stopBtn->setFixedSize(50, 50);
+    m_stopBtn->setIconSize(QSize(50, 50));
+    
     m_timer = new QTimeEdit(m_toolBar);
     m_timer->setDisplayFormat("hh:mm:ss");
     m_timer->setFixedSize(120, 30);
     m_timer->setCurrentSection(QDateTimeEdit::MinuteSection);
 
-    m_toolBar->addWidget(m_startBtn);
-    m_toolBar->addWidget(m_stopBtn);
+    m_buttonStack = new QStackedWidget(m_toolBar);
+    m_buttonStack->addWidget(m_startBtn);
+    m_buttonStack->addWidget(m_stopBtn);
+    m_buttonStack->setCurrentWidget(m_startBtn);
+    m_buttonStack->setStyleSheet("QStackedWidget { border: none; background: none; }");
+    m_buttonStack->setFixedSize(50, 50);
+
+    m_toolBar->addWidget(m_buttonStack);
     m_toolBar->addWidget(m_timer);
 
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
@@ -300,23 +319,32 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
     // end text
     m_globalState.setIsRunning(true);
-    m_startBtn->hide();
-    m_timer->hide();
 
-    m_stopBtn->show();
-    //m_toolbar_blocker->show();
-    //m_scene_blocker->show();
-    m_stopBtn->raise();
+    // m_startBtn->hide();
+    // m_timer->hide();
+    // m_stopBtn->show();
+    // //m_toolbar_blocker->show();
+    // //m_scene_blocker->show();
+    // m_stopBtn->raise();
+    m_buttonStack->setCurrentWidget(m_stopBtn);
+    m_timer->setDisabled(true);
+
+    m_toolBar->update();
+    m_toolBar->repaint();
+
+    m_countdownTimer->start(1000);
 }
 
 void MainWindow::onRunEnd()
 {
-    m_startBtn->show();
-    m_timer->show();
+    m_buttonStack->setCurrentWidget(m_startBtn);
+    m_timer->setDisabled(false);
 
-    m_stopBtn->hide();
+    // m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
+
+    m_countdownTimer->stop();
 }
 
 
@@ -336,4 +364,16 @@ void MainWindow::saveLayout() {
 }
 void MainWindow::loadLayout() {
     m_globalState.loadData();
+}
+
+void MainWindow::updateTimer()
+{
+    QTime currentTime = m_timer->time();
+    if (currentTime == QTime(0, 0, 0)) {
+        m_countdownTimer->stop();
+        // m_runService->stop();
+        return;
+    }
+    currentTime = currentTime.addSecs(-1);
+    m_timer->setTime(currentTime);
 }

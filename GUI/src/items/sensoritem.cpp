@@ -122,12 +122,8 @@ void SensorItem::setupCheckBoxProxy()
 void SensorItem::setupIconLabelProxy()
 {
     m_cloudIcon = new QLabel();
-    m_cloudIcon->setPixmap(QPixmap("resources/icons/cloud.svg")); // Set your icon path here
-    m_cloudIcon->setToolTip("the sensor's owner is online");
-    //make background of the label transparent
     m_cloudIcon->setAttribute(Qt::WA_TranslucentBackground);
-    // set the color of the icon to
-    m_cloudIcon->setStyleSheet("background-color: blue");
+    setCloudIcon();
 
     // Create a proxy widget for the icon label
     QGraphicsProxyWidget* iconProxy = new QGraphicsProxyWidget(this);
