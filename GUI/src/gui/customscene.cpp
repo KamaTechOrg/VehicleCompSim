@@ -311,8 +311,8 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
 }
 
 void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
-    SensorItem* src = m_sensors[data[bufferInfo::SourceId].second];
-    SensorItem* dest = m_sensors[data[bufferInfo::DestinationId].second];
+    SensorItem* src = m_sensors[data[BufferInfo::SourceId].second];
+    SensorItem* dest = m_sensors[data[BufferInfo::DestinationId].second];
     
     // update the sensor values
     if(src) {
