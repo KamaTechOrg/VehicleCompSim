@@ -25,6 +25,7 @@ include_directories(${mongo-c-driver_BINARY_DIR}/src/libbson/src)
 enable_testing()
 
 # Add subdirectories
+add_subdirectory(resources)
 add_subdirectory(include/VehicleCompSim/utils)
 add_subdirectory(src)
 add_subdirectory(tests)

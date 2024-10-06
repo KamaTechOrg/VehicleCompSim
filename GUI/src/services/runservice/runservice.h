@@ -6,6 +6,7 @@
 #include "runmanager.h"
 //#include "../../../Communication/server/include/manger.h"
 #include "../../../../Communication/server/include/manger.h"
+#include "../../../../Communication/client/include/client.h"
 
 
 
@@ -16,11 +17,20 @@ class RunService : public QObject
     std::shared_ptr<RunManager> runManager;
     static int newSessionId();
     int session;
-    MangServer server;
+
+    std::shared_ptr<MangServer> server;
+    std::shared_ptr<std::thread> server_thread;
+
+    std::shared_ptr<ClientSocket> client;
+    std::shared_ptr<std::thread> client_listner;
 
     void startTimer(int timer);
     void initComServer(QString com_server_ip);
     void closeComServer();
+
+    void startAlphaClient();
+    void closeAlphaClient();
+
 public:
     RunService();
 
@@ -29,6 +39,7 @@ public:
 signals:
     void startBegin();
     void stopFinished();
+    void newCommunicationPacketAccepted(QString packet);
 
 };
 

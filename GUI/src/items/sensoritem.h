@@ -3,6 +3,8 @@
 #include <QToolTip>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QLabel>
+
 #include "baseitem.h"
 #include "sensormodel.h"
 #include "PersistentTootip.h"
@@ -36,10 +38,13 @@ private slots:
     void onModelUpdated();
     void showInfoWindow();
     void onCustomWindowClosed();
+    void onIsRunningChanged(bool isRunning);
+    void setCloudIcon();
 
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void setupCheckBoxProxy();
+    void setupIconLabelProxy();
     void showButtons();
     void hideButtons();
     QString fetchDataInTable();
@@ -52,6 +57,7 @@ private:
     QGraphicsProxyWidget* m_checkBoxProxy;
     QGraphicsProxyWidget* m_verticalIndicatorProxy;
     VerticalIndicator* m_verticalIndicator;
+    QLabel* m_cloudIcon;
     QColor m_disabledColor = QColor(192, 192, 192); // Gray for disabled
     QColor m_excludedColor = QColor(250, 165, 142); // Red for excluded
     QColor m_availableColor = QColor(160, 253, 143); // Green for available
@@ -62,12 +68,9 @@ private:
     QList<QList<QPair<QString, QString>>>  all_data_final;
     QList<QPair<QString, QString>>  last_data_final;
 
-
     QList<QVariant> last_data;
     QList<QVariant> all_data;
     PersistentTooltip* m_persistentTooltip = nullptr;
     bool m_isOwnedByMe = false;
     bool mouse_pressed = false;
-
-
 };

@@ -9,10 +9,12 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
+#include <QTimer>
 #include <QFileDialog>
 #include <QGraphicsItem>
 #include <QWidget>
 #include <QPushButton>
+#include <QStackedWidget>
 #include <QRandomGenerator>
 #include <QRect>
 #include <QHBoxLayout>
@@ -42,8 +44,7 @@
 #include "saveAndLoad.h"
 #include "items/parser.h"
 #include "globalconstants.h"
-#include "../../../Communication/User_Directory/client/client.h"
-#include "../../../Communication/utilities/constants.h"
+#include "../../MainComputer/src/maincomputer.h"
 
 class QGraphicsView;
 class QToolBar;
@@ -67,13 +68,14 @@ private:
     void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
-    void buffer_listener(const QString &data);
+    void buffer_listener(const QString& data);
 
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
+    void updateTimer();
 
 private:
     CustomScene* m_scene;
@@ -81,15 +83,18 @@ private:
     GlobalState &m_globalState;
 
     QString m_mainWindowTitle;
-
+    
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
     PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
+    QStackedWidget* m_buttonStack;
     QPushButton *m_startBtn;
     QPushButton *m_stopBtn ;
     QTimeEdit *m_timer;
+    QTimer* m_countdownTimer;
+
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;
@@ -100,6 +105,7 @@ private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
     DB_handler *m_DB_handler;
+//    QTimer *change_view_timer;
     QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
@@ -113,6 +119,6 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
-    ClientSocket * clientSocket;
+    MainComputer mainComputer;
 };
 

@@ -26,12 +26,18 @@ SensorItem::SensorItem(SensorModel* model, QGraphicsItem *parent)
 
     m_closeProxy->setPos(boundingRect().topRight() + QPointF(5, -25)); // Adjust position to be outside top-right
     setupCheckBoxProxy();
+    if(!m_isOwnedByMe){
+        setupIconLabelProxy();
+    }
     // Set up vertical indicator
     m_verticalIndicatorProxy->setWidget(m_verticalIndicator);
     m_verticalIndicatorProxy->setPos(QPointF(boundingRect().right(), boundingRect().top() + 5));
     m_verticalIndicatorProxy->setZValue(1);
+    m_verticalIndicator->setVisible(false);
     
     connect(m_model, &SensorModel::anyPropertyChanged, this, &SensorItem::onModelUpdated);
+    connect(m_model, &SensorModel::isOwnerOnlineChanged, this, &SensorItem::setCloudIcon);
+    connect(&m_globalState, &GlobalState::isRunningChanged, this, &SensorItem::onIsRunningChanged);
     updateColor();
     hideButtons();
 
@@ -92,7 +98,7 @@ void SensorItem::setupCheckBoxProxy()
         QCheckBox* checkBox = static_cast<QCheckBox*>(m_checkBoxProxy->widget());
         bool oldState = checkBox->blockSignals(true); // Block signals
         checkBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
-        checkBox->setEnabled(isInitialized() && m_isOwnedByMe);
+        checkBox->setEnabled(isInitialized());// && m_isOwnedByMe);
         checkBox->blockSignals(oldState); // Restore previous state
         return;
     }
@@ -102,7 +108,7 @@ void SensorItem::setupCheckBoxProxy()
     excludeCheckBox->setToolTip("Exclude this sensor from the project");
     excludeCheckBox->setCheckState(m_model->isExcludeFromProject() ? Qt::Checked : Qt::Unchecked);
     excludeCheckBox->setAttribute(Qt::WA_TranslucentBackground);
-    excludeCheckBox->setEnabled(isInitialized() && m_isOwnedByMe);
+    excludeCheckBox->setEnabled(isInitialized());// && m_isOwnedByMe);
     connect(excludeCheckBox, &QCheckBox::stateChanged, [this](int state) {
         m_model->setisExcludeFromProject(state == Qt::Checked);
         m_model->notifyItemModified();
@@ -111,6 +117,18 @@ void SensorItem::setupCheckBoxProxy()
 
     m_checkBoxProxy->setWidget(excludeCheckBox);
     m_checkBoxProxy->setPos(QPointF(-m_width / 2 + 10, m_height / 2 - 30));
+}
+
+void SensorItem::setupIconLabelProxy()
+{
+    m_cloudIcon = new QLabel();
+    m_cloudIcon->setAttribute(Qt::WA_TranslucentBackground);
+    setCloudIcon();
+
+    // Create a proxy widget for the icon label
+    QGraphicsProxyWidget* iconProxy = new QGraphicsProxyWidget(this);
+    iconProxy->setWidget(m_cloudIcon);
+    iconProxy->setPos(QPointF(m_width / 2 - 30, m_height / 2 - 30)); // Position the icon label at the right bottom
 }
 
 void SensorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -270,12 +288,30 @@ void SensorItem::onCustomWindowClosed() {
     mouse_pressed = false;
     m_updateWindowTimer->stop();
 }
-void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
-    if (m_persistentTooltip) {
-        m_persistentTooltip->hide();
-    }
-    BaseItem::hoverLeaveEvent(event);
+void SensorItem::onIsRunningChanged(bool isRunning)
+{
+    m_verticalIndicator->setVisible(isRunning);
 }
 
+void SensorItem::setCloudIcon()
+{
+    bool isOnline = m_model->isOwnerOnline();
+    if (m_cloudIcon && !m_isOwnedByMe) {
+        if(isOnline){
+            m_cloudIcon->setPixmap(QPixmap("resources/icons/cloud.svg"));
+            m_cloudIcon->setToolTip("the sensor's owner is online");
+        } else{
+            m_cloudIcon->setPixmap(QPixmap("resources/icons/cloud-off.svg"));
+            m_cloudIcon->setToolTip("the sensor's owner is offline");
+        }
+    }
+}
 
-
+void SensorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+  if (m_persistentTooltip)
+  {
+    m_persistentTooltip->hide();
+  }
+  BaseItem::hoverLeaveEvent(event);
+}

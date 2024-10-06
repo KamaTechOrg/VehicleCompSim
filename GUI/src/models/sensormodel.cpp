@@ -3,7 +3,7 @@
 #include "qmetaobject.h"
 
 SensorModel::SensorModel(QObject* parent)
-    : m_isUseCmakePath(true), m_isExcludeFromProject(false), m_x(0), m_y(0) {
+    : m_isUseCmakePath(true), m_isExcludeFromProject(false), m_x(0), m_y(0), m_isOwnerOnline(true) {
     m_type = ItemType::Sensor;
 
 }
@@ -29,6 +29,14 @@ void SensorModel::setOwnerID(const QString& ownerID) {
     if (m_ownerID != ownerID) {
         m_ownerID = ownerID;
         emit ownerIDChanged();
+    }
+}
+
+bool SensorModel::isOwnerOnline() const { return m_isOwnerOnline; }
+void SensorModel::setIsOwnerOnline(bool isOwnerOnline) {
+    if (m_isOwnerOnline != isOwnerOnline) {
+        m_isOwnerOnline = isOwnerOnline;
+        emit isOwnerOnlineChanged();
     }
 }
 
@@ -79,6 +87,7 @@ QJsonObject SensorModel::serialize() const {
     itemData["priority"] = m_priority;
     itemData["name"] = m_name;
     itemData["ownerID"] = m_ownerID;
+    itemData["isOwnerOnline"] = m_isOwnerOnline;
     itemData["buildCommand"] = m_buildCommand;
     itemData["runCommand"] = m_runCommand;
     itemData["cmakePath"] = m_cmakePath;
@@ -97,7 +106,8 @@ void SensorModel::deserialize(const QJsonObject &itemData) {
     m_cmakePath = itemData["cmakePath"].toString();
     m_isUseCmakePath = itemData["isUseCmakePath"].toBool();
     m_isExcludeFromProject = itemData["isExcludeFromProject"].toBool();
-
+    setIsOwnerOnline(itemData["isOwnerOnline"].toBool());
+    
     emit anyPropertyChanged();
 }
 

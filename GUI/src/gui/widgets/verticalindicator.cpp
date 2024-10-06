@@ -2,7 +2,7 @@
 #include "globalstate.h"
 
 VerticalIndicator::VerticalIndicator(QWidget *parent)
-    : QWidget(parent), m_value(0), m_maxValue(100),
+    : QWidget(parent), m_value(0), m_maxValue(50),
       m_startColor(Qt::green), m_midColor(Qt::yellow), m_endColor(Qt::red)
 {
     setFixedWidth(10);
