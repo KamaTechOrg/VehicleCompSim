@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget* parent)
         m_runService(std::make_shared<RunService>()),
         m_globalState(GlobalState::getInstance()),
         m_initializeSensorsData(new initializeSensorsData()),
-        m_mainWindowTitle("Vehicle sensors simulator")
+        m_mainWindowTitle("Vehicle sensors simulator"),
+        m_countdownTimer(new QTimer(this))
 {
 
     setupToolBar();
@@ -56,6 +57,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(&m_globalState, &GlobalState::connectionStateChanged, this, &MainWindow::onConnectionStatusChanged);
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::currentProjectPublished, this, &MainWindow::onCurrentProjectPublished);
+
+    connect(m_countdownTimer, &QTimer::timeout, this, &MainWindow::updateTimer);
 
     // for test only
     connect(&m_globalState, &GlobalState::new_test_buffer_arrived, this, &MainWindow::buffer_listener);
@@ -319,6 +322,8 @@ void MainWindow::onRunStart(QString com_server_ip)
 
     m_toolBar->update();
     m_toolBar->repaint();
+
+    m_countdownTimer->start(1000);
 }
 
 void MainWindow::onRunEnd()
@@ -329,6 +334,8 @@ void MainWindow::onRunEnd()
     // m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
+
+    m_countdownTimer->stop();
 }
 
 
@@ -348,4 +355,16 @@ void MainWindow::saveLayout() {
 }
 void MainWindow::loadLayout() {
     m_globalState.loadData();
+}
+
+void MainWindow::updateTimer()
+{
+    QTime currentTime = m_timer->time();
+    if (currentTime == QTime(0, 0, 0)) {
+        m_countdownTimer->stop();
+        // m_runService->stop();
+        return;
+    }
+    currentTime = currentTime.addSecs(-1);
+    m_timer->setTime(currentTime);
 }

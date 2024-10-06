@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
+#include <QTimer>
 #include <QFileDialog>
 #include <QGraphicsItem>
 #include <QWidget>
@@ -68,11 +69,13 @@ private:
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
     void buffer_listener(const QString& data);
+
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
     void onCurrentProjectChanged(ProjectModel* project);
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
+    void updateTimer();
 //    void update_view();
 //    void fill_db_data();
 //    void read_from_json();
@@ -94,6 +97,8 @@ private:
     QPushButton *m_startBtn;
     QPushButton *m_stopBtn ;
     QTimeEdit *m_timer;
+    QTimer* m_countdownTimer;
+
     std::shared_ptr<RunService> m_runService;
 //    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;
