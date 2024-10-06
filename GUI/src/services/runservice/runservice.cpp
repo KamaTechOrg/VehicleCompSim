@@ -21,11 +21,13 @@ void RunService::startTimer(int timer)
     }).detach();
 }
 
-RunService::RunService()
+RunService::RunService() :server (new MangServer)
 {
     clearIpFile();
-    std::thread([this](){server.init();}).detach();
 
+    server_thread.reset(new std::thread([this](){
+        server->init();
+    }));
 }
 
 
@@ -36,6 +38,7 @@ void RunService::start(int timer, QString& com_server_ip)
     session = newSessionId();
     runManager = std::make_shared<RunManager>();
     QObject::connect(runManager.get(), &RunManager::startBegin, [this, timer](){
+        startAlphaClient();
         emit startBegin();
         startTimer(timer);
     });
@@ -71,5 +74,31 @@ void RunService::initComServer(QString com_server_ip)
 void RunService::closeComServer()
 {
     clearIpFile();
+}
+
+void RunService::startAlphaClient()
+{
+    static bool init = true;
+    if (init)
+    {
+        client.reset(new ClientSocket(100));
+
+        client_listner.reset(new std::thread([this](){
+            char buffer[MAXRECV];
+
+            while (true)
+            {
+                memset(buffer, 0, sizeof(buffer));
+                auto pair_recv = client->listen(buffer, sizeof(buffer));
+                if (pair_recv.first != ListenErrorCode::SUCCESS)
+                {
+                    client->shut_down();
+                    return 1;
+                }
+                emit newCommunicationPacketAccepted(QString(buffer));
+            }
+        }));
+        init = false;
+    }
 }
 

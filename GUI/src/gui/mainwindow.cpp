@@ -89,7 +89,13 @@ void MainWindow::setupToolBar() {
 
 void MainWindow::setupRunService()
 {
-    // m_runService->setScene(m_scene);
+    QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [](QString packet){
+        qInfo() << "------------------------------packet-----------------------------";
+        qInfo() << packet;
+        qInfo() << "------------------------------packet-----------------------------";
+    });
+
+    QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, &GlobalState::getInstance(), &GlobalState::newData);
 
     m_startBtn = new QPushButton("start", m_toolBar);
     // m_toolBar->addWidget(m_startBtn);
@@ -118,6 +124,9 @@ void MainWindow::setupRunService()
     });
     QObject::connect(m_runService.get(), &RunService::startBegin, [this](){
 
+    });
+    QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [this](QString packet){
+        qInfo() << packet;
     });
     QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
