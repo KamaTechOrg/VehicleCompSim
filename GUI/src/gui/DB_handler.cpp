@@ -52,7 +52,7 @@ void DB_handler::write_data_to_DB(const QString& data, size_t bufferSize) const 
         query.addBindValue(i < pieces.size() ? pieces[i] : QString());
     }
     if (query.exec()) {
-        qInfo() << "Data inserted successfully!";
+//        qInfo() << "Data inserted successfully!";
         sqlitedb->commit();
     } else {
         qCritical() << "Error inserting data:" << query.lastError().text();
