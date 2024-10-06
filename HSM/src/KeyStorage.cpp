@@ -68,7 +68,7 @@ std::vector<std::vector<u_int8_t>> keyStingToVector(std::string str)
     return vec;
 }
 
-const std::string KeyStorage::KeyStorageFileName = "KeyStorage17.csv";
+const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
 KeyStorage *KeyStorage::instance = nullptr;
 
 KeyStorage::KeyStorage()
@@ -83,24 +83,29 @@ KeyStorage::KeyStorage()
         return;
     }
     file.close();
-    HSM_STATUS status;
-    kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC;
-    // kekAlgType = kekAlgorithmType;
-    // keyForKek = std::vector<u_int8_t>(stringKeyForKek.begin(), stringKeyForKek.end());
-    status = AES::generateKey(keyForKek, kekAlgType);
-    if (status != HSM_STATUS::HSM_Good)
+    // HSM_STATUS status;
+    // kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC;
+    kekAlgType = kekAlgorithmType;
+    keyForKek.resize(stringKeyForKek.size() / 2);
+    for (int i = 0; i < keyForKek.size(); i += 2)
     {
-        std::cerr << "Failed to generate key" << std::endl;
-        return;
+        keyForKek[i] = stoi(stringKeyForKek.substr(i, 2), nullptr, 16);
     }
+    // status = AES::generateKey(keyForKek, kekAlgType);
+    // if (status != HSM_STATUS::HSM_Good)
+    // {
+    //     std::cerr << "Failed to generate key" << std::endl;
+    //     return;
+    // }
 }
 
 HSM::KeyStorage::~KeyStorage()
 {
-    // erase teh csv file
-    // std::ofstream file(KeyStorageFileName, std::ofstream::out | std::ofstream::trunc);
-    // file.close();
-    
+    // clear the csv file
+    std::ofstream file(KeyStorageFileName, std::ios::trunc);
+    file.close();
+    std::cout << "KeyStorage destructor" << std::endl;
+
     // delete instance;
     // delete instance;
     // KeyStorage::instance = nullptr;
