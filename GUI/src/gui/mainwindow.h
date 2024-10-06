@@ -13,6 +13,7 @@
 #include <QGraphicsItem>
 #include <QWidget>
 #include <QPushButton>
+#include <QStackedWidget>
 #include <QRandomGenerator>
 #include <QRect>
 #include <QHBoxLayout>
@@ -89,6 +90,7 @@ private:
     PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
+    QStackedWidget* m_buttonStack;
     QPushButton *m_startBtn;
     QPushButton *m_stopBtn ;
     QTimeEdit *m_timer;
