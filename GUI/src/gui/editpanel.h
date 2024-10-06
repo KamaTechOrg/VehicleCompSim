@@ -16,13 +16,11 @@ public:
         virtual void close() = 0;
     };
     static QToolBar *getPanel();
-    static QWidget *getScrollArea();
 
 private:
     EditPanel();
     Editor* currentEditor;
     QToolBar *panel;
-    QScrollArea* scrollArea;
     SensorModel* currentModel;
     GlobalState& globalState;
 
