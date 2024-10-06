@@ -4,7 +4,8 @@ namespace globalConstants {
         Time = 0,
         SourceId,
         DestinationId,
-        Length
+        Length,
+        Buffer
     };
 
     enum ConnectionState {
