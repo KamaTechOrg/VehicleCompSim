@@ -3,7 +3,7 @@
 #include "RSA_KEY.h"
 #include <ostream>
 #include <sstream>
-
+#include "KyeforKek.hpp"
 
 using namespace HSM;
 
@@ -28,7 +28,8 @@ std::vector<std::vector<u_char>> keyStingToVector(std::string str)
         std::stringstream ss2(word);
         std::string word2 = ss2.str();
         std::vector<u_char> v;
-        for(u_char c: word2){
+        for (u_char c : word2)
+        {
             v.emplace_back(c);
         }
         vec.push_back(v);
@@ -44,7 +45,7 @@ KeyStorage::KeyStorage()
 {
 
     std::cout << "KeyStorage constructor" << std::endl;
-    //create file if not exists
+    // create file if not exists
     std::ofstream file(KeyStorageFileName, std::ios_base::app);
     if (!file.is_open())
     {
@@ -52,13 +53,23 @@ KeyStorage::KeyStorage()
         return;
     }
     file.close();
+    HSM_STATUS status;
+    kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB;
+    // kekAlgType = kekAlgorithmType;
+    // keyForKek = std::vector<u_char>(stringKeyForKek.begin(), stringKeyForKek.end());
+    status = AES::generateKey(keyForKek, kekAlgType);
+    if (status != HSM_STATUS::HSM_Good)
+    {
+        std::cerr << "Failed to generate key" << std::endl;
+        return;
+    }
 }
 
 HSM::KeyStorage::~KeyStorage()
 {
-    //erase file
+    // erase file
     std::remove(KeyStorageFileName.c_str());
-    // delete instance; 
+    // delete instance;
     // KeyStorage::instance = nullptr;
 }
 
@@ -93,7 +104,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
     while (std::getline(file, line))
     {
         std::stringstream ss(line);
-        //convert line to vector string split by comma
+        // convert line to vector string split by comma
         std::vector<std::string> vec;
         while (std::getline(ss, word, ','))
         {
@@ -106,8 +117,11 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
             file.close();
             std::vector<std::vector<u_char>> vec = keyStingToVector(line);
             publicKey = vec[3];
-            privateKey = vec[4];
+            std::vector<u_char> encryptedPrivateKey = vec[4];
             file.close();
+            HSM_STATUS status = AES::decrypt(getInstance().keyForKek, encryptedPrivateKey, privateKey, getInstance().kekAlgType);
+            if (status != HSM_STATUS::HSM_Good)
+                return status;
             return HSM_STATUS::HSM_Good;
         }
         else if (vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type) && !needPrivilege)
@@ -135,12 +149,12 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
         status = RSA_KEY::generateKeys(publicKey, privateKey, bits);
         break;
 
-    // case ECC:
-    //     break;
+        // case ECC:
+        //     break;
 
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
-    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
@@ -158,7 +172,10 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
     {
         keyId = KeyStorage::getInstance().keyIdCounter++;
         std::stringstream ss;
-        ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(privateKey);
+        // encrypt private key using kek
+        std::vector<u_char> encryptedPrivateKey;
+        status = AES::encrypt(getInstance().keyForKek, privateKey, encryptedPrivateKey, getInstance().kekAlgType);
+        ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << vectorToString(encryptedPrivateKey);
         status = KeyStorage::getInstance().writeToStorage(ss.str());
     }
     return status;

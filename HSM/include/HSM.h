@@ -29,6 +29,8 @@ namespace HSM
         static KeyStorage *instance;
         u_int32_t keyIdCounter = 0;
         static const std::string KeyStorageFileName;
+        std::vector<u_char> keyForKek;
+        ENCRYPTION_ALGORITHM_TYPE kekAlgType;
 
     protected:
         static HSM_STATUS getKeyFromKeyStorage(
