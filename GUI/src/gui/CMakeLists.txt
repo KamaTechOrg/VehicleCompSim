@@ -36,6 +36,8 @@ set(CLIENT_SOURCES
     widgets/verticalindicator.cpp
     widgets/flowanimation.h
     widgets/flowanimation.cpp
+    widgets/iconbutton.h
+    widgets/iconbutton.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

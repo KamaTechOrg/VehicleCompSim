@@ -101,19 +101,8 @@ void MainWindow::setupRunService()
 
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, &GlobalState::getInstance(), &GlobalState::newData);
 
-    m_startBtn = new QPushButton(m_toolBar);
-    m_startBtn->setIcon(QIcon("resources/icons/start.svg"));
-    m_startBtn->setToolTip("Start");
-    m_startBtn->setStyleSheet("QPushButton { border: none; background: none; }");
-    m_startBtn->setFixedSize(50, 50);
-    m_startBtn->setIconSize(QSize(50, 50));
-
-    m_stopBtn = new QPushButton(m_toolBar);
-    m_stopBtn->setIcon(QIcon("resources/icons/stop.svg"));
-    m_stopBtn->setToolTip("Stop");
-    m_stopBtn->setStyleSheet("QPushButton { border: none; background: none; }");
-    m_stopBtn->setFixedSize(50, 50);
-    m_stopBtn->setIconSize(QSize(50, 50));
+    m_startBtn = new IconButton(globalConstants::Icons::Start, "Start", m_toolBar);
+    m_stopBtn = new IconButton(globalConstants::Icons::Stop, "Stop", m_toolBar);
     
     m_timer = new QTimeEdit(m_toolBar);
     m_timer->setDisplayFormat("hh:mm:ss");
@@ -186,14 +175,11 @@ void MainWindow::setupView() {
     m_sceneBox = new QGroupBox(this);
 
     // Initialize the title and conditional button
-    m_publishButton = new QPushButton("Publish project", m_sceneBox);
+    m_publishButton = new IconButton(globalConstants::Icons::Publish, "Publish the project", m_sceneBox);
     m_publishButton->setDisabled(m_globalState.connectionState() != globalConstants::ConnectionState::Online);
     QObject::connect(m_publishButton, &QPushButton::clicked, [this] {
         m_globalState.publishCurrentProject();
     });
-    // set the style of the button
-    m_publishButton->setStyleSheet("QPushButton { border: 1px solid black; border-radius: 5px; padding: 5px; }");
-    
 
     // Add the title and button to the layout
     auto sceneBoxLayout = new QVBoxLayout();

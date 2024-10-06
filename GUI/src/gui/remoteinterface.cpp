@@ -35,7 +35,7 @@ RemoteInterface::RemoteInterface(QWidget *parent)
 void RemoteInterface::setupUI()
 {
     // Mode switch button
-    m_switchModeButton = new QPushButton("Switch to Remote Mode", this);
+    m_switchModeButton = new IconButton(globalConstants::Icons::ToggleSwitchOff, "Switch to Remote Mode", this);
     connect(m_switchModeButton, &QPushButton::clicked, this, [this]() {
         bool isRemoteMode = !m_globalState.isRemoteMode();
         m_globalState.setIsRemoteMode(isRemoteMode);
@@ -50,7 +50,7 @@ void RemoteInterface::setupUI()
 
 
     // Add project button
-    m_addProjectButton = new QPushButton("Add Project", this);
+    m_addProjectButton = new IconButton(globalConstants::Icons::AddProject, "Add Project", this);
     connect(m_addProjectButton, &QPushButton::clicked, this, &RemoteInterface::onAddProjectClicked);
 
     // Project list view
@@ -76,12 +76,14 @@ void RemoteInterface::setupUI()
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // Navigation buttons
-    m_scrollLeftButton = new QPushButton("<", this);
+    m_scrollLeftButton = new IconButton(globalConstants::Icons::ArrowLeft, "Scroll Left", this);
     m_scrollLeftButton->setFixedSize(25, 25);
+    m_scrollLeftButton->setIconSize(QSize(25, 25));
     connect(m_scrollLeftButton, &QPushButton::clicked, this, &RemoteInterface::scrollLeft);
 
-    m_scrollRightButton = new QPushButton(">", this);
+    m_scrollRightButton = new IconButton(globalConstants::Icons::ArrowRight, "Scroll Right", this);
     m_scrollRightButton->setFixedSize(25, 25);
+    m_scrollRightButton->setIconSize(QSize(25, 25));
     connect(m_scrollRightButton, &QPushButton::clicked, this, &RemoteInterface::scrollRight);
 
     // Connection status group box
@@ -148,14 +150,21 @@ void RemoteInterface::onConnectionStatusChanged(ConnectionState state)
         case ConnectionState::Connecting:
             statusText = "Connecting...";
             color = "orange";
+            m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitchMiddle);
             break;
         case ConnectionState::Online:
             statusText = "Online";
             color = "green";
+            m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitch);
             break;
         case ConnectionState::Offline:
             statusText = "Offline";
             color = "red";
+            if(m_globalState.isRemoteMode()){
+                m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitchMiddle);
+            } else {
+                m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitchOff);
+            }
             break;
     }
 
@@ -179,9 +188,15 @@ void RemoteInterface::onProjectItemClicked(const QModelIndex &index)
 void RemoteInterface::onRemoteModeChanged(bool isRemoteMode)
 {
     if (isRemoteMode) {
-        m_switchModeButton->setText("Switch to Local Mode");
+        m_switchModeButton->setToolTip("Switch to Local Mode");
+        if(m_globalState.connectionState() == ConnectionState::Online) {
+            m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitch);
+        } else {
+            m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitchMiddle);
+        }
     } else {
-        m_switchModeButton->setText("Switch to Remote Mode");
+        m_switchModeButton->setToolTip("Switch to Remote Mode");
+        m_switchModeButton->changeIcon(globalConstants::Icons::ToggleSwitchOff);
     }
 }
 

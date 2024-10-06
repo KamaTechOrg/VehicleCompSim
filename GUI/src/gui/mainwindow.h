@@ -39,11 +39,11 @@
 #include "handlers/RunHandler.h"
 #include "globalstate.h"
 #include "items/qemusensoritem.h"
+#include "items/parser.h"
 #include "initializeSensorsData.h"
 #include "sensormodel.h"
 #include "saveAndLoad.h"
-#include "items/parser.h"
-#include "globalconstants.h"
+#include "widgets/iconbutton.h"
 #include "../../MainComputer/src/maincomputer.h"
 
 class QGraphicsView;
@@ -90,8 +90,8 @@ private:
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QStackedWidget* m_buttonStack;
-    QPushButton *m_startBtn;
-    QPushButton *m_stopBtn ;
+    IconButton *m_startBtn;
+    IconButton *m_stopBtn ;
     QTimeEdit *m_timer;
     QTimer* m_countdownTimer;
 
@@ -115,7 +115,7 @@ private:
     QString m_currentMainBackgroundPath;
 
     QGroupBox* m_sceneBox;
-    QPushButton* m_publishButton;
+    IconButton* m_publishButton;
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;

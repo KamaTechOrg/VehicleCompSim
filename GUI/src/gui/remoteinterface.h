@@ -11,9 +11,10 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QGroupBox>
+
+#include "widgets/iconbutton.h"
 #include "globalstate.h"
 #include "projectmodel.h"
-#include "globalconstants.h"
 
 using namespace globalConstants;
 
@@ -39,8 +40,8 @@ private:
     void populateProjectList();
     void updateConnectionStatus();
 
-    QPushButton *m_switchModeButton;
-    QPushButton *m_addProjectButton;
+    IconButton *m_switchModeButton;
+    IconButton *m_addProjectButton;
     QListView *m_projectListView;
     QGroupBox *m_connectionGroupBox;
     QLabel *m_connectionStatusLabel;
@@ -52,8 +53,8 @@ private:
     QMap<QStandardItem*, ProjectModel*> m_projectItemMap;
 
     QScrollArea *m_scrollArea;
-    QPushButton *m_scrollLeftButton;
-    QPushButton *m_scrollRightButton;
+    IconButton *m_scrollLeftButton;
+    IconButton *m_scrollRightButton;
 
     QColor m_publishedColor = QColor(160, 253, 143); // Green
     QColor m_nonublishedColor = QColor(250, 165, 142); // Red
