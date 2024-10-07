@@ -74,7 +74,6 @@ KeyStorage *KeyStorage::instance = nullptr;
 KeyStorage::KeyStorage()
 {
 
-    std::cout << "KeyStorage constructor" << std::endl;
     // create file if not exists
     std::ofstream file(KeyStorageFileName, std::ios_base::app);
     if (!file.is_open())
@@ -97,8 +96,6 @@ HSM::KeyStorage::~KeyStorage()
     // clear the csv file
     std::ofstream file(KeyStorageFileName, std::ios::trunc);
     file.close();
-    std::cout << "KeyStorage destructor" << std::endl;
-
     // delete instance;
     // delete instance;
     // KeyStorage::instance = nullptr;
@@ -144,7 +141,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
         Ident IdCheck = Ident(vec[0]);
         if (IdCheck.compareID(myId) == HSM_STATUS::HSM_Good && vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type))
         {
-            std::cout << "Found: " << line << "\n";
+            // std::cout << "Found: " << line << "\n";
             file.close();
             std::vector<std::vector<u_int8_t>> vec = keyStingToVector(line);
             publicKey = vec[3];
@@ -157,7 +154,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
         }
         else if (vec[1] == std::to_string(keyId) && vec[2] == std::to_string(type) && !needPrivilege)
         {
-            std::cout << "Found !needPrivilege: " << line << "\n";
+            // std::cout << "Found !needPrivilege: " << line << "\n";
             file.close();
             std::vector<std::vector<u_int8_t>> vec = keyStingToVector(line);
             publicKey = vec[3];
