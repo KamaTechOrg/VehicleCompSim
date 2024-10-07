@@ -43,7 +43,7 @@ BigNum::BigNum(std::string num, int numBase) : size((num.size() / 8) + 1)
 	}
 }
 
-BigNum::BigNum(std::vector<u_char> num, int numBase) : size((num.size() / 8) + 1)
+BigNum::BigNum(std::vector<u_int8_t> num, int numBase) : size((num.size() / 8) + 1)
 {
 	if (size > MAX_SIZE)
 		size = MAX_SIZE;
@@ -53,7 +53,7 @@ BigNum::BigNum(std::vector<u_char> num, int numBase) : size((num.size() / 8) + 1
 
 	for (int i = 0; i < num_len; i += 8)
 	{
-		std::vector<u_char> part(num.begin() + i, num.begin() + std::min(i + 8, num_len));
+		std::vector<u_int8_t> part(num.begin() + i, num.begin() + std::min(i + 8, num_len));
 		std::reverse(part.begin(), part.end());
 		if (i / 8 < size)
 		{
@@ -109,10 +109,10 @@ std::string BigNum::toString() const
 	return result.str();
 }
 
-std::vector<u_char> BigNum::toVectorChar() const
+std::vector<u_int8_t> BigNum::toVectorChar() const
 {
 	std::string str = toString();
-	return std::vector<u_char>(str.begin(), str.end());
+	return std::vector<u_int8_t>(str.begin(), str.end());
 }
 
 BigNum BigNum::operator+(const BigNum &other) const

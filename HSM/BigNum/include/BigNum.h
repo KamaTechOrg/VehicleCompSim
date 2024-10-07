@@ -32,7 +32,7 @@ public:
 
 	BigNum(uint64_t num, int bit_size);
 
-    BigNum(std::vector<u_char> num, int numBase = 16);
+    BigNum(std::vector<u_int8_t> num, int numBase = 16);
     BigNum(std::string num, int numBase = 16);
     
 
@@ -41,7 +41,7 @@ public:
 
     std::string toString() const;
 
-    std::vector<u_char> toVectorChar() const;
+    std::vector<u_int8_t> toVectorChar() const;
 
 
     BigNum operator+(const BigNum& other) const;
