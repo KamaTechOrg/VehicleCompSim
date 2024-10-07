@@ -93,7 +93,7 @@ HSM_STATUS expected_key_size_and_type_check(ENCRYPTION_ALGORITHM_TYPE const& typ
 }
 
 
-HSM_STATUS AES::encrypt(std::vector<uint8_t> const &key, std::vector<uint8_t> const &clrMsg, std::vector<uint8_t> &encMsg, ENCRYPTION_ALGORITHM_TYPE const &type) {
+HSM_STATUS AES::encrypt(std::vector<uint8_t> const &clrMsg, std::vector<uint8_t> &encMsg, std::vector<uint8_t> const &key, ENCRYPTION_ALGORITHM_TYPE const &type) {
     uint expected_key_size;
     if(auto stat = expected_key_size_and_type_check(type, expected_key_size); stat != HSM_STATUS::HSM_Good)
       return stat;
@@ -136,7 +136,7 @@ HSM_STATUS AES::encrypt(std::vector<uint8_t> const &key, std::vector<uint8_t> co
 
 
 
-HSM_STATUS AES::decrypt(std::vector<uint8_t> const &key, std::vector<uint8_t> const &clrMsg, std::vector<uint8_t> &encMsg, ENCRYPTION_ALGORITHM_TYPE const &type) {
+HSM_STATUS AES::decrypt(std::vector<uint8_t> const &clrMsg, std::vector<uint8_t> &encMsg, std::vector<uint8_t> const &key, ENCRYPTION_ALGORITHM_TYPE const &type) {
     uint expected_key_size;
     if(auto stat = expected_key_size_and_type_check(type, expected_key_size); stat != HSM_STATUS::HSM_Good)
       return stat;
