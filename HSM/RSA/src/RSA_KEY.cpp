@@ -3,21 +3,21 @@
 #include <iostream>
 #include <string.h>
 
-    HSM::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_char> &public_key, std::vector<u_char> &private_key, int bits)
+    HSM::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_int8_t> &public_key, std::vector<u_int8_t> &private_key, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
 	generate_keys(publicKey, privateKey, modulus, bits);
 	if(publicKey == 0 || privateKey == 0 || modulus == 0){
 		return HSM::HSM_STATUS::HSM_InternalErr;
 	}
-	std::vector<u_char> public_key1 = publicKey.toVectorChar();
-	std::vector<u_char> private_key1 = privateKey.toVectorChar();
-	std::vector<u_char> modulus_str = modulus.toVectorChar();
+	std::vector<u_int8_t> public_key1 = publicKey.toVectorChar();
+	std::vector<u_int8_t> private_key1 = privateKey.toVectorChar();
+	std::vector<u_int8_t> modulus_str = modulus.toVectorChar();
 	modulus_str.emplace_back('P');
-	std::vector<u_char> result1 = modulus_str;
+	std::vector<u_int8_t> result1 = modulus_str;
 	result1.insert(result1.end(), public_key1.begin(), public_key1.end());
 
-	std::vector<u_char> result2 = modulus_str;
+	std::vector<u_int8_t> result2 = modulus_str;
 	result2.insert(result2.end(), private_key1.begin(), private_key1.end());
 
 	public_key = result1;
@@ -120,14 +120,14 @@ bool RSA_KEY::millerTest(const BigNum &d, const BigNum &n)
 
 BigNum RSA_KEY::generateRandomNumber(int bits)
 {
-	std::vector<u_char> bits_str = generateRandomBits(bits);
+	std::vector<u_int8_t> bits_str = generateRandomBits(bits);
 	BigNum number(bits_str);
 	// Ensure the number is odd
 	number.data[0] |= 1;
 	return number;
 }
 
-std::vector<u_char> RSA_KEY::generateRandomBits(size_t length)
+std::vector<u_int8_t> RSA_KEY::generateRandomBits(size_t length)
 {
 	if (length < 16)
 		length = 16;
@@ -161,7 +161,7 @@ std::vector<u_char> RSA_KEY::generateRandomBits(size_t length)
 
 	// Trim the string to the specified length
 	std::string binaryString = oss.str();
-	return std::vector<u_char>(binaryString.begin(), binaryString.end());
+	return std::vector<u_int8_t>(binaryString.begin(), binaryString.end());
 }
 
 BigNum RSA_KEY::generateLargePrime(int bits)

@@ -201,8 +201,8 @@ std::string BigNumWithMinus::toString() const
     }
 }
 
-std::vector<u_char> BigNumWithMinus::toVectorChar() const
+std::vector<u_int8_t> BigNumWithMinus::toVectorChar() const
 {
     std::string str = toString();
-    return std::vector<u_char>(str.begin(), str.end());
+    return std::vector<u_int8_t>(str.begin(), str.end());
 }

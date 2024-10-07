@@ -24,7 +24,7 @@ public:
         }
     }
 
-    BigNumWithMinus(std::vector<u_char> num, int numBase = 16) : BigNum(MAX_SIZE * UINT_T_SIZE)
+    BigNumWithMinus(std::vector<u_int8_t> num, int numBase = 16) : BigNum(MAX_SIZE * UINT_T_SIZE)
     {
         if (!num.empty() && num[0] == '-')
         {
@@ -98,5 +98,5 @@ public:
     void print() const;
 
     std::string toString() const;
-    std::vector<u_char> toVectorChar() const;
+    std::vector<u_int8_t> toVectorChar() const;
 };

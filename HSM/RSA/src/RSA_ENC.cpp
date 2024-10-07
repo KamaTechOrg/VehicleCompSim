@@ -14,11 +14,11 @@ BigNum RSA_ENC::decrypt(const BigNum &message, const BigNum &privateKey, const B
 	return RSA_KEY::power(message, privateKey, modulus);
 }
 
-std::vector<u_char> RSA_ENC::encrypt(const std::vector<u_char> &message, const BigNum &publicKey, const BigNum &modulus)
+std::vector<u_int8_t> RSA_ENC::encrypt(const std::vector<u_int8_t> &message, const BigNum &publicKey, const BigNum &modulus)
 {
 	std::string messageStr(message.begin(), message.end());
 	std::string result = encrypt(messageStr, publicKey, modulus);
-	return std::vector<u_char>(result.begin(), result.end());
+	return std::vector<u_int8_t>(result.begin(), result.end());
 }
 
 std::string RSA_ENC::encrypt(const std::string &message, const BigNum &publicKey, const BigNum &modulus)
@@ -44,20 +44,20 @@ std::string RSA_ENC::encrypt(const std::string &message, const BigNum &publicKey
 	return result;
 }
 
-std::vector<u_char> RSA_ENC::encrypt(const std::vector<u_char> &message, const std::vector<u_char> &key)
+std::vector<u_int8_t> RSA_ENC::encrypt(const std::vector<u_int8_t> &message, const std::vector<u_int8_t> &key)
 {
-	std::vector<u_char> modulus(key.begin(), std::find(key.begin(), key.end(), 'P'));
-	std::vector<u_char> publicKey(key.begin() + modulus.size() + 1, key.end());
+	std::vector<u_int8_t> modulus(key.begin(), std::find(key.begin(), key.end(), 'P'));
+	std::vector<u_int8_t> publicKey(key.begin() + modulus.size() + 1, key.end());
 	BigNum bigPublicKey(publicKey);
 	BigNum bigModulus(modulus);
 	return RSA_ENC::encrypt(message, bigPublicKey, bigModulus);
 }
 
-std::vector<u_char> RSA_ENC::decrypt(const std::vector<u_char> &encrypted_message, const BigNum &privateKey, const BigNum &modulus)
+std::vector<u_int8_t> RSA_ENC::decrypt(const std::vector<u_int8_t> &encrypted_message, const BigNum &privateKey, const BigNum &modulus)
 {
 	std::string encrypted_message_str(encrypted_message.begin(), encrypted_message.end());
 	std::string result = decrypt(encrypted_message_str, privateKey, modulus);
-	return std::vector<u_char>(result.begin(), result.end());
+	return std::vector<u_int8_t>(result.begin(), result.end());
 }
 
 std::string RSA_ENC::decrypt(const std::string &encrypted_message, const BigNum &privateKey, const BigNum &modulus)
@@ -78,10 +78,10 @@ std::string RSA_ENC::decrypt(const std::string &encrypted_message, const BigNum 
 	return result;
 }
 
-std::vector<u_char> RSA_ENC::decrypt(const std::vector<u_char> &encrypted_message, const std::vector<u_char> &key)
+std::vector<u_int8_t> RSA_ENC::decrypt(const std::vector<u_int8_t> &encrypted_message, const std::vector<u_int8_t> &key)
 {
-	std::vector<u_char> modulus(key.begin(), std::find(key.begin(), key.end(), 'P'));
-	std::vector<u_char> privateKey(key.begin() + modulus.size() + 1, key.end());
+	std::vector<u_int8_t> modulus(key.begin(), std::find(key.begin(), key.end(), 'P'));
+	std::vector<u_int8_t> privateKey(key.begin() + modulus.size() + 1, key.end());
 	BigNum bigPrivateKey(privateKey);
 	BigNum bigModulus(modulus);
 	return RSA_ENC::decrypt(encrypted_message, bigPrivateKey, bigModulus);
