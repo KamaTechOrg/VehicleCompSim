@@ -43,6 +43,7 @@ namespace HSM
 
     public:
         static KeyStorage &getInstance();
+        static void resetInstance();
         HSM_STATUS writeToStorage(std::string info);
         ~KeyStorage();
 

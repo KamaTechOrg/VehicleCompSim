@@ -36,7 +36,7 @@ TEST(API_TEST, get_kye_rsa_64_bit)
     status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::getInstance().~KeyStorage();
+    HSM::KeyStorage::resetInstance();
 }
 TEST(API_TEST, get_kye_rsa_128_bit)
 {
@@ -53,7 +53,7 @@ TEST(API_TEST, get_kye_rsa_128_bit)
     status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::getInstance().~KeyStorage();
+    HSM::KeyStorage::resetInstance();
 }
 
 TEST(API_TEST, rsa_encrypt_without_user_id)
@@ -71,7 +71,7 @@ TEST(API_TEST, rsa_encrypt_without_user_id)
     status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::getInstance().~KeyStorage();
+    HSM::KeyStorage::resetInstance();
 }
 
 TEST(API_TEST, get_kye_invalid_type)

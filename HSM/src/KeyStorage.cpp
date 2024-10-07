@@ -103,13 +103,14 @@ HSM::KeyStorage::~KeyStorage()
 {
     // clear the csv file
     std::ofstream file(KeyStorageFileName, std::ios::trunc);
-    file.close();
+    // file.close();
     std::cout << "KeyStorage destructor" << std::endl;
 
     // delete instance;
     // delete instance;
     // KeyStorage::instance = nullptr;
 }
+
 
 HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
 {
@@ -123,7 +124,6 @@ HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
 
     file << info + "\n";
 
-    file.close(); // Close the file after writing
     return HSM_STATUS::HSM_Good;
 }
 
@@ -226,6 +226,14 @@ HSM::KeyStorage &HSM::KeyStorage::getInstance()
         instance = new KeyStorage();
     return *instance;
 }
+
+
+void HSM::KeyStorage::resetInstance()
+{
+    delete instance;
+    instance = nullptr;
+}
+
 
 HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
 {
