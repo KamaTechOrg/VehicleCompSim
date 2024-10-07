@@ -11,9 +11,10 @@ void initializeSensorsData::initialize(){
 }
 
 void initializeSensorsData::read_from_json() {
-    QString filePath = R"(C:\mobileye_project\VehicleCompSim\GUI\resources\jsons\box_info.json)";
-//    QString dataDir;
-//    QString relativeFilePath = "resources/jsons/box_info.json";
+    QString dataDir;
+    QString relativeFilePath = "resources/jsons/box_info.json";
+    dataDir = QDir::currentPath();
+    QString filePath = QDir::cleanPath(QDir(dataDir).filePath(relativeFilePath));
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -37,7 +38,6 @@ void initializeSensorsData::read_from_json() {
     }
     QJsonObject jsonObj = document.object();
     itemsArray = jsonObj["items"].toArray();
-    qInfo() << "Successfully read from JSON. Number of items:" << itemsArray.size();
 }
 
 void initializeSensorsData::getSensorsInfoData() {
