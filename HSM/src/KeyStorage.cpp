@@ -147,7 +147,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
             publicKey = vec[3];
             std::vector<u_int8_t> encryptedPrivateKey = vec[4];
             // file.close();
-            HSM_STATUS status = AES::decrypt(getInstance().keyForKek, encryptedPrivateKey, privateKey, getInstance().kekAlgType);
+            HSM_STATUS status = AES::decrypt(encryptedPrivateKey, privateKey, getInstance().keyForKek, getInstance().kekAlgType);
             if (status != HSM_STATUS::HSM_Good)
                 return status;
             return HSM_STATUS::HSM_Good;
@@ -202,7 +202,7 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
         std::stringstream ss;
         // encrypt private key using kek
         std::vector<u_int8_t> encryptedPrivateKey;
-        status = AES::encrypt(getInstance().keyForKek, privateKey, encryptedPrivateKey, getInstance().kekAlgType);
+        status = AES::encrypt(privateKey, encryptedPrivateKey, getInstance().keyForKek, getInstance().kekAlgType);
         ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << binaryVectorToString(encryptedPrivateKey);
         std::string tmp = ss.str();
         status = KeyStorage::getInstance().writeToStorage(ss.str());

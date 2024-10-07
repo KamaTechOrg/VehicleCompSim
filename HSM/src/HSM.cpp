@@ -29,7 +29,7 @@ HSM_STATUS Algo::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int
     case ENCRYPTION_ALGORITHM_TYPE::AES_256_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_256_CBC:
     case ENCRYPTION_ALGORITHM_TYPE::AES_256_CTR:
-        return AES::encrypt(message, encrypted_message, publicKey, type);
+        return AES::encrypt(message, encrypted_message, privateKey, type);
 
     default:
         return HSM_STATUS::HSM_InvalidAlg;
