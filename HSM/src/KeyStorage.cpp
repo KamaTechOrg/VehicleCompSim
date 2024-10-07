@@ -83,27 +83,20 @@ KeyStorage::KeyStorage()
         return;
     }
     file.close();
-    // HSM_STATUS status;
-    // kekAlgType = ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC;
     kekAlgType = kekAlgorithmType;
     keyForKek.resize(stringKeyForKek.size() / 2);
     for (int i = 0; i < keyForKek.size(); i += 2)
     {
         keyForKek[i] = stoi(stringKeyForKek.substr(i, 2), nullptr, 16);
     }
-    // status = AES::generateKey(keyForKek, kekAlgType);
-    // if (status != HSM_STATUS::HSM_Good)
-    // {
-    //     std::cerr << "Failed to generate key" << std::endl;
-    //     return;
-    // }
+    
 }
 
 HSM::KeyStorage::~KeyStorage()
 {
     // clear the csv file
     std::ofstream file(KeyStorageFileName, std::ios::trunc);
-    // file.close();
+    file.close();
     std::cout << "KeyStorage destructor" << std::endl;
 
     // delete instance;
@@ -222,6 +215,13 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
 
 HSM::KeyStorage &HSM::KeyStorage::getInstance()
 {
+    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && Ident().compareID(Ident("ym")) != HSM_STATUS::HSM_Good)
+    {
+        std::vector<u_int8_t>key;
+        AES::generateAndPrintKey(key, kekAlgorithmType);
+        throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
+        return *instance;
+    }
     if (instance == nullptr)
         instance = new KeyStorage();
     return *instance;
