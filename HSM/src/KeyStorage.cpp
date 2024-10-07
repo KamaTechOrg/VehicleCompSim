@@ -215,7 +215,10 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
 
 HSM::KeyStorage &HSM::KeyStorage::getInstance()
 {
-    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && Ident().compareID(Ident("ym")) != HSM_STATUS::HSM_Good)
+    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
+    Ident().compareID(Ident("ym")) != HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
+    Ident().compareID(Ident("hsm")) != HSM_STATUS::HSM_Good
+    )
     {
         std::vector<u_int8_t>key;
         AES::generateAndPrintKey(key, kekAlgorithmType);

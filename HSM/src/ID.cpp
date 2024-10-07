@@ -36,7 +36,6 @@ HSM::Ident::Ident()
 #endif
     // remove "," from username
     std::replace(username.begin(), username.end(), ',', ' ');
-    std::cout << "username:" << username << std::endl;
     this->id = std::vector<u_int8_t>(username.begin(), username.end());
 }
 
