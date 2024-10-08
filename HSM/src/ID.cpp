@@ -46,7 +46,7 @@ Ident::Ident(const std::string &userID)
     this->id = std::vector<u_int8_t>(userID.begin(), userID.end());
 }
 
-HSM_STATUS Ident::compareID(const Ident &other)
+HSM_STATUS Ident::compareID(const Ident &other) const 
 {
     if (this->id.size() != other.id.size())
     {

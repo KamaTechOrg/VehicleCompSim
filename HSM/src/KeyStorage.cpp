@@ -115,7 +115,7 @@ HSM_STATUS KeyStorage::writeToStorage(std::string info)
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege) const
 {
     std::ifstream file(KeyStorageFileName);
     if (!file.is_open())
