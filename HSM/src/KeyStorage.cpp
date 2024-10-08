@@ -4,7 +4,7 @@
 #include <ostream>
 #include <sstream>
 
-using namespace HSMnamespace;
+using namespace HSMns;
 
 std::string vectorToString(std::vector<u_int8_t> vec)
 {

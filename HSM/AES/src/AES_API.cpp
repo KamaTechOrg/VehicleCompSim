@@ -9,7 +9,7 @@
 
 #include "../../HSM_Enums/HSMEnums.hpp"
 
-using namespace HSMnamespace;
+using namespace HSMns;
 using namespace aes;
 
 bool is_AES_algo_type(ENCRYPTION_ALGORITHM_TYPE const& type){

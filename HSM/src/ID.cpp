@@ -12,7 +12,7 @@
 #include <pwd.h>
 #endif
 
-using namespace HSMnamespace;
+using namespace HSMns;
 
 Ident::Ident()
 {

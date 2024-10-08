@@ -3,12 +3,12 @@
 #include <iostream>
 #include <string.h>
 
-    HSMnamespace::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_int8_t> &public_key, std::vector<u_int8_t> &private_key, int bits)
+    HSMns::HSM_STATUS RSA_KEY::generateKeys(std::vector<u_int8_t> &public_key, std::vector<u_int8_t> &private_key, int bits)
 {
 	BigNum publicKey, privateKey, modulus;
 	generate_keys(publicKey, privateKey, modulus, bits);
 	if(publicKey == 0 || privateKey == 0 || modulus == 0){
-		return HSMnamespace::HSM_STATUS::HSM_InternalErr;
+		return HSMns::HSM_STATUS::HSM_InternalErr;
 	}
 	std::vector<u_int8_t> public_key1 = publicKey.toVectorChar();
 	std::vector<u_int8_t> private_key1 = privateKey.toVectorChar();
@@ -25,7 +25,7 @@
 	
 
 
-	return HSMnamespace::HSM_STATUS::HSM_Good;
+	return HSMns::HSM_STATUS::HSM_Good;
 }
 
 void RSA_KEY::generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits)
