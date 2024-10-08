@@ -12,8 +12,17 @@ void SendManager::extractFromHeap(std::priority_queue<CanBus, std::vector<CanBus
     while (!min_heap.empty())
     {
         CanBus topElement = min_heap.top();
+<<<<<<< HEAD
         if(isCrcValid(topElement)){
             vec_can.push_back(topElement);
+=======
+
+        if(check_crc(topElement)){
+            for(int i = 0; i < 100; i++){
+                vec_can.push_back(topElement);
+            }
+            
+>>>>>>> 229870f (fix recv mesege)
         }
         else{
             std::cout << "CRC check failed for canbus" << std::endl;
@@ -30,29 +39,22 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
     {
         FD d_s = get_sock(canbus.getDestinationId());
         size_t message_len = canbus.getMessageSize();
-        std::string crcstr = "%";
-        crcstr += Data_manipulator::int_to_str(canbus.crc);
+        // std::string crcstr = "%";
+        // crcstr += Data_manipulator::int_to_str(canbus.crc);
 
-        size_t crc_len = crcstr.size();
+        // size_t crc_len = crcstr.size();
         char data[MAXRECV];
 
 
         memcpy(data, canbus.getMessage().c_str(), message_len);
 
 
-        memcpy(data + message_len, crcstr.c_str(), crc_len);
-
-
-        std::string result = "reccccccc == ";
-        for (int i = 0; i < message_len + crc_len + 2; ++i) {
-         result += data[i];
-        }
-        LOG_INFO(result);
+        // memcpy(data + message_len, crcstr.c_str(), crc_len);
 
         if (d_s)
         {   
 
-            int status = Cross_platform::cress_send(d_s, data, message_len + crc_len);
+            int status = Cross_platform::cress_send(d_s, data, message_len );
 
             if (status == -1)
             {

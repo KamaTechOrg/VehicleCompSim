@@ -18,7 +18,8 @@ static void send_yuor_id(int id , ClientSocket &socket)
     char buffer[20];
     socket.listen(buffer, sizeof(buffer));
     if (strcmp(buffer, "OK") != 0)
-    {
+    {   
+        LOG_ERROR("no update client");
         throw std::runtime_error(buffer);
     }
 }
@@ -28,7 +29,8 @@ ClientSocket::ClientSocket(int id)
 
 {
     if (id <= 0)
-    {
+    {   
+        LOG_ERROR("error id client");
         throw std::invalid_argument("Invalid ID: must be a positive integer.");
     }
     
@@ -49,7 +51,8 @@ ClientSocket::~ClientSocket()
 sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int dest_id)
 {
     if (!is_valid_ptr(data) || !is_valid_size(size) || !is_valid_d_id(dest_id))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid input");
     }
 
@@ -69,7 +72,8 @@ std::pair<ListenErrorCode, int> ClientSocket::listen(void *data, size_t size)
 {
     auto clientSocket = m_clientSocket;
     if (!is_valid_ptr(data) || !is_valid_size(size))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid to receive");
     }
     std::pair<ListenErrorCode, int> pair_recv;
@@ -78,14 +82,19 @@ std::pair<ListenErrorCode, int> ClientSocket::listen(void *data, size_t size)
         pair_recv = clientSocket->recv(data, size);
     }
 
-    std::cout << "RECV: " << pair_recv.first << std::endl;
+    // ::recv(clientSocket->get_FD(), data, size, 0);
+
+    // ListenErrorCode errorCode;
+    // errorCode = ListenErrorCode::SUCCESS;
+    // return std::make_pair(errorCode, 5);
     return pair_recv;
 }
 
 void ClientSocket::listenAsync(void *data, size_t size, std::function<void(ListenErrorCode)> callback)
 {
     if (!is_valid_ptr(data) || !is_valid_size(size))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid to receive");
     }
     auto clientSocket = m_clientSocket;
