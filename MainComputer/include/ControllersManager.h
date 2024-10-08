@@ -7,13 +7,12 @@ class ControllersManager
 {
 public:
 	std::vector<std::string> getControllersIDS() const;
-	std::vector<int> getControllersPortNumbers() const;
-	int getPortByID(const std::string& id) const;
+	std::vector<std::string> getControllersOptions(std::string sensorID) const;
 
 private:
 	// <"id", port number>
-	inline static const std::unordered_map<std::string, int> _controllers = {
-		{"Beep Controller", 8201},
-		{"Dashboard Controller", 8202},
+	inline static const std::unordered_map<std::string, std::vector<std::string>> _controllers = {
+		{"Beep Controller", {}},
+		{"Dashboard Controller", {}},
 	};
 };
