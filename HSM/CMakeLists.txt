@@ -36,19 +36,6 @@ target_link_options(sycl_flags INTERFACE "-fsycl")
 target_compile_options(sycl_flags INTERFACE "-fsycl")
 
 
-#testing
-# add_executable(APITest test/API_test.cpp)
-# target_link_libraries(APITest API GTest::gtest_main)
-# target_link_libraries(API RSA)
-# target_link_libraries(API AES)
-# target_link_libraries(API)
-
-
-
-# gtest_discover_tests(APITest)
-
-
-
 enable_testing()
 add_subdirectory(AES)
 add_subdirectory(BigNum)
@@ -57,15 +44,8 @@ add_subdirectory(RSA)
 add_subdirectory(SHA_API)
 # add_subdirectory(Benchmark)
 add_subdirectory(HSM_Enums)
+add_subdirectory(API)
 add_subdirectory(RPC)
-
-# API
-add_library(HSM src/HSM.cpp src/KeyStorage.cpp src/ID.cpp)
-target_include_directories(HSM PUBLIC include)
-target_link_libraries(HSM AES_API RSA SHA_API HSM_Enums)
-
-
-
 
 
 # add_executable(main main.cpp)
