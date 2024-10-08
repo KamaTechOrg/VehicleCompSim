@@ -38,7 +38,7 @@ TEST(API_TEST, get_kye_rsa_64_bit)
     status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    hsm.resetInstance();
+    HSM::resetInstance();
 }
 TEST(API_TEST, get_kye_rsa_128_bit)
 {
@@ -55,7 +55,7 @@ TEST(API_TEST, get_kye_rsa_128_bit)
     status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    hsm.resetInstance();
+    HSM::resetInstance();
 }
 
 TEST(API_TEST, rsa_encrypt_without_user_id)
@@ -73,7 +73,7 @@ TEST(API_TEST, rsa_encrypt_without_user_id)
     status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
     EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    hsm.resetInstance();
+    HSM::resetInstance();
 }
 
 TEST(API_TEST, get_kye_invalid_type)
@@ -121,7 +121,7 @@ TEST(API_TEST, aes_all_types_many_msg_sizes)
             ASSERT_EQ(hsm.encrypt(msg, enc_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
             ASSERT_EQ(hsm.decrypt(enc_msg, clr_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
             EXPECT_EQ(msg, clr_msg) << failure_msg;
-            hsm.resetInstance();
+            HSM::resetInstance();
         }
     }
 }
