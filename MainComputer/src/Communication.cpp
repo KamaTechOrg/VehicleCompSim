@@ -1,5 +1,6 @@
 #include "Communication.h"
 #include "SensorsManager.h"
+#include "constants.h"
 #include <iostream>
 #include <cstring>
 #include <winsock2.h>
@@ -80,6 +81,13 @@ std::string Communication::sendAndReceiveLoop(const std::string& serverIP, int p
         if (valread > 0) {
             std::string message(buffer, valread);
             qInfo() << "Message received from server: " << message.c_str();
+  
+           
+                {
+                    std::lock_guard<std::mutex> lock(queueMutex);
+                    _messagesQueue.push(message);
+                }
+                messageAvailable.notify_one();
         }
         else if (valread == 0) {
             qWarning() << "Connection closed by peer.";
@@ -105,7 +113,7 @@ std::string Communication::listenTo(int portNumber) {
     char buffer[1024] = { 0 };
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("172.232.208.10");  
+    serverAddr.sin_addr.s_addr = inet_addr(constants::SERVER_IP.c_str());
     serverAddr.sin_port = htons(portNumber);
 
     // Bind
@@ -168,7 +176,7 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     serverAddr.sin_port = htons(portNumber);
 
     // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, "172.232.208.10", &serverAddr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, constants::SERVER_IP.c_str(), &serverAddr.sin_addr) <= 0) {
         qWarning() << "Invalid address/ Address not supported";
         closesocket(clientSock);
         return;
@@ -200,7 +208,7 @@ void Communication::connectToSensors()
         sensorAddr.sin_port = htons(portNumber);
 
         // Convert IPv4 and IPv6 addresses from text to binary form
-        if (inet_pton(AF_INET, "172.232.208.10", &sensorAddr.sin_addr) <= 0) {
+        if (inet_pton(AF_INET, constants::SERVER_IP.c_str(), &sensorAddr.sin_addr) <= 0) {
             qWarning() << "Invalid address/ Address not supported";
             closesocket(sensorSock);
             return;
