@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <utility>
+#include <memory>
 #include "HSMEnums.hpp"
 #include "SHA_API.h"
 
@@ -53,8 +54,9 @@ namespace HSMnamespace
     class HSM : public KeyStorage
     {
     private:
-        static HSM *instance;
-        HSM(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek): KeyStorage(kekAlgorithmType, stringKeyForKek) {}
+        static std::unique_ptr<HSM> instance;        
+        
+        explicit HSM(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek): KeyStorage(kekAlgorithmType, stringKeyForKek) {}
 
 
     public:
