@@ -48,18 +48,7 @@ Ident::Ident(const std::string &userID)
 
 HSM_STATUS Ident::compareID(const Ident &other) const 
 {
-    if (this->id.size() != other.id.size())
-    {
-        return HSM_STATUS::HSM_InternalErr;
-    }
-    for (int i = 0; i < this->id.size(); i++)
-    {
-        if (this->id[i] != other.id[i])
-        {
-            return HSM_STATUS::HSM_InternalErr;
-        }
-    }
-    return HSM_STATUS::HSM_Good;
+    return *this == other ? HSM_STATUS::HSM_Good : HSM_STATUS::HSM_InternalErr;
 }
 
 std::string Ident::toString() const
