@@ -19,6 +19,7 @@ namespace HSMnamespace
     public:
         Ident();
         explicit Ident(const std::string &str);
+        bool operator==(const Ident &other) const = default;
         std::string toString() const;
         HSM_STATUS compareID(const Ident &other) const;
     };
