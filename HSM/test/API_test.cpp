@@ -3,6 +3,8 @@
 #include "HSM.h"
 #include "AES_API.hpp"
 
+using namespace HSMnamespace;
+
 // TEST(AesTest, Aes_128_ecb_encrypt_decrypt_string_with_size_16) {
 //   std::string key ="\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
 //   std::string msg = "hello hello hsm!";
@@ -15,7 +17,7 @@
 
 TEST(API_TEST, get_ID)
 {
-    HSM::Ident myId = HSM::Ident();
+    Ident myId = Ident();
     std::string str = myId.toString();
     std::cout << "myId:" << str << std::endl;
     EXPECT_TRUE(str.length() > 0);
@@ -23,69 +25,69 @@ TEST(API_TEST, get_ID)
 
 TEST(API_TEST, get_kye_rsa_64_bit)
 {
-    HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    HSM::Ident myId = HSM::Ident();
-    HSM::KeyId keyId;
-    HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    HSM &hsm = getInstance();
+    Ident myId = Ident();
+    KeyId keyId;
+    HSM_STATUS status = hsm.create_key_and_get_id(myId, keyId, ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::string massage = "hello world";
     std::vector<u_char> encrypted_massage;
-    status = HSM::Algo::encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::vector<u_char> decrypted_massage;
-    status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::resetInstance();
+    hsm.resetInstance();
 }
 TEST(API_TEST, get_kye_rsa_128_bit)
 {
-    HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    HSM::Ident myId = HSM::Ident();
-    HSM::KeyId keyId;
-    HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 128);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    HSM &hsm = getInstance();
+    Ident myId = Ident();
+    KeyId keyId;
+    HSM_STATUS status = hsm.create_key_and_get_id(myId, keyId, ENCRYPTION_ALGORITHM_TYPE::RSA, 128);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::string massage = "hello world";
     std::vector<u_char> encrypted_massage;
-    status = HSM::Algo::encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::vector<u_char> decrypted_massage;
-    status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::resetInstance();
+    hsm.resetInstance();
 }
 
 TEST(API_TEST, rsa_encrypt_without_user_id)
 {
-    HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    HSM::KeyId keyId;
-    HSM::Ident myId = HSM::Ident();
-    HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    HSM &hsm = getInstance();
+    KeyId keyId;
+    Ident myId = Ident();
+    HSM_STATUS status = hsm.create_key_and_get_id(myId, keyId, ENCRYPTION_ALGORITHM_TYPE::RSA, 64);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::string massage = "hello world";
     std::vector<u_char> encrypted_massage;
-    status = HSM::Algo::encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, HSM::Ident{"notMyId"}, keyId, false);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.encrypt(std::vector<u_char>(massage.begin(), massage.end()), encrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, Ident{"notMyId"}, keyId, false);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     std::vector<u_char> decrypted_massage;
-    status = HSM::Algo::decrypt(encrypted_massage, decrypted_massage, HSM::ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_Good);
+    status = hsm.decrypt(encrypted_massage, decrypted_massage, ENCRYPTION_ALGORITHM_TYPE::RSA, myId, keyId);
+    EXPECT_EQ(status, HSM_STATUS::HSM_Good);
     EXPECT_EQ(std::string(decrypted_massage.begin(), decrypted_massage.end()), massage);
-    HSM::KeyStorage::resetInstance();
+    hsm.resetInstance();
 }
 
 TEST(API_TEST, get_kye_invalid_type)
 {
-    HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-    HSM::Ident myId = HSM::Ident();
-    HSM::KeyId keyId;
-    HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, HSM::ENCRYPTION_ALGORITHM_TYPE::NoAlg, 128);
-    EXPECT_EQ(status, HSM::HSM_STATUS::HSM_InvalidAlg);
+    HSM &hsm = getInstance();
+    Ident myId = Ident();
+    KeyId keyId;
+    HSM_STATUS status = hsm.create_key_and_get_id(myId, keyId, ENCRYPTION_ALGORITHM_TYPE::NoAlg, 128);
+    EXPECT_EQ(status, HSM_STATUS::HSM_InvalidAlg);
 }
 
 TEST(API_TEST, aes_all_types_many_msg_sizes)
 {
-    std::array<HSM::ENCRYPTION_ALGORITHM_TYPE, 9> aes_types = {
+    std::array<ENCRYPTION_ALGORITHM_TYPE, 9> aes_types = {
         ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB,
         ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC,
         ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR,
@@ -108,18 +110,18 @@ TEST(API_TEST, aes_all_types_many_msg_sizes)
         for (ENCRYPTION_ALGORITHM_TYPE aes_type : aes_types)
         {
             std::string failure_msg = "fail on aes_type: " + std::to_string(aes_type) + ",  msg_size: " + std::to_string(msg_size);
-            HSM::KeyStorage &keyStorage = HSM::KeyStorage::getInstance();
-            HSM::KeyId keyId;
-            HSM::Ident myId;
-            HSM::HSM_STATUS status = keyStorage.get_keys(myId, keyId, aes_type);
-            ASSERT_EQ(status, HSM::HSM_STATUS::HSM_Good) << failure_msg;
+            HSM &hsm = getInstance();
+            KeyId keyId;
+            Ident myId;
+            HSM_STATUS status = hsm.create_key_and_get_id(myId, keyId, aes_type);
+            ASSERT_EQ(status, HSM_STATUS::HSM_Good) << failure_msg;
 
             std::vector<uint8_t> enc_msg;
             std::vector<uint8_t> clr_msg;
-            ASSERT_EQ(HSM::Algo::encrypt(msg, enc_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
-            ASSERT_EQ(HSM::Algo::decrypt(enc_msg, clr_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
+            ASSERT_EQ(hsm.encrypt(msg, enc_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
+            ASSERT_EQ(hsm.decrypt(enc_msg, clr_msg, aes_type, myId, keyId), HSM_STATUS::HSM_Good) << failure_msg;
             EXPECT_EQ(msg, clr_msg) << failure_msg;
-            HSM::KeyStorage::resetInstance();
+            hsm.resetInstance();
         }
     }
 }

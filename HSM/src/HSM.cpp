@@ -3,15 +3,48 @@
 #include "RSA_ENC.h"
 #include "RSA_KEY.h"
 #include <vector>
+#include "KyeforKek.hpp"
 
 
-using namespace HSM;
 
-HSM_STATUS Algo::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId, bool needPrivilege)
+
+
+HSMnamespace::HSM *HSMnamespace::HSM::instance = nullptr;
+
+
+
+HSMnamespace::HSM &HSMnamespace::getInstance()
+{
+    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
+    HSMnamespace::Ident().compareID(HSMnamespace::Ident("ym")) != HSMnamespace::HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
+    HSMnamespace::Ident().compareID(HSMnamespace::Ident("hsm")) != HSMnamespace::HSM_STATUS::HSM_Good
+    )
+    {
+        std::vector<u_int8_t>key;
+        HSMnamespace::AES::generateAndPrintKey(key, kekAlgorithmType);
+        throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
+        return *HSMnamespace::HSM::instance;
+    }
+    if (HSMnamespace::HSM::instance == nullptr) {
+        HSMnamespace::HSM::instance = new HSMnamespace::HSM(kekAlgorithmType, stringKeyForKek);
+    }
+    return *HSMnamespace::HSM::instance;
+}
+
+using namespace HSMnamespace;
+
+
+void HSM::resetInstance()
+{
+    delete HSM::instance;
+    HSM::instance = nullptr;
+}
+
+HSM_STATUS HSM::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId, bool needPrivilege)
 {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
-    HSM_STATUS status = KeyStorage::getInstance().getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);
+    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);
     if (status != HSM_STATUS::HSM_Good)
         return status;
 
@@ -37,11 +70,11 @@ HSM_STATUS Algo::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS Algo::decrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId)
+HSM_STATUS HSM::decrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId)
 {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
-    HSM_STATUS status = KeyStorage::getInstance().getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey);
+    HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, type, publicKey, privateKey);
     if (status != HSM_STATUS::HSM_Good)
         return status;
 
@@ -68,7 +101,7 @@ HSM_STATUS Algo::decrypt(const std::vector<u_int8_t> &message, std::vector<u_int
     return HSM_STATUS();
 }
 
-HSM_STATUS HSM::Algo::signMessage(
+HSM_STATUS HSM::signMessage(
     const std::vector<u_int8_t> &message, 
     std::vector<u_int8_t> &signature, 
     ENCRYPTION_ALGORITHM_TYPE sigAlg, 
@@ -91,7 +124,7 @@ HSM_STATUS HSM::Algo::signMessage(
     return encrypt(message, signature, sigAlg, myId, keyId);
 }
 
-HSM_STATUS HSM::Algo::verify(
+HSM_STATUS HSM::verify(
     const std::vector<u_int8_t> &message, 
     const std::vector<u_int8_t> &signature, 
     ENCRYPTION_ALGORITHM_TYPE sigAlg,  
@@ -114,4 +147,5 @@ HSM_STATUS HSM::Algo::verify(
 
     return SHA_API::comperHash(message, signature, hashAlg);
 }
+
 

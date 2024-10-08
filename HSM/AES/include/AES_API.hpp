@@ -4,9 +4,8 @@
 
 #include "../../HSM_Enums/HSMEnums.hpp"
 #include "../../include/HSM.h"
-using namespace HSM;
 
-namespace HSM
+namespace HSMnamespace
 {
     class AES
     {

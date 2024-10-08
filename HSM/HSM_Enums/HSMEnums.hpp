@@ -1,6 +1,6 @@
 #pragma once
 
-namespace HSM {
+namespace HSMnamespace {
 
 /**
  * @enum HSM_STATUS

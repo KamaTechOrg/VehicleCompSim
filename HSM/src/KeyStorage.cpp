@@ -3,9 +3,8 @@
 #include "RSA_KEY.h"
 #include <ostream>
 #include <sstream>
-#include "KyeforKek.hpp"
 
-using namespace HSM;
+using namespace HSMnamespace;
 
 std::string vectorToString(std::vector<u_int8_t> vec)
 {
@@ -69,9 +68,8 @@ std::vector<std::vector<u_int8_t>> keyStingToVector(std::string str)
 }
 
 const std::string KeyStorage::KeyStorageFileName = "KeyStorage.csv";
-KeyStorage *KeyStorage::instance = nullptr;
 
-KeyStorage::KeyStorage()
+KeyStorage::KeyStorage(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek)
 {
 
     // create file if not exists
@@ -91,7 +89,7 @@ KeyStorage::KeyStorage()
     
 }
 
-HSM::KeyStorage::~KeyStorage()
+KeyStorage::~KeyStorage()
 {
     // clear the csv file
     std::ofstream file(KeyStorageFileName, std::ios::trunc);
@@ -102,7 +100,7 @@ HSM::KeyStorage::~KeyStorage()
 }
 
 
-HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
+HSM_STATUS KeyStorage::writeToStorage(std::string info)
 {
     std::ofstream file(KeyStorageFileName, std::ios_base::app);
 
@@ -117,7 +115,7 @@ HSM_STATUS HSM::KeyStorage::writeToStorage(std::string info)
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
+HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
 {
     std::ifstream file(KeyStorageFileName);
     if (!file.is_open())
@@ -147,7 +145,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
             publicKey = vec[3];
             std::vector<u_int8_t> encryptedPrivateKey = vec[4];
             // file.close();
-            HSM_STATUS status = AES::decrypt(encryptedPrivateKey, privateKey, getInstance().keyForKek, getInstance().kekAlgType);
+            HSM_STATUS status = AES::decrypt(encryptedPrivateKey, privateKey, keyForKek, kekAlgType);
             if (status != HSM_STATUS::HSM_Good)
                 return status;
             return HSM_STATUS::HSM_Good;
@@ -166,7 +164,7 @@ HSM_STATUS HSM::KeyStorage::searchInStorage(const Ident &myId, const KeyId &keyI
     return HSM_STATUS::HSM_NoSuchKey;
 }
 
-HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
+HSM_STATUS KeyStorage::create_key_and_get_id(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, int bits)
 {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
@@ -198,46 +196,17 @@ HSM_STATUS KeyStorage::get_keys(const Ident &myId, KeyId &keyId, ENCRYPTION_ALGO
 
     if (status == HSM_STATUS::HSM_Good)
     {
-        keyId = KeyStorage::getInstance().keyIdCounter++;
+        keyId = keyIdCounter++;
         std::stringstream ss;
         // encrypt private key using kek
         std::vector<u_int8_t> encryptedPrivateKey;
-        status = AES::encrypt(privateKey, encryptedPrivateKey, getInstance().keyForKek, getInstance().kekAlgType);
+        status = AES::encrypt(privateKey, encryptedPrivateKey, keyForKek, kekAlgType);
         ss << myId.toString() << "," << keyId << "," << type << "," << vectorToString(publicKey) << "," << binaryVectorToString(encryptedPrivateKey);
         std::string tmp = ss.str();
-        status = KeyStorage::getInstance().writeToStorage(ss.str());
+        status = writeToStorage(ss.str());
     }
     return status;
 }
 
-HSM::KeyStorage &HSM::KeyStorage::getInstance()
-{
-    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
-    Ident().compareID(Ident("ym")) != HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
-    Ident().compareID(Ident("hsm")) != HSM_STATUS::HSM_Good
-    )
-    {
-        std::vector<u_int8_t>key;
-        AES::generateAndPrintKey(key, kekAlgorithmType);
-        throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
-        return *instance;
-    }
-    if (instance == nullptr)
-        instance = new KeyStorage();
-    return *instance;
-}
 
 
-void HSM::KeyStorage::resetInstance()
-{
-    delete instance;
-    instance = nullptr;
-}
-
-
-HSM_STATUS KeyStorage::getKeyFromKeyStorage(const Ident &myId, const KeyId &keyId, ENCRYPTION_ALGORITHM_TYPE type, std::vector<u_int8_t> &publicKey, std::vector<u_int8_t> &privateKey, bool needPrivilege)
-{
-    HSM_STATUS status = HSM_STATUS();
-    status = KeyStorage::getInstance().searchInStorage(myId, keyId, type, publicKey, privateKey, needPrivilege);
-    return status;
-}
