@@ -9,24 +9,23 @@
 
 
 
-HSMnamespace::HSM *HSMnamespace::HSM::instance = nullptr;
-
+std::unique_ptr<HSMnamespace::HSM> HSMnamespace::HSM::instance = nullptr;
 
 
 HSMnamespace::HSM &HSMnamespace::getInstance()
 {
-    if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
-    HSMnamespace::Ident().compareID(HSMnamespace::Ident("ym")) != HSMnamespace::HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
-    HSMnamespace::Ident().compareID(HSMnamespace::Ident("hsm")) != HSMnamespace::HSM_STATUS::HSM_Good
-    )
-    {
-        std::vector<u_int8_t>key;
-        HSMnamespace::AES::generateAndPrintKey(key, kekAlgorithmType);
-        throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
-        return *HSMnamespace::HSM::instance;
-    }
-    if (HSMnamespace::HSM::instance == nullptr) {
-        HSMnamespace::HSM::instance = new HSMnamespace::HSM(kekAlgorithmType, stringKeyForKek);
+    if(!HSMnamespace::HSM::instance){
+        if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
+        HSMnamespace::Ident().compareID(HSMnamespace::Ident("ym")) != HSMnamespace::HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
+        HSMnamespace::Ident().compareID(HSMnamespace::Ident("hsm")) != HSMnamespace::HSM_STATUS::HSM_Good
+        )
+        {
+            std::vector<u_int8_t>key;
+            HSMnamespace::AES::generateAndPrintKey(key, kekAlgorithmType);
+            throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
+            return *HSMnamespace::HSM::instance;
+        }
+        HSMnamespace::HSM::instance.reset(new HSMnamespace::HSM(kekAlgorithmType, stringKeyForKek));
     }
     return *HSMnamespace::HSM::instance;
 }
@@ -36,8 +35,7 @@ using namespace HSMnamespace;
 
 void HSM::resetInstance()
 {
-    delete HSM::instance;
-    HSM::instance = nullptr;
+    HSM::instance.reset();
 }
 
 HSM_STATUS HSM::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId, bool needPrivilege)
