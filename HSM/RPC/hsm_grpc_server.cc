@@ -56,12 +56,12 @@ class HSM_RPCServiceImpl final : public HSM_RPC::Service {
       const EncryptRequest* request, EncryptReply* reply) override {
         std::vector<uint8_t> clr_data(request->clr_data().begin(), request->clr_data().end());
         std::vector<uint8_t> enc_data;
-        auto type = static_cast<HSM::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
-        HSM::Ident id(request->my_id().id());
+        auto type = static_cast<HSMns::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
+        HSMns::Ident id(request->my_id().id());
         uint32_t key_id = request->key_id();
         bool needPrivilege = request->need_privilege();
-
-        HSM::HSM_STATUS status = HSM::Algo::encrypt(
+        auto& hsm = HSMns::getInstance();
+        HSMns::HSM_STATUS status = hsm.encrypt(
           clr_data,
           enc_data,
           type,
@@ -70,7 +70,7 @@ class HSM_RPCServiceImpl final : public HSM_RPC::Service {
           needPrivilege
         );
         reply->set_status(static_cast<HSM_gRpc::HSM_STATUS>(status));
-        if(status == HSM::HSM_STATUS::HSM_Good){
+        if(status == HSMns::HSM_STATUS::HSM_Good){
           reply->set_enc_data(enc_data.data(), enc_data.size());
           return Status::OK;
         }
@@ -81,11 +81,11 @@ class HSM_RPCServiceImpl final : public HSM_RPC::Service {
       const DecryptRequest* request, DecryptReply* reply) override {
         std::vector<uint8_t> enc_data(request->enc_data().begin(), request->enc_data().end());
         std::vector<uint8_t> clr_data;
-        auto type = static_cast<HSM::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
-        HSM::Ident id(request->my_id().id());
+        auto type = static_cast<HSMns::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
+        HSMns::Ident id(request->my_id().id());
         uint32_t key_id = request->key_id();
-
-        HSM::HSM_STATUS status = HSM::Algo::decrypt(
+        auto& hsm = HSMns::getInstance();
+        HSMns::HSM_STATUS status = hsm.decrypt(
           enc_data,
           clr_data,
           type,
@@ -93,7 +93,7 @@ class HSM_RPCServiceImpl final : public HSM_RPC::Service {
           key_id
         );
         reply->set_status(static_cast<HSM_gRpc::HSM_STATUS>(status));
-        if(status == HSM::HSM_STATUS::HSM_Good){
+        if(status == HSMns::HSM_STATUS::HSM_Good){
           reply->set_clr_data(clr_data.data(), clr_data.size());
           return Status::OK;
         }
@@ -105,14 +105,15 @@ Status Sign(ServerContext* context,
       const SignRequest* request, SignReply* reply) override {
         std::vector<uint8_t> message(request->message().begin(), request->message().end());
         std::vector<uint8_t> signature;
-        auto algo_type = static_cast<HSM::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
+        auto algo_type = static_cast<HSMns::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
         auto hash_type = static_cast<HASH_ALGORITHM_TYPE>(request->hash_type());
-        HSM::Ident myId;
-        HSM::KeyId key_id = request->key_id();
-        HSM::HSM_STATUS status = HSM::Algo::signMessage(message, signature, algo_type, hash_type, myId, key_id);
+        HSMns::Ident myId;
+        HSMns::KeyId key_id = request->key_id();
+        auto& hsm = HSMns::getInstance();
+        HSMns::HSM_STATUS status = hsm.signMessage(message, signature, algo_type, hash_type, myId, key_id);
 
         reply->set_status(static_cast<HSM_gRpc::HSM_STATUS>(status));
-        if(status == HSM::HSM_STATUS::HSM_Good){
+        if(status == HSMns::HSM_STATUS::HSM_Good){
           reply->set_signature(signature.data(), signature.size());
           return Status::OK;
         }
@@ -124,15 +125,16 @@ Status Sign(ServerContext* context,
       const VerifyRequest* request, VerifyReply* reply) override {
         std::vector<uint8_t> message(request->message().begin(), request->message().end());
         std::vector<uint8_t> signature(request->signature().begin(), request->signature().end());
-        auto algo_type = static_cast<HSM::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
+        auto algo_type = static_cast<HSMns::ENCRYPTION_ALGORITHM_TYPE>(request->algo_type());
         auto hash_type = static_cast<HASH_ALGORITHM_TYPE>(request->hash_type());
-        HSM::Ident my_id;
-        HSM::KeyId key_id = request->key_id();
+        HSMns::Ident my_id;
+        HSMns::KeyId key_id = request->key_id();
         bool needPrivilege = request->need_privilege();
-        HSM::HSM_STATUS status = HSM::Algo::verify(message, signature, algo_type, hash_type, my_id, key_id, needPrivilege);
+        auto& hsm = HSMns::getInstance();
+        HSMns::HSM_STATUS status = hsm.verify(message, signature, algo_type, hash_type, my_id, key_id, needPrivilege);
 
         reply->set_status(static_cast<HSM_gRpc::HSM_STATUS>(status));
-        if(status == HSM::HSM_STATUS::HSM_Good){
+        if(status == HSMns::HSM_STATUS::HSM_Good){
           return Status::OK;
         }
         return Status(grpc::StatusCode::INTERNAL, "HSM_STATUS: " + std::to_string(status));
