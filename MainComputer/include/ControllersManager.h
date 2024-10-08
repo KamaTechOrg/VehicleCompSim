@@ -7,12 +7,21 @@ class ControllersManager
 {
 public:
 	std::vector<std::string> getControllersIDS() const;
-	std::vector<std::string> getControllersOptions(std::string sensorID) const;
+	std::vector<std::string> getControllersOptions(std::string controllerID) const;
 
 private:
 	// <"id", port number>
 	inline static const std::unordered_map<std::string, std::vector<std::string>> _controllers = {
-		{"Beep Controller", {}},
-		{"Dashboard Controller", {}},
+		{"Beep Controller", {
+			"to close",
+			"stop",
+			"clear",
+			}
+		},
+		{"Dashboard Controller", {
+			"low fuel",
+			"open backle",
+			}
+		},
 	};
 };
