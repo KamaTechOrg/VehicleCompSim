@@ -1,0 +1,134 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+// option java_multiple_files = true;
+// option java_package = "io.grpc.examples.helloworld";
+// option java_outer_classname = "HelloWorldProto";
+// option objc_class_prefix = "_HSM_";
+
+package HSM_gRpc;
+
+message Ident {
+  bytes id = 1;
+}
+
+enum HSM_STATUS {
+  HSM_Good = 0;
+  HSM_InvalidAlg = 1;
+  HSM_InvalidIdent = 2;
+  HSM_NoSuchKey = 3;
+  HSM_KeyNotValid = 4;
+  HSM_WrongDataSize = 5;
+  HSM_WrongPadding = 6;
+  HSM_BadOutputBufSize = 7;
+  HSM_InternalErr = 8;
+  // Add more here
+  HSM_Status_Count = 9;
+}
+
+enum ENCRYPTION_ALGORITHM_TYPE {
+  NoAlg = 0;
+  RSA = 1;
+  AES_128_ECB = 2;
+  AES_128_CBC = 3;
+  AES_128_CTR = 4;
+  AES_192_ECB = 5;
+  AES_192_CBC = 6;
+  AES_192_CTR = 7;     
+  AES_256_ECB = 8;
+  AES_256_CBC = 9;
+  AES_256_CTR = 10; 
+  ECC = 11;
+  Alg_Count = 12;
+};
+
+
+enum HASH_ALGORITHM_TYPE {
+    NoHash = 0;
+    SHA1 = 1;
+    SHA256 = 2;
+    SHA512 = 3;
+    Hash_Count = 4;
+    SHA3_256 = 5;
+    SHA3_512 = 6;
+};
+
+// encrypt
+message EncryptRequest {
+  bytes clr_data = 2;
+  ENCRYPTION_ALGORITHM_TYPE algo_type = 3;
+  Ident my_id = 4;
+  uint32 key_id = 5;
+  bool need_privilege = 6;
+}
+
+message EncryptReply {
+  HSM_STATUS status = 7;
+  bytes enc_data = 8;
+}
+
+// decrypt
+message DecryptRequest {
+  bytes enc_data = 9;
+  ENCRYPTION_ALGORITHM_TYPE algo_type = 10;
+  Ident my_id = 11;
+  uint32 key_id = 12;
+}
+
+message DecryptReply {
+  HSM_STATUS status = 14;
+  bytes clr_data = 15;
+}
+
+
+// sign message
+message SignRequest {
+  bytes message = 16;
+  ENCRYPTION_ALGORITHM_TYPE algo_type = 17;
+  HASH_ALGORITHM_TYPE hash_type = 18;
+  Ident my_id = 19;
+  uint32 key_id = 20;
+}
+
+message SignReply {
+  HSM_STATUS status = 21;
+  bytes signature = 22;
+}
+
+
+// verify signature
+message VerifyRequest {
+  bytes message = 23;
+  bytes signature = 24;
+  ENCRYPTION_ALGORITHM_TYPE algo_type = 26;
+  HASH_ALGORITHM_TYPE Hash_type = 27;
+  Ident my_id = 28;
+  uint32 key_id = 29;
+  bool need_privilege = 30;
+}
+
+message VerifyReply {
+  HSM_STATUS status = 31;
+}
+
+
+// The hsm service definition.
+service HSM_RPC {
+  rpc Encrypt (EncryptRequest) returns (EncryptReply) {}
+  rpc Decrypt (DecryptRequest) returns (DecryptReply) {}
+  rpc Sign (SignRequest) returns (SignReply) {}
+  rpc Verify (VerifyRequest) returns (VerifyReply) {}
+}

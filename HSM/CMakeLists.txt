@@ -57,6 +57,7 @@ add_subdirectory(RSA)
 add_subdirectory(SHA_API)
 # add_subdirectory(Benchmark)
 add_subdirectory(HSM_Enums)
+add_subdirectory(RPC)
 
 # API
 add_library(HSM src/HSM.cpp src/KeyStorage.cpp src/ID.cpp)
