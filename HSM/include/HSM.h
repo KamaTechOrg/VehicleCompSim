@@ -59,7 +59,7 @@ namespace HSMnamespace
 
     public:
         friend HSM &getInstance();
-        void resetInstance();
+        static void resetInstance();
         HSM_STATUS encrypt(
             const std::vector<u_int8_t> &message,
             std::vector<u_int8_t> &encrypted_message,
