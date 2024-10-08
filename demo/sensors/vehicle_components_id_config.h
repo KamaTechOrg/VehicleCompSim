@@ -2,11 +2,11 @@
 #define VEHICLE_COMPONENTS_ID_CONFIG_H
 
 enum vehicle_components_id_config {
-    MAIN_COMPUTER,
-    IMAGE_INPUT,
-    WHEELS,
-    BREAKS,
-    GAS,
+    MAIN_COMPUTER, // 0
+    IMAGE_INPUT, // 1
+    WHEELS, // 2
+    BREAKS, // 3
+    GAS, // 4
     COMPONENTS_COUNT
 };
 
