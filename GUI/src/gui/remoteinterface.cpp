@@ -77,12 +77,12 @@ void RemoteInterface::setupUI()
 
     // Navigation buttons
     m_scrollLeftButton = new IconButton(globalConstants::Icons::ArrowLeft, "Scroll Left", this);
-    m_scrollLeftButton->setFixedSize(25, 25);
+    m_scrollLeftButton->setCustomSize(QSize(25, 25));
     m_scrollLeftButton->setIconSize(QSize(25, 25));
     connect(m_scrollLeftButton, &QPushButton::clicked, this, &RemoteInterface::scrollLeft);
 
     m_scrollRightButton = new IconButton(globalConstants::Icons::ArrowRight, "Scroll Right", this);
-    m_scrollRightButton->setFixedSize(25, 25);
+    m_scrollRightButton->setCustomSize(QSize(25, 25));
     m_scrollRightButton->setIconSize(QSize(25, 25));
     connect(m_scrollRightButton, &QPushButton::clicked, this, &RemoteInterface::scrollRight);
 
