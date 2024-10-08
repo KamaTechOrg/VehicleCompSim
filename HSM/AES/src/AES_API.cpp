@@ -9,7 +9,7 @@
 
 #include "../../HSM_Enums/HSMEnums.hpp"
 
-using namespace HSM;
+using namespace HSMnamespace;
 using namespace aes;
 
 bool is_AES_algo_type(ENCRYPTION_ALGORITHM_TYPE const& type){
@@ -99,7 +99,7 @@ HSM_STATUS AES::encrypt(std::vector<uint8_t> const &clrMsg, std::vector<uint8_t>
       return stat;
     
     if(key.size() != expected_key_size)
-      return HSM::HSM_KeyNotValid;
+      return HSM_STATUS::HSM_KeyNotValid;
     auto aes = aes_create(key, type);
 
     switch (type)
@@ -142,7 +142,7 @@ HSM_STATUS AES::decrypt(std::vector<uint8_t> const &clrMsg, std::vector<uint8_t>
       return stat;
     
     if(key.size() != expected_key_size)
-      return HSM::HSM_KeyNotValid;
+      return HSM_STATUS::HSM_KeyNotValid;
     auto aes = aes_create(key, type);
 
     switch (type)

@@ -12,7 +12,9 @@
 #include <pwd.h>
 #endif
 
-HSM::Ident::Ident()
+using namespace HSMnamespace;
+
+Ident::Ident()
 {
     std::string username;
 #ifdef _WIN32
@@ -39,12 +41,12 @@ HSM::Ident::Ident()
     this->id = std::vector<u_int8_t>(username.begin(), username.end());
 }
 
-HSM::Ident::Ident(const std::string &userID)
+Ident::Ident(const std::string &userID)
 {
     this->id = std::vector<u_int8_t>(userID.begin(), userID.end());
 }
 
-HSM::HSM_STATUS HSM::Ident::compareID(const Ident &other)
+HSM_STATUS Ident::compareID(const Ident &other)
 {
     if (this->id.size() != other.id.size())
     {
@@ -60,7 +62,7 @@ HSM::HSM_STATUS HSM::Ident::compareID(const Ident &other)
     return HSM_STATUS::HSM_Good;
 }
 
-std::string HSM::Ident::toString() const
+std::string Ident::toString() const
 {
     std::string str(this->id.begin(), this->id.end());
     return str;

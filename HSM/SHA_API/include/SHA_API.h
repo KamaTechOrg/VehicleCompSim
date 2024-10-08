@@ -21,12 +21,12 @@ enum HASH_ALGORITHM_TYPE
 class SHA_API
 {
 public:
-    static HSM::HSM_STATUS sha(
+    static HSMnamespace::HSM_STATUS sha(
         const std::vector<u_char> &message, 
         HASH_ALGORITHM_TYPE type = HASH_ALGORITHM_TYPE::SHA256
     );
 
-    static HSM::HSM_STATUS comperHash(
+    static HSMnamespace::HSM_STATUS comperHash(
         const std::vector<u_char> &message, 
         const std::vector<u_char> &hash, 
         HASH_ALGORITHM_TYPE type = HASH_ALGORITHM_TYPE::SHA256
