@@ -32,10 +32,9 @@ private:
 	QComboBox* _operation;
 	QPushButton* _deleteButton;
 	
-
-
 	void createDeleteButton();
 	void addWidget(QWidget* widget);
 	void addStretch(int stretch);
 	unsigned extractIdFromString(const std::string& str);
+	void setOperationOptionsBasedOnTarget(const QString& text);
 };

@@ -4,9 +4,6 @@
 #include "ThenWidgetsLayout.h"
 #include "ControllersManager.h"
 
-
-
-
 ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	: QWidget(parent),
 	_layout(new QHBoxLayout(this))
@@ -17,23 +14,24 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 	_messagePart1->setText("Send a message to:");
 	addWidget(_messagePart1);
 
-	_targetUnit = new QComboBox(this); // Pass 'this' as parent
+	_targetUnit = new QComboBox(this);
 	_targetUnit->setPlaceholderText("target unit");
 	std::vector<std::string> controllers = ControllersManager().getControllersIDS();
 	for (const auto& controller : controllers)
 		_targetUnit->addItem(controller.c_str());
+	connect(_targetUnit, &QComboBox::currentTextChanged, this, &ThenWidgetsLayout::setOperationOptionsBasedOnTarget);
 	addWidget(_targetUnit);
 
 	_messagePart2 = new QLabel;
 	_messagePart2->setText("to do:");
 	addWidget(_messagePart2);
 
-	_operation = new QComboBox(this); // Pass 'this' as parent
+	_operation = new QComboBox(this);
 	_operation->setPlaceholderText("operation");
-	_operation->addItem("do 1");
-	_operation->addItem("do 2");
-	_operation->addItem("do 3");
-	_operation->addItem("do 4");
+	//_operation->addItem("do 1");
+	//_operation->addItem("do 2");
+	//_operation->addItem("do 3");
+	//_operation->addItem("do 4");
 	addWidget(_operation);
 
 	createDeleteButton();
@@ -79,8 +77,6 @@ std::shared_ptr<Action> ThenWidgetsLayout::data()
 	return std::make_shared<Action>(targetUnit, message);
 }
 
-
-
 void ThenWidgetsLayout::loadFromJson(const nlohmann::json& json)
 {
 	int targetIndex = _targetUnit->findText(QString::fromStdString(json["target"]));
@@ -93,8 +89,6 @@ void ThenWidgetsLayout::loadFromJson(const nlohmann::json& json)
 		_operation->setCurrentIndex(operationIndex);
 	}
 }
-
-
 
 nlohmann::json ThenWidgetsLayout::GuiData()
 {
@@ -110,9 +104,6 @@ nlohmann::json ThenWidgetsLayout::GuiData()
 	};
 }
 
-
-
-
 unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
 {
 	size_t pos = str.find_last_of(' ');
@@ -122,4 +113,12 @@ unsigned ThenWidgetsLayout::extractIdFromString(const std::string& str)
 
 	std::string idStr = str.substr(pos + 1);
 	return std::stoul(idStr);
+}
+
+void ThenWidgetsLayout::setOperationOptionsBasedOnTarget(const QString& text)
+{
+	_operation->clear();
+	auto operationOptions = ControllersManager().getControllersOptions(text.toStdString());
+	for (const auto& option : operationOptions)
+		_operation->addItem(QString::fromStdString(option));
 }

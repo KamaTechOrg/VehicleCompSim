@@ -197,7 +197,9 @@ void Communication::sendTo(int portNumber, const std::string& message) {
 
 void Communication::connectToSensors()
 {
-    std::vector<int> sensorsPortNumbers = SensorsManager().getSensorsPortNumbers();
+    // there is no such function anymore, we don't connect to sensor through ports
+    //std::vector<int> sensorsPortNumbers = SensorsManager().getSensorsPortNumbers();
+    std::vector<int> sensorsPortNumbers;
     for (const int portNumber : sensorsPortNumbers) {
         int sensorSock = createSocket();
         struct sockaddr_in sensorAddr;
