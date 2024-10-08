@@ -25,8 +25,8 @@ set(CLIENT_SOURCES
     buffer_test.h
     PersistentTootip.h
     PersistentTootip.cpp
-    CustomInfoWindow.h
-    CustomInfoWindow.cpp
+#    CustomInfoWindow.h
+#    CustomInfoWindow.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
     saveAndLoad.cpp

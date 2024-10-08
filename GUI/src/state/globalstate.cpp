@@ -104,6 +104,17 @@ void GlobalState::saveData(){
 void GlobalState::loadData(){
     emit loadBtnPressed();
 }
+void GlobalState::log(const QString &newLog, const QString &tabName) {
+    emit newLogArrived(newLog, tabName);
+}
+void GlobalState::addNewTab(const QString &tabName){
+    emit newTab(tabName);
+}
+void GlobalState::pressOnTab(const QString &tabName){
+    emit tabPressed(tabName);
+}
+
+
 
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");

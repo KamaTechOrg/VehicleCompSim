@@ -1,5 +1,6 @@
 #include "sensorrunner.h"
 #include "CMakeUtils/../processControls.h"
+#include "globalstate.h"
 
 #define VERIFY_STATE(value) if (state != value) return onError()
 
@@ -73,6 +74,8 @@ void SensorRunner::onPrepareStep()
     {
         process.startCommand(commandRunFormat.arg(sensorModel->buildCommand()));
         qInfo() << "prepare-pid: " << process.processId();
+        QString processIdString = "prepare-pid: " + QString::number(process.processId());
+        GlobalState::getInstance().log(processIdString, "Terminal");
         state = RUNNING;
     }
     else emit stepSuccess(currentStep);
@@ -86,6 +89,8 @@ void SensorRunner::onInitStep()
 
     process.startCommand(commandRunFormat.arg(sensorModel->runCommand()));
     qInfo() << "init-pid: " << process.processId();
+    QString processIdString = "init-pid: " + QString::number(process.processId());
+    GlobalState::getInstance().log(processIdString, "Terminal");
     //process.waitForStarted();
     //suspendProcess(process.processId());
     //state = SUSPENDED;
@@ -122,5 +127,8 @@ void SensorRunner::onError()
     emit Runner::errorAccure();
     state = HAS_ERROR;
     qInfo() << (process.error() != QProcess::UnknownError ? unknownErrorAccureMessage : "");
+    GlobalState::getInstance().log(process.error() != QProcess::UnknownError ? unknownErrorAccureMessage : "",
+                                   "Terminal");
     qInfo() << process.errorString();
+    GlobalState::getInstance().log(process.errorString(), "Terminal");
 }

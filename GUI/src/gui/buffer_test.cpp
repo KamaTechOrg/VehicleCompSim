@@ -33,8 +33,8 @@ buffer_test::~buffer_test() {
 }
 void buffer_test::testExtractBufferData() {
     int time = 200;
-    int src_id = 10;
-    int dest_id = 20;
+    int src_id = 1;
+    int dest_id = 2;
     int len = 50;
 
     std::stringstream ss;
@@ -80,5 +80,5 @@ void buffer_test::testExtractBufferData() {
 
     QString qstr = QString::fromStdString(ss.str());
 
-//    GlobalState::getInstance().newData(qstr, 1024);
+    GlobalState::getInstance().newData(qstr);
 }

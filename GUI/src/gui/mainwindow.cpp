@@ -69,10 +69,72 @@ MainWindow::MainWindow(QWidget* parent)
     m_globalState.addProject(startingProject);
     m_globalState.setCurrentProject(startingProject);
 
+    // Create a QTabWidget
+    tabWidget = new QTabWidget();
+    // remote tab
+    QWidget* remoteTab = new QWidget();
+    QVBoxLayout* remoteTabLayout = new QVBoxLayout(remoteTab);
+    remoteTab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    remoteTab->setMinimumSize(400, 150);
     m_remoteInterface = new RemoteInterface(this);
-    addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
+    remoteTabLayout->addWidget(m_remoteInterface);
+    remoteTab->setLayout(remoteTabLayout);
+    tabWidget->addTab(remoteTab, "Remote");
+    tabIndexMap["Remote"] = tabWidget->indexOf(remoteTab);
+//    qInfo() << tabWidget->indexOf(remoteTab);
+
+//    emit &QTabWidget::currentChanged;
+
+    // terminal tab
+    QWidget* terminalTab = new QWidget();
+    QVBoxLayout* tab2Layout = new QVBoxLayout(terminalTab);
+    QTextEdit *logTextEdit = new QTextEdit();
+    tab2Layout->addWidget(logTextEdit);
+    tabWidget->addTab(terminalTab, "Terminal");
+    textEditMap["Terminal"] = logTextEdit;
+    tabIndexMap["Terminal"] = tabWidget->indexOf(terminalTab);
+
+
+//// Set the current tab to the "Terminal" tab
+//    tabWidget->setCurrentIndex(tabWidget->indexOf(terminalTab));
+//    qInfo() << tabWidget->indexOf(terminalTab);
+
+
+    m_mainLayout->addWidget(tabWidget);
+    tabWidget->setTabPosition(QTabWidget::South);
+    tabWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    connect(&m_globalState, &GlobalState::newLogArrived, this, &MainWindow::handleNewLog);
+    connect(&m_globalState, &GlobalState::newTab, this, &MainWindow::createNewTab);
+    connect(&m_globalState, &GlobalState::tabPressed, this, &MainWindow::pressONTab);
 
     setupRunService();
+}
+void MainWindow::createNewTab(const QString &tabName){
+    auto* newTab = new QWidget();
+    auto* tabLayout = new QVBoxLayout(newTab);
+    auto *TextEdit = new QTextEdit();
+    tabLayout->addWidget(TextEdit);
+    tabWidget->addTab(newTab, tabName);
+    textEditMap[tabName] = TextEdit;
+    tabIndexMap[tabName] = tabWidget->indexOf(newTab);
+}
+void MainWindow::pressONTab(const QString & tabName){
+    tabWidget->setCurrentIndex(tabIndexMap[tabName]);
+}
+
+void MainWindow::handleNewLog(const QString &newLog, const QString &tabName) {
+    try {
+        auto it = textEditMap.find(tabName);
+        if (it == textEditMap.end()) {
+            throw std::out_of_range("Tab name not found in textEditMap");
+        }
+        it->second->append(newLog);
+    } catch (const std::out_of_range& e) {
+        qWarning() << "Error in handleNewLog: " << e.what() << ". Tab name: " << tabName;
+        QString msg = "Error in handleNewLog: " + QString(e.what()) + ". Tab name: " + tabName;
+        GlobalState::getInstance().log(msg ,"Terminal");
+    }
 }
 
 void MainWindow::setupToolBar() {
@@ -95,8 +157,13 @@ void MainWindow::setupRunService()
 {
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [](QString packet){
         qInfo() << "------------------------------packet-----------------------------";
+        GlobalState::getInstance().log("------------------------------packet-----------------------------",
+                                       "Terminal");
         qInfo() << packet;
+        GlobalState::getInstance().log(packet, "Terminal");
         qInfo() << "------------------------------packet-----------------------------";
+        GlobalState::getInstance().log("------------------------------packet-----------------------------",
+                                       "Terminal");
     });
 
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, &GlobalState::getInstance(), &GlobalState::newData);
@@ -136,6 +203,8 @@ void MainWindow::setupRunService()
     });
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [this](QString packet){
         qInfo() << packet;
+        GlobalState::getInstance().log(packet, "Terminal");
+
     });
     QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
@@ -240,14 +309,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::updateBackground()
 {
-//    if (!m_currentFrameBackgroundPath.isEmpty()) {
-//        QPixmap backgroundImage(m_currentFrameBackgroundPath);
-//        QPixmap scaledImage = backgroundImage.scaled(mainFrame->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-//        QPalette palette;
-//        palette.setBrush(QPalette::Window, scaledImage);
-//        mainFrame->setAutoFillBackground(true);
-//        mainFrame->setPalette(palette);
-//    }
     if (!m_currentMainBackgroundPath.isEmpty()) {
         QImage backgroundImage(m_currentMainBackgroundPath);
         QSize viewSize = m_view->viewport()->size();
@@ -329,6 +390,7 @@ void MainWindow::onRunEnd()
     m_buttonStack->setCurrentWidget(m_startBtn);
     m_timer->setDisabled(false);
 
+    m_globalState.setIsRunning(false);
     // m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();

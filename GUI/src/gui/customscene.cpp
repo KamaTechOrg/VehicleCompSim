@@ -309,19 +309,36 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
         }
     }
 }
+QString CustomScene::dataToHtml(const QList<QPair<QString, QString>>& data){
+    QString tableHtml = "<table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse;'>";
+    tableHtml += "<tr style='background-color: #f2f2f2;'>";
+    for (const auto& pair : data) {
+        tableHtml += QString("<th style='padding: 10px;'>%1</th>").arg(pair.first.toHtmlEscaped());
+    }
+    tableHtml += "</tr>";
+    tableHtml += "<tr>";
+    for (const auto& pair : data) {
+        tableHtml += QString("<td style='padding: 10px;'>%1</td>").arg(pair.second.toHtmlEscaped());
+    }
+    tableHtml += "</tr>";
+    tableHtml += "</table>";
+    return tableHtml;
+}
 
 void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
     SensorItem* src = m_sensors[data[BufferInfo::SourceId].second];
     SensorItem* dest = m_sensors[data[BufferInfo::DestinationId].second];
-    
-    // update the sensor values
-    if(src) {
-        src->update_new_data(data);
+    QString newData = dataToHtml(data);
+    QString srcName = "Sensor " + data[SourceId].second;
+    QString destName = "Sensor " + data[DestinationId].second;
+    GlobalState::getInstance().log(newData,  srcName);
+    GlobalState::getInstance().log(newData,  destName);
+    if(src){
+        src->update_new_data(newData);
     }
-    if(dest) {
-        dest->update_new_data(data);
+    if(dest){
+        dest->update_new_data(newData);
     }
-
     if (!src || !dest) {
         qWarning() << "Source or Destination sensor not found.";
         return;

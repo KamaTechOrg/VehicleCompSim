@@ -46,6 +46,12 @@
 #include "widgets/iconbutton.h"
 #include "../../MainComputer/src/maincomputer.h"
 
+#include <QTabWidget>
+#include <QTextEdit>
+#include <unordered_map>
+
+
+
 class QGraphicsView;
 class QToolBar;
 
@@ -76,8 +82,11 @@ private slots:
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
     void updateTimer();
+    void handleNewLog(const QString &newLog, const QString &tabName);
+    void createNewTab(const QString &tabName);
+    void pressONTab(const QString & tabName);
 
-private:
+        private:
     CustomScene* m_scene;
     QGraphicsView* m_view;
     GlobalState &m_globalState;
@@ -120,5 +129,17 @@ private:
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
     MainComputer mainComputer;
+
+    QTabWidget* tabWidget;
+
+    std::unordered_map<QString, QTextEdit*> textEditMap;
+    std::unordered_map<QString, int> tabIndexMap;
+
+
+
+//    QTextEdit* logTextEdit;
+
+//    QTabWidget * tabWidget;
+
 };
 

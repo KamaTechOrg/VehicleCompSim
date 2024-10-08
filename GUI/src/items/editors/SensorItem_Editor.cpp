@@ -169,4 +169,5 @@ void SensorItem::Editor::open()
 void SensorItem::Editor::close()
 {
     qInfo() << "closing...";
+    GlobalState::getInstance().log("closing...", "Terminal");
 }

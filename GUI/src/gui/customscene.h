@@ -17,8 +17,9 @@ class CustomScene : public QGraphicsScene {
 public:
     CustomScene(QObject* parent = nullptr);
     void modifyItem(QGraphicsItem *item);
-    
-public slots:
+    QString dataToHtml(const QList<QPair<QString, QString>>& data);
+
+        public slots:
     void onCurrentProjectChanged(ProjectModel* project);
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
