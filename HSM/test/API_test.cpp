@@ -3,7 +3,7 @@
 #include "HSM.h"
 #include "AES_API.hpp"
 
-using namespace HSMnamespace;
+using namespace HSMns;
 
 // TEST(AesTest, Aes_128_ecb_encrypt_decrypt_string_with_size_16) {
 //   std::string key ="\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";

@@ -8,7 +8,7 @@
 #include "HSMEnums.hpp"
 #include "SHA_API.h"
 
-namespace HSMnamespace
+namespace HSMns
 {
     typedef uint32_t KeyId;
     class Ident

@@ -9,28 +9,28 @@
 
 
 
-std::unique_ptr<HSMnamespace::HSM> HSMnamespace::HSM::instance = nullptr;
+std::unique_ptr<HSMns::HSM> HSMns::HSM::instance = nullptr;
 
 
-HSMnamespace::HSM &HSMnamespace::getInstance()
+HSMns::HSM &HSMns::getInstance()
 {
-    if(!HSMnamespace::HSM::instance){
+    if(!HSMns::HSM::instance){
         if(stringKeyForKek == "bcced699dee5a6abde586607a26bf8dc" && //cheek that user replaced the key in KyeforKek.hpp
-        HSMnamespace::Ident().compareID(HSMnamespace::Ident("ym")) != HSMnamespace::HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
-        HSMnamespace::Ident().compareID(HSMnamespace::Ident("hsm")) != HSMnamespace::HSM_STATUS::HSM_Good
+        HSMns::Ident().compareID(HSMns::Ident("ym")) != HSMns::HSM_STATUS::HSM_Good && //alow only for ym & hsm for testing
+        HSMns::Ident().compareID(HSMns::Ident("hsm")) != HSMns::HSM_STATUS::HSM_Good
         )
         {
             std::vector<u_int8_t>key;
-            HSMnamespace::AES::generateAndPrintKey(key, kekAlgorithmType);
+            HSMns::AES::generateAndPrintKey(key, kekAlgorithmType);
             throw std::runtime_error("Please change the key for kek in KyeforKek.hpp to the line above:\n");
-            return *HSMnamespace::HSM::instance;
+            return *HSMns::HSM::instance;
         }
-        HSMnamespace::HSM::instance.reset(new HSMnamespace::HSM(kekAlgorithmType, stringKeyForKek));
+        HSMns::HSM::instance.reset(new HSMns::HSM(kekAlgorithmType, stringKeyForKek));
     }
-    return *HSMnamespace::HSM::instance;
+    return *HSMns::HSM::instance;
 }
 
-using namespace HSMnamespace;
+using namespace HSMns;
 
 
 void HSM::resetInstance()

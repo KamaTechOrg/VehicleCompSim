@@ -15,7 +15,7 @@
 class RSA_KEY
 {
 public:
-    static HSMnamespace::HSM_STATUS generateKeys(std::vector<u_int8_t> &public_key, std::vector<u_int8_t> &private_key, int bits = 512);
+    static HSMns::HSM_STATUS generateKeys(std::vector<u_int8_t> &public_key, std::vector<u_int8_t> &private_key, int bits = 512);
 
     static void generate_keys(BigNum &publicKey, BigNum &privateKey, BigNum &modulus, int bits = 512);
     static bool isPrime(const BigNum &n, int k);
