@@ -41,17 +41,28 @@ void send_thread(ClientSocket &client, int id)
 void listen_thread(ClientSocket &client)
 {
     char buffer[MAXRECV];
-
+    std::string s;
     while (true)
     {
         memset(buffer, 0, sizeof(buffer));
         auto pair_recv = client.listen(buffer, sizeof(buffer));
+        
+        s += buffer;
+        int count = 0;
+        for(int i = 0; i <= s.size() - 3 ; i+=3){
+            if (s[i] == 'a' && s[i+1] == ' ' && s[i+2] == 'c'){
+                count++;
+            }
+        }
+
+        std::cout << "count = " << count << std::endl;
 
         if (pair_recv.first != ListenErrorCode::SUCCESS)
         {
             client.shut_down();
             return;
         }
+        std::cout << "Received buffer: " << buffer << std::endl;
     }
 }
 
@@ -59,7 +70,8 @@ int main()
 {
     
     // Configure logger with different sinks and levels
-    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Info));  // Console logs only Error and above
+    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Info));  
+    Logger::addSink(std::make_unique<FileSink>("/home/mefathim-tech-41/text_file.txt", LogLevel::Info));
 
     LOG_INFO("Application started");
 

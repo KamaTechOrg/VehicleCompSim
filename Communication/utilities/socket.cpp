@@ -122,6 +122,7 @@ sendErrorCode Socket::send(void *data, size_t size) const
     int status = ::send(m_sock, static_cast<const char *>(data), static_cast<int>(size), 0);
 #else
     int status = ::send(m_sock, data, size, MSG_NOSIGNAL);
+    std::cout << status << std::endl;
 #endif
 
     if (status == -1)
@@ -182,23 +183,7 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        std::string input(buf, len);
-        size_t pos1 = input.find('%');
-
-        if (pos1 != std::string::npos) {
-        Data_manipulator::validateCRC(input, pos1, buf, data);
-        } else {
         memcpy(data, buf, len);
-        std::string result = "received == ";
-        for (int i = 0; i < len; ++i) {
-         result += buf[i];
-        }
-        LOG_INFO(result);
-        }
-
-
-
-
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
