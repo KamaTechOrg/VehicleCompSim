@@ -38,7 +38,13 @@ void HSM::resetInstance()
     HSM::instance.reset();
 }
 
-HSM_STATUS HSM::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &encrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId, bool needPrivilege)
+HSM_STATUS HSM::encrypt(
+    const std::vector<u_int8_t> &message,
+    std::vector<u_int8_t> &encrypted_message,
+    ENCRYPTION_ALGORITHM_TYPE type,
+    const Ident &myId,
+    const KeyId &keyId,
+    bool needPrivilege) const
 {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
@@ -48,12 +54,12 @@ HSM_STATUS HSM::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8
 
     switch (type)
     {
-    case RSA: 
+    case RSA:
         encrypted_message = RSA_ENC::encrypt(message, publicKey);
         break;
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
-    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
@@ -68,7 +74,12 @@ HSM_STATUS HSM::encrypt(const std::vector<u_int8_t> &message, std::vector<u_int8
     return HSM_STATUS::HSM_Good;
 }
 
-HSM_STATUS HSM::decrypt(const std::vector<u_int8_t> &message, std::vector<u_int8_t> &decrypted_message, ENCRYPTION_ALGORITHM_TYPE type, const Ident &myId, const KeyId &keyId)
+HSM_STATUS HSM::decrypt(
+    const std::vector<u_int8_t> &message,
+    std::vector<u_int8_t> &decrypted_message,
+    ENCRYPTION_ALGORITHM_TYPE type,
+    const Ident &myId,
+    const KeyId &keyId) const
 {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
@@ -84,7 +95,7 @@ HSM_STATUS HSM::decrypt(const std::vector<u_int8_t> &message, std::vector<u_int8
 
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_128_CBC:
-    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR: 
+    case ENCRYPTION_ALGORITHM_TYPE::AES_128_CTR:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_ECB:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CBC:
     case ENCRYPTION_ALGORITHM_TYPE::AES_192_CTR:
@@ -106,7 +117,7 @@ HSM_STATUS HSM::signMessage(
     HASH_ALGORITHM_TYPE hashAlg, 
     const Ident &myId, 
     const KeyId &keyId
-){
+) const {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
     HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey);
@@ -130,7 +141,7 @@ HSM_STATUS HSM::verify(
     const Ident &myId, 
     const KeyId &keyId,
     bool needPrivilege
-){
+) const {
     std::vector<u_int8_t> publicKey;
     std::vector<u_int8_t> privateKey;
     HSM_STATUS status = getKeyFromKeyStorage(myId, keyId, sigAlg, publicKey, privateKey, needPrivilege);

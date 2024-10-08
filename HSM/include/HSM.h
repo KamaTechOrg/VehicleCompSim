@@ -18,9 +18,9 @@ namespace HSMnamespace
 
     public:
         Ident();
-        Ident(const std::string &str);
+        explicit Ident(const std::string &str);
         std::string toString() const;
-        HSM_STATUS compareID(const Ident &other);
+        HSM_STATUS compareID(const Ident &other) const;
     };
 
     class KeyStorage
@@ -33,7 +33,7 @@ namespace HSMnamespace
         HSM_STATUS writeToStorage(std::string info);
 
     protected:
-        KeyStorage(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek);
+        explicit KeyStorage(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek);
         ~KeyStorage();
         HSM_STATUS getKeyFromKeyStorage(
             const Ident &myId,
@@ -41,7 +41,7 @@ namespace HSMnamespace
             ENCRYPTION_ALGORITHM_TYPE type,
             std::vector<u_int8_t> &publicKey,
             std::vector<u_int8_t> &privateKey,
-            bool needPrivilege = true);
+            bool needPrivilege = true) const;
 
     public:
         HSM_STATUS create_key_and_get_id(
@@ -56,7 +56,8 @@ namespace HSMnamespace
     private:
         static std::unique_ptr<HSM> instance;        
         
-        explicit HSM(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek): KeyStorage(kekAlgorithmType, stringKeyForKek) {}
+        explicit HSM(ENCRYPTION_ALGORITHM_TYPE kekAlgorithmType, std::string stringKeyForKek)
+            :KeyStorage(kekAlgorithmType, stringKeyForKek) {}
 
 
     public:
@@ -68,14 +69,14 @@ namespace HSMnamespace
             ENCRYPTION_ALGORITHM_TYPE type,
             const Ident &myId,
             const KeyId &keyId,
-            bool needPrivilege = true);
+            bool needPrivilege = true) const;
 
         HSM_STATUS decrypt(
             const std::vector<u_int8_t> &message,
             std::vector<u_int8_t> &decrypted_message,
             ENCRYPTION_ALGORITHM_TYPE type,
             const Ident &myId,
-            const KeyId &keyId);
+            const KeyId &keyId) const;
 
         HSM_STATUS signMessage(
             const std::vector<u_int8_t> &message,
@@ -83,7 +84,7 @@ namespace HSMnamespace
             ENCRYPTION_ALGORITHM_TYPE sigAlg,
             HASH_ALGORITHM_TYPE hashAlg,
             const Ident &myId,
-            const KeyId &keyId);
+            const KeyId &keyId) const;
 
         HSM_STATUS verify(
             const std::vector<u_int8_t> &message,
@@ -92,7 +93,7 @@ namespace HSMnamespace
             HASH_ALGORITHM_TYPE hashAlg,
             const Ident &myId,
             const KeyId &keyId,
-            bool needPrivilege = true);
+            bool needPrivilege = true) const;
     };
 
     HSM& getInstance();
