@@ -5,10 +5,13 @@
 
 #include "gui/mainwindow.h"
 #include "observerconfig.h"
+#include "logger.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+
+    Logger::initialize();
 
     ObserverConfig::setObserver(&WebSocketClient::getInstance());
 
