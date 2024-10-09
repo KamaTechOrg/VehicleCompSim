@@ -95,6 +95,10 @@ void SensorItem::Editor::onSaveBtnClicked()
     }
     auto itemData = model.serialize();
 
+    QString oldTabName = "Sensor " + itemData["priority"].toString();
+    QString newTabName = "Sensor " + priority->text();
+    GlobalState::getInstance().addNewTab(newTabName, oldTabName);
+
     itemData["priority"] = priority->text();
     itemData["name"] = name->text();
     itemData["buildCommand"] = buildCommand->text();
@@ -108,6 +112,7 @@ void SensorItem::Editor::onSaveBtnClicked()
         itemData["buildCommand"] = commands.first;
         itemData["runCommand"] = commands.second;
     }
+
 
     model.deserialize(itemData);
     model.notifyItemModified();

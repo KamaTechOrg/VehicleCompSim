@@ -9,7 +9,6 @@
 #include "baseitem.h"
 #include "sensormodel.h"
 #include "PersistentTootip.h"
-#include "CustomInfoWindow.h"
 #include "widgets/verticalindicator.h"
 
 class PopupDialog;

@@ -1,7 +1,11 @@
 #include "mainwindow.h"
-#include "../../MainComputer/src/maincomputer.h"
 #include <QThread>
 #include <thread>
+#include <QPushButton>
+#include <QFileDialog>
+
+
+
 #include "app_utils.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -81,10 +85,6 @@ MainWindow::MainWindow(QWidget* parent)
     remoteTab->setLayout(remoteTabLayout);
     tabWidget->addTab(remoteTab, "Remote");
     tabIndexMap["Remote"] = tabWidget->indexOf(remoteTab);
-//    qInfo() << tabWidget->indexOf(remoteTab);
-
-//    emit &QTabWidget::currentChanged;
-
     // terminal tab
     QWidget* terminalTab = new QWidget();
     QVBoxLayout* tab2Layout = new QVBoxLayout(terminalTab);
@@ -93,12 +93,6 @@ MainWindow::MainWindow(QWidget* parent)
     tabWidget->addTab(terminalTab, "Terminal");
     textEditMap["Terminal"] = logTextEdit;
     tabIndexMap["Terminal"] = tabWidget->indexOf(terminalTab);
-
-
-//// Set the current tab to the "Terminal" tab
-//    tabWidget->setCurrentIndex(tabWidget->indexOf(terminalTab));
-//    qInfo() << tabWidget->indexOf(terminalTab);
-
 
     m_mainLayout->addWidget(tabWidget);
     tabWidget->setTabPosition(QTabWidget::South);
@@ -110,14 +104,23 @@ MainWindow::MainWindow(QWidget* parent)
 
     setupRunService();
 }
-void MainWindow::createNewTab(const QString &tabName){
-    auto* newTab = new QWidget();
-    auto* tabLayout = new QVBoxLayout(newTab);
-    auto *TextEdit = new QTextEdit();
-    tabLayout->addWidget(TextEdit);
-    tabWidget->addTab(newTab, tabName);
-    textEditMap[tabName] = TextEdit;
-    tabIndexMap[tabName] = tabWidget->indexOf(newTab);
+void MainWindow::createNewTab(const QString &tabName, const QString &oldTabName){
+    auto it = tabIndexMap.find(oldTabName);
+    if (it != tabIndexMap.end()) {
+        int oldTabIndex = tabIndexMap[oldTabName];
+        tabWidget->setTabText(oldTabIndex, tabName);
+        textEditMap[tabName] = textEditMap[oldTabName];
+        tabIndexMap[tabName] = oldTabIndex;
+        textEditMap.erase(oldTabName);
+    } else {
+        auto* newTab = new QWidget();
+        auto* tabLayout = new QVBoxLayout(newTab);
+        auto *TextEdit = new QTextEdit();
+        tabLayout->addWidget(TextEdit);
+        tabWidget->addTab(newTab, tabName);
+        textEditMap[tabName] = TextEdit;
+        tabIndexMap[tabName] = tabWidget->indexOf(newTab);;
+    }
 }
 void MainWindow::pressONTab(const QString & tabName){
     tabWidget->setCurrentIndex(tabIndexMap[tabName]);
@@ -189,10 +192,11 @@ void MainWindow::setupRunService()
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
-    m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
+    // for test only
+    m_bufferTest = new buffer_test();
 
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
@@ -365,11 +369,9 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_initializeSensorsData->initialize();
 
     // for test only
-    m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
-    // end test
+    m_bufferTest->start_timer();
 
     m_globalState.setIsRunning(true);
-
     // m_startBtn->hide();
     // m_timer->hide();
     // m_stopBtn->show();
@@ -394,8 +396,11 @@ void MainWindow::onRunEnd()
     // m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
-
     m_countdownTimer->stop();
+
+    // for test only
+    m_bufferTest->stop_timer();
+
 }
 
 // for test only

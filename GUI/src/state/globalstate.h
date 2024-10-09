@@ -49,7 +49,9 @@ public:
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newData(const QString& newData);
     void newParsedData(QList<QPair<QString, QString>> data);
-    void addNewTab(const QString &tabName);
+//    void addNewTab(const QString &tabName);
+    void addNewTab(const QString &tabName, const QString &oldTabName="-1");
+
     void pressOnTab(const QString &tabName);
     void saveData();
     void loadData();
@@ -82,7 +84,7 @@ signals:
     // for test only
     void new_test_buffer_arrived(const char data[], size_t bufferSize);
     void newLogArrived(const QString & newLog, const QString &tabName);
-    void newTab(const QString &tabName);
+    void newTab(const QString &tabName, const QString &oldTabName);
     void tabPressed(const QString &tabName);
 
 

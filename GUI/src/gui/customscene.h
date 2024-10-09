@@ -3,14 +3,13 @@
 #include <QGraphicsScene>
 #include <memory>
 #include <QToolBar>
-#include "network.hpp"
-#include "sensoritem.h"
-#include "connectoritem.h"
-#include "edgeitem.h"
-#include "serializableitem.h"
-#include "projectmodel.h"
-#include "globalstate.h"
+#include "state/globalstate.h"
 #include "widgets/flowanimation.h"
+#include "items/baseitem.h"
+#include "items/sensoritem.h"
+#include "models/projectmodel.h"
+#include "items/connectoritem.h"
+#include "../include/VehicleCompSim/utils/network.hpp"
 
 class CustomScene : public QGraphicsScene {
     Q_OBJECT
@@ -19,7 +18,7 @@ public:
     void modifyItem(QGraphicsItem *item);
     QString dataToHtml(const QList<QPair<QString, QString>>& data);
 
-        public slots:
+public slots:
     void onCurrentProjectChanged(ProjectModel* project);
     void onModelAdded(SerializableItem* model);
     void onModelRemoved(SerializableItem* model);
@@ -44,13 +43,11 @@ private:
     void dragEnterEvent(QGraphicsSceneDragDropEvent* event) override;
     void dragMoveEvent(QGraphicsSceneDragDropEvent* event) override;
     void dropEvent(QGraphicsSceneDragDropEvent* event) override;
-
     void processBaseItem(QGraphicsSceneMouseEvent* event, BaseItem* baseItem);
     void handleEdgeConnection(QGraphicsSceneMouseEvent* event, BaseItem* baseItem);
     void startNewEdge(QGraphicsSceneMouseEvent* event, BaseItem* baseItem);
     void cleanupCurrentEdge();
     void buildConnection(BaseItem* src, BaseItem* dest);
-
     void handleProjectConnections(ProjectModel* newProject);
 
     ProjectModel* m_currentProject = nullptr;

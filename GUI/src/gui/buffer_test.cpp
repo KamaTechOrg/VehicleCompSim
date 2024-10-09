@@ -24,13 +24,19 @@
 
 
 buffer_test::buffer_test(QObject *parent) {
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &buffer_test::testExtractBufferData);
-    m_timer->start(1000);
+    m_buffer_test_timer = new QTimer(this);
+    connect(m_buffer_test_timer, &QTimer::timeout, this, &buffer_test::testExtractBufferData);
 }
 buffer_test::~buffer_test() {
 
 }
+void buffer_test::start_timer(){
+    m_buffer_test_timer->start(1000);
+}
+void buffer_test::stop_timer(){
+    m_buffer_test_timer->stop();
+}
+
 void buffer_test::testExtractBufferData() {
     int time = 200;
     int src_id = 1;

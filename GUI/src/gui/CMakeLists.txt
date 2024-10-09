@@ -6,8 +6,6 @@ set(CLIENT_SOURCES
     customwidget.h
     customscene.cpp
     customscene.h
-    LiveUpdate.cpp
-    LogReader.cpp
     SimulationRecorder.cpp
     SimulationReplayer.cpp
     SimulationControlPanel.h
@@ -25,13 +23,10 @@ set(CLIENT_SOURCES
     buffer_test.h
     PersistentTootip.h
     PersistentTootip.cpp
-#    CustomInfoWindow.h
-#    CustomInfoWindow.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
     saveAndLoad.cpp
     saveAndLoad.h
-    
     widgets/verticalindicator.h
     widgets/verticalindicator.cpp
     widgets/flowanimation.h

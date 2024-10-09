@@ -2,18 +2,13 @@
 #include <QMimeData>
 #include <QGraphicsSceneMouseEvent>
 #include <QJsonArray>
-#include <QJsonObject>
 #include <QJsonDocument>
-#include "items/sensoritem.h"
-#include "items/connectoritem.h"
-#include "qemusensoritem.h"
 #include "qemusensormodel.h"
-#include "sensormodel.h"
 #include "popupdialog.h"
 #include "client/websocketclient.h"
 #include "customwidget.h"
 #include "globalconstants.h"
-
+#include "serializableitem.h"
 #include <cstdlib>
 #include <ctime>
 
