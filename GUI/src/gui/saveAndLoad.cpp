@@ -105,6 +105,7 @@ void saveAndLoad::loadLayout() {
         bson_reader_destroy(reader);
     } else {
         qInfo() << "File selection canceled by the user.";
+        GlobalState::getInstance().log("File selection canceled by the user.", "Terminal");
     }
 }
 

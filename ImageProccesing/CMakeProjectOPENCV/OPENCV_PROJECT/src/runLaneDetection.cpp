@@ -7,6 +7,7 @@
 #include <string>
 #include "constants.h"
 #include "sendWarning.h"
+#include <SafeQueue.h>
 
 const std::string videoPath = DATA_DIR "\\videos\\lane_vid2.mp4";
 std::vector<cv::Point> departure_video_roi_points =
@@ -17,10 +18,10 @@ std::vector<cv::Point> curved_video_roi_points =
 
 
 void display_red_line(cv::Mat& frame, cv::Vec4i& line);
-int runLaneDetection();
+int runLaneDetection(SafeQueue& queue);
 
 
-int runLaneDetection() {
+int runLaneDetection(SafeQueue& queue) {
 	cv::VideoCapture cap(videoPath);
 	if (!cap.isOpened()) {
 		std::cerr << "Error opening video file" << std::endl;
@@ -46,21 +47,22 @@ int runLaneDetection() {
 				putText(frame, "Warning: Lane Departure Detected!", cv::Point(50, 50), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(0, 0, 255), 8);
 
 				if (lane_depatured == 1) {
-					cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
-					display_red_line(frame, lane);
-				}
-				if (lane_depatured == 2) {
 					cv::Vec4i lane(lanes[0][0], lanes[0][1], lanes[0][2], lanes[0][3]);
 					display_red_line(frame, lane);
+					sendWarning(DEPARTURE_RIGHT_WARNING);
+					queue.enqueue(DEPARTURE_RIGHT_WARNING);
+
+				}
+				if (lane_depatured == 2) {
+					cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
+					display_red_line(frame, lane);
+					sendWarning(DEPARTURE_LEFT_WARNING);
+					queue.enqueue(DEPARTURE_LEFT_WARNING);
 				}
 			}
 
 			imshow("Lane Departure", frame);
 			if (cv::waitKey(1) == 'q') break;
-		}
-
-		if (lane_depatured != 0) {
-			sendWarning(lane_depatured == 1 ? DEPARTURE_RIGHT_WARNING : DEPARTURE_LEFT_WARNING);
 		}
 	}
 

@@ -1,6 +1,7 @@
 #include "SensorModel.h"
 #include "CMakeUtils/getBuildAndRunCommands.h"
 #include "qmetaobject.h"
+#include "globalstate.h"
 
 SensorModel::SensorModel(QObject* parent)
     : m_isUseCmakePath(true), m_isExcludeFromProject(false), m_x(0), m_y(0), m_isOwnerOnline(true) {
@@ -14,6 +15,8 @@ void SensorModel::setPriority(const QString& priority) {
         m_priority = priority;
         emit priorityChanged();
     }
+    QString tabName = "Sensor " + priority;
+    GlobalState::getInstance().addNewTab(tabName);
 }
 
 QString SensorModel::name() const { return m_name; }

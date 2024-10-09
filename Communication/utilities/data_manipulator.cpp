@@ -54,7 +54,7 @@ std::optional<CanBus> Data_manipulator::extract_id_and_data(const char *data, in
                
                 CanBus cb(source_id, dest_id, message, message.size());
 
-                cb.crc = EXcrc;
+                cb.setCrc( EXcrc);
                 
            
 
@@ -110,7 +110,7 @@ std::filesystem::path Data_manipulator::getTempFilePath(const std::string& fileN
 std::string Data_manipulator::readFileContents(const std::filesystem::path& filePath) {
     std::ifstream file(filePath);
     if (!file) {
-        std::cerr << "Error: Unable to open file " << filePath << std::endl;
+        LOG_ERROR("Error: Unable to open file");  
         return "127.0.0.1";
     }
 
@@ -130,26 +130,4 @@ std::string Data_manipulator::get_ip_server(const std::string &filename)
    return readFileContents(p);
 }
 
-// bool Data_manipulator::validateCRC(char *buf, void *data)
-// {
-//        std::string input1 = input.substr(0, pos1);
-//     int EXcrc = std::stoi(input.substr(pos1 + 1, input.length() - pos1 - 1));
-//     char* message = const_cast<char*>(input1.c_str());
-
-//     if (Data_manipulator::CRCalgo(message) == EXcrc) {
-//         memcpy(data, buf, pos1);
-
-//         std::string result = "received = ";
-//         for (int i = 0; i < pos1; ++i) {
-//          result += buf[i];
-//         }
-//         LOG_INFO(result);
-
-//         return true;
-//     } else {
-//         std::cout << "CRC check failed" << std::endl;
-//         memcpy(data, buf, input.length());
-//         return false;
-//     }
-// }
 

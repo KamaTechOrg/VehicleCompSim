@@ -14,8 +14,8 @@
 
 const bool ENABLE_DRAWING = true;
 
-const std::string DEPARTURE_RIGHT_WARNING = "Lane Departure Right Detected!";
-const std::string DEPARTURE_LEFT_WARNING = "Lane Departure Left Detected!";
+const std::string DEPARTURE_RIGHT_WARNING = "Lane Departure Right Detected";
+const std::string DEPARTURE_LEFT_WARNING = "Lane Departure Left Detected";
 
 
 namespace OBJECT_CATEGORY

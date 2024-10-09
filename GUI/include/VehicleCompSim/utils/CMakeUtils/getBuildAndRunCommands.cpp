@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QRegularExpression>
 #include <QDebug>
+//#include "../../../src/state/globalstate.h"
 
 #define QUOTE_STR(str)  (QString(R"("%1")").arg(str))
 
@@ -64,7 +65,9 @@ std::pair<QString, QString> getBuildAndRunCommands(const QString &cmakePath) {
 #endif
 
     qInfo() << buildCommand;
+//    GlobalState::getInstance().log(buildCommand);
     qInfo() << runCommand;
+//    GlobalState::getInstance().log(runCommand);
     return std::make_pair(buildCommand, runCommand);
 }
 

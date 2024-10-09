@@ -1,18 +1,14 @@
 
-#include <iostream>
-#include <cstring>
-#include <vector>
 
 #include "socket.h"
 #include "Logger.h"
-
 
 Socket::Socket() : m_sock(-1)
 {
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-    {   
+    {
         LOG_WARN("WSAStartup failed");
     }
 #endif
@@ -21,7 +17,7 @@ Socket::Socket() : m_sock(-1)
 
 Socket::~Socket()
 {
-  close();
+    close();
 }
 
 void Socket::create()
@@ -59,12 +55,11 @@ void Socket::bind(const int port)
         std::stringstream ss;
         ss << "bind failed with errno: " << WSAGetLastError();
         LOG_ERROR(ss.str());
-#else   
+#else
         std::stringstream ss;
         ss << "bind failed with errno: " << errno;
         LOG_ERROR(ss.str());
 #endif
-
     }
 }
 
@@ -133,30 +128,28 @@ sendErrorCode Socket::send(void *data, size_t size) const
         LOG_ERROR(ss.str());
         code = sendErrorCode::SENDFAILED;
         return code;
-#else   
+#else
         std::stringstream ss;
         ss << "send failed with errno: " << errno;
         LOG_ERROR(ss.str());
         code = sendErrorCode::SENDFAILED;
         return code;
 #endif
-      
     }
     code = sendErrorCode::SUCCESS;
-        return code;
+    return code;
 }
 
 std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
 {
     ListenErrorCode errorCode;
-    char buf[MAXRECV]; 
+    char buf[MAXRECV];
     memset(buf, 0, len);
 
 #ifdef _WIN32
     int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
 #else
     int status = ::recv(m_sock, buf, len, 0);
-
 #endif
 
     if (status == -1)
@@ -168,7 +161,7 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
         errorCode = ListenErrorCode::RECEIVE_ERROR;
         return std::make_pair(errorCode, status);
 
-#else   
+#else
         std::stringstream ss;
         ss << "recv failed with errno: " << errno;
         LOG_ERROR(ss.str());
@@ -184,6 +177,8 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     else
     {
         memcpy(data, buf, len);
+        LOG_INFO(buf);
+
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
@@ -196,7 +191,7 @@ void Socket::set_FD(int fd)
 
 void Socket::close()
 {
-       if (is_valid())
+    if (is_valid())
     {
 
 #ifdef _WIN32
@@ -224,13 +219,13 @@ void Socket::connect(const std::string host, const int port)
     if (status == -1)
     {
 #ifdef _WIN32
-    std::stringstream ss;
-    ss << "connect failed with error: " << WSAGetLastError();
-    LOG_ERROR(ss.str());
+        std::stringstream ss;
+        ss << "connect failed with error: " << WSAGetLastError();
+        LOG_ERROR(ss.str());
 #else
-    std::stringstream ss;
-    ss << "connect failed with errno: " << errno;
-    LOG_ERROR(ss.str());
+        std::stringstream ss;
+        ss << "connect failed with errno: " << errno;
+        LOG_ERROR(ss.str());
 #endif
     }
     else

@@ -19,7 +19,7 @@ int Cross_platform::cress_send(FD d_s,const char *buf, size_t size)
 #else
 
     int status = ::send(d_s, buf, size , MSG_NOSIGNAL);
-    std::cout << "status = " << status << std::endl;
+    
     return status;
 #endif
 }

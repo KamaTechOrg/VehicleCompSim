@@ -44,8 +44,8 @@ int main()
     ClientSocket client(id);
 
     thread t1(send_thread, ref(client), id, d_id, ref(queue));
-	Manager(queue).runTracking();
- 	//runLaneDetection();
+    runLaneDetection(queue);
+    Manager(queue).runTracking();
 
 	std::string end = "BYE BYE";
 	queue.enqueue(end);

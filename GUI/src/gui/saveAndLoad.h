@@ -7,8 +7,7 @@
 
 #include "bson/bson.h"
 #include "state/globalstate.h"
-#include "qemusensormodel.h"
-
+#include "models/qemusensormodel.h"
 
 class saveAndLoad :public QObject{
 Q_OBJECT

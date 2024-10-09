@@ -20,10 +20,6 @@ add_subdirectory ("OPENCV_PROJECT")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/OPENCV_PROJECT/include)
 
-# Add executable definition in the external CMakeLists.txt
-
-
-
 
 link_directories(../../Communication/User_Directory/lib/win)
 
@@ -34,11 +30,26 @@ include_directories(../../Communication/User_Directory/utilities)
 
 add_executable(MyApp main.cpp)
 
+#
+set_target_properties(MyApp PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin"
+)
+
+set(OpenCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/opencv_library_backup/install/x64/vc17/lib")
+
+file(COPY "${OpenCV_DIR}/../bin" DESTINATION "${CMAKE_BINARY_DIR}")
+
+#
+
+
 # Create the client executable
 target_link_libraries(MyApp client_lib)
 target_link_libraries(MyApp CMakeProjectOPENCV ${OpenCV_LIBS})
 
 # Set the DATA_DIR for MyApp
 target_compile_definitions(MyApp PRIVATE DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data")
+
+
 
 

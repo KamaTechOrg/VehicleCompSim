@@ -11,7 +11,6 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QQueue>
-#include "LiveUpdate.h"
 #include "DB_handler.h"
 
 class SimulationReplayer : public QObject {
@@ -38,7 +37,6 @@ private:
     qint64 m_lastPosition;
     QQueue<QString> m_messagesQueue;
     QQueue<QTimer *> m_timers;
-    std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;
     DB_handler *m_db;
 public:

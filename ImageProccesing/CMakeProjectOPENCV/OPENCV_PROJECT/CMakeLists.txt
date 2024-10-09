@@ -34,6 +34,7 @@ set(SOURCES
     src/SafeQueue.cpp
 )
 
+
 # Add the static library
 add_library(CMakeProjectOPENCV STATIC ${SOURCES})
 
@@ -41,6 +42,23 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMakeProjectOPENCV PROPERTY CXX_STANDARD 20)
 endif()
 
+#
+# Set the DLL output directory
+#set_target_properties(CMakeProjectOPENCV PROPERTIES
+#    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+#)
+
+# Copy external DLLs to the output directory
+#file(COPY "${OpenCV_DIR}/../bin" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+
+# Add DLL folder to PATH for runtime on Windows
+#if(WIN32)
+#    set(DLL_PATH "${OpenCV_DIR}/../bin")
+#    set(ENV{PATH} "$ENV{PATH};${DLL_PATH}")
+#endif()
+#
+
+
 target_link_libraries(CMakeProjectOPENCV ${OpenCV_LIBS})
 
-target_compile_definitions(CMakeProjectOPENCV PRIVATE DATA_DIR="${DATA_DIR}")
+target_compile_definitions(CMakeProjectOPENCV PRIVATE DATA_DIR="${DATA_DIR}")  

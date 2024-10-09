@@ -17,6 +17,9 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <QTime>
+#include <QDateTime>
+#include <QRandomGenerator>
 
 
 #include <string.h>
@@ -24,21 +27,36 @@
 
 
 buffer_test::buffer_test(QObject *parent) {
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &buffer_test::testExtractBufferData);
-    m_timer->start(1000);
+    m_buffer_test_timer = new QTimer(this);
+    connect(m_buffer_test_timer, &QTimer::timeout, this, &buffer_test::testExtractBufferData);
 }
 buffer_test::~buffer_test() {
 
 }
+void buffer_test::start_timer(){
+    m_buffer_test_timer->start(100);
+}
+void buffer_test::stop_timer(){
+    m_buffer_test_timer->stop();
+}
+
 void buffer_test::testExtractBufferData() {
-    int time = 200;
-    int src_id = 10;
-    int dest_id = 20;
+    QTime currentTime = QTime::currentTime();
+    int src_id = QRandomGenerator::global()->bounded(1, 6);  // Generates a random number between 1 and 5
+    int dest_id = QRandomGenerator::global()->bounded(1, 6);
+    while (src_id == dest_id) {
+        dest_id = QRandomGenerator::global()->bounded(1, 6);
+    }
+
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QString time = currentTime.toString("hh:mm:ss");
     int len = 50;
 
     std::stringstream ss;
-    ss << time << "," << src_id << "," << dest_id << "," << len << ",";
+    ss << currentDateTime.toString(Qt::ISODate).toStdString() << ","
+       << src_id << ","
+       << dest_id << ","
+       << len << ",";
 
     char buffer[1024];
     size_t offset = 0;
@@ -80,5 +98,5 @@ void buffer_test::testExtractBufferData() {
 
     QString qstr = QString::fromStdString(ss.str());
 
-//    GlobalState::getInstance().newData(qstr, 1024);
+    GlobalState::getInstance().newData(qstr);
 }

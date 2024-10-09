@@ -15,6 +15,9 @@
     typedef int FD;  // Use int as the type for file descriptors in Linux
 #endif
 
+#include <iostream>
+#include <cstring>
+#include <vector>
 
 #include "canbus.h"
 #include "constants.h"

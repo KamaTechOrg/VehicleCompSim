@@ -1,3 +1,3 @@
+#include <SafeQueue.h>
 
-
-int runLaneDetection();
+int runLaneDetection(SafeQueue& queue);

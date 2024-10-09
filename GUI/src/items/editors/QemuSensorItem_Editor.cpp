@@ -244,5 +244,7 @@ void QemuSensorItem::Editor::open()
 void QemuSensorItem::Editor::close()
 {
     qInfo() << "closing qemu snesor" ;
+    GlobalState::getInstance().log("closing qemu snesor", "Terminal");
+
 }
 
