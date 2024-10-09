@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(WIN32)
-link_directories(lib/win32)
+link_directories(lib/win)
 else()
 link_directories(lib/unix)
 endif()
