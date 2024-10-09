@@ -1,0 +1,10 @@
+^C:\OPENCV-4.10.0\OPENCV-4.10.0\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/opencv-4.10.0/opencv-4.10.0 -BC:/opencv-4.10.0/opencv_library --check-stamp-file C:/opencv-4.10.0/opencv_library/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

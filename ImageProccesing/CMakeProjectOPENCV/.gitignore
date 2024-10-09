@@ -1,4 +1,4 @@
 data/videos/*
 data/weights/*
-
+!data/opencv_library_backup/**
 [Bb]uild/
