@@ -6,6 +6,7 @@
 #define close_socket closesocket
 #else
 #include <unistd.h>
+#include <Logger.h>
 #define close_socket close
 #endif
 
@@ -58,7 +59,7 @@ void ReceiveManager::readFromSocket(int sd, ItMap & it_map, char *buffer,std::ve
     }
     else
     {
-        perror("recv error");
+        LOG_ERROR("recv error");
     }
 }
 
@@ -67,7 +68,7 @@ int ReceiveManager::performSelect(fd_set &readfds, int max_sd)
     int activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
     if ((activity < 0) && (errno != EINTR))
     {
-        perror("Select error");
+        LOG_ERROR("select error");
     }
     return activity;
 }

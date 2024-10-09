@@ -1,5 +1,5 @@
 #include <chrono>
-
+#include <Logger.h>
 #include "manger.h"
 #ifdef _WIN32
 #define close_socket closesocket
@@ -84,7 +84,10 @@ int MangServer::add_socket(int new_socket)
     {
         m_socket_connections[pair.first] = pair.second;
         Cross_platform::cress_send(pair.second, "OK", 3);
-        std::cout << "Adding new socket with FD: " << new_socket << std::endl;
+
+        std::stringstream ss;
+        ss << "Adding new socket with FD: " << new_socket;
+        LOG_INFO(ss.str());
     }
     else
     {

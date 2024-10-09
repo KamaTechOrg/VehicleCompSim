@@ -16,7 +16,7 @@ void SendManager::extractFromHeap(std::priority_queue<CanBus, std::vector<CanBus
             vec_can.push_back(topElement);
         }
         else{
-            std::cout << "CRC check failed for canbus" << std::endl;
+            LOG_WARN("CRC check failed for canbus");
         }
         min_heap.pop();
     }
@@ -36,18 +36,7 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
         size_t crc_len = crcstr.size();
         char data[MAXRECV];
 
-
         memcpy(data, canbus.getMessage().c_str(), message_len);
-
-
-        memcpy(data + message_len, crcstr.c_str(), crc_len);
-
-
-        std::string result = "reccccccc == ";
-        for (int i = 0; i < message_len + crc_len + 2; ++i) {
-         result += data[i];
-        }
-        LOG_INFO(result);
 
         if (d_s)
         {   
@@ -56,7 +45,9 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
 
             if (status == -1)
             {
-                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                std::stringstream ss;
+                ss << "status == -1" << errno;
+                LOG_INFO(ss.str());
             }
         }
 
@@ -65,12 +56,13 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
 
         if (d_s_gui)
         {   
-            std::cout << d_s_gui << "gguuii" << std::endl;
             int status = Cross_platform::cress_send(d_s_gui, mesegeForGui.c_str(), mesegeForGui.size());
 
             if (status == -1)
             {
-                std::cout << "status == -1   errno == " << errno << "  in Socket::send\n";
+                std::stringstream ss;
+                ss << "status == -1" << errno;
+                LOG_INFO(ss.str());
             }
         }
     }

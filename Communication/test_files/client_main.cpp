@@ -41,12 +41,10 @@ void send_thread(ClientSocket &client, int id)
 void listen_thread(ClientSocket &client)
 {
     char buffer[MAXRECV];
-
     while (true)
     {
         memset(buffer, 0, sizeof(buffer));
         auto pair_recv = client.listen(buffer, sizeof(buffer));
-
         if (pair_recv.first != ListenErrorCode::SUCCESS)
         {
             client.shut_down();
@@ -59,7 +57,8 @@ int main()
 {
     
     // Configure logger with different sinks and levels
-    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Info));  // Console logs only Error and above
+    Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Error));  
+    Logger::addSink(std::make_unique<FileSink>("/home/mefathim-tech-41/text_file.txt", LogLevel::Info));
 
     LOG_INFO("Application started");
 

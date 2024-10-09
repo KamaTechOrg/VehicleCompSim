@@ -78,7 +78,6 @@ std::pair<ListenErrorCode, int> ClientSocket::listen(void *data, size_t size)
         pair_recv = clientSocket->recv(data, size);
     }
 
-    std::cout << "RECV: " << pair_recv.first << std::endl;
     return pair_recv;
 }
 

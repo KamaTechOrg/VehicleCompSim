@@ -1,5 +1,6 @@
 
 #include <cstdint>
+#include "Logger.h"
 #include "canbus.h"
 
 CanBus::CanBus(int srcId, int dstId, std::string msg, int msgLen)
@@ -37,7 +38,7 @@ void writeCanMessageToLog(CanBus & message , const std::string & filename)
         logFile << message.getFormattedMessage();
         logFile.close();
     } else {
-        std::cerr << "Error: Unable to open log file!" << std::endl;
+        LOG_ERROR("Unable to open log file!");
     }
 }
 
