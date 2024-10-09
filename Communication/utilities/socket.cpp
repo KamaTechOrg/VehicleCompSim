@@ -149,7 +149,6 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     int status = ::recv(m_sock, buf, static_cast<int>(len), 0);
 #else
     int status = ::recv(m_sock, buf, len, 0);
-
 #endif
 
     if (status == -1)
@@ -176,10 +175,9 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
     }
     else
     {
-        std::string input(buf, len);
-        size_t pos1 = input.find('%');
-
         memcpy(data, buf, len);
+        LOG_INFO(buf);
+
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
