@@ -11,10 +11,8 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QQueue>
-#include "customscene.h"
 #include "LiveUpdate.h"
 #include "DB_handler.h"
-#include "customscene.h"
 
 class SimulationReplayer : public QObject {
     Q_OBJECT
@@ -43,7 +41,6 @@ private:
     std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;
     DB_handler *m_db;
-    CustomScene* m_scene_simulation;
 public:
     QDateTime m_startTime;
     QDateTime m_totalTime;

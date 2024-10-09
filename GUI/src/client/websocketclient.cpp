@@ -21,9 +21,6 @@ WebSocketClient& WebSocketClient::getInstance(const QUrl &url, bool debug)
 WebSocketClient::WebSocketClient(const QUrl &url, bool debug, QObject *parent)
     : QObject(parent), m_url(url), m_debug(debug), m_globalState(GlobalState::getInstance())
 {
-    if (m_debug)
-        qDebug() << "WebSocketClient created with URL:" << url.toString();
-
     connect(&m_webSocket, &QWebSocket::connected, this, &WebSocketClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &WebSocketClient::onDisconnected);
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
@@ -72,8 +69,10 @@ void WebSocketClient::disconnectFromServer()
 void WebSocketClient::onRemoteModeChanged(bool remoteMode)
 {
     if (remoteMode){
+        qInfo() << "Remote mode enabled, connecting to server...";
         connectToServer();
     } else {
+        qInfo() << "Remote mode disabled, disconnecting from server...";
         disconnectFromServer();
     }
 }
@@ -81,7 +80,7 @@ void WebSocketClient::onRemoteModeChanged(bool remoteMode)
 void WebSocketClient::onError(QAbstractSocket::SocketError error)
 {
     if (m_debug) {
-        qDebug() << "WebSocket error:" << error << m_webSocket.errorString();
+        qCritical() << "WebSocket error:" << error << m_webSocket.errorString();
         qDebug() << "Current URL:" << m_webSocket.requestUrl().toString();
         qDebug() << "Current state:" << m_webSocket.state();        
     }
@@ -92,7 +91,6 @@ void WebSocketClient::onError(QAbstractSocket::SocketError error)
 void WebSocketClient::onConnected() {
     if (m_debug){
         qDebug() << "WebSocket connected successfully";
-        qDebug() << "Connected URL:" << m_webSocket.requestUrl().toString();
     }
     // Ensure the signal is connected only once
     disconnect(&m_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClient::onTextMessageReceived);
@@ -109,6 +107,7 @@ void WebSocketClient::onDisconnected()
     m_globalState.setConnectionState(ConnectionState::Offline);
 
     if(m_globalState.isRemoteMode()) {
+        qWarning() << "WebSocket disconnected in remote mode, attempting to reconnect...";
         m_reconnectTimer->start(5000);
     }
 }
@@ -132,7 +131,7 @@ void WebSocketClient::attemptReconnection()
 
 void WebSocketClient::onTextMessageReceived(const QString &message) {
     if (m_debug)
-        qDebug() << "Text message received:" << message;
+        qDebug() << "Server message received:" << message;
 
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonObj = doc.object();
@@ -141,7 +140,7 @@ void WebSocketClient::onTextMessageReceived(const QString &message) {
     if (m_actionHandlers.find(action) != m_actionHandlers.end()) {
         m_actionHandlers[action]->handle(jsonObj);
     } else {
-        qDebug() << "No handler registered for action:" << action;
+        qWarning() << "No handler registered for action:" << action;
     }
 }
 

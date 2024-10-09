@@ -5,7 +5,7 @@
 
 #include "gui/mainwindow.h"
 #include "observerconfig.h"
-#include "logger.h"
+#include "services/logger.h"
 
 int main(int argc, char *argv[])
 {

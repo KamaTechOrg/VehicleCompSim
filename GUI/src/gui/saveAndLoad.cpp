@@ -4,9 +4,6 @@
 
 #include <QFileDialog>
 #include "saveAndLoad.h"
-#include "sensoritem.h"
-#include <QWidget>
-
 
 saveAndLoad::saveAndLoad(GlobalState *globalState) : m_globalState(globalState){
         connect(&GlobalState::getInstance(), &GlobalState::saveBtnPressed, this, &saveAndLoad::saveLayout);
@@ -88,7 +85,7 @@ void saveAndLoad::loadLayout() {
     for (auto model : models) {
         m_globalState->currentProject()->removeModel(model);
     }
-    QString selectedFileName = QFileDialog::getOpenFileName(this, tr("Select BSON File"), QString(),
+    QString selectedFileName = QFileDialog::getOpenFileName(nullptr , tr("Select BSON File"), QString(),
                                                             tr("BSON Files (*.bson);;All Files (*)"));
     if (!selectedFileName.isEmpty()) {
         bson_reader_t* reader = bson_reader_new_from_file(selectedFileName.toUtf8().constData(), NULL);
