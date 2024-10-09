@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
     // Create a new toolbar for the right side
     rightToolBar = EditPanel::getPanel();
     rightToolBar->setParent(this);
-    rightToolBar->setFixedWidth(250);
+    rightToolBar->setFixedWidth(200);
     addToolBar(Qt::RightToolBarArea, rightToolBar);
 
 
@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget* parent)
     QWidget* remoteTab = new QWidget();
     QVBoxLayout* remoteTabLayout = new QVBoxLayout(remoteTab);
     remoteTab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    remoteTab->setMinimumSize(400, 150);
+    remoteTab->setMinimumSize(400, 80);
     m_remoteInterface = new RemoteInterface(this);
     remoteTabLayout->addWidget(m_remoteInterface);
     remoteTab->setLayout(remoteTabLayout);
@@ -367,6 +367,11 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
+
+
+    for (auto& item : textEditMap) {
+        item.second->clear(); // Clear the content
+    }
 
     // for test only
     m_bufferTest->start_timer();
