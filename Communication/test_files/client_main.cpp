@@ -35,6 +35,7 @@ void send_thread(ClientSocket &client, int id)
             return;
         }
        
+       
     }
 }
 
@@ -50,6 +51,8 @@ void listen_thread(ClientSocket &client)
             client.shut_down();
             return;
         }
+        buffer[pair_recv.second] = '\0';
+        std::cout << buffer << std::endl;
     }
 }
 
@@ -58,7 +61,7 @@ int main()
     
     // Configure logger with different sinks and levels
     Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Error));  
-    Logger::addSink(std::make_unique<FileSink>("/home/mefathim-tech-41/text_file.txt", LogLevel::Info));
+    // Logger::addSink(std::make_unique<FileSink>("/build/app.log", LogLevel::Info));
 
     LOG_INFO("Application started");
 

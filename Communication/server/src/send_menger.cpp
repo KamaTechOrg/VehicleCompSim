@@ -31,7 +31,7 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
         FD d_s = get_sock(canbus.getDestinationId());
         size_t message_len = canbus.getMessageSize();
         std::string crcstr = "%";
-        crcstr += Data_manipulator::int_to_str(canbus.crc);
+        crcstr += Data_manipulator::int_to_str(canbus.getCrc());
 
         size_t crc_len = crcstr.size();
         char data[MAXRECV];
@@ -75,5 +75,5 @@ bool SendManager::isCrcValid(CanBus can)
     std::string myString(can.getMessage());
     char *modifiableCharPtr = const_cast<char*>(myString.c_str());
     int crc2 = Data_manipulator::CRCalgo(modifiableCharPtr);
-    return (crc2 == can.crc);
+    return (crc2 == can.getCrc());
 }

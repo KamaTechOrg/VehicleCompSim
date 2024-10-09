@@ -54,7 +54,7 @@ std::optional<CanBus> Data_manipulator::extract_id_and_data(const char *data, in
                
                 CanBus cb(source_id, dest_id, message, message.size());
 
-                cb.crc = EXcrc;
+                cb.setCrc( EXcrc);
                 
            
 
