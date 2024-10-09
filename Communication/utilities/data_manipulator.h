@@ -4,10 +4,10 @@
 #include <optional>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 #include <string>
 #include <chrono>
 #include <ctime>
-#include <cstring>
 
 #include "canbus.h"
 
