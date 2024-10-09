@@ -78,31 +78,34 @@ void ConditionsManager::run()
         communication.sendTo(8080, "Hello, Server!");
         communication.sendTo(8080, "TARGET:server,MESSAGE:Main computer connected");
 
-        communication.connectToSensors();
+        // communication.connectToSensors();
 
-        std::string count;
         while (_isRunning)
         {
-            qInfo() << "running";
+            qInfo() << "Running main computer";
             std::string message = communication.getMessageFromQueue();
+            if (message.empty()) {
+                qWarning() << "Received empty message from server"; // Log empty message
+                continue; // Skip processing if message is empty
+            }
             qInfo() << "Message received from sensor: " << QString::fromStdString(message);  // Print to GUI
 
-            if (message.find("TARGET:main computer") != std::string::npos) {
-                std::pair<std::string, std::string> messageContent;
-                try {
-                    messageContent = parseMessage(message);
-                }
-                catch (const std::exception& e) {
-                    qWarning() << "Failed to parse message:" << e.what();
-                    continue;
-                }
+            try {
+                auto messageContent = parseMessage(message);
                 std::string id = messageContent.first;
                 std::string value = messageContent.second;
                 validateAll(id, value);
             }
+            catch (const std::exception& e) {
+                qWarning() << "Failed to parse message:" << e.what();
+
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+
         }
-    qInfo() << "Conditions Manager thread stopping";
-    }).detach();
+
+        qInfo() << "Conditions Manager thread stopping";
+        }).detach();
 }
 
 void ConditionsManager::stop()
@@ -139,7 +142,7 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
         {
             qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
             executeActions(i);
-            sendTargetMessage(senderId, value);
+            sendTargetMessage("beep controller", "MESSAGE:Beep");
         }
         else
         {
