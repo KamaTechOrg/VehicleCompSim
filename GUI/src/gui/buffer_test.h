@@ -24,5 +24,6 @@ public:
     void stop_timer();
     QTimer *m_buffer_test_timer;
 
+
 };
 #endif //VEHICLECOMPSIM_BUFFER_TEST_H

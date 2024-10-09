@@ -3,37 +3,56 @@
     {
       "id": 1,
       "data": [
-        { "name": "TestInt32", "numBits": "4", "type":  "int32_t"},
-        { "name": "TestUint32", "numBits": "4", "type": "uint32_t"},
-        { "name": "TestString", "numBits": "14", "type": "char*"},
-        { "name": "TestFloat", "numBits": "4", "type": "float"},
-        { "name": "TestDouble", "numBits": "8", "type": "double"},
-        { "name": "TestBools", "numBits": "3", "type": "bool"}
+        { "name": "1TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "1TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "1TestString", "numBits": "14", "type": "char*"},
+        { "name": "1TestFloat", "numBits": "4", "type": "float"},
+        { "name": "1TestDouble", "numBits": "8", "type": "double"},
+        { "name": "1TestBools", "numBits": "3", "type": "bool"}
       ]
     },
     {
       "id": 2,
       "data": [
-        { "name": "msg sensor 2", "numBits": "14", "type": "string" },
-        { "name": "msg sensor 2", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 2", "numBits": "8", "type": "double" }
+        { "name": "2TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "2TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "2TestString", "numBits": "14", "type": "char*"},
+        { "name": "2TestFloat", "numBits": "4", "type": "float"},
+        { "name": "2TestDouble", "numBits": "8", "type": "double"},
+        { "name": "2TestBools", "numBits": "3", "type": "bool"}
       ]
     },
     {
       "id": 3,
       "data": [
-        { "name": "msg sensor 3", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 3", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 3", "numBits": "14", "type": "string" }
+        { "name": "3TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "3TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "3TestString", "numBits": "14", "type": "char*"},
+        { "name": "3TestFloat", "numBits": "4", "type": "float"},
+        { "name": "3TestDouble", "numBits": "8", "type": "double"},
+        { "name": "3TestBools", "numBits": "3", "type": "bool"}
       ]
     },
     {
       "id": 4,
       "data": [
-        { "name": "msg sensor 4", "numBits": "14", "type": "string" },
-        { "name": "msg sensor 4", "numBits": "4", "type": "int" },
-        { "name": "msg sensor 4", "numBits": "8", "type": "double" },
-        { "name": "msg sensor 4", "numBits": "14", "type": "string" }
+        { "name": "4TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "4TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "4TestString", "numBits": "14", "type": "char*"},
+        { "name": "4TestFloat", "numBits": "4", "type": "float"},
+        { "name": "4TestDouble", "numBits": "8", "type": "double"},
+        { "name": "4TestBools", "numBits": "3", "type": "bool"}
+      ]
+    },
+    {
+      "id": 5,
+      "data": [
+        { "name": "5TestInt32", "numBits": "4", "type":  "int32_t"},
+        { "name": "5TestUint32", "numBits": "4", "type": "uint32_t"},
+        { "name": "5TestString", "numBits": "14", "type": "char*"},
+        { "name": "5TestFloat", "numBits": "4", "type": "float"},
+        { "name": "5TestDouble", "numBits": "8", "type": "double"},
+        { "name": "5TestBools", "numBits": "3", "type": "bool"}
       ]
     }
   ]
