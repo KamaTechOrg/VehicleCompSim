@@ -180,12 +180,6 @@ std::pair<ListenErrorCode, int> Socket::recv(void *data, size_t len) const
         size_t pos1 = input.find('%');
 
         memcpy(data, buf, len);
-        std::string result = "received == ";
-        for (int i = 0; i < len; ++i)
-        {
-            result += buf[i];
-        }
-        LOG_INFO(result);
     }
     errorCode = ListenErrorCode::SUCCESS;
     return std::make_pair(errorCode, status);
