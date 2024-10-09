@@ -39,9 +39,9 @@ void ConditionsManager::executeActions(const int index) const
 
     Communication communication;
     for (const auto& action : actions.at(index)) {
-        int targetUnit = std::stoi(action.getTargetUnit());
-        communication.sendTo(targetUnit, action.getMessageToSend());
-        qInfo() << "Action executed: Sent message to index: " << index;
+        std::string message = "TARGET:beep controller," + action.getMessageToSend();
+        communication.sendTo(constants::SERVER_PORT, message);
+        qInfo() << "Action executed: Sent message to BEEP controller: " << QString::fromStdString(message);
     }
 }
 
@@ -61,6 +61,13 @@ std::pair<std::string, std::string> ConditionsManager::parseMessage(const std::s
 }
 
 
+void ConditionsManager::sendTargetMessage(const std::string& targetController, const std::string& message) const {
+    Communication communication;
+    communication.sendTo(constants::SERVER_PORT, "TARGET:" + targetController + ", MESSAGE:" + message);
+    qInfo() << "Sent message to target controller: " << QString::fromStdString(targetController);
+}
+
+
 void ConditionsManager::run()
 {
     _isRunning = true;
@@ -69,6 +76,8 @@ void ConditionsManager::run()
 
         communication.sendAndReceiveLoop("172.232.208.10", 8080);
         communication.sendTo(8080, "Hello, Server!");
+        communication.sendTo(8080, "TARGET:server,MESSAGE:Main computer connected");
+
         communication.connectToSensors();
 
         std::string count;
@@ -77,17 +86,20 @@ void ConditionsManager::run()
             qInfo() << "running";
             std::string message = communication.getMessageFromQueue();
             qInfo() << "Message received from sensor: " << QString::fromStdString(message);  // Print to GUI
-            std::pair<std::string, std::string> messageContent;
 
-            try {
-                messageContent = parseMessage(message);
+            if (message.find("TARGET:main computer") != std::string::npos) {
+                std::pair<std::string, std::string> messageContent;
+                try {
+                    messageContent = parseMessage(message);
+                }
+                catch (const std::exception& e) {
+                    qWarning() << "Failed to parse message:" << e.what();
+                    continue;
+                }
+                std::string id = messageContent.first;
+                std::string value = messageContent.second;
+                validateAll(id, value);
             }
-            catch (const std::exception& e) {
-                qWarning() << "Failed to parse message:" << e.what();
-            }
-            std::string id = messageContent.first;
-            std::string value = messageContent.second;
-            validateAll(id, value);
         }
     qInfo() << "Conditions Manager thread stopping";
     }).detach();
@@ -127,6 +139,7 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
         {
             qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
             executeActions(i);
+            sendTargetMessage(senderId, value);
         }
         else
         {

@@ -21,7 +21,7 @@ private:
     void addAction(const int index, const Action& action);
     void validateAll(const std::string &senderId, const std::string &value) const;
     void executeActions(const int index) const;
-
+    void sendTargetMessage(const std::string& targetController, const std::string& message) const;
     bool _isRunning;
 
 public:
