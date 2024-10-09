@@ -1,0 +1,10 @@
+^C:\OPENCV-4.10.0\OPENCV_LIBRARY\CMAKEFILES\39A9DB35D8B1E0E4331DE1FE89B0D16E\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/opencv-4.10.0/opencv-4.10.0 -BC:/opencv-4.10.0/opencv_library --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/opencv-4.10.0/opencv_library/OpenCV.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
