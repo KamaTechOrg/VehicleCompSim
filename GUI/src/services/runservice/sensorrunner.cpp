@@ -1,16 +1,34 @@
 #include "sensorrunner.h"
-#include "CMakeUtils/../processControls.h"
+#include <QFile>
 
 #define VERIFY_STATE(value) if (state != value) return onError()
 
 const QString commandRunFormat =
 #ifdef _WIN32
-    "cmd /c \"%1\""
+    R"(cmd /c "%1")"
 #else
-    "bash -c '%1'",   // Bash (Unix-like)
+    R"(bash -c '%1')",   // Bash (Unix-like)
 #endif
-
     ;
+void log(QString l)
+{
+
+    // Get the current date and time with milliseconds
+    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_z");
+
+    // Create a file name using the timestamp
+    QString filePath = QString("C:/codes/output_%1.txt").arg(timestamp);
+
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << l;
+        file.close();
+    } else {
+        // Handle error
+    }
+
+}
 SensorRunner::SensorRunner(SensorModel *_model) :
     sensorModel(_model)
 {
@@ -62,7 +80,7 @@ void SensorRunner::abort()
         // }
         process.kill(); // not good option
     }
-    if (state = RUNNING) state = NOT_RUNNING;
+    if (state == RUNNING) state = NOT_RUNNING;
 }
 
 void SensorRunner::onPrepareStep()
@@ -71,8 +89,12 @@ void SensorRunner::onPrepareStep()
 
     if (!sensorModel->buildCommand().isEmpty())
     {
-        process.startCommand(commandRunFormat.arg(sensorModel->buildCommand()));
-        qInfo() << "prepare-pid: " << process.processId();
+        QString command = commandRunFormat.arg(sensorModel->buildCommand());
+        log(command);
+        //process.startCommand( command);
+        process.setProgram("cmd");
+        process.setArguments({"/c", sensorModel->buildCommand()});
+        process.start();
         state = RUNNING;
     }
     else emit stepSuccess(currentStep);
@@ -84,11 +106,12 @@ void SensorRunner::onInitStep()
 
     if (sensorModel->runCommand().isEmpty()) return onError();
 
-    process.startCommand(commandRunFormat.arg(sensorModel->runCommand()));
-    qInfo() << "init-pid: " << process.processId();
-    //process.waitForStarted();
-    //suspendProcess(process.processId());
-    //state = SUSPENDED;
+    QString command = commandRunFormat.arg(sensorModel->runCommand());
+    log(command);
+    process.startCommand( command);
+                                                                        //process.waitForStarted();
+                                  // CODE FOR SIMULTAINUS RUNNING       //suspendProcess(process.processId());
+                                                                        //state = SUSPENDED;
     state = RUNNING;
     emit Runner::stepSuccess(currentStep);
 }
@@ -105,8 +128,8 @@ void SensorRunner::onStartStep()
 void SensorRunner::onProcessFinished()
 {
     VERIFY_STATE(RUNNING);
-
-    if (process.exitCode()) {
+    qInfo() << "process.exitCode(): " << process.exitCode();
+    if (false && process.exitCode()) {
         onError();
     }
     else {
