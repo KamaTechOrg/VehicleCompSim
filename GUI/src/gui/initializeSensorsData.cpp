@@ -38,6 +38,8 @@ void initializeSensorsData::read_from_json() {
     }
     QJsonObject jsonObj = document.object();
     itemsArray = jsonObj["items"].toArray();
+    qInfo() << "Successfully read from JSON.";
+    GlobalState::getInstance().log("Successfully read from JSON.", "Terminal");
 }
 
 void initializeSensorsData::getSensorsInfoData() {

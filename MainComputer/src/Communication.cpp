@@ -81,8 +81,8 @@ std::string Communication::sendAndReceiveLoop(const std::string& serverIP, int p
         if (valread > 0) {
             std::string message(buffer, valread);
             qInfo() << "Message received from server: " << message.c_str();
-  
-           
+
+
                 {
                     std::lock_guard<std::mutex> lock(queueMutex);
                     _messagesQueue.push(message);

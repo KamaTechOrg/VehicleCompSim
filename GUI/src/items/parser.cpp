@@ -24,9 +24,9 @@ void parser::setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap) {
     sensorInfoMap = std::move(parseInfoMap);
 }
 
-void parser::parseBuffer(const QString buffer, size_t bufferSize) {
+void parser::parseBuffer(const QString& buffer, size_t bufferSize) {
     QList<QPair<QString, QString>> result;
-    QStringList defaultInfo = {"time", "src_id", "dest_id", "len"};
+    QStringList defaultInfo = {"Time", "Src_id", "Dest_id", "Len"};
     QStringList split_pieces = buffer.split(',', Qt::SkipEmptyParts);
     for (int i = 0; i < defaultInfo.size() && i < split_pieces.size(); ++i) {
         result.append(qMakePair(defaultInfo[i], split_pieces[i]));

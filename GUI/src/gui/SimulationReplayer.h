@@ -12,7 +12,6 @@
 #include <QDebug>
 #include <QQueue>
 #include "customscene.h"
-#include "LiveUpdate.h"
 #include "DB_handler.h"
 #include "customscene.h"
 
@@ -40,7 +39,6 @@ private:
     qint64 m_lastPosition;
     QQueue<QString> m_messagesQueue;
     QQueue<QTimer *> m_timers;
-    std::unique_ptr<LiveUpdate> m_LiveUpdate;
     QDateTime m_currentTime;
     DB_handler *m_db;
     CustomScene* m_scene_simulation;

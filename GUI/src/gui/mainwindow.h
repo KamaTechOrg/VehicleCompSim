@@ -1,53 +1,43 @@
 #pragma once
-#include <QtWidgets/QMainWindow>
 #include <QMainWindow>
-#include <memory>
-#include <QtWidgets/QTimeEdit>
-#include <QLineEdit>
-#include <QGraphicsView>
-#include <QToolBar>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QFile>
-#include <QTimer>
-#include <QFileDialog>
-#include <QGraphicsItem>
-#include <QWidget>
-#include <QPushButton>
 #include <QStackedWidget>
-#include <QRandomGenerator>
-#include <QRect>
+#include <QToolBar>
+#include <QTimer>
+#include <QGraphicsView>
+#include <QWidget>
+#include <QObject>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QTabWidget>
+#include <QTextEdit>
+#include <QLabel>
+#include <QFrame>
+#include <QString>
+#include <unordered_map>
 
 #include "customscene.h"
+#include "state/globalstate.h"
 #include "items/actionsblocker.h"
 #include "qdatetimeedit.h"
 #include "services/runservice/runservice.h"
 #include "SimulationRecorder.h"
 #include "SimulationReplayer.h"
-#include "LiveUpdate.h"
-#include "LogReader.h"
 #include "remoteinterface.h"
-#include <bson/bson.h>
 #include "popupdialog.h"
 #include "DB_handler.h"
 #include "buffer_test.h"
 #include "SimulationControlPanel.h"
 #include "./editpanel.h"
 #include "customwidget.h"
-#include "websocketclient.h"
-#include "handlers/RunHandler.h"
-#include "globalstate.h"
+#include "../src/client/websocketclient.h"
+#include "../src/client/handlers/RunHandler.h"
 #include "items/qemusensoritem.h"
 #include "items/parser.h"
 #include "initializeSensorsData.h"
-#include "sensormodel.h"
+#include "../models/sensormodel.h"
 #include "saveAndLoad.h"
 #include "widgets/iconbutton.h"
 #include "../../MainComputer/src/maincomputer.h"
-
-class QGraphicsView;
-class QToolBar;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -65,7 +55,6 @@ private:
     void onRunEnd();
     void record();
     void replayer();
-    void create_sensor_from_bson_obj(const bson_t *bsonDocument);
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
     void buffer_listener(const QString& data);
@@ -76,17 +65,17 @@ private slots:
     void onCurrentProjectPublished(ProjectModel* project);
     void close_previous_replay();
     void updateTimer();
+    void handleNewLog(const QString &newLog, const QString &tabName);
+    void createNewTab(const QString &tabName, const QString & oldTabName);
+    void pressONTab(const QString & tabName);
 
 private:
     CustomScene* m_scene;
     QGraphicsView* m_view;
     GlobalState &m_globalState;
-
     QString m_mainWindowTitle;
-    
     QToolBar* m_toolBar;
     QToolBar* rightToolBar;
-    PopupDialog* m_popupDialog;
     ActionsBlocker* m_toolbar_blocker;
     ActionsBlocker* m_scene_blocker;
     QStackedWidget* m_buttonStack;
@@ -94,31 +83,27 @@ private:
     IconButton *m_stopBtn ;
     QTimeEdit *m_timer;
     QTimer* m_countdownTimer;
-
     std::shared_ptr<RunService> m_runService;
-//    std::unique_ptr<LogReader> m_logReader;
     SimulationRecorder * m_simulationRecorder = nullptr;
     SimulationReplayer * m_simulationReplayer = nullptr;
-    std::unique_ptr<LiveUpdate> m_liveUpdate_forLogger;
-    std::unique_ptr<LiveUpdate> m_liveUpdate_forReplyer;
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
     DB_handler *m_DB_handler;
-//    QTimer *change_view_timer;
-    QJsonArray itemsArray;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;
     buffer_test *m_bufferTest;
     initializeSensorsData *m_initializeSensorsData;
     QString m_currentMainBackgroundPath;
-
     QGroupBox* m_sceneBox;
     IconButton* m_publishButton;
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
     MainComputer mainComputer;
+    QTabWidget* tabWidget;
+    std::unordered_map<QString, QTextEdit*> textEditMap;
+    std::unordered_map<QString, int> tabIndexMap;
 };
 

@@ -1,7 +1,11 @@
 #include "mainwindow.h"
-#include "../../MainComputer/src/maincomputer.h"
 #include <QThread>
 #include <thread>
+#include <QPushButton>
+#include <QFileDialog>
+
+
+
 #include "app_utils.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -69,10 +73,71 @@ MainWindow::MainWindow(QWidget* parent)
     m_globalState.addProject(startingProject);
     m_globalState.setCurrentProject(startingProject);
 
+    // Create a QTabWidget
+    tabWidget = new QTabWidget();
+    // remote tab
+    QWidget* remoteTab = new QWidget();
+    QVBoxLayout* remoteTabLayout = new QVBoxLayout(remoteTab);
+    remoteTab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    remoteTab->setMinimumSize(400, 150);
     m_remoteInterface = new RemoteInterface(this);
-    addToolBar(Qt::BottomToolBarArea, m_remoteInterface);
+    remoteTabLayout->addWidget(m_remoteInterface);
+    remoteTab->setLayout(remoteTabLayout);
+    tabWidget->addTab(remoteTab, "Remote");
+    tabIndexMap["Remote"] = tabWidget->indexOf(remoteTab);
+    // terminal tab
+    QWidget* terminalTab = new QWidget();
+    QVBoxLayout* tab2Layout = new QVBoxLayout(terminalTab);
+    QTextEdit *logTextEdit = new QTextEdit();
+    tab2Layout->addWidget(logTextEdit);
+    tabWidget->addTab(terminalTab, "Terminal");
+    textEditMap["Terminal"] = logTextEdit;
+    tabIndexMap["Terminal"] = tabWidget->indexOf(terminalTab);
+
+    m_mainLayout->addWidget(tabWidget);
+    tabWidget->setTabPosition(QTabWidget::South);
+    tabWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    connect(&m_globalState, &GlobalState::newLogArrived, this, &MainWindow::handleNewLog);
+    connect(&m_globalState, &GlobalState::newTab, this, &MainWindow::createNewTab);
+    connect(&m_globalState, &GlobalState::tabPressed, this, &MainWindow::pressONTab);
 
     setupRunService();
+}
+void MainWindow::createNewTab(const QString &tabName, const QString &oldTabName){
+    auto it = tabIndexMap.find(oldTabName);
+    if (it != tabIndexMap.end()) {
+        int oldTabIndex = tabIndexMap[oldTabName];
+        tabWidget->setTabText(oldTabIndex, tabName);
+        textEditMap[tabName] = textEditMap[oldTabName];
+        tabIndexMap[tabName] = oldTabIndex;
+        textEditMap.erase(oldTabName);
+    } else {
+        auto* newTab = new QWidget();
+        auto* tabLayout = new QVBoxLayout(newTab);
+        auto *TextEdit = new QTextEdit();
+        tabLayout->addWidget(TextEdit);
+        tabWidget->addTab(newTab, tabName);
+        textEditMap[tabName] = TextEdit;
+        tabIndexMap[tabName] = tabWidget->indexOf(newTab);;
+    }
+}
+void MainWindow::pressONTab(const QString & tabName){
+    tabWidget->setCurrentIndex(tabIndexMap[tabName]);
+}
+
+void MainWindow::handleNewLog(const QString &newLog, const QString &tabName) {
+    try {
+        auto it = textEditMap.find(tabName);
+        if (it == textEditMap.end()) {
+            throw std::out_of_range("Tab name not found in textEditMap");
+        }
+        it->second->append(newLog);
+    } catch (const std::out_of_range& e) {
+        qWarning() << "Error in handleNewLog: " << e.what() << ". Tab name: " << tabName;
+        QString msg = "Error in handleNewLog: " + QString(e.what()) + ". Tab name: " + tabName;
+        GlobalState::getInstance().log(msg ,"Terminal");
+    }
 }
 
 void MainWindow::setupToolBar() {
@@ -95,8 +160,13 @@ void MainWindow::setupRunService()
 {
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [](QString packet){
         qInfo() << "------------------------------packet-----------------------------";
+        GlobalState::getInstance().log("------------------------------packet-----------------------------",
+                                       "Terminal");
         qInfo() << packet;
+        GlobalState::getInstance().log(packet, "Terminal");
         qInfo() << "------------------------------packet-----------------------------";
+        GlobalState::getInstance().log("------------------------------packet-----------------------------",
+                                       "Terminal");
     });
 
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, &GlobalState::getInstance(), &GlobalState::newData);
@@ -122,10 +192,11 @@ void MainWindow::setupRunService()
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
-    m_liveUpdate_forLogger = std::make_unique<LiveUpdate>(m_scene);
     m_DB_handler = new DB_handler();
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
+    // for test only
+    m_bufferTest = new buffer_test();
 
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
@@ -136,6 +207,8 @@ void MainWindow::setupRunService()
     });
     QObject::connect(m_runService.get(), &RunService::newCommunicationPacketAccepted, [this](QString packet){
         qInfo() << packet;
+        GlobalState::getInstance().log(packet, "Terminal");
+
     });
     QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
         WebSocketClient::getInstance().sendMessage(QJsonObject{
@@ -240,14 +313,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::updateBackground()
 {
-//    if (!m_currentFrameBackgroundPath.isEmpty()) {
-//        QPixmap backgroundImage(m_currentFrameBackgroundPath);
-//        QPixmap scaledImage = backgroundImage.scaled(mainFrame->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-//        QPalette palette;
-//        palette.setBrush(QPalette::Window, scaledImage);
-//        mainFrame->setAutoFillBackground(true);
-//        mainFrame->setPalette(palette);
-//    }
     if (!m_currentMainBackgroundPath.isEmpty()) {
         QImage backgroundImage(m_currentMainBackgroundPath);
         QSize viewSize = m_view->viewport()->size();
@@ -304,11 +369,9 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_initializeSensorsData->initialize();
 
     // for test only
-    m_bufferTest = new buffer_test(); // this generates buffer every 2 seconds, and write then to A.log
-    // end test
+    m_bufferTest->start_timer();
 
     m_globalState.setIsRunning(true);
-
     // m_startBtn->hide();
     // m_timer->hide();
     // m_stopBtn->show();
@@ -329,11 +392,15 @@ void MainWindow::onRunEnd()
     m_buttonStack->setCurrentWidget(m_startBtn);
     m_timer->setDisabled(false);
 
+    m_globalState.setIsRunning(false);
     // m_stopBtn->hide();
     m_toolbar_blocker->hide();
     m_scene_blocker->hide();
-
     m_countdownTimer->stop();
+
+    // for test only
+    m_bufferTest->stop_timer();
+
 }
 
 // for test only

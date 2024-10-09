@@ -1,5 +1,7 @@
 #include "sensorrunner.h"
 #include <QFile>
+#include "CMakeUtils/../processControls.h"
+#include "globalstate.h"
 
 #define VERIFY_STATE(value) if (state != value) return onError()
 
