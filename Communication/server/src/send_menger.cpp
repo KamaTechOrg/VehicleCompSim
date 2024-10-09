@@ -30,10 +30,7 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
     {
         FD d_s = get_sock(canbus.getDestinationId());
         size_t message_len = canbus.getMessageSize();
-        std::string crcstr = "%";
-        crcstr += Data_manipulator::int_to_str(canbus.getCrc());
-
-        size_t crc_len = crcstr.size();
+        
         char data[MAXRECV];
 
         memcpy(data, canbus.getMessage().c_str(), message_len);
@@ -41,7 +38,7 @@ void SendManager::sendCanBusMessages(std::mutex &map_mutex, std::function<FD(int
         if (d_s)
         {   
 
-            int status = Cross_platform::cress_send(d_s, data, message_len + crc_len);
+            int status = Cross_platform::cress_send(d_s, data, message_len);
 
             if (status == -1)
             {

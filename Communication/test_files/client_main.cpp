@@ -61,7 +61,7 @@ int main()
     
     // Configure logger with different sinks and levels
     Logger::addSink(std::make_unique<ConsoleSink>(LogLevel::Error));  
-    // Logger::addSink(std::make_unique<FileSink>("/build/app.log", LogLevel::Info));
+    Logger::addSink(std::make_unique<FileSink>("app.log", LogLevel::Info));
 
     LOG_INFO("Application started");
 
