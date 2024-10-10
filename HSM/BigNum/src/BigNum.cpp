@@ -24,7 +24,7 @@ BigNum::BigNum(uint64_t num, int bit_size) : size(bit_size / UINT_T_SIZE + 1)
 	data[1] = static_cast<uint32_t>(num >> 32);
 }
 
-BigNum::BigNum(std::string num, int numBase) : size((num.size() / 8) + 1)
+BigNum::BigNum(std::string num) : size((num.size() / 8) + 1)
 {
 	if (size > MAX_SIZE)
 		size = MAX_SIZE;
@@ -38,12 +38,12 @@ BigNum::BigNum(std::string num, int numBase) : size((num.size() / 8) + 1)
 		std::reverse(part.begin(), part.end());
 		if (i / 8 < size)
 		{
-			data[i / 8] = std::stoul(part, nullptr, numBase);
+			data[i / 8] = std::stoul(part, nullptr, 16);
 		}
 	}
 }
 
-BigNum::BigNum(std::vector<u_int8_t> num, int numBase) : size((num.size() / 8) + 1)
+BigNum::BigNum(std::vector<u_int8_t> num) : size((num.size() / 8) + 1)
 {
 	if (size > MAX_SIZE)
 		size = MAX_SIZE;
@@ -57,7 +57,7 @@ BigNum::BigNum(std::vector<u_int8_t> num, int numBase) : size((num.size() / 8) +
 		std::reverse(part.begin(), part.end());
 		if (i / 8 < size)
 		{
-			data[i / 8] = std::stoul(std::string(part.begin(), part.end()), nullptr, numBase);
+			data[i / 8] = std::stoul(std::string(part.begin(), part.end()), nullptr, 16);
 		}
 	}
 }
@@ -256,78 +256,49 @@ BigNum BigNum::operator*=(uint32_t num)
 	return *this;
 }
 
-// BigNum BigNum::operator/(const BigNum &other) const
-// {
-// 	if (other == BigNum(0, 1))
-// 	{
-// 		throw std::runtime_error("Division by zero error");
-// 	}
-
-// 	BigNum dividend = *this;
-// 	BigNum divisor = other;
-// 	BigNum quotient(size * UINT_T_SIZE);
-// 	BigNum remainder(size * UINT_T_SIZE);
-
-// 	for (int i = dividend.size * UINT_T_SIZE - 1; i >= 0; --i)
-// 	{
-// 		remainder = remainder << 1;
-// 		remainder.data[0] |= (dividend.data[i / UINT_T_SIZE] >> (i % UINT_T_SIZE)) & 1;
-
-// 		if (remainder >= divisor)
-// 		{
-// 			remainder = remainder - divisor;
-// 			quotient.data[i / UINT_T_SIZE] |= (1 << (i % UINT_T_SIZE));
-// 		}
-// 	}
-
-// 	return quotient;
-// }
-
-
 BigNum BigNum::operator/(const BigNum &other) const
 {
-    // Check for division by zero
-    if (other == BigNum(0, 1))
-    {
-        throw std::runtime_error("Division by zero error");
-    }
+	// Check for division by zero
+	if (other == BigNum(0, 1))
+	{
+		throw std::runtime_error("Division by zero error");
+	}
 
-    // Handle the case when the numerator is smaller than the divisor
-    if (*this < other)
-    {
-        return BigNum("0"); // Division result is zero if num < divisor
-    }
+	// Handle the case when the numerator is smaller than the divisor
+	if (*this < other)
+	{
+		return BigNum("0"); // Division result is zero if num < divisor
+	}
 
-    BigNum num = *this;        // Copy of the numerator
-    BigNum divisor = other;    // Divisor
-    BigNum result("0");        // Stores the result (quotient)
-    BigNum currentDivisor = divisor;
-    BigNum quotient("1");
+	BigNum num = *this;		// Copy of the numerator
+	BigNum divisor = other; // Divisor
+	BigNum result("0");		// Stores the result (quotient)
+	BigNum currentDivisor = divisor;
+	BigNum quotient("1");
 
-    // Left shift the divisor to the highest possible multiple less than or equal to num
-    while ((currentDivisor << 1) <= num)
-    {
-        currentDivisor = currentDivisor << 1;
-        quotient = quotient << 1;
-    }
+	// Left shift the divisor to the highest possible multiple less than or equal to num
+	while ((currentDivisor << 1) <= num)
+	{
+		currentDivisor = currentDivisor << 1;
+		quotient = quotient << 1;
+	}
 
-    // Perform the division by subtracting and accumulating quotient
-    while (num >= other)
-    {
-        if (num >= currentDivisor)
-        {
-            num = num - currentDivisor;
-            result = result + quotient;
-        }
+	// Perform the division by subtracting and accumulating quotient
+	while (num >= other)
+	{
+		if (num >= currentDivisor)
+		{
+			num = num - currentDivisor;
+			result = result + quotient;
+		}
 
-        // Right shift to reduce the currentDivisor and quotient for the next step
-        currentDivisor = currentDivisor >> 1;
-        quotient = quotient >> 1;
-    }
+		// Right shift to reduce the currentDivisor and quotient for the next step
+		currentDivisor = currentDivisor >> 1;
+		quotient = quotient >> 1;
+	}
 
-    return result;
+	return result;
 }
-
 
 BigNum BigNum::operator/(uint32_t num) const
 {
@@ -345,73 +316,40 @@ BigNum BigNum::operator/=(uint32_t num)
 	*this = *this / num;
 	return *this;
 }
-// BigNum barrett_reduce(const BigNum& x, const BigNum& n, const BigNum& mu) {
-//     // Calculate k as the bit-length of n
-//     int k = n.bit_length(); // Assuming there's a function bit_length()
-
-//     BigNum q = x >> (k - 1);  // q = x / 2^k
-//     q = q * mu;               // q = q * mu
-//     q = q >> (k + 1);         // q = q / 2^(k+1)
-
-//     BigNum r = x - (q * n);   // r = x - q * n
-
-//     while (r >= n) {
-//         r = r - n;            // Correct if r >= n
-//     }
-
-//     return r; 
-// }
-
-// BigNum BigNum::operator%(const BigNum& other) const {
-//     if (*this < other) {
-//         return *this; // If this is less than the modulus, return this
-//     }
-
-//     // Compute mu = 2^(2k) / n
-//     int k = other.bit_length(); // Assuming other has a bit_length function
-//     BigNum two_k = BigNum(1) << (2 * k);  // 2^(2k)
-//     BigNum mu = two_k / other;  // Calculate mu
-
-//     BigNum remainder = barrett_reduce(*this, other, mu);
-
-//     return remainder; // Return the remainder
-// }
-
-
 
 BigNum BigNum::operator%(const BigNum &other) const
 {
-    // Check for division by zero
-    if (other == BigNum("0"))
-    {
-        throw std::runtime_error("Division by zero error");
-    }
-    BigNum num = *this;
-    
-    if (num < other) {
-        return num;
-    }
+	// Check for division by zero
+	if (other == BigNum("0"))
+	{
+		throw std::runtime_error("Division by zero error");
+	}
+	BigNum num = *this;
 
-    BigNum mod = other;
-    BigNum shiftedMod = mod;
-    while (shiftedMod <= num)
-    {
-        mod = shiftedMod;
-        shiftedMod = shiftedMod << 1;
-    }
+	if (num < other)
+	{
+		return num;
+	}
 
-    while (num >= other)
-    {
-        if (num >= mod)
-        {
-            num = num - mod;
-        }
-        mod = mod >> 1;
-    }
+	BigNum mod = other;
+	BigNum shiftedMod = mod;
+	while (shiftedMod <= num)
+	{
+		mod = shiftedMod;
+		shiftedMod = shiftedMod << 1;
+	}
 
-    return num;
+	while (num >= other)
+	{
+		if (num >= mod)
+		{
+			num = num - mod;
+		}
+		mod = mod >> 1;
+	}
+
+	return num;
 }
-
 
 BigNum BigNum::operator%(uint32_t num) const
 {
@@ -618,4 +556,11 @@ int BigNum::bit_length() const
 		++k;
 	}
 	return k;
+}
+
+std::ostream &operator<<(std::ostream &out, const BigNum &num)
+{
+	std::string str = num.toString();
+	out << str;
+	return out;
 }
