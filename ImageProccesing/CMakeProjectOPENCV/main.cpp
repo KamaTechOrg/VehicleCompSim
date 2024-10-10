@@ -22,7 +22,7 @@ void send_thread(ClientSocket &client, int id, int d_id, SafeQueue& queue)
         
 		std::string h = queue.dequeue();
 		if(h== "BYE BYE")break;
-		h = "ID: " + std::to_string(id) + " Message: " + h;
+		h = "ID:" + std::to_string(id) + ",VALUE:" + h;
         sendErrorCode code = client.send((void *)h.c_str(), h.size(), id, d_id);
         if (code == sendErrorCode::SENDFAILED)
         {
