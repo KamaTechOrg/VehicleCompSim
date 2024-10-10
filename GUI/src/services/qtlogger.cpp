@@ -1,8 +1,8 @@
-#include "Logger.h"
+#include "qtlogger.h"
 #include <QDir>
 
-QFile Logger::logFile;
-QTextStream Logger::logStream;
+QFile QtLogger::logFile;
+QTextStream QtLogger::logStream;
 
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
     Q_UNUSED(context);
@@ -26,15 +26,15 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
             break;
     }
 
-    Logger::logStream << QDateTime::currentDateTime().toString(Qt::ISODate) << " - " << logMessage << Qt::endl;
-    Logger::logStream.flush();
+    QtLogger::logStream << QDateTime::currentDateTime().toString(Qt::ISODate) << " - " << logMessage << Qt::endl;
+    QtLogger::logStream.flush();
 
     if (type == QtFatalMsg) {
         abort();
     }
 }
 
-QString Logger::generateLogFileName() {
+QString QtLogger::generateLogFileName() {
     QDir logDir("logs");
     if (!logDir.exists()) {
         logDir.mkpath(".");
@@ -43,7 +43,7 @@ QString Logger::generateLogFileName() {
     return logDir.filePath(QString("log_%1.txt").arg(timestamp));
 }
 
-void Logger::initialize() {
+void QtLogger::initialize() {
     logFile.setFileName(generateLogFileName());
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         logStream.setDevice(&logFile);
@@ -51,7 +51,7 @@ void Logger::initialize() {
     }
 }
 
-void Logger::cleanup() {
+void QtLogger::cleanup() {
     qInstallMessageHandler(nullptr);
     logFile.close();
 }

@@ -7,7 +7,7 @@
 
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
-class Logger {
+class QtLogger {
 public:
     static void initialize();
     static void cleanup();

@@ -12,12 +12,8 @@ void SendManager::extractFromHeap(std::priority_queue<CanBus, std::vector<CanBus
     while (!min_heap.empty())
     {
         CanBus topElement = min_heap.top();
-
-        if(check_crc(topElement)){
-            for(int i = 0; i < 100; i++){
-                vec_can.push_back(topElement);
-            }
-            
+        if(isCrcValid(topElement)){
+            vec_can.push_back(topElement);
         }
         else{
             LOG_WARN("CRC check failed for canbus");
