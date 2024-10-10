@@ -10,7 +10,7 @@ Go back one folder above (CMakeProjectOPENCV), and add a Build folder.
 enter it and build as a CMAKE project: load the following commands:
 cmake ..
 
-(our system run of both: debug and release, but the communication server currently run on release,
+(our system run of both: debug and release,  but the communication server currently run on release,
 so debug mode will not work)
 
 for release: cmake --build . --config Release
