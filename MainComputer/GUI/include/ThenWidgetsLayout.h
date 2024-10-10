@@ -9,6 +9,14 @@
 #include "Action.h"
 #include "json.hpp"
 
+/**
+ * @brief Widget for managing a single action configuration.
+ *
+ * This class provides a layout for configuring an action, including
+ * selection of target units and operations.
+ */
+
+
 class ThenWidgetsLayout : public QWidget
 {
 

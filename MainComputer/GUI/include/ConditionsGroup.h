@@ -9,6 +9,13 @@
 #include "SingleCondition.h"
 #include "ConditionLayoutBase.h"
 
+/**
+ * @brief Group of conditions for managing a set of logical conditions.
+ *
+ * This class allows the user to add, remove, and organize conditions in a graphical interface.
+ */
+
+
 class ConditionsGroup : public ConditionLayoutBase
 {
 	Q_OBJECT

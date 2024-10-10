@@ -2,6 +2,7 @@
 #include "JsonLoader.h"
 
 #include <QDebug>
+#include <conditionsManager.h>
 
 Editor::Editor()
 {
@@ -56,7 +57,7 @@ bool Editor::saveLogicDataToJson()
 	JsonLoader().saveConditionsLogic(jsonData);
 	return true;
 	// TODO: save and then load the main computer "backend" in running time with the new conditions
-	//ConditionsManager().loadFromJson();
+	ConditionsManager().loadFromJson();
 }
 
 bool Editor::saveGuiDataToJson()

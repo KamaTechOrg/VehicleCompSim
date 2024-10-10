@@ -10,6 +10,14 @@
 
 #include "ConditionLayoutBase.h"
 
+/**
+ * @brief Represents a single condition in the user interface.
+ *
+ * This class manages the input fields for a condition, including source, type,
+ * and validation value, along with a delete button.
+ */
+
+
 class SingleCondition : public ConditionLayoutBase
 {
 	Q_OBJECT

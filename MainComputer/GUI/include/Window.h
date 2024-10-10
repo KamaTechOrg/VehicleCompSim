@@ -6,6 +6,13 @@
 #include "ConditionsEditor.h"
 #include "ExplorerBox.h"
 
+/**
+ * @brief Main application window for managing conditions and actions.
+ *
+ * This class serves as the primary interface for users to edit conditions
+ */
+
+
 class Window : public QWidget
 {
 public:
