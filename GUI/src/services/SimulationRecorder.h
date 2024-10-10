@@ -9,7 +9,6 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QDebug>
-#include <QWidget>
 #include <QObject>
 
 

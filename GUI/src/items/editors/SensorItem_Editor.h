@@ -11,19 +11,20 @@
 
 class SensorItem::Editor : public EditPanel::Editor{
     SensorModel& model;
+    QVBoxLayout* mainLayout;
+    QWidget* contentWidget;
 
-    QLineEdit* priority = new QLineEdit(this);
-    QLineEdit* name = new QLineEdit(this);
-    QLineEdit* buildCommand = new QLineEdit(this);
-    QLineEdit* runCommand = new QLineEdit(this);
-    QPushButton* cmakeSelectorOpen = new QPushButton(this);
-    QCheckBox* isUseCmakePath = new QCheckBox(this);
+    QLineEdit* priority;
+    QLineEdit* name;
+    QLineEdit* buildCommand;
+    QLineEdit* runCommand;
+    QPushButton* cmakeSelectorOpen;
+    QCheckBox* isUseCmakePath;
 
     QString cmakePath;
 
 protected:
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
     std::unordered_map<QObject*, QLabel*> labels;
 
     void initPriority();
@@ -35,7 +36,7 @@ protected:
 
     void initSaveCancelBtns();
     void initParameters();
-    void initLayout();
+    void initUI();
 
     void onSaveBtnClicked();
     void onCancelBtnCliked();

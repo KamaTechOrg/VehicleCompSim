@@ -7,10 +7,8 @@
 
 #include <QtSql>
 #include <QtSql/QSqlDatabase>
-#include <QGraphicsView>
 #include "globalstate.h"
 #include "../../../Communication/utilities/constants.h"
-#include <QWidget>
 #include <QObject>
 
 

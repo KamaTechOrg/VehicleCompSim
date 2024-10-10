@@ -117,6 +117,7 @@ sendErrorCode Socket::send(void *data, size_t size) const
     int status = ::send(m_sock, static_cast<const char *>(data), static_cast<int>(size), 0);
 #else
     int status = ::send(m_sock, data, size, MSG_NOSIGNAL);
+    std::cout << status << std::endl;
 #endif
 
     if (status == -1)

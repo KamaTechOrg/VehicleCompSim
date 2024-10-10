@@ -8,37 +8,37 @@
 #include "qpushbutton.h"
 #include "qspinbox.h"
 #include <QVBoxLayout>
-
+#include <QScrollArea>
+#include <QWidget>
 
 
 class QemuSensorItem::Editor : public EditPanel::Editor{
 
-    QemuSensorItem* sensor;
+    // QemuSensorItem* sensor;
     QemuSensorModel& model;
-    QVBoxLayout* layout;
+    QScrollArea* scrollArea;
+    QWidget* contentWidget;
+    QVBoxLayout* contentLayout;
+    QVBoxLayout* mainLayout;
 
     // parameters:
-    QLineEdit* priority = new QLineEdit(this);
-    QLineEdit* name = new QLineEdit(this);
-    QComboBox* platform = new QComboBox(this);
-    QComboBox* machine = new QComboBox(this);
-    QComboBox* cpu = new QComboBox(this);
-    QSpinBox* memory_MB = new QSpinBox(this);
-    QPushButton* kernal = new QPushButton (this);
-    QPushButton* harddrive = new QPushButton(this);
-    QPushButton* cdrom = new QPushButton(this);
-    QComboBox* boot = new QComboBox(this);
-    QLineEdit* net = new QLineEdit(this);
-    QLineEdit* append = new QLineEdit(this);
-    QCheckBox* nographic = new QCheckBox(this);
-
-
-
+    QLineEdit* priority;
+    QLineEdit* name;
+    QComboBox* platform;
+    QComboBox* machine;
+    QComboBox* cpu;
+    QSpinBox* memory_MB;
+    QPushButton* kernal;
+    QPushButton* harddrive;
+    QPushButton* cdrom;
+    QComboBox* boot;
+    QLineEdit* net;
+    QLineEdit* append;
+    QCheckBox* nographic;
 
     QString m_kernal;
     QString m_harddrive;
     QString m_cdrom;
-
 
     // inits:
     void initPriority();
@@ -57,7 +57,7 @@ class QemuSensorItem::Editor : public EditPanel::Editor{
 
     void initSaveCancelBtns();
     void initParameters();
-    void initLayout();
+    void initUI();
 
     void onSaveBtnClicked();
     void onCancelBtnCliked();

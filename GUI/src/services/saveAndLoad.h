@@ -6,11 +6,10 @@
 #define MYPROJECT_SAVEANDLOAD_H
 
 #include "bson/bson.h"
-#include "models/sensormodel.h"
 #include "state/globalstate.h"
 #include "models/qemusensormodel.h"
 
-class saveAndLoad :public QWidget{
+class saveAndLoad :public QObject{
 Q_OBJECT
 
 public:

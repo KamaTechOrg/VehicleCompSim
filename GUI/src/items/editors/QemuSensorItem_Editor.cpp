@@ -12,15 +12,15 @@
 void QemuSensorItem::Editor::initPriority()
 {
     priority->setText(model.priority());
-    layout->addWidget(new QLabel("priority", this));
-    layout->addWidget(priority);
+    contentLayout->addWidget(new QLabel("priority", this));
+    contentLayout->addWidget(priority);
 }
 
 void QemuSensorItem::Editor::initName()
 {
     name->setText(model.name());
-    layout->addWidget(new QLabel("name", this));
-    layout->addWidget(name);
+    contentLayout->addWidget(new QLabel("name", this));
+    contentLayout->addWidget(name);
 }
 
 void QemuSensorItem::Editor::initPlatform()
@@ -30,8 +30,8 @@ void QemuSensorItem::Editor::initPlatform()
         platform->addItem(option.label, option.value);
         if (model.platform() == option.value) platform->setCurrentText(option.label);
     }
-    layout->addWidget(new QLabel("platform:", this));
-    layout->addWidget(platform);
+    contentLayout->addWidget(new QLabel("platform:", this));
+    contentLayout->addWidget(platform);
 }
 
 void QemuSensorItem::Editor::initMachine()
@@ -41,8 +41,8 @@ void QemuSensorItem::Editor::initMachine()
         machine->addItem(option.label, option.value);
         if (model.machine().compare(option.value) == 0) machine->setCurrentText(option.label);
     }
-    layout->addWidget(new QLabel("machine:", this));
-    layout->addWidget(machine);
+    contentLayout->addWidget(new QLabel("machine:", this));
+    contentLayout->addWidget(machine);
 }
 
 void QemuSensorItem::Editor::initCpu()
@@ -53,8 +53,8 @@ void QemuSensorItem::Editor::initCpu()
         if (model.cpu().compare(option.value) == 0) cpu->setCurrentText(option.label);
     }
 
-    layout->addWidget(new QLabel("cpu:", this));
-    layout->addWidget(cpu);
+    contentLayout->addWidget(new QLabel("cpu:", this));
+    contentLayout->addWidget(cpu);
 }
 
 void QemuSensorItem::Editor::initMemory_MB()
@@ -62,8 +62,8 @@ void QemuSensorItem::Editor::initMemory_MB()
     memory_MB->setMinimum(1);
     memory_MB->setMaximum(INT_MAX);
     memory_MB->setValue(model.memory_MB());
-    layout->addWidget(new QLabel("memory (in MB):", this));
-    layout->addWidget(memory_MB);
+    contentLayout->addWidget(new QLabel("memory (in MB):", this));
+    contentLayout->addWidget(memory_MB);
 }
 
 void QemuSensorItem::Editor::initKernal()
@@ -76,8 +76,8 @@ void QemuSensorItem::Editor::initKernal()
         kernal->setText(m_kernal);
     });
     kernal->setText(m_kernal);
-    layout->addWidget(new QLabel("Kernal File:", this));
-    layout->addWidget(kernal);
+    contentLayout->addWidget(new QLabel("Kernal File:", this));
+    contentLayout->addWidget(kernal);
 }
 
 void QemuSensorItem::Editor::initHarddrive()
@@ -90,8 +90,8 @@ void QemuSensorItem::Editor::initHarddrive()
         harddrive->setText(m_harddrive);
     });
     harddrive->setText(m_harddrive);
-    layout->addWidget(new QLabel("Hard Drive File:", this));
-    layout->addWidget(harddrive);
+    contentLayout->addWidget(new QLabel("Hard Drive File:", this));
+    contentLayout->addWidget(harddrive);
 }
 
 void QemuSensorItem::Editor::initCdrom()
@@ -104,8 +104,8 @@ void QemuSensorItem::Editor::initCdrom()
         cdrom->setText(m_cdrom);
     });
     cdrom->setText(m_cdrom);
-    layout->addWidget(new QLabel("cdrom File:", this));
-    layout->addWidget(cdrom);
+    contentLayout->addWidget(new QLabel("cdrom File:", this));
+    contentLayout->addWidget(cdrom);
 }
 
 void QemuSensorItem::Editor::initBoot()
@@ -116,29 +116,29 @@ void QemuSensorItem::Editor::initBoot()
         if (model.boot().compare(option.value) == 0) boot->setCurrentText(option.label);
     }
 
-    layout->addWidget(new QLabel("start boot from device:", this));
-    layout->addWidget(boot);
+    contentLayout->addWidget(new QLabel("start boot from device:", this));
+    contentLayout->addWidget(boot);
 }
 
 void QemuSensorItem::Editor::initNet()
 {
     net->setText(model.net());
-    layout->addWidget(new QLabel("network configuration (advanced)", this));
-    layout->addWidget(net);
+    contentLayout->addWidget(new QLabel("network configuration (advanced)", this));
+    contentLayout->addWidget(net);
 }
 
 void QemuSensorItem::Editor::initAppend()
 {
     append->setText(model.append());
-    layout->addWidget(new QLabel("kernal startup parameters (advanced):", this));
-    layout->addWidget(append);
+    contentLayout->addWidget(new QLabel("kernal startup parameters (advanced):", this));
+    contentLayout->addWidget(append);
 }
 
 void QemuSensorItem::Editor::initNographic()
 {
     nographic->setCheckState((model.nographic() ? Qt::Checked : Qt::Unchecked));
-    layout->addWidget(new QLabel("dont open a screen window:", this));
-    layout->addWidget(nographic);
+    contentLayout->addWidget(new QLabel("don't open a screen window:", this));
+    contentLayout->addWidget(nographic);
 }
 
 void QemuSensorItem::Editor::initSaveCancelBtns()
@@ -152,13 +152,9 @@ void QemuSensorItem::Editor::initSaveCancelBtns()
 
     row->addWidget(save);
     row->addWidget(cancel);
-    layout->addLayout(row);
+    mainLayout->addLayout(row);
 }
 
-void QemuSensorItem::Editor::initLayout()
-{
-    setLayout(layout);
-}
 void QemuSensorItem::Editor::onSaveBtnClicked()
 {
     if(!(model.ownerID() == GlobalState::getInstance().myClientId()))
@@ -187,8 +183,8 @@ void QemuSensorItem::Editor::onSaveBtnClicked()
 void QemuSensorItem::Editor::onCancelBtnCliked()
 {
     GlobalState::getInstance().setCurrentSensorModel(nullptr);
-
 }
+
 void QemuSensorItem::Editor::initParameters()
 {
     initPriority();
@@ -206,11 +202,38 @@ void QemuSensorItem::Editor::initParameters()
     initNographic();
 }
 
-QemuSensorItem::Editor::Editor(QemuSensorModel *_model) : model(*_model), layout(new QVBoxLayout(this))
+QemuSensorItem::Editor::Editor(QemuSensorModel* _model)
+    : model(*_model),
+      scrollArea(new QScrollArea(this)),
+      contentWidget(new QWidget()),
+      contentLayout(new QVBoxLayout(contentWidget)),
+      mainLayout(new QVBoxLayout(this))
 {
-    initSaveCancelBtns();
+    initUI();
     initParameters();
-    initLayout();
+    initSaveCancelBtns();
+    setLayout(mainLayout);
+}
+
+void QemuSensorItem::Editor::initUI()
+{
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(contentWidget);
+    mainLayout->addWidget(scrollArea);
+
+    priority = new QLineEdit(contentWidget);
+    name = new QLineEdit(contentWidget);
+    platform = new QComboBox(contentWidget);
+    machine = new QComboBox(contentWidget);
+    cpu = new QComboBox(contentWidget);
+    memory_MB = new QSpinBox(contentWidget);
+    kernal = new QPushButton(contentWidget);
+    harddrive = new QPushButton(contentWidget);
+    cdrom = new QPushButton(contentWidget);
+    boot = new QComboBox(contentWidget);
+    net = new QLineEdit(contentWidget);
+    append = new QLineEdit(contentWidget);
+    nographic = new QCheckBox(contentWidget);
 }
 
 void QemuSensorItem::Editor::open()
