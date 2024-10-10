@@ -1,5 +1,38 @@
 #include "BigNumWithMinus.h"
 
+BigNumWithMinus::BigNumWithMinus(std::string num)
+{
+    if (num[0] == '-')
+    {
+        num = num.substr(1);
+        BigNum tmp(num);
+        *this = BigNumWithMinus(tmp);
+        setToMinus();
+    }
+    else
+    {
+        BigNum tmp(num);
+        *this = BigNumWithMinus(tmp);
+    }
+}
+
+BigNumWithMinus::BigNumWithMinus(std::vector<u_int8_t> num)
+{
+    if (!num.empty() && num[0] == '-')
+    {
+        num.erase(num.begin());
+        BigNum tmp(num);
+        *this = BigNumWithMinus(tmp);
+        setToMinus();
+    }
+    else
+    {
+        BigNum tmp(num);
+        *this = BigNumWithMinus(tmp);
+    }
+}
+
+
 void BigNumWithMinus::setToMinus()
 {
     for (int i = 0; i < size; ++i)

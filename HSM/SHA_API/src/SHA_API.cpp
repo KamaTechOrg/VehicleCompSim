@@ -7,7 +7,7 @@ HSMns::HSM_STATUS SHA_API::sha(
     return HSMns::HSM_STATUS();
 }
 
-HSMns::HSM_STATUS SHA_API::comperHash(
+HSMns::HSM_STATUS SHA_API::compareHash(
     const std::vector<u_char> &message, 
     const std::vector<u_char> &hash, 
     HASH_ALGORITHM_TYPE type
