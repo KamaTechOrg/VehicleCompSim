@@ -21,12 +21,12 @@ add_subdirectory ("OPENCV_PROJECT")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/OPENCV_PROJECT/include)
 
 
-link_directories(../../Communication/User_Directory/lib/win)
+link_directories(../Communication/User_Directory/lib/win)
 
 
 # Include directories for your library headers
-include_directories(../../Communication/User_Directory/client)
-include_directories(../../Communication/User_Directory/utilities)
+include_directories(../Communication/User_Directory/client)
+include_directories(../Communication/User_Directory/utilities)
 
 add_executable(MyApp main.cpp)
 
