@@ -1,3 +1,4 @@
 data/weights/*
 !data/opencv_library_backup/**
 [Bb]uild/
+CMakeSettings.json
