@@ -6,8 +6,6 @@ set(CLIENT_SOURCES
     customwidget.h
     customscene.cpp
     customscene.h
-    SimulationRecorder.cpp
-    SimulationReplayer.cpp
     SimulationControlPanel.h
     SimulationControlPanel.cpp
     popupdialog.cpp
@@ -17,16 +15,12 @@ set(CLIENT_SOURCES
     remoteinterface.h
     editpanel.h
     editpanel.cpp
-    DB_handler.h
-    DB_handler.cpp
     buffer_test.cpp
     buffer_test.h
     PersistentTootip.h
     PersistentTootip.cpp
     initializeSensorsData.h
     initializeSensorsData.cpp
-    saveAndLoad.cpp
-    saveAndLoad.h
     widgets/verticalindicator.h
     widgets/verticalindicator.cpp
     widgets/flowanimation.h

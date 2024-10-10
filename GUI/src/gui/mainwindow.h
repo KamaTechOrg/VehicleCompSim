@@ -32,7 +32,7 @@
 #include "../src/client/websocketclient.h"
 #include "../src/client/handlers/RunHandler.h"
 #include "items/qemusensoritem.h"
-#include "items/parser.h"
+#include "services/parser.h"
 #include "initializeSensorsData.h"
 #include "../models/sensormodel.h"
 #include "saveAndLoad.h"
