@@ -4,12 +4,11 @@
 #include "yolov3.h"
 #include <filesystem>
 #include <unordered_map>
-#include "Prediction.h"
 #include "Distance.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include "NewPrediction.h"
-#include "SafeQueue.h"
+//class SafeQueue;
 
 class Manager
 {
@@ -20,8 +19,16 @@ private:
 	std::string m_videoPath;
 	std::string m_videoDir;
 	TrackerManager m_trackerManager;
-	Prediction m_prediction;
+	std::unordered_map<int, TrackedObject> m_predictedObjects;
 	SafeQueue& m_queue;
 	//Distance m_distance;
+
+
+	cv::VideoCapture openVideo();
+	void processFrame(cv::Mat& frame, int frameCount);
+	void saveFirstFrame(const cv::Mat& frame);
+	void detectAndInitializeTrackers(cv::Mat& frame);
+	void updateTrackersAndPredict(cv::Mat& frame);
+	void drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetection);
 };
 

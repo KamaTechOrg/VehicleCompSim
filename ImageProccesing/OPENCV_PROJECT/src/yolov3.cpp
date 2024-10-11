@@ -67,7 +67,7 @@ std::vector<std::pair<cv::Rect, std::string>> detectVehiclesV3(cv::Mat& frame, c
     }
 
     std::vector<int> indices;
-    cv::dnn::NMSBoxes(boxes, confidences, 0.5, 0.4, indices);
+    cv::dnn::NMSBoxes(boxes, confidences, 0.5, 0.4f, indices);
     std::vector<std::pair<cv::Rect, std::string>> resultBoxes;
     for (int idx : indices) {
         cv::Rect box = boxes[idx];
@@ -78,14 +78,10 @@ std::vector<std::pair<cv::Rect, std::string>> detectVehiclesV3(cv::Mat& frame, c
     return resultBoxes;
 }
 
-std::vector<std::pair<cv::Rect, std::string>> run_yolov3(cv::Mat& original_img, std::string& image_name)
+std::vector<std::pair<cv::Rect, std::string>> run_yolov3(cv::Mat& original_img)
 {
-    static std::string cfgFile = DATA_DIR "\\weights\\yolov3.cfg";
-    static std::string weightsFile = DATA_DIR "\\weights\\yolov3.weights";
-    static std::string classFile = DATA_DIR "\\weights\\coco.names";
-
-    static std::vector<std::string> classList = v3loadClassList(classFile);
-    static cv::dnn::Net net = loadNetV3(cfgFile, weightsFile);
+    static std::vector<std::string> classList = v3loadClassList(CATEGORIES_FILE);
+    static cv::dnn::Net net = loadNetV3(CFG_FILE, WEIGHTS_FILE);
 
     cv::Mat& image = original_img;
     std::vector<std::pair<cv::Rect, std::string>> detectedBoxes = detectVehiclesV3(image, net, classList);

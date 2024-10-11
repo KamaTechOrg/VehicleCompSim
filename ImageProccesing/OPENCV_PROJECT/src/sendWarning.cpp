@@ -1,7 +1,7 @@
 #include "sendWarning.h"
 
 
-void sendWarning(const std::string& msg)
+void sendWarningToConsole(const std::string& msg)
 {
     static const int id = 2345;
 
