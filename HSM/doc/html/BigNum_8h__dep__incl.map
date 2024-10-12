@@ -1,0 +1,11 @@
+<map id="BigNum/include/BigNum.h" name="BigNum/include/BigNum.h">
+<area shape="rect" id="Node000001" title="A header file defining the BigNum class for handling large integers up to 1024 bits." alt="" coords="97,5,291,31"/>
+<area shape="rect" id="Node000002" href="$BigNumWithMinus_8h.html" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="89,79,299,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,44,197,79,191,79,191,44"/>
+<area shape="rect" id="Node000003" href="$RSA__ENC_8h.html" title="Header file for RSA encryption and decryption functions." alt="" coords="5,167,183,192"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="134,38,103,55,79,80,72,102,74,125,90,166,85,168,69,126,67,101,74,77,100,51,132,33"/>
+<area shape="rect" id="Node000004" href="$RSA__KEY_8h.html" title="Header file for RSA key generation and related functions." alt="" coords="228,167,400,192"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="255,33,288,51,314,77,323,101,325,126,320,167,315,166,320,125,318,102,309,80,284,55,253,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="161,129,111,168,107,164,157,125"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="236,124,298,164,295,169,233,128"/>
+</map>

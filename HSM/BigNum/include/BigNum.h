@@ -16,11 +16,11 @@
 
 /**
  * @class BigNum
- * @brief A class for representing and performing operations on large numbers (up to 2048 bits).
+ * @brief A class for representing and performing operations on large numbers (up to 1024 bits).
  */
 class BigNum {
 public:
-    static const int MAX_SIZE = 64;  ///< Maximum size of the number in 32-bit units.
+    static const int MAX_SIZE = 32;  ///< Maximum size of the number in 32-bit units.
     static const int UINT_T_SIZE = 32;  ///< Size of each unit in bits (32 bits).
 
     int size;  ///< Current size of the BigNum.

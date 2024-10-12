@@ -1,0 +1,5 @@
+<map id="HSMns::KeyStorage" name="HSMns::KeyStorage">
+<area shape="rect" id="Node000001" title="Class responsible for managing key storage within the HSM." alt="" coords="5,5,155,31"/>
+<area shape="rect" id="Node000002" href="$classHSMns_1_1HSM.html" title="Main class for HSM (Hardware Security Module) operations, including encryption, decryption,..." alt="" coords="27,79,133,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,44,83,79,77,79,77,44"/>
+</map>

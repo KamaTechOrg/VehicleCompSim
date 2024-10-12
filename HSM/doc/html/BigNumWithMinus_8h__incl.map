@@ -1,0 +1,23 @@
+<map id="BigNum/include/BigNumWithMinus.h" name="BigNum/include/BigNumWithMinus.h">
+<area shape="rect" id="Node000001" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="308,5,519,45"/>
+<area shape="rect" id="Node000002" href="$BigNum_8h.html" title="A header file defining the BigNum class for handling large integers up to 1024 bits." alt="" coords="309,93,395,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="401,47,372,84,367,81,396,44"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="419,93,530,119"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="430,44,459,81,455,84,426,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,167,85,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="309,120,100,168,98,163,307,115"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="109,167,165,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="318,121,179,167,178,162,317,116"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="190,167,253,192"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="332,121,256,162,253,158,330,116"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="277,167,336,192"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="347,120,324,157,319,154,342,118"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="360,167,435,192"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="362,118,385,154,380,157,357,120"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="459,167,533,192"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="376,116,461,158,459,163,374,121"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="557,167,643,192"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="393,116,547,160,546,165,391,121"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="667,167,733,192"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="396,114,409,116,530,139,654,164,653,169,529,144,407,121,395,119"/>
+</map>
