@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classHSMns_1_1KeyStorage.html" title="Class responsible for managing key storage within the HSM." alt="" coords="5,5,155,31"/>
+<area shape="rect" id="Node000001" href="$classHSMns_1_1HSM.html" title="Main class for HSM (Hardware Security Module) operations, including encryption, decryption,..." alt="" coords="203,5,308,31"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="169,15,202,15,202,21,169,21"/>
+</map>

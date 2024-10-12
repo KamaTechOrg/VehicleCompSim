@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "../../HSM_Enums/HSMEnums.hpp"
-#include "../../include/HSM.h"
+#include "HSM.h"
 
 namespace HSMns
 {
