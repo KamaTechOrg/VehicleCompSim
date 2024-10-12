@@ -1,6 +1,6 @@
 <map id="BigNum/include/BigNumWithMinus.h" name="BigNum/include/BigNumWithMinus.h">
 <area shape="rect" id="Node000001" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="308,5,519,45"/>
-<area shape="rect" id="Node000002" href="$BigNum_8h.html" title="A header file defining the BigNum class for handling large integers up to 1024 bits." alt="" coords="309,93,395,119"/>
+<area shape="rect" id="Node000002" href="$BigNum_8h.html" title="A header file defining the BigNum class for handling large integers up to 2048 bits." alt="" coords="309,93,395,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="401,47,372,84,367,81,396,44"/>
 <area shape="rect" id="Node000011" title=" " alt="" coords="419,93,530,119"/>
 <area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="430,44,459,81,455,84,426,47"/>

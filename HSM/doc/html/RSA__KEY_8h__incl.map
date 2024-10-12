@@ -20,7 +20,7 @@
 <area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="645,31,693,241,688,242,640,32"/>
 <area shape="rect" id="Node000011" title=" " alt="" coords="1041,86,1127,111"/>
 <area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="727,25,870,45,1030,76,1041,79,1040,84,1029,81,869,50,726,31"/>
-<area shape="rect" id="Node000012" href="$BigNum_8h.html" title="A header file defining the BigNum class for handling large integers up to 1024 bits." alt="" coords="267,167,416,207"/>
+<area shape="rect" id="Node000012" href="$BigNum_8h.html" title="A header file defining the BigNum class for handling large integers up to 2048 bits." alt="" coords="267,167,416,207"/>
 <area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="554,33,453,52,410,65,382,81,368,96,358,115,347,154,342,152,354,113,364,93,378,77,408,60,451,47,553,27"/>
 <area shape="rect" id="Node000016" href="$BigNumWithMinus_8h.html" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="393,79,551,119"/>
 <area shape="poly" id="edge20_Node000001_Node000016" title=" " alt="" coords="617,33,526,75,524,70,614,28"/>

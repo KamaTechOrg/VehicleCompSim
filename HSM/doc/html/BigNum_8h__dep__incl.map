@@ -1,5 +1,5 @@
 <map id="BigNum/include/BigNum.h" name="BigNum/include/BigNum.h">
-<area shape="rect" id="Node000001" title="A header file defining the BigNum class for handling large integers up to 1024 bits." alt="" coords="97,5,291,31"/>
+<area shape="rect" id="Node000001" title="A header file defining the BigNum class for handling large integers up to 2048 bits." alt="" coords="97,5,291,31"/>
 <area shape="rect" id="Node000002" href="$BigNumWithMinus_8h.html" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="89,79,299,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,44,197,79,191,79,191,44"/>
 <area shape="rect" id="Node000003" href="$RSA__ENC_8h.html" title="Header file for RSA encryption and decryption functions." alt="" coords="5,167,183,192"/>

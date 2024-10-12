@@ -87,7 +87,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5e86b810f82e03ca5f559fd0da5674db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates RSA public and private keys.  <br /></td></tr>
 <tr class="separator:a5e86b810f82e03ca5f559fd0da5674db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a487cda1e2dca010c469644dd2736d080" id="r_a487cda1e2dca010c469644dd2736d080"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRSA__KEY.html#a487cda1e2dca010c469644dd2736d080">generate_keys</a> (<a class="el" href="classBigNum.html">BigNum</a> &amp;publicKey, <a class="el" href="classBigNum.html">BigNum</a> &amp;privateKey, <a class="el" href="classBigNum.html">BigNum</a> &amp;modulus, int bits=512)</td></tr>
-<tr class="memdesc:a487cda1e2dca010c469644dd2736d080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates RSA public and private keys using <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a>.  <br /></td></tr>
+<tr class="memdesc:a487cda1e2dca010c469644dd2736d080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates RSA public and private keys using <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a>.  <br /></td></tr>
 <tr class="separator:a487cda1e2dca010c469644dd2736d080"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d41833910c9b3199fa38a3076385250" id="r_a3d41833910c9b3199fa38a3076385250"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRSA__KEY.html#a3d41833910c9b3199fa38a3076385250">isPrime</a> (const <a class="el" href="classBigNum.html">BigNum</a> &amp;n, int k)</td></tr>
 <tr class="memdesc:a3d41833910c9b3199fa38a3076385250"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a given number is prime using the Miller-Rabin primality test.  <br /></td></tr>
@@ -99,7 +99,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad437ef320c140c9b70d3821dbce484c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a single iteration of the Miller-Rabin primality test.  <br /></td></tr>
 <tr class="separator:ad437ef320c140c9b70d3821dbce484c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d4c705a44529e98c058f4bb42f5f80f" id="r_a3d4c705a44529e98c058f4bb42f5f80f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classBigNum.html">BigNum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRSA__KEY.html#a3d4c705a44529e98c058f4bb42f5f80f">generateRandomNumber</a> (int bits)</td></tr>
-<tr class="memdesc:a3d4c705a44529e98c058f4bb42f5f80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a> with the specified number of bits.  <br /></td></tr>
+<tr class="memdesc:a3d4c705a44529e98c058f4bb42f5f80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a> with the specified number of bits.  <br /></td></tr>
 <tr class="separator:a3d4c705a44529e98c058f4bb42f5f80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a4fbe8cc737ba9c1de8c05d72d5e9be" id="r_a6a4fbe8cc737ba9c1de8c05d72d5e9be"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; u_int8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRSA__KEY.html#a6a4fbe8cc737ba9c1de8c05d72d5e9be">generateRandomBits</a> (size_t length)</td></tr>
 <tr class="memdesc:a6a4fbe8cc737ba9c1de8c05d72d5e9be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random sequence of bits.  <br /></td></tr>
@@ -209,11 +209,11 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Generates RSA public and private keys using <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a>. </p>
+<p>Generates RSA public and private keys using <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">publicKey</td><td>The generated public key as a <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">privateKey</td><td>The generated private key as a <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">publicKey</td><td>The generated public key as a <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">privateKey</td><td>The generated private key as a <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">modulus</td><td>The modulus used in the RSA algorithm. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bits</td><td>The size of the keys in bits. Default is 512. </td></tr>
   </table>
@@ -306,7 +306,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A prime <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a> of the specified size. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A prime <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a> of the specified size. </dd></dl>
 
 </div>
 </div>
@@ -369,14 +369,14 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Generates a random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a> with the specified number of bits. </p>
+<p>Generates a random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a> with the specified number of bits. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">bits</td><td>The number of bits for the random number. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 1024 bits).">BigNum</a> of the specified size. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A random <a class="el" href="classBigNum.html" title="A class for representing and performing operations on large numbers (up to 2048 bits).">BigNum</a> of the specified size. </dd></dl>
 
 </div>
 </div>
