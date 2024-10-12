@@ -24,7 +24,6 @@ cmake_minimum_required(VERSION 3.8)
 include(cmake/common.cmake)
 
 # Proto file
-# get_filename_component(hsm_proto "../../protos/helloworld.proto" ABSOLUTE)
 get_filename_component(hsm_proto "./hsm.proto" ABSOLUTE)
 get_filename_component(hsm_proto_path "${hsm_proto}" PATH)
 
@@ -58,18 +57,31 @@ target_link_libraries(hsm_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
 
-# Targets greeter_[async_](client|server)
 foreach(_target
-  hsm_grpc_client hsm_grpc_server)
-  add_executable(${_target} "${_target}.cc")
+  hsm_grpc_server hsm_grpc_client)
+  add_library(${_target} "${_target}.cpp")
   target_link_libraries(${_target}
     hsm_grpc_proto
-    absl::check
-    absl::flags
-    absl::flags_parse
-    absl::log
+
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
     ${_PROTOBUF_LIBPROTOBUF}
     HSM )
 endforeach()
+
+# server main
+add_executable(hsm_grpc_server_main hsm_grpc_server_main.cpp)
+target_link_libraries(hsm_grpc_server_main hsm_grpc_server
+
+    # absl::check
+    absl::flags
+    absl::flags_parse
+    # absl::log
+)
+
+# test
+add_executable(hsm_grpc_client_test RPC_test.cpp)
+target_link_libraries(
+  hsm_grpc_client_test hsm_grpc_client hsm_grpc_server HSM GTest::gtest_main
+)
+gtest_discover_tests(hsm_grpc_client_test)

@@ -6,11 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "absl/flags/flag.h"
-#include "absl/flags/parse.h"
-
-#include <grpcpp/grpcpp.h>
-
 #include "hsm.grpc.pb.h"
 
 
@@ -18,9 +13,17 @@ namespace HSMns {
 namespace RPC {
 
 class HSM_GRPC_Client {
+
 public:
-    explicit HSM_GRPC_Client(std::shared_ptr<Channel> channel);
-    explicit HSM_GRPC_Client(std::string const& host);
+    explicit HSM_GRPC_Client(std::shared_ptr<grpc::Channel> channel);
+    explicit HSM_GRPC_Client(std::string const& host = "localhost:50051");
+
+    HSM_STATUS create_key_and_get_id(
+            const Ident &myId,
+            KeyId &keyId,
+            ENCRYPTION_ALGORITHM_TYPE type,
+            int bits = 512);
+
     HSM_STATUS encrypt(
         const std::vector<u_int8_t> &message,
         std::vector<u_int8_t> &encrypted_message,
@@ -55,8 +58,7 @@ public:
 
 
 private:
-    class HSM_RPC::Stub;
-    std::unique_ptr<HSM_RPC::Stub> stub_;
+    std::unique_ptr<HSM_gRpc::HSM_RPC::Stub> stub_;
 };
 
 } // namespace RPC

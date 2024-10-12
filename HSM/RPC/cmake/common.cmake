@@ -18,7 +18,6 @@
 # that automatically builds all the dependencies before building route_guide.
 
 cmake_minimum_required(VERSION 3.8)
-set(FETCHCONTENT_QUIET OFF)
 if(MSVC)
   add_definitions(-D_WIN32_WINNT=0x600)
 endif()
@@ -67,6 +66,7 @@ elseif(GRPC_FETCHCONTENT)
   # Another way is to use CMake's FetchContent module to clone gRPC at
   # configure time. This makes gRPC's source code available to your project,
   # similar to a git submodule.
+  set(FETCHCONTENT_QUIET OFF)
   message(STATUS "Using gRPC via add_subdirectory (FetchContent).")
   include(FetchContent)
   FetchContent_Declare(
@@ -76,7 +76,7 @@ elseif(GRPC_FETCHCONTENT)
     # v1.25.0, v1.26.0 etc..
     # For the purpose of testing, we override the tag used to the commit
     # that's currently under test.
-    GIT_TAG        vGRPC_TAG_VERSION_OF_YOUR_CHOICE)
+    GIT_TAG        v1.67.0)
   
   FetchContent_MakeAvailable(grpc)
 

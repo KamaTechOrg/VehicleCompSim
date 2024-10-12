@@ -124,6 +124,17 @@ message VerifyReply {
   HSM_STATUS status = 31;
 }
 
+message GenKeyRequest {
+  Ident my_id = 32;
+  ENCRYPTION_ALGORITHM_TYPE algo_type = 33;
+  uint32 bits = 34;
+}
+
+message GenKeyReply {
+  HSM_STATUS status = 35;
+  uint32 key_id = 36;
+}
+
 
 // The hsm service definition.
 service HSM_RPC {
@@ -131,4 +142,5 @@ service HSM_RPC {
   rpc Decrypt (DecryptRequest) returns (DecryptReply) {}
   rpc Sign (SignRequest) returns (SignReply) {}
   rpc Verify (VerifyRequest) returns (VerifyReply) {}
+  rpc GenKey (GenKeyRequest) returns (GenKeyReply) {}
 }
