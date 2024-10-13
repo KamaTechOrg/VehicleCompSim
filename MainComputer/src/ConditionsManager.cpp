@@ -73,12 +73,9 @@ void ConditionsManager::run()
     _isRunning = true;
     std::thread([this]() {
         Communication communication;
-
         communication.sendAndReceiveLoop("172.232.208.10", 8080);
         communication.sendTo(8080, "Hello, Server!");
         communication.sendTo(8080, "TARGET:server,MESSAGE:Main computer connected");
-
-        // communication.connectToSensors();
 
         while (_isRunning)
         {
