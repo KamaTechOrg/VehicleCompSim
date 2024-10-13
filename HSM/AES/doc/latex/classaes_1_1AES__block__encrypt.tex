@@ -1,0 +1,111 @@
+\doxysection{aes\+::AES\+\_\+block\+\_\+encrypt Class Reference}
+\hypertarget{classaes_1_1AES__block__encrypt}{}\label{classaes_1_1AES__block__encrypt}\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+
+
+Base class for AES block encryption and decryption.  
+
+
+
+
+{\ttfamily \#include $<$AES\+\_\+block\+\_\+encrypt.\+hpp$>$}
+
+
+
+Inheritance diagram for aes\+::AES\+\_\+block\+\_\+encrypt\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{classaes_1_1AES__block__encrypt__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} = std\+::array$<$ std\+::array$<$ uint8\+\_\+t, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} $>$, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} $>$
+\begin{DoxyCompactList}\small\item\em Defines the state matrix used in AES encryption. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e}{encrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&) const =0
+\begin{DoxyCompactList}\small\item\em Encrypts a block of data (state) using AES. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b}{decrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&) const =0
+\begin{DoxyCompactList}\small\item\em Decrypts a block of data (state) using AES. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} = 4
+\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ac664b2b33c0d9fbd6988a8b0e8b78404}{Block\+Size}} = \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\texorpdfstring{$\ast$}{*}\mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base class for AES block encryption and decryption. 
+
+This class provides the basic structure for AES encryption and decryption, defining a state matrix and virtual encrypt/decrypt methods that are implemented by derived classes. 
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}\label{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58} 
+\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}!State@{State}}
+\index{State@{State}!aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+\doxysubsubsection{\texorpdfstring{State}{State}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+::\+State}} =  std\+::array$<$std\+::array$<$uint8\+\_\+t, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}$>$, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}$>$}
+
+
+
+Defines the state matrix used in AES encryption. 
+
+The state is a 4x4 matrix of bytes (uint8\+\_\+t), where each byte represents a value in the AES block. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b}\label{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b} 
+\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}}
+{\footnotesize\ttfamily virtual void aes\+::\+AES\+\_\+block\+\_\+encrypt\+::decrypt (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Decrypts a block of data (state) using AES. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The state matrix representing the data to be decrypted. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e}\label{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e} 
+\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}}
+{\footnotesize\ttfamily virtual void aes\+::\+AES\+\_\+block\+\_\+encrypt\+::encrypt (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Encrypts a block of data (state) using AES. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The state matrix representing the data to be encrypted. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt_ac664b2b33c0d9fbd6988a8b0e8b78404}\label{classaes_1_1AES__block__encrypt_ac664b2b33c0d9fbd6988a8b0e8b78404} 
+\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}!BlockSize@{BlockSize}}
+\index{BlockSize@{BlockSize}!aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+\doxysubsubsection{\texorpdfstring{BlockSize}{BlockSize}}
+{\footnotesize\ttfamily const uint aes\+::\+AES\+\_\+block\+\_\+encrypt\+::\+Block\+Size = \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\texorpdfstring{$\ast$}{*}\mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\hspace{0.3cm}{\ttfamily [static]}}
+
+Number of bytes in an AES block \Hypertarget{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}\label{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069} 
+\index{aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}!Nb@{Nb}}
+\index{Nb@{Nb}!aes::AES\_block\_encrypt@{aes::AES\_block\_encrypt}}
+\doxysubsubsection{\texorpdfstring{Nb}{Nb}}
+{\footnotesize\ttfamily const uint aes\+::\+AES\+\_\+block\+\_\+encrypt\+::\+Nb = 4\hspace{0.3cm}{\ttfamily [static]}}
+
+Number of columns in the state and expanded key 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/AES\+\_\+block\+\_\+encrypt.\+hpp\end{DoxyCompactItemize}

@@ -1,0 +1,211 @@
+\doxysection{aes\+::AES\+\_\+block\+\_\+encrypt\+\_\+impl\texorpdfstring{$<$}{<} Aes\+\_\+var \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classaes_1_1AES__block__encrypt__impl}{}\label{classaes_1_1AES__block__encrypt__impl}\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+
+
+AES block encryption implementation for a specific AES variant (128-\/bit, 192-\/bit, 256-\/bit).  
+
+
+
+
+{\ttfamily \#include $<$AES\+\_\+block\+\_\+encrypt.\+hpp$>$}
+
+
+
+Inheritance diagram for aes\+::AES\+\_\+block\+\_\+encrypt\+\_\+impl\texorpdfstring{$<$}{<} Aes\+\_\+var \texorpdfstring{$>$}{>}\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{classaes_1_1AES__block__encrypt__impl__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for aes\+::AES\+\_\+block\+\_\+encrypt\+\_\+impl\texorpdfstring{$<$}{<} Aes\+\_\+var \texorpdfstring{$>$}{>}\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{classaes_1_1AES__block__encrypt__impl__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{Key\+Type}} = std\+::array$<$ uint8\+\_\+t, \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9}{Key\+Size}} $>$
+\item 
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}} = std\+::array$<$ std\+::array$<$ uint8\+\_\+t, 4 $>$, 4 $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Types inherited from \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{aes\+::\+AES\+\_\+block\+\_\+encrypt}}}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} = std\+::array$<$ std\+::array$<$ uint8\+\_\+t, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} $>$, \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} $>$
+\begin{DoxyCompactList}\small\item\em Defines the state matrix used in AES encryption. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aa98cb8694eaa413f06f3504a74f023f6}{AES\+\_\+block\+\_\+encrypt\+\_\+impl}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{Key\+Type}} const \&key)
+\begin{DoxyCompactList}\small\item\em Constructor that initializes the AES encryption implementation with the provided key. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae52f69c1eccc61f60070de2ad625b136}{encrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}} \&) const override
+\begin{DoxyCompactList}\small\item\em Encrypts a block of data (state) using the specified AES variant. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aa62016ec70140bdd45bb965b60d49981}{decrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}} \&) const override
+\begin{DoxyCompactList}\small\item\em Decrypts a block of data (state) using the specified AES variant. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{aes\+::\+AES\+\_\+block\+\_\+encrypt}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e}{encrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&) const =0
+\begin{DoxyCompactList}\small\item\em Encrypts a block of data (state) using AES. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b}{decrypt}} (\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}} \&) const =0
+\begin{DoxyCompactList}\small\item\em Decrypts a block of data (state) using AES. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a4ae4524b790a6d00f3a5353f7e3510fc}{Nr}}
+\begin{DoxyCompactList}\small\item\em Number of rounds in the encryption/decryption process for the given AES variant. \end{DoxyCompactList}\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}{Nk}}
+\begin{DoxyCompactList}\small\item\em Number of columns in the encryption key for the given AES variant. \end{DoxyCompactList}\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9}{Key\+Size}} = \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}{Nk}}\texorpdfstring{$\ast$}{*}4
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes inherited from \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{aes\+::\+AES\+\_\+block\+\_\+encrypt}}}
+\begin{DoxyCompactItemize}
+\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}} = 4
+\item 
+static const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ac664b2b33c0d9fbd6988a8b0e8b78404}{Block\+Size}} = \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\texorpdfstring{$\ast$}{*}\mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$Aes\+Variant Aes\+\_\+var$>$\newline
+class aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl$<$ Aes\+\_\+var $>$}
+AES block encryption implementation for a specific AES variant (128-\/bit, 192-\/bit, 256-\/bit). 
+
+This class implements AES encryption and decryption for the specified AES variant and provides methods for key expansion, round operations, and other internal AES transformations.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Aes\+\_\+var} & The AES variant to be used (Aes128, Aes192, or Aes256). \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}\label{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!KeyType@{KeyType}}
+\index{KeyType@{KeyType}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{KeyType}{KeyType}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+Key\+Type =  std\+::array$<$uint8\+\_\+t, \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9}{Key\+Size}}$>$}
+
+Type definition for the AES key \Hypertarget{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}\label{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!State@{State}}
+\index{State@{State}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{State}{State}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+using \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+State =  std\+::array$<$std\+::array$<$uint8\+\_\+t, 4$>$, 4$>$}
+
+Redefinition of the state matrix 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_aa98cb8694eaa413f06f3504a74f023f6}\label{classaes_1_1AES__block__encrypt__impl_aa98cb8694eaa413f06f3504a74f023f6} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!AES\_block\_encrypt\_impl@{AES\_block\_encrypt\_impl}}
+\index{AES\_block\_encrypt\_impl@{AES\_block\_encrypt\_impl}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{AES\_block\_encrypt\_impl()}{AES\_block\_encrypt\_impl()}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{Key\+Type}} const \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Constructor that initializes the AES encryption implementation with the provided key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The encryption key used for AES block encryption. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_aa62016ec70140bdd45bb965b60d49981}\label{classaes_1_1AES__block__encrypt__impl_aa62016ec70140bdd45bb965b60d49981} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+void \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::decrypt (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Decrypts a block of data (state) using the specified AES variant. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The state matrix representing the data to be decrypted. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_ae52f69c1eccc61f60070de2ad625b136}\label{classaes_1_1AES__block__encrypt__impl_ae52f69c1eccc61f60070de2ad625b136} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+void \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::encrypt (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Encrypts a block of data (state) using the specified AES variant. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The state matrix representing the data to be encrypted. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9}\label{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!KeySize@{KeySize}}
+\index{KeySize@{KeySize}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{KeySize}{KeySize}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+Key\+Size = \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}{Nk}}\texorpdfstring{$\ast$}{*}4\hspace{0.3cm}{\ttfamily [static]}}
+
+Size of the key in bytes \Hypertarget{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}\label{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!Nk@{Nk}}
+\index{Nk@{Nk}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{Nk}{Nk}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+Nk\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ Aes\_var\ ==\ AesVariant::Aes128\ ?\ 4}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :Aes\_var\ ==\ AesVariant::Aes192\ ?\ 6\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \ \ \ \ \ \ \ 8}
+
+\end{DoxyCode}
+
+
+Number of columns in the encryption key for the given AES variant. 
+
+\Hypertarget{classaes_1_1AES__block__encrypt__impl_a4ae4524b790a6d00f3a5353f7e3510fc}\label{classaes_1_1AES__block__encrypt__impl_a4ae4524b790a6d00f3a5353f7e3510fc} 
+\index{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}!Nr@{Nr}}
+\index{Nr@{Nr}!aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$@{aes::AES\_block\_encrypt\_impl$<$ Aes\_var $>$}}
+\doxysubsubsection{\texorpdfstring{Nr}{Nr}}
+{\footnotesize\ttfamily template$<$Aes\+Variant Aes\+\_\+var$>$ \\
+const uint \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{aes\+::\+AES\+\_\+block\+\_\+encrypt\+\_\+impl}}$<$ Aes\+\_\+var $>$\+::\+Nr\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ Aes\_var\ ==\ AesVariant::Aes128\ ?\ 10\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :Aes\_var\ ==\ AesVariant::Aes192\ ?\ 12\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \ \ \ \ \ \ \ 14}
+
+\end{DoxyCode}
+
+
+Number of rounds in the encryption/decryption process for the given AES variant. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/AES\+\_\+block\+\_\+encrypt.\+hpp\end{DoxyCompactItemize}

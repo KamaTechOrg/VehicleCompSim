@@ -1,0 +1,121 @@
+\doxysection{HSMns\+::AES Class Reference}
+\hypertarget{classHSMns_1_1AES}{}\label{classHSMns_1_1AES}\index{HSMns::AES@{HSMns::AES}}
+
+
+Provides \doxylink{classHSMns_1_1AES}{AES} encryption and decryption functionality.  
+
+
+
+
+{\ttfamily \#include $<$AES\+\_\+\+API.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static HSM\+\_\+\+STATUS \mbox{\hyperlink{classHSMns_1_1AES_a4aadd62fff55841fa2380f560179945d}{encrypt}} (std\+::vector$<$ uint8\+\_\+t $>$ const \&clr\+Msg, std\+::vector$<$ uint8\+\_\+t $>$ \&enc\+Msg, std\+::vector$<$ uint8\+\_\+t $>$ const \&key, ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&type)
+\begin{DoxyCompactList}\small\item\em Encrypts a clear message using the specified \doxylink{classHSMns_1_1AES}{AES} encryption algorithm. \end{DoxyCompactList}\item 
+static HSM\+\_\+\+STATUS \mbox{\hyperlink{classHSMns_1_1AES_a155ecb76b69e00f3a7f487feb95640bb}{decrypt}} (std\+::vector$<$ uint8\+\_\+t $>$ const \&enc\+Msg, std\+::vector$<$ uint8\+\_\+t $>$ \&clr\+Msg, std\+::vector$<$ uint8\+\_\+t $>$ const \&key, ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&type)
+\begin{DoxyCompactList}\small\item\em Decrypts an encrypted message using the specified \doxylink{classHSMns_1_1AES}{AES} decryption algorithm. \end{DoxyCompactList}\item 
+static HSM\+\_\+\+STATUS \mbox{\hyperlink{classHSMns_1_1AES_a525fccbd44c8ea5be2e4bf2e67688652}{generate\+Key}} (std\+::vector$<$ uint8\+\_\+t $>$ \&generated\+\_\+key, ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&type)
+\begin{DoxyCompactList}\small\item\em Generates a random \doxylink{classHSMns_1_1AES}{AES} key for the specified encryption algorithm type. \end{DoxyCompactList}\item 
+static HSM\+\_\+\+STATUS \mbox{\hyperlink{classHSMns_1_1AES_afe15f186d44d5d5fd8f6da14fb61335a}{generate\+And\+Print\+Key}} (std\+::vector$<$ uint8\+\_\+t $>$ \&generated\+\_\+key, ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&type)
+\begin{DoxyCompactList}\small\item\em Generates a random \doxylink{classHSMns_1_1AES}{AES} key for the specified encryption algorithm type and prints it. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides \doxylink{classHSMns_1_1AES}{AES} encryption and decryption functionality. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classHSMns_1_1AES_a155ecb76b69e00f3a7f487feb95640bb}\label{classHSMns_1_1AES_a155ecb76b69e00f3a7f487feb95640bb} 
+\index{HSMns::AES@{HSMns::AES}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!HSMns::AES@{HSMns::AES}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}}
+{\footnotesize\ttfamily static HSM\+\_\+\+STATUS HSMns\+::\+AES\+::decrypt (\begin{DoxyParamCaption}\item[{std\+::vector$<$ uint8\+\_\+t $>$ const \&}]{enc\+Msg,  }\item[{std\+::vector$<$ uint8\+\_\+t $>$ \&}]{clr\+Msg,  }\item[{std\+::vector$<$ uint8\+\_\+t $>$ const \&}]{key,  }\item[{ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decrypts an encrypted message using the specified \doxylink{classHSMns_1_1AES}{AES} decryption algorithm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em enc\+Msg} & The encrypted message to decrypt, represented as a vector of bytes. \\
+\hline
+{\em clr\+Msg} & The resulting clear message after decryption, represented as a vector of bytes. \\
+\hline
+{\em key} & The decryption key to use, represented as a vector of bytes. \\
+\hline
+{\em type} & The type of \doxylink{classHSMns_1_1AES}{AES} decryption algorithm to use.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSM\+\_\+\+STATUS Status code indicating the success or failure of the decryption process. 
+\end{DoxyReturn}
+\Hypertarget{classHSMns_1_1AES_a4aadd62fff55841fa2380f560179945d}\label{classHSMns_1_1AES_a4aadd62fff55841fa2380f560179945d} 
+\index{HSMns::AES@{HSMns::AES}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!HSMns::AES@{HSMns::AES}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}}
+{\footnotesize\ttfamily static HSM\+\_\+\+STATUS HSMns\+::\+AES\+::encrypt (\begin{DoxyParamCaption}\item[{std\+::vector$<$ uint8\+\_\+t $>$ const \&}]{clr\+Msg,  }\item[{std\+::vector$<$ uint8\+\_\+t $>$ \&}]{enc\+Msg,  }\item[{std\+::vector$<$ uint8\+\_\+t $>$ const \&}]{key,  }\item[{ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Encrypts a clear message using the specified \doxylink{classHSMns_1_1AES}{AES} encryption algorithm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em clr\+Msg} & The clear message to encrypt, represented as a vector of bytes. \\
+\hline
+{\em enc\+Msg} & The resulting encrypted message, represented as a vector of bytes. \\
+\hline
+{\em key} & The encryption key to use, represented as a vector of bytes. \\
+\hline
+{\em type} & The type of \doxylink{classHSMns_1_1AES}{AES} encryption algorithm to use.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSM\+\_\+\+STATUS Status code indicating the success or failure of the encryption process. 
+\end{DoxyReturn}
+\Hypertarget{classHSMns_1_1AES_afe15f186d44d5d5fd8f6da14fb61335a}\label{classHSMns_1_1AES_afe15f186d44d5d5fd8f6da14fb61335a} 
+\index{HSMns::AES@{HSMns::AES}!generateAndPrintKey@{generateAndPrintKey}}
+\index{generateAndPrintKey@{generateAndPrintKey}!HSMns::AES@{HSMns::AES}}
+\doxysubsubsection{\texorpdfstring{generateAndPrintKey()}{generateAndPrintKey()}}
+{\footnotesize\ttfamily static HSM\+\_\+\+STATUS HSMns\+::\+AES\+::generate\+And\+Print\+Key (\begin{DoxyParamCaption}\item[{std\+::vector$<$ uint8\+\_\+t $>$ \&}]{generated\+\_\+key,  }\item[{ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a random \doxylink{classHSMns_1_1AES}{AES} key for the specified encryption algorithm type and prints it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em generated\+\_\+key} & The generated \doxylink{classHSMns_1_1AES}{AES} key, represented as a vector of bytes. \\
+\hline
+{\em type} & The type of \doxylink{classHSMns_1_1AES}{AES} encryption algorithm for which to generate the key.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSM\+\_\+\+STATUS Status code indicating the success or failure of the key generation and printing process. 
+\end{DoxyReturn}
+\Hypertarget{classHSMns_1_1AES_a525fccbd44c8ea5be2e4bf2e67688652}\label{classHSMns_1_1AES_a525fccbd44c8ea5be2e4bf2e67688652} 
+\index{HSMns::AES@{HSMns::AES}!generateKey@{generateKey}}
+\index{generateKey@{generateKey}!HSMns::AES@{HSMns::AES}}
+\doxysubsubsection{\texorpdfstring{generateKey()}{generateKey()}}
+{\footnotesize\ttfamily static HSM\+\_\+\+STATUS HSMns\+::\+AES\+::generate\+Key (\begin{DoxyParamCaption}\item[{std\+::vector$<$ uint8\+\_\+t $>$ \&}]{generated\+\_\+key,  }\item[{ENCRYPTION\+\_\+\+ALGORITHM\+\_\+\+TYPE const \&}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a random \doxylink{classHSMns_1_1AES}{AES} key for the specified encryption algorithm type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em generated\+\_\+key} & The generated \doxylink{classHSMns_1_1AES}{AES} key, represented as a vector of bytes. \\
+\hline
+{\em type} & The type of \doxylink{classHSMns_1_1AES}{AES} encryption algorithm for which to generate the key.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSM\+\_\+\+STATUS Status code indicating the success or failure of the key generation process. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/AES\+\_\+\+API.\+hpp\end{DoxyCompactItemize}

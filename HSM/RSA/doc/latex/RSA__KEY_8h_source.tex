@@ -1,0 +1,45 @@
+\doxysection{RSA\+\_\+\+KEY.\+h}
+\hypertarget{RSA__KEY_8h_source}{}\label{RSA__KEY_8h_source}\index{include/RSA\_KEY.h@{include/RSA\_KEY.h}}
+\mbox{\hyperlink{RSA__KEY_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <iomanip>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}../../BigNum/include/BigNum.h"{}}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}../../BigNum/include/BigNumWithMinus.h"{}}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ "{}HSMEnums.hpp"{}}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classRSA__KEY}{RSA\_KEY}}}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{static}\ HSMns::HSM\_STATUS\ \mbox{\hyperlink{classRSA__KEY_a07a008a6cbdf8cede18754e8a55fb61f}{generateKeys}}(std::vector<u\_int8\_t>\ \&public\_key,\ std::vector<u\_int8\_t>\ \&private\_key,\ \textcolor{keywordtype}{int}\ bits\ =\ 512);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classRSA__KEY_ac1e6a52fe9c776c8bd358b7333f247e4}{generate\_keys}}(BigNum\ \&publicKey,\ BigNum\ \&privateKey,\ BigNum\ \&modulus,\ \textcolor{keywordtype}{int}\ bits\ =\ 512);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classRSA__KEY_ac9ca97e44b50e3ef0c696c46ec94f58b}{isPrime}}(\textcolor{keyword}{const}\ BigNum\ \&n,\ \textcolor{keywordtype}{int}\ k);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__KEY_a1bb9fd810400108a0dcdbc58fc5b6f49}{power}}(\textcolor{keyword}{const}\ BigNum\ \&x,\ \textcolor{keyword}{const}\ BigNum\ \&y,\ \textcolor{keyword}{const}\ BigNum\ \&p);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classRSA__KEY_a60cceb3c66659bc3ae7f012d601017b9}{millerTest}}(\textcolor{keyword}{const}\ BigNum\ \&d,\ \textcolor{keyword}{const}\ BigNum\ \&n);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__KEY_a2a85b9f80a9db72a8c2ac7000fa3f3e1}{generateRandomNumber}}(\textcolor{keywordtype}{int}\ bits);}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classRSA__KEY_acfe6ddc9eeeab45f8f29d3c1f54ad6b8}{generateRandomBits}}(\textcolor{keywordtype}{size\_t}\ length);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__KEY_abb064b687c76207227bef5556c29996f}{generateLargePrime}}(\textcolor{keywordtype}{int}\ bits);}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__KEY_ab7424591042c7f50632f221bf8c35033}{gcd}}(BigNum\ a,\ BigNum\ b);}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__KEY_ab5649175659930587df8d6e49c240372}{modInverse}}(BigNum\ a,\ BigNum\ m);}
+\DoxyCodeLine{00120\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,890 @@
+\doxysection{Big\+Num Class Reference}
+\hypertarget{classBigNum}{}\label{classBigNum}\index{BigNum@{BigNum}}
+
+
+A class for representing and performing operations on large numbers (up to 2048 bits).  
+
+
+
+
+{\ttfamily \#include $<$Big\+Num.\+h$>$}
+
+
+
+Inheritance diagram for Big\+Num\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{classBigNum__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classBigNum_a920c1dfbab5c5170e2cfc5ee6ec7fc7c}\label{classBigNum_a920c1dfbab5c5170e2cfc5ee6ec7fc7c} 
+{\bfseries Big\+Num} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. Initializes the \doxylink{classBigNum}{Big\+Num} to a size of MAX\+\_\+\+SIZE with all elements set to zero. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum_a17ca525c5ca804cdfd0807582297658a}{Big\+Num}} (int bit\+\_\+size)
+\begin{DoxyCompactList}\small\item\em Constructor to initialize a \doxylink{classBigNum}{Big\+Num} with a specific bit size. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum_a27f7c02d9f21d801fd4f8c339f389287}{Big\+Num}} (uint64\+\_\+t num, int bit\+\_\+size)
+\begin{DoxyCompactList}\small\item\em Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a 64-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum_a071a5aac0e920e3542efddf2bdb00945}{Big\+Num}} (std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ num)
+\begin{DoxyCompactList}\small\item\em Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a vector of bytes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum_a22f9358a1529a3e82dcdfa015cd9a0fa}{Big\+Num}} (std\+::string num)
+\begin{DoxyCompactList}\small\item\em Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a string representation of a number. \end{DoxyCompactList}\item 
+\Hypertarget{classBigNum_aa33f906c6ddebafa8f444dfb6f40a914}\label{classBigNum_aa33f906c6ddebafa8f444dfb6f40a914} 
+void {\bfseries print} () const
+\begin{DoxyCompactList}\small\item\em Prints the \doxylink{classBigNum}{Big\+Num} in a human-\/readable format (for testing purposes). \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classBigNum_a3ad43612e81d668be68c049d0b88790c}{to\+String}} () const
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classBigNum}{Big\+Num} to a string representation. \end{DoxyCompactList}\item 
+std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classBigNum_a4c6f35a44b0c7120bdcb194486028678}{to\+Vector\+Char}} () const
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classBigNum}{Big\+Num} to a vector of 8-\/bit unsigned integers. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_ab131a96ed84f288c0e93a0beaa46563b}{operator+}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Addition operator for adding two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a91a5f35c4e3717f4df68f30b0f7fa6e4}{operator+}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Addition operator for adding a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_ae94623f096de8dff3d02449468bf3ba8}{operator+=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other)
+\begin{DoxyCompactList}\small\item\em Addition and assignment operator for adding another \doxylink{classBigNum}{Big\+Num} to this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a68f504a2cd755a43cc0f078fb20ad3db}{operator+=}} (uint32\+\_\+t num)
+\begin{DoxyCompactList}\small\item\em Addition and assignment operator for adding a 32-\/bit unsigned integer to this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a32ad53661a0a6926deb89e7b5081598f}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Multiplication operator for multiplying two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a4c49a9c801145e21f43c72696dcebd9e}{operator\texorpdfstring{$\ast$}{*}}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Multiplication operator for multiplying a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a6ca90c6ab9541a86bacdaf9ba63eb585}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other)
+\begin{DoxyCompactList}\small\item\em Multiplication and assignment operator for multiplying this \doxylink{classBigNum}{Big\+Num} with another \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a9364136466a82ac382a07f2555002fa6}{operator\texorpdfstring{$\ast$}{*}=}} (uint32\+\_\+t num)
+\begin{DoxyCompactList}\small\item\em Multiplication and assignment operator for multiplying this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a002e13300d4b1bb0a71b6098408927c4}{operator-\/}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Subtraction operator for subtracting another \doxylink{classBigNum}{Big\+Num} from this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_ac73c650b4363411710a5aab2e3b24942}{operator-\/}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Subtraction operator for subtracting a 32-\/bit unsigned integer from this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_aa05aa59f9c69417a9b729c4d131f7c22}{operator-\/=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other)
+\begin{DoxyCompactList}\small\item\em Subtraction and assignment operator for subtracting another \doxylink{classBigNum}{Big\+Num} from this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a2c58880aa3d689065774e64440016463}{operator-\/=}} (uint32\+\_\+t num)
+\begin{DoxyCompactList}\small\item\em Subtraction and assignment operator for subtracting a 32-\/bit unsigned integer from this \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_aab8ebe7ba041e2f053dd6ce26ecf06d0}{operator\%}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Modulus operator for finding the remainder of division between two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a148e56b8e624a17b3f1a6999b32d1a75}{operator\%}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Modulus operator for finding the remainder of division between a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a12e3ee888de55608bc2d054a7ffbf0f7}{operator/}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Division operator for dividing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_aca2a103a25a8455a2b3694c40c92bb06}{operator/}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Division operator for dividing a \doxylink{classBigNum}{Big\+Num} by a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a76b36fe2213d0c990085b0d9e517d5af}{operator/=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other)
+\begin{DoxyCompactList}\small\item\em Division and assignment operator for dividing this \doxylink{classBigNum}{Big\+Num} by another \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_a589eb5a56caf58b212ca4c387b02f638}{operator/=}} (uint32\+\_\+t num)
+\begin{DoxyCompactList}\small\item\em Division and assignment operator for dividing this \doxylink{classBigNum}{Big\+Num} by a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_abbf28723158cf09414085622d8c74663}{operator$<$$<$}} (uint32\+\_\+t shift) const
+\begin{DoxyCompactList}\small\item\em Left shift operator for shifting the \doxylink{classBigNum}{Big\+Num} by a certain number of bits to the left. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBigNum}{Big\+Num}} \mbox{\hyperlink{classBigNum_aa84f2a29dbd6fa6551bb05be35b91f6b}{operator$>$$>$}} (uint32\+\_\+t shift) const
+\begin{DoxyCompactList}\small\item\em Right shift operator for shifting the \doxylink{classBigNum}{Big\+Num} by a certain number of bits to the right. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a6659dea1c02c10c4ebf805f1b9d121bf}{operator$<$}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Less-\/than operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a9832208c4fa27110e6b851e6934bab35}{operator$>$=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Greater-\/than-\/or-\/equal-\/to operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_af05837d15465eeb513e9722baf2c4ab4}{operator==}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Equality operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a9db3541fe331f3bb9b79a4662d7a4dae}{operator==}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Equality operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a38e9c89aabe84374141108e1b300273b}{operator!=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Inequality operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a38600237f9ea61cfd6b3893309666931}{operator!=}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Inequality operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_ae32b9e297c0f955c6f1687368f8d8d38}{operator$<$=}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Less-\/than-\/or-\/equal-\/to operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a29adf00eb8d666823e193e0ba39f5230}{operator$<$=}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Less-\/than-\/or-\/equal-\/to operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a21799bce3ded6ba19dab389855dc65c9}{operator$>$}} (const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&other) const
+\begin{DoxyCompactList}\small\item\em Greater-\/than operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classBigNum_a2adb3b3a39c3e9ab1165f46ecbc0ec8b}{operator$>$}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Greater-\/than operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classBigNum_a0cb340cd80c80416638a396595ef799b}{operator\&}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Bitwise AND operator for performing a bitwise AND operation with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classBigNum_afdf16b5a94f20a0215405145ceae64b5}{operator\texorpdfstring{$\vert$}{|}}} (uint32\+\_\+t num) const
+\begin{DoxyCompactList}\small\item\em Bitwise OR operator for performing a bitwise OR operation with a 32-\/bit unsigned integer. \end{DoxyCompactList}\item 
+uint64\+\_\+t \mbox{\hyperlink{classBigNum_a67bec0e21ff5889838f0da1158848772}{to\+\_\+ulong}} () const
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classBigNum}{Big\+Num} to a 64-\/bit unsigned integer. \end{DoxyCompactList}\item 
+uint64\+\_\+t \mbox{\hyperlink{classBigNum_a343868e820245fb03b70634242c8eccb}{to\+Char}} () const
+\begin{DoxyCompactList}\small\item\em Converts the \doxylink{classBigNum}{Big\+Num} to a character representation. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classBigNum_acf32aebb7599731e894b7d1cc421a6b5}{get\+Size\+That\+Is\+Full}} () const
+\begin{DoxyCompactList}\small\item\em Gets the number of 32-\/bit units that are currently being used in the \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classBigNum_a8096163a259aeb88dbcac39f25458b2d}{bit\+\_\+length}} () const
+\begin{DoxyCompactList}\small\item\em Gets the length of the \doxylink{classBigNum}{Big\+Num} in bits. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classBigNum_a5c1eae2e5a426fa9a38005713907c2a0}\label{classBigNum_a5c1eae2e5a426fa9a38005713907c2a0} 
+int {\bfseries size}
+\begin{DoxyCompactList}\small\item\em Current size of the \doxylink{classBigNum}{Big\+Num}. \end{DoxyCompactList}\item 
+\Hypertarget{classBigNum_a525539c0d105b8559746c7111b78ae0f}\label{classBigNum_a525539c0d105b8559746c7111b78ae0f} 
+std\+::vector$<$ uint32\+\_\+t $>$ {\bfseries data}
+\begin{DoxyCompactList}\small\item\em Internal storage for the number, stored as an array of 32-\/bit units. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classBigNum_ae618d0488754255258311c81ec2b788b}\label{classBigNum_ae618d0488754255258311c81ec2b788b} 
+static const int {\bfseries MAX\+\_\+\+SIZE} = 64
+\begin{DoxyCompactList}\small\item\em Maximum size of the number in 32-\/bit units. \end{DoxyCompactList}\item 
+\Hypertarget{classBigNum_a8f729c3eec29e478cda702574beb4d5f}\label{classBigNum_a8f729c3eec29e478cda702574beb4d5f} 
+static const int {\bfseries UINT\+\_\+\+T\+\_\+\+SIZE} = 32
+\begin{DoxyCompactList}\small\item\em Size of each unit in bits (32 bits). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classBigNum_a2d367ff6eee12a920980ac4023680017}{operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&num)
+\begin{DoxyCompactList}\small\item\em Outputs the \doxylink{classBigNum}{Big\+Num} to an output stream (e.\+g., std\+::cout). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A class for representing and performing operations on large numbers (up to 2048 bits). 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classBigNum_a17ca525c5ca804cdfd0807582297658a}\label{classBigNum_a17ca525c5ca804cdfd0807582297658a} 
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{BigNum()}{BigNum()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily Big\+Num\+::\+Big\+Num (\begin{DoxyParamCaption}\item[{int}]{bit\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+Constructor to initialize a \doxylink{classBigNum}{Big\+Num} with a specific bit size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bit\+\_\+size} & The size of the number in bits. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classBigNum_a27f7c02d9f21d801fd4f8c339f389287}\label{classBigNum_a27f7c02d9f21d801fd4f8c339f389287} 
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{BigNum()}{BigNum()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily Big\+Num\+::\+Big\+Num (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{num,  }\item[{int}]{bit\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a 64-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & A 64-\/bit unsigned integer to initialize the \doxylink{classBigNum}{Big\+Num}. \\
+\hline
+{\em bit\+\_\+size} & The size of the number in bits. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classBigNum_a071a5aac0e920e3542efddf2bdb00945}\label{classBigNum_a071a5aac0e920e3542efddf2bdb00945} 
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{BigNum()}{BigNum()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily Big\+Num\+::\+Big\+Num (\begin{DoxyParamCaption}\item[{std\+::vector$<$ u\+\_\+int8\+\_\+t $>$}]{num }\end{DoxyParamCaption})}
+
+
+
+Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a vector of bytes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & A vector of 8-\/bit unsigned integers representing the number as a ascii string. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classBigNum_a22f9358a1529a3e82dcdfa015cd9a0fa}\label{classBigNum_a22f9358a1529a3e82dcdfa015cd9a0fa} 
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\index{BigNum@{BigNum}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{BigNum()}{BigNum()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily Big\+Num\+::\+Big\+Num (\begin{DoxyParamCaption}\item[{std\+::string}]{num }\end{DoxyParamCaption})}
+
+
+
+Constructor to initialize a \doxylink{classBigNum}{Big\+Num} from a string representation of a number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & A string representing the number. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classBigNum_a8096163a259aeb88dbcac39f25458b2d}\label{classBigNum_a8096163a259aeb88dbcac39f25458b2d} 
+\index{BigNum@{BigNum}!bit\_length@{bit\_length}}
+\index{bit\_length@{bit\_length}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{bit\_length()}{bit\_length()}}
+{\footnotesize\ttfamily int Big\+Num\+::bit\+\_\+length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Gets the length of the \doxylink{classBigNum}{Big\+Num} in bits. 
+
+\begin{DoxyReturn}{Returns}
+The number of bits used by the \doxylink{classBigNum}{Big\+Num}. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_acf32aebb7599731e894b7d1cc421a6b5}\label{classBigNum_acf32aebb7599731e894b7d1cc421a6b5} 
+\index{BigNum@{BigNum}!getSizeThatIsFull@{getSizeThatIsFull}}
+\index{getSizeThatIsFull@{getSizeThatIsFull}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{getSizeThatIsFull()}{getSizeThatIsFull()}}
+{\footnotesize\ttfamily int Big\+Num\+::get\+Size\+That\+Is\+Full (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Gets the number of 32-\/bit units that are currently being used in the \doxylink{classBigNum}{Big\+Num}. 
+
+\begin{DoxyReturn}{Returns}
+The number of full units in the \doxylink{classBigNum}{Big\+Num}. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a38e9c89aabe84374141108e1b300273b}\label{classBigNum_a38e9c89aabe84374141108e1b300273b} 
+\index{BigNum@{BigNum}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Inequality operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the Big\+Nums are not equal, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a38600237f9ea61cfd6b3893309666931}\label{classBigNum_a38600237f9ea61cfd6b3893309666931} 
+\index{BigNum@{BigNum}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator!= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Inequality operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is not equal to the integer, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_aab8ebe7ba041e2f053dd6ce26ecf06d0}\label{classBigNum_aab8ebe7ba041e2f053dd6ce26ecf06d0} 
+\index{BigNum@{BigNum}!operator\%@{operator\%}}
+\index{operator\%@{operator\%}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\%()}{operator\%()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\% (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Modulus operator for finding the remainder of division between two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the remainder. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a148e56b8e624a17b3f1a6999b32d1a75}\label{classBigNum_a148e56b8e624a17b3f1a6999b32d1a75} 
+\index{BigNum@{BigNum}!operator\%@{operator\%}}
+\index{operator\%@{operator\%}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\%()}{operator\%()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\% (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Modulus operator for finding the remainder of division between a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the remainder. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a0cb340cd80c80416638a396595ef799b}\label{classBigNum_a0cb340cd80c80416638a396595ef799b} 
+\index{BigNum@{BigNum}!operator\&@{operator\&}}
+\index{operator\&@{operator\&}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}}
+{\footnotesize\ttfamily int Big\+Num\+::operator\& (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Bitwise AND operator for performing a bitwise AND operation with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The result of the bitwise AND operation. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a32ad53661a0a6926deb89e7b5081598f}\label{classBigNum_a32ad53661a0a6926deb89e7b5081598f} 
+\index{BigNum@{BigNum}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Multiplication operator for multiplying two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the product. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a4c49a9c801145e21f43c72696dcebd9e}\label{classBigNum_a4c49a9c801145e21f43c72696dcebd9e} 
+\index{BigNum@{BigNum}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Multiplication operator for multiplying a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the product. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a6ca90c6ab9541a86bacdaf9ba63eb585}\label{classBigNum_a6ca90c6ab9541a86bacdaf9ba63eb585} 
+\index{BigNum@{BigNum}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Multiplication and assignment operator for multiplying this \doxylink{classBigNum}{Big\+Num} with another \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after multiplication. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a9364136466a82ac382a07f2555002fa6}\label{classBigNum_a9364136466a82ac382a07f2555002fa6} 
+\index{BigNum@{BigNum}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption})}
+
+
+
+Multiplication and assignment operator for multiplying this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after multiplication. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_ab131a96ed84f288c0e93a0beaa46563b}\label{classBigNum_ab131a96ed84f288c0e93a0beaa46563b} 
+\index{BigNum@{BigNum}!operator+@{operator+}}
+\index{operator+@{operator+}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Addition operator for adding two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the sum. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a91a5f35c4e3717f4df68f30b0f7fa6e4}\label{classBigNum_a91a5f35c4e3717f4df68f30b0f7fa6e4} 
+\index{BigNum@{BigNum}!operator+@{operator+}}
+\index{operator+@{operator+}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator+ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Addition operator for adding a \doxylink{classBigNum}{Big\+Num} and a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the sum. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_ae94623f096de8dff3d02449468bf3ba8}\label{classBigNum_ae94623f096de8dff3d02449468bf3ba8} 
+\index{BigNum@{BigNum}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Addition and assignment operator for adding another \doxylink{classBigNum}{Big\+Num} to this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after addition. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a68f504a2cd755a43cc0f078fb20ad3db}\label{classBigNum_a68f504a2cd755a43cc0f078fb20ad3db} 
+\index{BigNum@{BigNum}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator+= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption})}
+
+
+
+Addition and assignment operator for adding a 32-\/bit unsigned integer to this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after addition. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a002e13300d4b1bb0a71b6098408927c4}\label{classBigNum_a002e13300d4b1bb0a71b6098408927c4} 
+\index{BigNum@{BigNum}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator-\/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Subtraction operator for subtracting another \doxylink{classBigNum}{Big\+Num} from this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the difference. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_ac73c650b4363411710a5aab2e3b24942}\label{classBigNum_ac73c650b4363411710a5aab2e3b24942} 
+\index{BigNum@{BigNum}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator-\/ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Subtraction operator for subtracting a 32-\/bit unsigned integer from this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the difference. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_aa05aa59f9c69417a9b729c4d131f7c22}\label{classBigNum_aa05aa59f9c69417a9b729c4d131f7c22} 
+\index{BigNum@{BigNum}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Subtraction and assignment operator for subtracting another \doxylink{classBigNum}{Big\+Num} from this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after subtraction. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a2c58880aa3d689065774e64440016463}\label{classBigNum_a2c58880aa3d689065774e64440016463} 
+\index{BigNum@{BigNum}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator-\/= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption})}
+
+
+
+Subtraction and assignment operator for subtracting a 32-\/bit unsigned integer from this \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after subtraction. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a12e3ee888de55608bc2d054a7ffbf0f7}\label{classBigNum_a12e3ee888de55608bc2d054a7ffbf0f7} 
+\index{BigNum@{BigNum}!operator/@{operator/}}
+\index{operator/@{operator/}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Division operator for dividing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the quotient. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_aca2a103a25a8455a2b3694c40c92bb06}\label{classBigNum_aca2a103a25a8455a2b3694c40c92bb06} 
+\index{BigNum@{BigNum}!operator/@{operator/}}
+\index{operator/@{operator/}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator/ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Division operator for dividing a \doxylink{classBigNum}{Big\+Num} by a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the quotient. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a76b36fe2213d0c990085b0d9e517d5af}\label{classBigNum_a76b36fe2213d0c990085b0d9e517d5af} 
+\index{BigNum@{BigNum}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Division and assignment operator for dividing this \doxylink{classBigNum}{Big\+Num} by another \doxylink{classBigNum}{Big\+Num}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after division. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a589eb5a56caf58b212ca4c387b02f638}\label{classBigNum_a589eb5a56caf58b212ca4c387b02f638} 
+\index{BigNum@{BigNum}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator/= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption})}
+
+
+
+Division and assignment operator for dividing this \doxylink{classBigNum}{Big\+Num} by a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current \doxylink{classBigNum}{Big\+Num} object after division. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a6659dea1c02c10c4ebf805f1b9d121bf}\label{classBigNum_a6659dea1c02c10c4ebf805f1b9d121bf} 
+\index{BigNum@{BigNum}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$<$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Less-\/than operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is smaller than the other, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_abbf28723158cf09414085622d8c74663}\label{classBigNum_abbf28723158cf09414085622d8c74663} 
+\index{BigNum@{BigNum}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator$<$$<$ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{shift }\end{DoxyParamCaption}) const}
+
+
+
+Left shift operator for shifting the \doxylink{classBigNum}{Big\+Num} by a certain number of bits to the left. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shift} & The number of bits to shift. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the result of the shift. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_ae32b9e297c0f955c6f1687368f8d8d38}\label{classBigNum_ae32b9e297c0f955c6f1687368f8d8d38} 
+\index{BigNum@{BigNum}!operator$<$=@{operator$<$=}}
+\index{operator$<$=@{operator$<$=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$<$=()}{operator<=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Less-\/than-\/or-\/equal-\/to operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is less than or equal to the other, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a29adf00eb8d666823e193e0ba39f5230}\label{classBigNum_a29adf00eb8d666823e193e0ba39f5230} 
+\index{BigNum@{BigNum}!operator$<$=@{operator$<$=}}
+\index{operator$<$=@{operator$<$=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$<$=()}{operator<=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$<$= (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Less-\/than-\/or-\/equal-\/to operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is less than or equal to the integer, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_af05837d15465eeb513e9722baf2c4ab4}\label{classBigNum_af05837d15465eeb513e9722baf2c4ab4} 
+\index{BigNum@{BigNum}!operator==@{operator==}}
+\index{operator==@{operator==}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Equality operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if both Big\+Nums are equal, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a9db3541fe331f3bb9b79a4662d7a4dae}\label{classBigNum_a9db3541fe331f3bb9b79a4662d7a4dae} 
+\index{BigNum@{BigNum}!operator==@{operator==}}
+\index{operator==@{operator==}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator== (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Equality operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is equal to the integer, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a21799bce3ded6ba19dab389855dc65c9}\label{classBigNum_a21799bce3ded6ba19dab389855dc65c9} 
+\index{BigNum@{BigNum}!operator$>$@{operator$>$}}
+\index{operator$>$@{operator$>$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$>$()}{operator>()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$>$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Greater-\/than operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is greater than the other, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a2adb3b3a39c3e9ab1165f46ecbc0ec8b}\label{classBigNum_a2adb3b3a39c3e9ab1165f46ecbc0ec8b} 
+\index{BigNum@{BigNum}!operator$>$@{operator$>$}}
+\index{operator$>$@{operator$>$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$>$()}{operator>()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$>$ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Greater-\/than operator for comparing this \doxylink{classBigNum}{Big\+Num} with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is greater than the integer, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a9832208c4fa27110e6b851e6934bab35}\label{classBigNum_a9832208c4fa27110e6b851e6934bab35} 
+\index{BigNum@{BigNum}!operator$>$=@{operator$>$=}}
+\index{operator$>$=@{operator$>$=}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$>$=()}{operator>=()}}
+{\footnotesize\ttfamily bool Big\+Num\+::operator$>$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Greater-\/than-\/or-\/equal-\/to operator for comparing two \doxylink{classBigNum}{Big\+Num} objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \doxylink{classBigNum}{Big\+Num} object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this \doxylink{classBigNum}{Big\+Num} is greater than or equal to the other, otherwise false. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_aa84f2a29dbd6fa6551bb05be35b91f6b}\label{classBigNum_aa84f2a29dbd6fa6551bb05be35b91f6b} 
+\index{BigNum@{BigNum}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBigNum}{Big\+Num}} Big\+Num\+::operator$>$$>$ (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{shift }\end{DoxyParamCaption}) const}
+
+
+
+Right shift operator for shifting the \doxylink{classBigNum}{Big\+Num} by a certain number of bits to the right. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shift} & The number of bits to shift. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{classBigNum}{Big\+Num} representing the result of the shift. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_afdf16b5a94f20a0215405145ceae64b5}\label{classBigNum_afdf16b5a94f20a0215405145ceae64b5} 
+\index{BigNum@{BigNum}!operator\texttt{"|}@{operator\texttt{"|}}}
+\index{operator\texttt{"|}@{operator\texttt{"|}}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator\texttt{"|}()}{operator|()}}
+{\footnotesize\ttfamily int Big\+Num\+::operator\texorpdfstring{$\vert$}{|} (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{num }\end{DoxyParamCaption}) const}
+
+
+
+Bitwise OR operator for performing a bitwise OR operation with a 32-\/bit unsigned integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num} & The 32-\/bit unsigned integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The result of the bitwise OR operation. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a67bec0e21ff5889838f0da1158848772}\label{classBigNum_a67bec0e21ff5889838f0da1158848772} 
+\index{BigNum@{BigNum}!to\_ulong@{to\_ulong}}
+\index{to\_ulong@{to\_ulong}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{to\_ulong()}{to\_ulong()}}
+{\footnotesize\ttfamily uint64\+\_\+t Big\+Num\+::to\+\_\+ulong (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Converts the \doxylink{classBigNum}{Big\+Num} to a 64-\/bit unsigned integer. 
+
+\begin{DoxyReturn}{Returns}
+The 64-\/bit unsigned integer representing the \doxylink{classBigNum}{Big\+Num}. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a343868e820245fb03b70634242c8eccb}\label{classBigNum_a343868e820245fb03b70634242c8eccb} 
+\index{BigNum@{BigNum}!toChar@{toChar}}
+\index{toChar@{toChar}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{toChar()}{toChar()}}
+{\footnotesize\ttfamily uint64\+\_\+t Big\+Num\+::to\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Converts the \doxylink{classBigNum}{Big\+Num} to a character representation. 
+
+\begin{DoxyReturn}{Returns}
+The \doxylink{classBigNum}{Big\+Num} as a character. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a3ad43612e81d668be68c049d0b88790c}\label{classBigNum_a3ad43612e81d668be68c049d0b88790c} 
+\index{BigNum@{BigNum}!toString@{toString}}
+\index{toString@{toString}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{toString()}{toString()}}
+{\footnotesize\ttfamily std\+::string Big\+Num\+::to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Converts the \doxylink{classBigNum}{Big\+Num} to a string representation. 
+
+\begin{DoxyReturn}{Returns}
+A string representing the number. 
+\end{DoxyReturn}
+\Hypertarget{classBigNum_a4c6f35a44b0c7120bdcb194486028678}\label{classBigNum_a4c6f35a44b0c7120bdcb194486028678} 
+\index{BigNum@{BigNum}!toVectorChar@{toVectorChar}}
+\index{toVectorChar@{toVectorChar}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{toVectorChar()}{toVectorChar()}}
+{\footnotesize\ttfamily std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ Big\+Num\+::to\+Vector\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Converts the \doxylink{classBigNum}{Big\+Num} to a vector of 8-\/bit unsigned integers. 
+
+\begin{DoxyReturn}{Returns}
+A vector of bytes representing the number. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Friends And Related Symbol Documentation}
+\Hypertarget{classBigNum_a2d367ff6eee12a920980ac4023680017}\label{classBigNum_a2d367ff6eee12a920980ac4023680017} 
+\index{BigNum@{BigNum}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!BigNum@{BigNum}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const \mbox{\hyperlink{classBigNum}{Big\+Num}} \&}]{num }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Outputs the \doxylink{classBigNum}{Big\+Num} to an output stream (e.\+g., std\+::cout). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & The output stream. \\
+\hline
+{\em num} & The \doxylink{classBigNum}{Big\+Num} to be output. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The output stream with the \doxylink{classBigNum}{Big\+Num} written to it. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{BigNum_8h}{Big\+Num.\+h}}\end{DoxyCompactItemize}

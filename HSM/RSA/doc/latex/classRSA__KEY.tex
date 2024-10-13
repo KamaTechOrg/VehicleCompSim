@@ -1,0 +1,244 @@
+\doxysection{RSA\+\_\+\+KEY Class Reference}
+\hypertarget{classRSA__KEY}{}\label{classRSA__KEY}\index{RSA\_KEY@{RSA\_KEY}}
+
+
+Class providing RSA key generation and related cryptographic operations.  
+
+
+
+
+{\ttfamily \#include $<$RSA\+\_\+\+KEY.\+h$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static HSMns\+::\+HSM\+\_\+\+STATUS \mbox{\hyperlink{classRSA__KEY_a07a008a6cbdf8cede18754e8a55fb61f}{generate\+Keys}} (std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&public\+\_\+key, std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&private\+\_\+key, int bits=512)
+\begin{DoxyCompactList}\small\item\em Generates RSA public and private keys. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classRSA__KEY_ac1e6a52fe9c776c8bd358b7333f247e4}{generate\+\_\+keys}} (Big\+Num \&public\+Key, Big\+Num \&private\+Key, Big\+Num \&modulus, int bits=512)
+\begin{DoxyCompactList}\small\item\em Generates RSA public and private keys using Big\+Num. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classRSA__KEY_ac9ca97e44b50e3ef0c696c46ec94f58b}{is\+Prime}} (const Big\+Num \&n, int k)
+\begin{DoxyCompactList}\small\item\em Tests if a given number is prime using the Miller-\/\+Rabin primality test. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__KEY_a1bb9fd810400108a0dcdbc58fc5b6f49}{power}} (const Big\+Num \&x, const Big\+Num \&y, const Big\+Num \&p)
+\begin{DoxyCompactList}\small\item\em Performs modular exponentiation. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classRSA__KEY_a60cceb3c66659bc3ae7f012d601017b9}{miller\+Test}} (const Big\+Num \&d, const Big\+Num \&n)
+\begin{DoxyCompactList}\small\item\em Performs a single iteration of the Miller-\/\+Rabin primality test. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__KEY_a2a85b9f80a9db72a8c2ac7000fa3f3e1}{generate\+Random\+Number}} (int bits)
+\begin{DoxyCompactList}\small\item\em Generates a random Big\+Num with the specified number of bits. \end{DoxyCompactList}\item 
+static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classRSA__KEY_acfe6ddc9eeeab45f8f29d3c1f54ad6b8}{generate\+Random\+Bits}} (size\+\_\+t length)
+\begin{DoxyCompactList}\small\item\em Generates a random sequence of bits. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__KEY_abb064b687c76207227bef5556c29996f}{generate\+Large\+Prime}} (int bits)
+\begin{DoxyCompactList}\small\item\em Generates a large prime number with the specified number of bits. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__KEY_ab7424591042c7f50632f221bf8c35033}{gcd}} (Big\+Num a, Big\+Num b)
+\begin{DoxyCompactList}\small\item\em Computes the greatest common divisor (GCD) of two Big\+Nums. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__KEY_ab5649175659930587df8d6e49c240372}{mod\+Inverse}} (Big\+Num a, Big\+Num m)
+\begin{DoxyCompactList}\small\item\em Computes the modular inverse of a number. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class providing RSA key generation and related cryptographic operations. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classRSA__KEY_ab7424591042c7f50632f221bf8c35033}\label{classRSA__KEY_ab7424591042c7f50632f221bf8c35033} 
+\index{RSA\_KEY@{RSA\_KEY}!gcd@{gcd}}
+\index{gcd@{gcd}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{gcd()}{gcd()}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+KEY\+::gcd (\begin{DoxyParamCaption}\item[{Big\+Num}]{a,  }\item[{Big\+Num}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Computes the greatest common divisor (GCD) of two Big\+Nums. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em a} & The first number. \\
+\hline
+\mbox{\texttt{ in}}  & {\em b} & The second number. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The GCD of a and b. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_ac1e6a52fe9c776c8bd358b7333f247e4}\label{classRSA__KEY_ac1e6a52fe9c776c8bd358b7333f247e4} 
+\index{RSA\_KEY@{RSA\_KEY}!generate\_keys@{generate\_keys}}
+\index{generate\_keys@{generate\_keys}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{generate\_keys()}{generate\_keys()}}
+{\footnotesize\ttfamily static void RSA\+\_\+\+KEY\+::generate\+\_\+keys (\begin{DoxyParamCaption}\item[{Big\+Num \&}]{public\+Key,  }\item[{Big\+Num \&}]{private\+Key,  }\item[{Big\+Num \&}]{modulus,  }\item[{int}]{bits = {\ttfamily 512} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates RSA public and private keys using Big\+Num. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em public\+Key} & The generated public key as a Big\+Num. \\
+\hline
+\mbox{\texttt{ out}}  & {\em private\+Key} & The generated private key as a Big\+Num. \\
+\hline
+\mbox{\texttt{ out}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\mbox{\texttt{ in}}  & {\em bits} & The size of the keys in bits. Default is 512. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classRSA__KEY_a07a008a6cbdf8cede18754e8a55fb61f}\label{classRSA__KEY_a07a008a6cbdf8cede18754e8a55fb61f} 
+\index{RSA\_KEY@{RSA\_KEY}!generateKeys@{generateKeys}}
+\index{generateKeys@{generateKeys}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{generateKeys()}{generateKeys()}}
+{\footnotesize\ttfamily static HSMns\+::\+HSM\+\_\+\+STATUS RSA\+\_\+\+KEY\+::generate\+Keys (\begin{DoxyParamCaption}\item[{std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{public\+\_\+key,  }\item[{std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{private\+\_\+key,  }\item[{int}]{bits = {\ttfamily 512} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates RSA public and private keys. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em public\+\_\+key} & The generated public key as a vector of bytes. \\
+\hline
+\mbox{\texttt{ out}}  & {\em private\+\_\+key} & The generated private key as a vector of bytes. \\
+\hline
+\mbox{\texttt{ in}}  & {\em bits} & The size of the keys in bits. Default is 512. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSMns\+::\+HSM\+\_\+\+STATUS indicating the success or failure of the key generation. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_abb064b687c76207227bef5556c29996f}\label{classRSA__KEY_abb064b687c76207227bef5556c29996f} 
+\index{RSA\_KEY@{RSA\_KEY}!generateLargePrime@{generateLargePrime}}
+\index{generateLargePrime@{generateLargePrime}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{generateLargePrime()}{generateLargePrime()}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+KEY\+::generate\+Large\+Prime (\begin{DoxyParamCaption}\item[{int}]{bits }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a large prime number with the specified number of bits. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em bits} & The size of the prime number in bits. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A prime Big\+Num of the specified size. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_acfe6ddc9eeeab45f8f29d3c1f54ad6b8}\label{classRSA__KEY_acfe6ddc9eeeab45f8f29d3c1f54ad6b8} 
+\index{RSA\_KEY@{RSA\_KEY}!generateRandomBits@{generateRandomBits}}
+\index{generateRandomBits@{generateRandomBits}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{generateRandomBits()}{generateRandomBits()}}
+{\footnotesize\ttfamily static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ RSA\+\_\+\+KEY\+::generate\+Random\+Bits (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a random sequence of bits. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em length} & The length of the sequence in bytes. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector of random bytes. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_a2a85b9f80a9db72a8c2ac7000fa3f3e1}\label{classRSA__KEY_a2a85b9f80a9db72a8c2ac7000fa3f3e1} 
+\index{RSA\_KEY@{RSA\_KEY}!generateRandomNumber@{generateRandomNumber}}
+\index{generateRandomNumber@{generateRandomNumber}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{generateRandomNumber()}{generateRandomNumber()}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+KEY\+::generate\+Random\+Number (\begin{DoxyParamCaption}\item[{int}]{bits }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a random Big\+Num with the specified number of bits. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em bits} & The number of bits for the random number. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A random Big\+Num of the specified size. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_ac9ca97e44b50e3ef0c696c46ec94f58b}\label{classRSA__KEY_ac9ca97e44b50e3ef0c696c46ec94f58b} 
+\index{RSA\_KEY@{RSA\_KEY}!isPrime@{isPrime}}
+\index{isPrime@{isPrime}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{isPrime()}{isPrime()}}
+{\footnotesize\ttfamily static bool RSA\+\_\+\+KEY\+::is\+Prime (\begin{DoxyParamCaption}\item[{const Big\+Num \&}]{n,  }\item[{int}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Tests if a given number is prime using the Miller-\/\+Rabin primality test. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em n} & The number to test for primality. \\
+\hline
+\mbox{\texttt{ in}}  & {\em k} & The number of iterations for the test. Higher values of k increase accuracy. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the number is prime, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_a60cceb3c66659bc3ae7f012d601017b9}\label{classRSA__KEY_a60cceb3c66659bc3ae7f012d601017b9} 
+\index{RSA\_KEY@{RSA\_KEY}!millerTest@{millerTest}}
+\index{millerTest@{millerTest}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{millerTest()}{millerTest()}}
+{\footnotesize\ttfamily static bool RSA\+\_\+\+KEY\+::miller\+Test (\begin{DoxyParamCaption}\item[{const Big\+Num \&}]{d,  }\item[{const Big\+Num \&}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Performs a single iteration of the Miller-\/\+Rabin primality test. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em d} & A value computed as n-\/1 divided by a power of 2. \\
+\hline
+\mbox{\texttt{ in}}  & {\em n} & The number to test for primality. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if n passes this iteration of the test, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_ab5649175659930587df8d6e49c240372}\label{classRSA__KEY_ab5649175659930587df8d6e49c240372} 
+\index{RSA\_KEY@{RSA\_KEY}!modInverse@{modInverse}}
+\index{modInverse@{modInverse}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{modInverse()}{modInverse()}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+KEY\+::mod\+Inverse (\begin{DoxyParamCaption}\item[{Big\+Num}]{a,  }\item[{Big\+Num}]{m }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Computes the modular inverse of a number. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em a} & The number to find the modular inverse of. \\
+\hline
+\mbox{\texttt{ in}}  & {\em m} & The modulus. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The modular inverse of a modulo m. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__KEY_a1bb9fd810400108a0dcdbc58fc5b6f49}\label{classRSA__KEY_a1bb9fd810400108a0dcdbc58fc5b6f49} 
+\index{RSA\_KEY@{RSA\_KEY}!power@{power}}
+\index{power@{power}!RSA\_KEY@{RSA\_KEY}}
+\doxysubsubsection{\texorpdfstring{power()}{power()}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+KEY\+::power (\begin{DoxyParamCaption}\item[{const Big\+Num \&}]{x,  }\item[{const Big\+Num \&}]{y,  }\item[{const Big\+Num \&}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Performs modular exponentiation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em x} & The base. \\
+\hline
+\mbox{\texttt{ in}}  & {\em y} & The exponent. \\
+\hline
+\mbox{\texttt{ in}}  & {\em p} & The modulus. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The result of (x\texorpdfstring{$^\wedge$}{\string^}y) \% p. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{RSA__KEY_8h}{RSA\+\_\+\+KEY.\+h}}\end{DoxyCompactItemize}

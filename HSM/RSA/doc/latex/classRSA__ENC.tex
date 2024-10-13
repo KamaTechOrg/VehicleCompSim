@@ -1,0 +1,213 @@
+\doxysection{RSA\+\_\+\+ENC Class Reference}
+\hypertarget{classRSA__ENC}{}\label{classRSA__ENC}\index{RSA\_ENC@{RSA\_ENC}}
+
+
+Class providing encryption and decryption using the RSA algorithm.  
+
+
+
+
+{\ttfamily \#include $<$RSA\+\_\+\+ENC.\+h$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Big\+Num \mbox{\hyperlink{classRSA__ENC_a9437f60f0fda00388c0829c21a3308f4}{encrypt}} (const Big\+Num \&message, const Big\+Num \&public\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Encrypts a message using the RSA algorithm. \end{DoxyCompactList}\item 
+static Big\+Num \mbox{\hyperlink{classRSA__ENC_ae94070320b7fc8ef1cc0b1ca3c3697b2}{decrypt}} (const Big\+Num \&message, const Big\+Num \&private\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Decrypts a message using the RSA algorithm. \end{DoxyCompactList}\item 
+static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classRSA__ENC_ab3ad22969e47b990bd932bbae1935482}{encrypt}} (const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&message, const Big\+Num \&public\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Encrypts a message using RSA with a byte vector input. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classRSA__ENC_afeff8a3bc1b49b413ba78a97f85c63f8}{encrypt}} (const std\+::string \&message, const Big\+Num \&public\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Encrypts a message using RSA with a string input. \end{DoxyCompactList}\item 
+static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classRSA__ENC_a0a9fe2416f888b35ee1b7097058e74c4}{encrypt}} (const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&message, const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&key)
+\begin{DoxyCompactList}\small\item\em Encrypts a message using a byte vector and a key. \end{DoxyCompactList}\item 
+static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classRSA__ENC_a16dd60a2d41e12637612a4cde74c64af}{decrypt}} (const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&encrypted\+\_\+message, const Big\+Num \&private\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Decrypts a message using RSA with a byte vector input. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classRSA__ENC_a314f637615424f6c18198dcc33903f66}{decrypt}} (const std\+::string \&encrypted\+\_\+message, const Big\+Num \&private\+Key, const Big\+Num \&modulus)
+\begin{DoxyCompactList}\small\item\em Decrypts a message using RSA with a string input. \end{DoxyCompactList}\item 
+static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \mbox{\hyperlink{classRSA__ENC_a10a1f0bbc22145616ee88cfbc7c1f9b4}{decrypt}} (const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&encrypted\+\_\+message, const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&key)
+\begin{DoxyCompactList}\small\item\em Decrypts a message using a byte vector and a key. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class providing encryption and decryption using the RSA algorithm. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classRSA__ENC_ae94070320b7fc8ef1cc0b1ca3c3697b2}\label{classRSA__ENC_ae94070320b7fc8ef1cc0b1ca3c3697b2} 
+\index{RSA\_ENC@{RSA\_ENC}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+ENC\+::decrypt (\begin{DoxyParamCaption}\item[{const Big\+Num \&}]{message,  }\item[{const Big\+Num \&}]{private\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decrypts a message using the RSA algorithm. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em message} & The encrypted message as a Big\+Num. \\
+\hline
+\mbox{\texttt{ in}}  & {\em private\+Key} & The private key for decryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The decrypted message as a Big\+Num. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_a314f637615424f6c18198dcc33903f66}\label{classRSA__ENC_a314f637615424f6c18198dcc33903f66} 
+\index{RSA\_ENC@{RSA\_ENC}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily static std\+::string RSA\+\_\+\+ENC\+::decrypt (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{encrypted\+\_\+message,  }\item[{const Big\+Num \&}]{private\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decrypts a message using RSA with a string input. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em encrypted\+\_\+message} & The encrypted message as a string. \\
+\hline
+\mbox{\texttt{ in}}  & {\em private\+Key} & The private key for decryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The decrypted message as a string. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_a16dd60a2d41e12637612a4cde74c64af}\label{classRSA__ENC_a16dd60a2d41e12637612a4cde74c64af} 
+\index{RSA\_ENC@{RSA\_ENC}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ RSA\+\_\+\+ENC\+::decrypt (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{encrypted\+\_\+message,  }\item[{const Big\+Num \&}]{private\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decrypts a message using RSA with a byte vector input. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em encrypted\+\_\+message} & The encrypted message as a vector of bytes. \\
+\hline
+\mbox{\texttt{ in}}  & {\em private\+Key} & The private key for decryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The decrypted message as a vector of bytes. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_a10a1f0bbc22145616ee88cfbc7c1f9b4}\label{classRSA__ENC_a10a1f0bbc22145616ee88cfbc7c1f9b4} 
+\index{RSA\_ENC@{RSA\_ENC}!decrypt@{decrypt}}
+\index{decrypt@{decrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{decrypt()}{decrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ RSA\+\_\+\+ENC\+::decrypt (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{encrypted\+\_\+message,  }\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decrypts a message using a byte vector and a key. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em encrypted\+\_\+message} & The encrypted message as a vector of bytes. \\
+\hline
+\mbox{\texttt{ in}}  & {\em key} & The key used for decryption as a vector of bytes. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The decrypted message as a vector of bytes. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_a9437f60f0fda00388c0829c21a3308f4}\label{classRSA__ENC_a9437f60f0fda00388c0829c21a3308f4} 
+\index{RSA\_ENC@{RSA\_ENC}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily static Big\+Num RSA\+\_\+\+ENC\+::encrypt (\begin{DoxyParamCaption}\item[{const Big\+Num \&}]{message,  }\item[{const Big\+Num \&}]{public\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Encrypts a message using the RSA algorithm. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em message} & The message to be encrypted as a Big\+Num. \\
+\hline
+\mbox{\texttt{ in}}  & {\em public\+Key} & The public key for encryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The encrypted message as a Big\+Num. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_afeff8a3bc1b49b413ba78a97f85c63f8}\label{classRSA__ENC_afeff8a3bc1b49b413ba78a97f85c63f8} 
+\index{RSA\_ENC@{RSA\_ENC}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily static std\+::string RSA\+\_\+\+ENC\+::encrypt (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message,  }\item[{const Big\+Num \&}]{public\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Encrypts a message using RSA with a string input. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em message} & The message to be encrypted as a string. \\
+\hline
+\mbox{\texttt{ in}}  & {\em public\+Key} & The public key for encryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The encrypted message as a string. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_ab3ad22969e47b990bd932bbae1935482}\label{classRSA__ENC_ab3ad22969e47b990bd932bbae1935482} 
+\index{RSA\_ENC@{RSA\_ENC}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ RSA\+\_\+\+ENC\+::encrypt (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{message,  }\item[{const Big\+Num \&}]{public\+Key,  }\item[{const Big\+Num \&}]{modulus }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Encrypts a message using RSA with a byte vector input. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em message} & The message to be encrypted as a vector of bytes. \\
+\hline
+\mbox{\texttt{ in}}  & {\em public\+Key} & The public key for encryption. \\
+\hline
+\mbox{\texttt{ in}}  & {\em modulus} & The modulus used in the RSA algorithm. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The encrypted message as a vector of bytes. 
+\end{DoxyReturn}
+\Hypertarget{classRSA__ENC_a0a9fe2416f888b35ee1b7097058e74c4}\label{classRSA__ENC_a0a9fe2416f888b35ee1b7097058e74c4} 
+\index{RSA\_ENC@{RSA\_ENC}!encrypt@{encrypt}}
+\index{encrypt@{encrypt}!RSA\_ENC@{RSA\_ENC}}
+\doxysubsubsection{\texorpdfstring{encrypt()}{encrypt()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ RSA\+\_\+\+ENC\+::encrypt (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{message,  }\item[{const std\+::vector$<$ u\+\_\+int8\+\_\+t $>$ \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Encrypts a message using a byte vector and a key. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em message} & The message to be encrypted as a vector of bytes. \\
+\hline
+\mbox{\texttt{ in}}  & {\em key} & The key used for encryption as a vector of bytes. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The encrypted message as a vector of bytes. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{RSA__ENC_8h}{RSA\+\_\+\+ENC.\+h}}\end{DoxyCompactItemize}

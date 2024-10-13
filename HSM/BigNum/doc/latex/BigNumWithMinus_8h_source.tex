@@ -1,0 +1,93 @@
+\doxysection{Big\+Num\+With\+Minus.\+h}
+\hypertarget{BigNumWithMinus_8h_source}{}\label{BigNumWithMinus_8h_source}\index{include/BigNumWithMinus.h@{include/BigNumWithMinus.h}}
+\mbox{\hyperlink{BigNumWithMinus_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{BigNum_8h}{BigNum.h}}"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <bits/stdc++.h>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classBigNum}{BigNum}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{comment}{//\ BigNumWithMinus\ inherits\ from\ BigNum.\ BigNumWithMinus\ is\ fixed\ to\ max\ size.}}
+\DoxyCodeLine{00017\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a7735a3368b5e0c16a6114a31212195ca}{BigNumWithMinus}}()\ :\ \mbox{\hyperlink{classBigNum}{BigNum}}(\mbox{\hyperlink{classBigNum_ae618d0488754255258311c81ec2b788b}{MAX\_SIZE}}\ *\ \mbox{\hyperlink{classBigNum_a8f729c3eec29e478cda702574beb4d5f}{UINT\_T\_SIZE}})\ \{\}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00028\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a4a8823081bbb82247cf1750905e381f6}{BigNumWithMinus}}(std::string\ num);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_aa9df1dd9cf7def1cb9de94bc379f893c}{BigNumWithMinus}}(std::vector<u\_int8\_t>\ num);}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a06fdd332d2a259d84cc2a1e02d0ca14c}{BigNumWithMinus}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNum}{BigNum}}\ \&other)\ :\ \mbox{\hyperlink{classBigNum}{BigNum}}(\mbox{\hyperlink{classBigNum_ae618d0488754255258311c81ec2b788b}{MAX\_SIZE}}\ *\ \mbox{\hyperlink{classBigNum_a8f729c3eec29e478cda702574beb4d5f}{UINT\_T\_SIZE}})}
+\DoxyCodeLine{00042\ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ other.\mbox{\hyperlink{classBigNum_a5c1eae2e5a426fa9a38005713907c2a0}{size}};\ ++i)}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classBigNum_a525539c0d105b8559746c7111b78ae0f}{data}}[i]\ =\ other.\mbox{\hyperlink{classBigNum_a525539c0d105b8559746c7111b78ae0f}{data}}[i];}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a9fc0a44078fcf49d2cbca47c24af6cdb}{BigNumWithMinus}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ :\ \mbox{\hyperlink{classBigNum}{BigNum}}(\mbox{\hyperlink{classBigNum_ae618d0488754255258311c81ec2b788b}{MAX\_SIZE}}\ *\ \mbox{\hyperlink{classBigNum_a8f729c3eec29e478cda702574beb4d5f}{UINT\_T\_SIZE}})}
+\DoxyCodeLine{00054\ \ \ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ other.\mbox{\hyperlink{classBigNum_a5c1eae2e5a426fa9a38005713907c2a0}{size}};\ ++i)}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classBigNum_a525539c0d105b8559746c7111b78ae0f}{data}}[i]\ =\ other.\mbox{\hyperlink{classBigNum_a525539c0d105b8559746c7111b78ae0f}{data}}[i];}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a6cfc2af7d3759b8746742869e03af0da}{BigNumWithMinus}}(\textcolor{keywordtype}{int}\ bit\_size)\ :\ \mbox{\hyperlink{classBigNum}{BigNum}}(\mbox{\hyperlink{classBigNum_ae618d0488754255258311c81ec2b788b}{MAX\_SIZE}}\ *\ \mbox{\hyperlink{classBigNum_a8f729c3eec29e478cda702574beb4d5f}{UINT\_T\_SIZE}})\ \{\}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus_a138c9adad371ac58e520c8629970ffd8}{BigNumWithMinus}}(uint32\_t\ num,\ \textcolor{keywordtype}{int}\ bit\_size)\ :\ \mbox{\hyperlink{classBigNum}{BigNum}}(num,\ \mbox{\hyperlink{classBigNum_ae618d0488754255258311c81ec2b788b}{MAX\_SIZE}}\ *\ \mbox{\hyperlink{classBigNum_a8f729c3eec29e478cda702574beb4d5f}{UINT\_T\_SIZE}})\ \{\}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBigNumWithMinus_ad6fd5abd4435a0665657654796724cbe}{setToMinus}}();}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBigNumWithMinus_a6a424a5a0ea0ac2cc4c961246c543b68}{setToPlus}}();}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Comparison\ Operators}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_a180303956566a3bdd5b48983e7377035}{operator<}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_ad4c8503984c9a484c5e103d95e87411a}{operator<}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_a50909ee0ede61db0710b2d57668fa4d4}{operator>}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_acf4d93abf9a10ad495a43e712211f239}{operator>}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_a86d90a4827f28f6a39b56a6df79a12a9}{operator<=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_acceac3d71d9abbd7cd87e80b82119339}{operator<=}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_a2572af5fc10cfb946d16509650c21776}{operator>=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_a0b31c84666132ed3c53923dfa1205d13}{operator>=}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{comment}{//\ Arithmetic\ Operators}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00150\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_a76c14b615804014dca112021f651807c}{operator-\/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00157\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&\mbox{\hyperlink{classBigNumWithMinus_a384f33652d7c888496ff40e23073cbd4}{operator-\/=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other);}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00164\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_a8df38aa1526d8696cf525f71531e515b}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00171\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&\mbox{\hyperlink{classBigNumWithMinus_a8e0cc58feeda7a023dcc32f2aa1626e3}{operator*=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other);}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00178\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_a3f75c339b1e7eaed8d9634014bedacc5}{operator/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00185\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_adc5dddb003c075501940f3ee61d77b10}{operator/}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00192\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&\mbox{\hyperlink{classBigNumWithMinus_a83f37b9f98fe531d1fd0f5a3d81d180e}{operator/=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other);}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00199\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_a97b4943072fac36d8ef362b6865b10ce}{operator\%}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \&other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00206\ \ \ \ \ \mbox{\hyperlink{classBigNumWithMinus}{BigNumWithMinus}}\ \mbox{\hyperlink{classBigNumWithMinus_a5af5f31d578f495cfab3c7d7a5461122}{operator\%}}(uint32\_t\ num)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{comment}{//\ Utility\ Functions}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classBigNumWithMinus_ac9cbbaf1d3365ca8df450ba90eca913e}{isMinus}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBigNumWithMinus_aa2ac18f88fd1892f198bd8f2948aa86b}{print}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00225\ \ \ \ \ std::string\ \mbox{\hyperlink{classBigNumWithMinus_a4d37dba7f8948a8a8d3e5ba3a95e3d86}{toString}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00231\ \ \ \ \ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classBigNumWithMinus_ab5126a12d9dac49f68ac1325dcb4170a}{toVectorChar}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00232\ \};}
+
+\end{DoxyCode}

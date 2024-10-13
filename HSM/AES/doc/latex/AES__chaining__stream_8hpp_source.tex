@@ -1,0 +1,41 @@
+\doxysection{AES\+\_\+chaining\+\_\+stream.\+hpp}
+\hypertarget{AES__chaining__stream_8hpp_source}{}\label{AES__chaining__stream_8hpp_source}\index{include/AES\_chaining\_stream.hpp@{include/AES\_chaining\_stream.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}AES\_block\_encrypt.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sycl/sycl.hpp>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }aes\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classaes_1_1AES__ChainingStream}{AES\_ChainingStream}}\ \{}
+\DoxyCodeLine{00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_a34605ae5e99c18eb358a37cc7cec4600}{encrypt\_ecb}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ message);}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_a21aa0d36e74c23909b6f1fc25abf34e8}{decrypt\_ecb}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ encrypted\_message);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_a34605ae5e99c18eb358a37cc7cec4600}{encrypt\_ecb}}(sycl::queue\&\ q,\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ message);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_a21aa0d36e74c23909b6f1fc25abf34e8}{decrypt\_ecb}}(sycl::queue\&\ q,\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ encrypted\_message);}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_acc3de59038c3b75b97c4b55b7aaed3a0}{encrypt\_cbc}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::array<uint8\_t,\ 16>\ \textcolor{keyword}{const}\&\ iv,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ message);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_acce0c302621d67ab6dd9080f8643bea2}{decrypt\_cbc}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::array<uint8\_t,\ 16>\ \textcolor{keyword}{const}\&\ iv,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ encrypted\_message);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_aec049a944edab3d784dc1ddc4573a0cb}{encrypt\_ctr}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::array<uint8\_t,\ 8>\ \textcolor{keyword}{const}\&\ iv,\ std::array<uint8\_t,\ 4>\ \textcolor{keyword}{const}\&\ nonce,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ message);}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<uint8\_t>\ \mbox{\hyperlink{classaes_1_1AES__ChainingStream_aec049a944edab3d784dc1ddc4573a0cb}{encrypt\_ctr}}(sycl::queue\&\ q,\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \textcolor{keyword}{const}\&\ aes,\ std::array<uint8\_t,\ 8>\ \textcolor{keyword}{const}\&\ iv,\ std::array<uint8\_t,\ 4>\ \textcolor{keyword}{const}\&\ nonce,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\&\ message);}
+\DoxyCodeLine{00105\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \}\ \textcolor{comment}{//\ namespace\ aes}}
+
+\end{DoxyCode}

@@ -1,0 +1,27 @@
+\doxysection{AES\+\_\+\+API.\+hpp}
+\hypertarget{AES__API_8hpp_source}{}\label{AES__API_8hpp_source}\index{include/AES\_API.hpp@{include/AES\_API.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}../../HSM\_Enums/HSMEnums.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}HSM.h"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{namespace\ }HSMns}
+\DoxyCodeLine{00009\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classHSMns_1_1AES}{AES}}}
+\DoxyCodeLine{00015\ \ \ \ \ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ HSM\_STATUS\ \mbox{\hyperlink{classHSMns_1_1AES_a4aadd62fff55841fa2380f560179945d}{encrypt}}(std::vector<uint8\_t>\ \textcolor{keyword}{const}\ \&clrMsg,\ std::vector<uint8\_t>\ \&encMsg,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\ \&key,\ ENCRYPTION\_ALGORITHM\_TYPE\ \textcolor{keyword}{const}\ \&type);}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ HSM\_STATUS\ \mbox{\hyperlink{classHSMns_1_1AES_a155ecb76b69e00f3a7f487feb95640bb}{decrypt}}(std::vector<uint8\_t>\ \textcolor{keyword}{const}\ \&encMsg,\ std::vector<uint8\_t>\ \&clrMsg,\ std::vector<uint8\_t>\ \textcolor{keyword}{const}\ \&key,\ \ ENCRYPTION\_ALGORITHM\_TYPE\ \textcolor{keyword}{const}\ \&type);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ HSM\_STATUS\ \mbox{\hyperlink{classHSMns_1_1AES_a525fccbd44c8ea5be2e4bf2e67688652}{generateKey}}(std::vector<uint8\_t>\ \&generated\_key,\ ENCRYPTION\_ALGORITHM\_TYPE\ \textcolor{keyword}{const}\ \&type);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ HSM\_STATUS\ \mbox{\hyperlink{classHSMns_1_1AES_afe15f186d44d5d5fd8f6da14fb61335a}{generateAndPrintKey}}(std::vector<uint8\_t>\ \&generated\_key,\ ENCRYPTION\_ALGORITHM\_TYPE\ \textcolor{keyword}{const}\ \&type);}
+\DoxyCodeLine{00060\ \ \ \ \ \};}
+\DoxyCodeLine{00061\ \}}
+
+\end{DoxyCode}
