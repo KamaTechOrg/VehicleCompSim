@@ -83,15 +83,20 @@ void saveAndLoad::bson_to_sensor(const bson_t *bsonDocument) {
     m_globalState->currentProject()->addModel(sensorModel);
 }
 
-void saveAndLoad::loadLayout() {
+void saveAndLoad::loadLayout(const QString &dirPath) {
+    QString path;
+    if(!dirPath.isEmpty()){
+        path = dirPath;
+    }else{
+        path = QFileDialog::getOpenFileName(this, tr("Select BSON File"), QString(),
+                                                                tr("BSON Files (*.bson);;All Files (*)"));
+    }
     auto models = m_globalState->currentProject()->models();
     for (auto model : models) {
         m_globalState->currentProject()->removeModel(model);
     }
-    QString selectedFileName = QFileDialog::getOpenFileName(this, tr("Select BSON File"), QString(),
-                                                            tr("BSON Files (*.bson);;All Files (*)"));
-    if (!selectedFileName.isEmpty()) {
-        bson_reader_t* reader = bson_reader_new_from_file(selectedFileName.toUtf8().constData(), NULL);
+    if (!path.isEmpty()) {
+        bson_reader_t* reader = bson_reader_new_from_file(path.toUtf8().constData(), NULL);
         const bson_t* bsonDocument;
         while ((bsonDocument = bson_reader_read(reader, NULL))) {
             bson_iter_t iter;
@@ -149,11 +154,16 @@ bson_t* saveAndLoad::qemu_to_bson(QemuSensorModel* qemu){
     return base_BSON;
 }
 
-void saveAndLoad::SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
-    QString defaultFileName = "layout.bson";
-    QString selectedFileName = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
-    if (!selectedFileName.isEmpty()) {
-        QFile outputFile(selectedFileName);
+void saveAndLoad::SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector, const QString &dirPath) {
+    QString path;
+    if(!dirPath.isEmpty()){
+        path = dirPath;
+    }else{
+        QString defaultFileName = "layout.bson";
+        path = QFileDialog::getSaveFileName(nullptr, "Save BSON File", defaultFileName, "BSON Files (*.bson);;All Files (*)");
+    }
+    if (!path.isEmpty()) {
+        QFile outputFile(path);
         if (outputFile.open(QIODevice::WriteOnly)) {
             for(bson_t * bson_obj : bson_obj_vector) {
                 const uint8_t *bsonData = bson_get_data(bson_obj);
@@ -164,7 +174,7 @@ void saveAndLoad::SaveBsonToFile(std::vector<bson_t*> &bson_obj_vector) {
     }
 }
 
-void saveAndLoad::saveLayout() {
+void saveAndLoad::saveLayout(const QString &dirPath) {
     std::vector<bson_t*> base_BSON_vector;
     auto models = m_globalState->currentProject()->models();
     for (auto model: models) {
@@ -174,5 +184,5 @@ void saveAndLoad::saveLayout() {
             base_BSON_vector.push_back(sensor_to_bson(dynamic_cast<SensorModel *>(sensor)));
         }
     }
-    SaveBsonToFile(base_BSON_vector);
+    SaveBsonToFile(base_BSON_vector, dirPath);
 }

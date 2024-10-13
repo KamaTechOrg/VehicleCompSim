@@ -46,8 +46,8 @@ public:
 
 private:
     void background_Layout();
-    void saveLayout();
-    void loadLayout();
+    void saveLayout(const QString &dirPath = QString());
+    void loadLayout(const QString &dirPath = QString());
     void setupToolBar();
     void setupRunService();
     void setupView();

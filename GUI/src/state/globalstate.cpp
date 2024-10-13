@@ -98,11 +98,11 @@ void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
 void GlobalState::newParsedData(QList<QPair<QString, QString>> data){
     emit parsedData(data);
 }
-void GlobalState::saveData(){
-    emit saveBtnPressed();
+void GlobalState::saveData(const QString &dirPath){
+    emit saveBtnPressed(dirPath);
 }
-void GlobalState::loadData(){
-    emit loadBtnPressed();
+void GlobalState::loadData(const QString &dirPath){
+    emit loadBtnPressed(dirPath);
 }
 void GlobalState::log(const QString &newLog, const QString &tabName) {
     emit newLogArrived(newLog, tabName);

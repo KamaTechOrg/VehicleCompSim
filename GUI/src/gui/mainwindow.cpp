@@ -329,26 +329,48 @@ void MainWindow::updateBackground()
 }
 
 void MainWindow::record() {
-    QString defaultFileName = "record.log";
-    QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
-    if (!logFilePath.isEmpty()) {
-        m_DB_handler = new DB_handler();
-        m_simulationRecorder = new SimulationRecorder(logFilePath, m_DB_handler->dbFilePath);
+    QString selectedDir = QFileDialog::getExistingDirectory(this,
+                                                            "Select Directory for Recording Files",
+                                                            QDir::homePath(),
+                                                            QFileDialog::ShowDirsOnly |
+                                                            QFileDialog::DontResolveSymlinks);
+    if (selectedDir.isEmpty()) {
+        return;
     }
+    QString logFilePath = selectedDir + "/record.log";
+    QString bsonFilePath = selectedDir + "/save.bson";
+    m_DB_handler = new DB_handler();
+    m_simulationRecorder = new SimulationRecorder(logFilePath, m_DB_handler->dbFilePath);
+    saveLayout(bsonFilePath);
 }
-
 void MainWindow::replayer() {
     close_previous_replay();
-    loadLayout();
-    QString logFilePath = QFileDialog::getOpenFileName(this, "Select log file", "", "Log Files (*.log)");
-    if (!logFilePath.isEmpty()) {
-        m_simulationReplayer = new SimulationReplayer(logFilePath);
-        controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
-        connect(&m_globalState, &GlobalState::delAllTabContent, this, &MainWindow::resetTabContent);
-        m_mainLayout->addWidget(controlPanel);
-        m_initializeSensorsData->initialize();
+    QString selectedDir = QFileDialog::getExistingDirectory(this,
+                                                            "Select Directory Containing Replay Files",
+                                                            QDir::homePath(),
+                                                            QFileDialog::ShowDirsOnly |
+                                                            QFileDialog::DontResolveSymlinks);
+    if (selectedDir.isEmpty()) {
+        return;
     }
+    QDir dir(selectedDir);
+    QString bsonFilePath = dir.entryList(QStringList() << "*.bson", QDir::Files).first();
+    QString logFilePath = dir.entryList(QStringList() << "*.log", QDir::Files).first();
+    if (bsonFilePath.isEmpty() || logFilePath.isEmpty()) {
+        QMessageBox::warning(this, "Missing Files",
+                             "The selected directory must contain both a .bson and a .log file.");
+        return;
+    }
+    bsonFilePath = dir.filePath(bsonFilePath);
+    logFilePath = dir.filePath(logFilePath);
+    loadLayout(bsonFilePath);
+    m_simulationReplayer = new SimulationReplayer(logFilePath);
+    controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
+    connect(&m_globalState, &GlobalState::delAllTabContent, this, &MainWindow::resetTabContent);
+    m_mainLayout->addWidget(controlPanel);
+    m_initializeSensorsData->initialize();
 }
+
 void MainWindow::resetTabContent(){
     for (auto& item : textEditMap) {
         item.second->clear(); // Clear the content
@@ -373,7 +395,7 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_runService->start(t, com_server_ip);
 
     m_initializeSensorsData->initialize();
-
+    close_previous_replay();
     resetTabContent();
     if(m_DB_handler == nullptr){
         m_DB_handler = new DB_handler();
@@ -413,16 +435,15 @@ void MainWindow::onRunEnd()
 
 }
 
-// for test only
 void MainWindow:: buffer_listener(const QString &data) {
     m_globalState.newData(data);
 }
 
-void MainWindow::saveLayout() {
-    m_globalState.saveData();
+void MainWindow::saveLayout(const QString &dirPath) {
+    m_globalState.saveData(dirPath);
 }
-void MainWindow::loadLayout() {
-    m_globalState.loadData();
+void MainWindow::loadLayout(const QString &dirPath) {
+    m_globalState.loadData(dirPath);
 }
 
 void MainWindow::updateTimer()
