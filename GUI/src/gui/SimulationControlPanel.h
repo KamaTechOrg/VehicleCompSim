@@ -24,11 +24,9 @@ public:
 
 private slots:
     void play();
-    void pause(bool from_slider_pressed);
+    void pause();
     void seek(int value);
     void updateSlider();
-    void onSliderPressed();
-    void onSliderReleased();
 
 private:
     SimulationReplayer* m_replayer;
@@ -38,12 +36,9 @@ private:
     QLabel* m_elapsedTimeLabel;
     QLabel* m_totalTimeLabel;
     QTimer* m_updateTimer;
-    QTime currentTime = (QDate(1970, 1, 1), QTime(0, 0, 0));
-    QTime delayTime;
-    bool m_isManualSliderChange;
-    bool play_mode = false;
-
-
+    QTime m_currentTime = (QDate(1970, 1, 1), QTime(0, 0, 0, 0));
+    QTime m_totalTime;
+    bool m_isPlaying = true;
 
 };
 

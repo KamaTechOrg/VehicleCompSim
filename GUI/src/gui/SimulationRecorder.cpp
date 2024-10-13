@@ -19,7 +19,7 @@ void SimulationRecorder::addStartTime() {
         first_running = false;
         if (m_logFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&m_logFile);
-            out << QDateTime::currentDateTime().toString(Qt::ISODate) << "\n";
+            out << QDateTime::currentDateTime().toString("yyyy-MM-ddTHH:mm:ss.zzz") << "\n";
             m_logFile.close();
         }
     }

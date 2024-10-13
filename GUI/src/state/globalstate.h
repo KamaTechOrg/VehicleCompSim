@@ -51,7 +51,7 @@ public:
     void newParsedData(QList<QPair<QString, QString>> data);
 //    void addNewTab(const QString &tabName);
     void addNewTab(const QString &tabName, const QString &oldTabName="-1");
-
+    void delTabContent();
     void pressOnTab(const QString &tabName);
     void saveData();
     void loadData();
@@ -86,6 +86,7 @@ signals:
     void newLogArrived(const QString & newLog, const QString &tabName);
     void newTab(const QString &tabName, const QString &oldTabName);
     void tabPressed(const QString &tabName);
+    void delAllTabContent();
 
 
 

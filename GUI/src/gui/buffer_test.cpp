@@ -48,12 +48,13 @@ void buffer_test::testExtractBufferData() {
         dest_id = QRandomGenerator::global()->bounded(1, 6);
     }
 
+//    QDateTime timestamp = QDateTime::fromString(parts[0], "yyyy-MM-ddTHH:mm:ss.zzz");
     QDateTime currentDateTime = QDateTime::currentDateTime();
-    QString time = currentTime.toString("hh:mm:ss");
+    QString time = currentTime.toString("yyyy-MM-ddTHH:mm:ss.zzz");
     int len = 50;
 
     std::stringstream ss;
-    ss << currentDateTime.toString(Qt::ISODate).toStdString() << ","
+    ss << currentDateTime.toString("yyyy-MM-ddTHH:mm:ss.zzz").toStdString() << ","
        << src_id << ","
        << dest_id << ","
        << len << ",";

@@ -22,31 +22,28 @@ public:
     SimulationReplayer(const QString &filePath);
     void pauseSimulation();
     void playSimulation();
-    void jumpToTime(const QTime &targetTime, bool isManualJump);
+    void jumpToTime(const QTime &targetTime);
     void startReplay();
     QDateTime start() const { return m_startTime; }
     void clear_current_events();
-
-
+signals:
+    void delAllTabContent();
 private:
-    void scheduleEvent(const QString &message, int delay);
-
+    void scheduleEvents();
+    void scheduleEvent(const QString &line, int delay);
 private slots:
-            void processMessage();
+    void processMessage();
 
 private:
     QFile m_logFile;
-    qint64 m_lastPosition;
     QQueue<QString> m_messagesQueue;
     QQueue<QTimer *> m_timers;
     QDateTime m_currentTime;
-    DB_handler *m_db;
-    CustomScene* m_scene_simulation;
+    QList<QPair<QString, int>> events;
+
 public:
     QDateTime m_startTime;
     QDateTime m_totalTime;
 };
-
-
 
 #endif //VEHICLECOMPSIM_SIMULATIONREPLAYER_H

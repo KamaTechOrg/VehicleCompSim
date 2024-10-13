@@ -18,30 +18,32 @@ void SimulationReplayer::startReplay() {
             QString line = in.readLine();
             QList<QString> parts = line.split(',');
             if(first_line){
-                QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
-                m_startTime = QDateTime::fromString(parts[0], Qt::ISODate);
+                m_startTime = QDateTime::fromString(parts[0], "yyyy-MM-ddTHH:mm:ss.zzz");
                 first_line = false;
                 continue;
             }
             if (parts.size() == 5) {
-                QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
+                QDateTime timestamp = QDateTime::fromString(parts[0], "yyyy-MM-ddTHH:mm:ss.zzz");
                 int delay = qMax(0, m_startTime.msecsTo(timestamp));
-                scheduleEvent(line, delay);
+                QPair<QString, int> new_pair(line, delay);
+                events.push_back(new_pair);
                 m_totalTime = timestamp;
             }
         }
         m_logFile.close();
+        scheduleEvents();
     }
 }
 
-void SimulationReplayer::scheduleEvent(const QString &message, int delay) {
-    m_messagesQueue.enqueue(message);
-    QTimer *timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, this, &SimulationReplayer::processMessage);
-    m_timers.enqueue(timer);
-    timer->start(delay);
-
+void SimulationReplayer::scheduleEvents() {
+    for(const auto &event : events){
+        m_messagesQueue.enqueue(event.first);
+        QTimer *timer = new QTimer(this);
+        timer->setSingleShot(true);
+        connect(timer, &QTimer::timeout, this, &SimulationReplayer::processMessage);
+        m_timers.enqueue(timer);
+        timer->start(event.second);
+    }
 }
 
 void SimulationReplayer::processMessage() {
@@ -73,33 +75,26 @@ void SimulationReplayer::playSimulation() {
         timer->start();
     }
 }
-void SimulationReplayer::jumpToTime(const QTime &targetTime, bool isManualJump) {
-    if (!isManualJump) {
-        return;
-    }
-    int secondsToAdd = targetTime.hour() * 3600 + targetTime.minute() * 60 + targetTime.second();
+
+void SimulationReplayer::scheduleEvent(const QString &line, int delay) {
+    m_messagesQueue.enqueue(line);
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, &QTimer::timeout, this, &SimulationReplayer::processMessage);
+    m_timers.enqueue(timer);
+    timer->start(delay);
+}
+
+void SimulationReplayer::jumpToTime(const QTime &targetTime) {
+    GlobalState::getInstance().delTabContent();
     clear_current_events();
-    if (m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        m_logFile.seek(0);
-        QTextStream in(&m_logFile);
-        bool first_line = true;
-        while (!in.atEnd()) {
-            QString line = in.readLine();
-            if(first_line){
-                first_line = false;
-                continue;
-            }
-            QList<QString> parts = line.split(',');
-            if (parts.size() == 5) {
-                QDateTime timestamp = QDateTime::fromString(parts[0], Qt::ISODate);
-                if (timestamp > m_startTime.addSecs(secondsToAdd)) {
-                    int delay = qMax(0, m_startTime.addSecs(secondsToAdd).msecsTo(timestamp));
-                    scheduleEvent(line, delay);
-                }else{
-                    GlobalState::getInstance().newData(line);
-                }
-            }
+    int msecsToAdd = QTime(0, 0).msecsTo(targetTime);
+    for (const auto &event : events) {
+        int remainingTime = event.second - msecsToAdd;
+        if (remainingTime <= 0) {
+            GlobalState::getInstance().newData(event.first);
+        } else {
+            scheduleEvent(event.first, remainingTime);
         }
-        m_logFile.close();
     }
 }

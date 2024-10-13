@@ -107,6 +107,9 @@ void GlobalState::loadData(){
 void GlobalState::log(const QString &newLog, const QString &tabName) {
     emit newLogArrived(newLog, tabName);
 }
+void GlobalState::delTabContent() {
+    emit delAllTabContent();
+}
 //void GlobalState::addNewTab(const QString &tabName){
 //    emit newTab(tabName);
 //}

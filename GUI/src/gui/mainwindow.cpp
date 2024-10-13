@@ -17,6 +17,11 @@ MainWindow::MainWindow(QWidget* parent)
         m_mainWindowTitle("Vehicle sensors simulator"),
         m_countdownTimer(new QTimer(this))
 {
+    m_DB_handler = new DB_handler();
+    m_saveAndLoad = new saveAndLoad(&m_globalState);
+    m_parser = new parser();
+    // for test only
+    m_bufferTest = new buffer_test();
 
     setupToolBar();
 
@@ -192,11 +197,6 @@ void MainWindow::setupRunService()
     m_toolbar_blocker = new ActionsBlocker(m_toolBar);
     m_scene_blocker = new ActionsBlocker(m_view);
     m_scene_blocker->transparency(0.0);
-    m_DB_handler = new DB_handler();
-    m_saveAndLoad = new saveAndLoad(&m_globalState);
-    m_parser = new parser();
-    // for test only
-//    m_bufferTest = new buffer_test();
 
     onRunEnd();
     QObject::connect(m_runService.get(), &RunService::stopFinished, [this](){
@@ -344,8 +344,14 @@ void MainWindow::replayer() {
     if (!logFilePath.isEmpty()) {
         m_simulationReplayer = new SimulationReplayer(logFilePath);
         controlPanel = new SimulationControlPanel(m_simulationReplayer, this);
+        connect(&m_globalState, &GlobalState::delAllTabContent, this, &MainWindow::resetTabContent);
         m_mainLayout->addWidget(controlPanel);
         m_initializeSensorsData->initialize();
+    }
+}
+void MainWindow::resetTabContent(){
+    for (auto& item : textEditMap) {
+        item.second->clear(); // Clear the content
     }
 }
 
@@ -368,13 +374,10 @@ void MainWindow::onRunStart(QString com_server_ip)
 
     m_initializeSensorsData->initialize();
 
-
-    for (auto& item : textEditMap) {
-        item.second->clear(); // Clear the content
-    }
+    resetTabContent();
 
     // for test only
-//    m_bufferTest->start_timer();
+    m_bufferTest->start_timer();
 
     m_globalState.setIsRunning(true);
     // m_startBtn->hide();
@@ -404,7 +407,7 @@ void MainWindow::onRunEnd()
     m_countdownTimer->stop();
 
     // for test only
-//    m_bufferTest->stop_timer();
+    m_bufferTest->stop_timer();
 
 }
 

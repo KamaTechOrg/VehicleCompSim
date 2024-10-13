@@ -68,6 +68,7 @@ private slots:
     void handleNewLog(const QString &newLog, const QString &tabName);
     void createNewTab(const QString &tabName, const QString & oldTabName);
     void pressONTab(const QString & tabName);
+    void resetTabContent();
 
 private:
     CustomScene* m_scene;
