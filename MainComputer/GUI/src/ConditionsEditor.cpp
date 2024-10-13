@@ -22,7 +22,7 @@ ConditionsEditor::ConditionsEditor()
     _ConditionsEditorLayout->addWidget(_actionGroupBox);
     _ConditionsEditorLayout->addStretch(1);
     setLayout(_ConditionsEditorLayout);
-    resize(350, 200);
+    setMinimumWidth(520);
 }
 
 void ConditionsEditor::setView(nlohmann::json jsonData)
