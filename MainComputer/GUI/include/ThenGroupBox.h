@@ -7,6 +7,13 @@
 #include "ThenWidgetsLayout.h"
 #include "Action.h"
 
+/**
+ * @brief Group box for managing actions in the user interface.
+ *
+ * This class provides a layout for displaying and managing action widgets,
+ * allowing users to add or remove actions as needed.
+ */
+
 class ThenGroupBox : public QGroupBox
 {
 public:

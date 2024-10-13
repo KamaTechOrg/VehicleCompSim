@@ -7,6 +7,14 @@
 
 #include "ConditionsEditor.h"
 
+/**
+ * @brief A group box for exploring and managing scenarios.
+ *
+ * This class provides a user interface for listing scenarios,
+ * allowing users to select, add, or delete scenarios.
+ */
+
+
 class ExplorerBox : public QGroupBox
 {
 	Q_OBJECT

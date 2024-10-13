@@ -6,6 +6,13 @@
 #include "ConditionsEditor.h"
 #include "ExplorerBox.h"
 
+/**
+ * @brief Main editor for managing scenarios and their conditions.
+ *
+ * This class provides a graphical interface for editing scenarios,
+ * allowing users to add, delete, and save conditions for each scenario.
+ */
+
 class Editor : public QWidget
 {
 	Q_OBJECT

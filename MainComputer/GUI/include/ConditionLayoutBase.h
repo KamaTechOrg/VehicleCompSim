@@ -3,6 +3,12 @@
 #include <QVBoxLayout>
 #include "ConditionBase.h"
 
+/**
+ * @brief Base class for graphical layouts of user-defined conditions.
+ *
+ * This layout serves as a base for organizing condition elements in a vertical arrangement.
+ */
+
 class ConditionLayoutBase : public QVBoxLayout
 {
 	Q_OBJECT
