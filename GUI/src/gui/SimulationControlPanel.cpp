@@ -69,6 +69,9 @@ void SimulationControlPanel::updateSlider() {
         return;
     }
     m_currentTime = m_currentTime.addMSecs(100);
+    if(m_currentTime > m_totalTime){
+        m_currentTime = m_totalTime;
+    }
     m_elapsedTimeLabel->setText(m_currentTime.toString("hh:mm:ss.zzz"));
     m_slider->blockSignals(true);
     m_slider->setValue(QTime(0, 0).msecsTo(m_currentTime));
