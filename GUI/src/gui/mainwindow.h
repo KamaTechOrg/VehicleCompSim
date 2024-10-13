@@ -90,7 +90,7 @@ private:
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
-    DB_handler *m_DB_handler;
+    DB_handler *m_DB_handler = nullptr;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;

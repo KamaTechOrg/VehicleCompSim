@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget* parent)
         m_mainWindowTitle("Vehicle sensors simulator"),
         m_countdownTimer(new QTimer(this))
 {
-    m_DB_handler = new DB_handler();
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
     // for test only
@@ -333,6 +332,7 @@ void MainWindow::record() {
     QString defaultFileName = "record.log";
     QString logFilePath = QFileDialog::getSaveFileName(nullptr, "Select or create log file", defaultFileName, "Log Files (*.log)");
     if (!logFilePath.isEmpty()) {
+        m_DB_handler = new DB_handler();
         m_simulationRecorder = new SimulationRecorder(logFilePath, m_DB_handler->dbFilePath);
     }
 }
@@ -375,7 +375,9 @@ void MainWindow::onRunStart(QString com_server_ip)
     m_initializeSensorsData->initialize();
 
     resetTabContent();
-
+    if(m_DB_handler == nullptr){
+        m_DB_handler = new DB_handler();
+    }
     // for test only
     m_bufferTest->start_timer();
 
