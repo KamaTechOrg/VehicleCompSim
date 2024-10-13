@@ -195,58 +195,6 @@ void Communication::sendTo(int portNumber, const std::string& message) {
     closesocket(clientSock);
 }
 
-void Communication::connectToSensors()
-{
-    // there is no such function anymore, we don't connect to sensor through ports
-    //std::vector<int> sensorsPortNumbers = SensorsManager().getSensorsPortNumbers();
-    std::vector<int> sensorsPortNumbers;
-    for (const int portNumber : sensorsPortNumbers) {
-        int sensorSock = createSocket();
-        struct sockaddr_in sensorAddr;
-
-        sensorAddr.sin_family = AF_INET;
-        sensorAddr.sin_port = htons(portNumber);
-
-        // Convert IPv4 and IPv6 addresses from text to binary form
-        if (inet_pton(AF_INET, constants::SERVER_IP.c_str(), &sensorAddr.sin_addr) <= 0) {
-            qWarning() << "Invalid address/ Address not supported";
-            closesocket(sensorSock);
-            return;
-        }
-
-        // Connect to the server
-        if (connect(sensorSock, (struct sockaddr*)&sensorAddr, sizeof(sensorAddr)) < 0) {
-            qWarning() << "Connection Failed: " << WSAGetLastError();
-            closesocket(sensorSock);
-            return;
-        }
-
-        // Continuously receive messages from the server
-        std::thread([this, sensorSock]() {
-
-            // Send initial message
-            std::string initMessage = "INIT";
-            send(sensorSock, initMessage.c_str(), initMessage.length(), 0);
-
-            while (true) {
-                char buffer[1024] = { 0 };
-                int valread = recv(sensorSock, buffer, sizeof(buffer), 0);
-                if (valread > 0) {
-                    qInfo() << "recived: " << buffer;
-
-                    std::lock_guard<std::mutex> lock(queueMutex);
-                    _messagesQueue.push(std::string(buffer, valread));
-                    messageAvailable.notify_one(); // Signal new message arrival
-                }
-                else {
-                    break;
-                }
-            }
-            closesocket(sensorSock);
-            }).detach();
-    }
-}
-
 std::string Communication::getMessageFromQueue()
 {
     std::unique_lock<std::mutex> lock(queueMutex);

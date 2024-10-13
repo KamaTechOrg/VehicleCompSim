@@ -13,7 +13,6 @@ public:
 
     std::string listenTo(int portNumber);
     void sendTo(int portNumber, const std::string& message);
-    void connectToSensors();
     std::string getMessageFromQueue();
 
     std::string sendAndReceiveLoop(const std::string& serverIP, int portNumber);
