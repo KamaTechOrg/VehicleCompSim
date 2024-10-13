@@ -12,6 +12,20 @@ ThenGroupBox::ThenGroupBox(QWidget* parent)
     setLayout(_mainLayout);
 
     _addActionButton = new QPushButton("+");
+    _addActionButton->setStyleSheet(
+        "QPushButton {"
+        "   background-color: #4CAF50;"
+        "   color: white;"
+        "   border: 1px solid #45a049;"
+        "   border-radius: 1px;"
+        "   padding: 1px;"
+        "   font-weight: bold;"
+        "}"
+        "QPushButton:hover {"
+        "   background-color: #45a049;"
+        "}"
+    );
+
     int defaultHeight = _addActionButton->sizeHint().height();
     _addActionButton->setFixedSize(defaultHeight, defaultHeight);
     connect(_addActionButton, &QPushButton::clicked, this, &ThenGroupBox::addActionLayout);

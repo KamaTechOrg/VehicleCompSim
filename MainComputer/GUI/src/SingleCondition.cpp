@@ -67,6 +67,20 @@ void SingleCondition::initializeFields()
 	_layout->addWidget(_validationValue);
 
 	_deleteButton = new QPushButton("-");
+	_deleteButton->setStyleSheet(
+		"QPushButton {"
+		"   background-color: #f44336;"   
+		"   color: white;"
+		"   border: 1px solid #d32f2f;"   
+		"   border-radius: 1px;"
+		"   padding: 1px;"
+		"   font-weight: bold;"
+		"}"
+		"QPushButton:hover {"
+		"   background-color: #d32f2f;"    
+		"}"
+	);
+
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
 	_layout->addWidget(_deleteButton);
@@ -102,7 +116,7 @@ std::shared_ptr<ConditionBase> SingleCondition::logicData()
 	if (input.empty() || conditionType.empty() || validationValue.empty()) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
-		msgBox.setWindowTitle(tr("<b>Validation Error</b>"));
+		msgBox.setWindowTitle(tr("Validation Error"));
 		msgBox.setText(tr("<b>Please make sure all fields are filled out.</b>"));
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.exec();

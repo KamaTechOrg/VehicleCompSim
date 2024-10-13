@@ -143,6 +143,19 @@ void ConditionsGroup::addGenericCondition(ConditionLayoutBase* condition,
 void ConditionsGroup::createAddConditionButton()
 {
 	_addConditionButton = new QPushButton("+");
+	_addConditionButton->setStyleSheet(
+		"QPushButton {"
+		"   background-color: #4CAF50;"  
+		"   color: white;"               
+		"   border: 1px solid #45a049;"  
+		"   border-radius: 1px;"        
+		"   padding: 1px;"
+		"   font-weight: bold;"         
+		"}"
+		"QPushButton:hover {"
+		"   background-color: #45a049;" 
+		"}"
+	);
 	int defaultHeight = _addConditionButton->sizeHint().height();
 	_addConditionButton->setFixedSize(defaultHeight, defaultHeight);
 	//connect(_addConditionButton, &QPushButton::clicked, this, &ConditionsGroup::addButtonClicked);
@@ -172,6 +185,19 @@ void ConditionsGroup::createAddConditionButton()
 void ConditionsGroup::createDeleteButton()
 {
 	_deleteButton = new QPushButton("-");
+	_deleteButton->setStyleSheet(
+		"QPushButton {"
+		"   background-color: #f44336;"
+		"   color: white;"
+		"   border: 1px solid #d32f2f;"
+		"   border-radius: 1px;"
+		"   padding: 1px;"
+		"   font-weight: bold;"
+		"}"
+		"QPushButton:hover {"
+		"   background-color: #d32f2f;"
+		"}"
+	);
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
 	_layout->addWidget(_deleteButton);

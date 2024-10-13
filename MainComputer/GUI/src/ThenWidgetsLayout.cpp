@@ -41,6 +41,19 @@ ThenWidgetsLayout::ThenWidgetsLayout(QWidget* parent)
 void ThenWidgetsLayout::createDeleteButton()
 {
 	_deleteButton = new QPushButton("-");
+	_deleteButton->setStyleSheet(
+		"QPushButton {"
+		"   background-color: #f44336;"
+		"   color: white;"
+		"   border: 1px solid #d32f2f;"
+		"   border-radius: 1px;"
+		"   padding: 1px;"
+		"   font-weight: bold;"
+		"}"
+		"QPushButton:hover {"
+		"   background-color: #d32f2f;"
+		"}"
+	);
 	int defaultHeight = _deleteButton->sizeHint().height();
 	_deleteButton->setFixedSize(defaultHeight, defaultHeight);
 	addWidget(_deleteButton);
