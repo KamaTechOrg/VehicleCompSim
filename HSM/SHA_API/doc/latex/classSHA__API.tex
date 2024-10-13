@@ -1,0 +1,71 @@
+\doxysection{SHA\+\_\+\+API Class Reference}
+\hypertarget{classSHA__API}{}\label{classSHA__API}\index{SHA\_API@{SHA\_API}}
+
+
+Class providing hashing-\/related functionality.  
+
+
+
+
+{\ttfamily \#include $<$SHA\+\_\+\+API.\+h$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static HSMns\+::\+HSM\+\_\+\+STATUS \mbox{\hyperlink{classSHA__API_a37e750966782657188a009239eac873b}{sha}} (const std\+::vector$<$ u\+\_\+char $>$ \&message, HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE type=HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE\+::\+SHA256)
+\begin{DoxyCompactList}\small\item\em Generates a hash of the provided message using the specified hash algorithm. \end{DoxyCompactList}\item 
+static HSMns\+::\+HSM\+\_\+\+STATUS \mbox{\hyperlink{classSHA__API_a3e7b80a39bc97b19b6159949d50bd619}{compare\+Hash}} (const std\+::vector$<$ u\+\_\+char $>$ \&message, const std\+::vector$<$ u\+\_\+char $>$ \&hash, HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE type=HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE\+::\+SHA256)
+\begin{DoxyCompactList}\small\item\em Compares a message with a provided hash using the specified hash algorithm. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class providing hashing-\/related functionality. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classSHA__API_a3e7b80a39bc97b19b6159949d50bd619}\label{classSHA__API_a3e7b80a39bc97b19b6159949d50bd619} 
+\index{SHA\_API@{SHA\_API}!compareHash@{compareHash}}
+\index{compareHash@{compareHash}!SHA\_API@{SHA\_API}}
+\doxysubsubsection{\texorpdfstring{compareHash()}{compareHash()}}
+{\footnotesize\ttfamily static HSMns\+::\+HSM\+\_\+\+STATUS SHA\+\_\+\+API\+::compare\+Hash (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+char $>$ \&}]{message,  }\item[{const std\+::vector$<$ u\+\_\+char $>$ \&}]{hash,  }\item[{HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE}]{type = {\ttfamily HASH\+\_\+ALGORITHM\+\_\+TYPE\+:\+:SHA256} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compares a message with a provided hash using the specified hash algorithm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & The message to hash and compare as a vector of unsigned chars. \\
+\hline
+{\em hash} & The precomputed hash to compare against. \\
+\hline
+{\em type} & The hash algorithm to use for comparison (default is SHA256).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSMns\+::\+HSM\+\_\+\+STATUS Status code indicating whether the comparison was successful. 
+\end{DoxyReturn}
+\Hypertarget{classSHA__API_a37e750966782657188a009239eac873b}\label{classSHA__API_a37e750966782657188a009239eac873b} 
+\index{SHA\_API@{SHA\_API}!sha@{sha}}
+\index{sha@{sha}!SHA\_API@{SHA\_API}}
+\doxysubsubsection{\texorpdfstring{sha()}{sha()}}
+{\footnotesize\ttfamily static HSMns\+::\+HSM\+\_\+\+STATUS SHA\+\_\+\+API\+::sha (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ u\+\_\+char $>$ \&}]{message,  }\item[{HASH\+\_\+\+ALGORITHM\+\_\+\+TYPE}]{type = {\ttfamily HASH\+\_\+ALGORITHM\+\_\+TYPE\+:\+:SHA256} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a hash of the provided message using the specified hash algorithm. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & The message to hash as a vector of unsigned chars. \\
+\hline
+{\em type} & The hash algorithm to use (default is SHA256).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+HSMns\+::\+HSM\+\_\+\+STATUS Status code indicating the result of the operation. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/SHA\+\_\+\+API.\+h\end{DoxyCompactItemize}

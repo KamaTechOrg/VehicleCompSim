@@ -1,0 +1,5 @@
+<map id="include/BigNum.h" name="include/BigNum.h">
+<area shape="rect" id="Node000001" title="A header file defining the BigNum class for handling large integers up to 2048 bits." alt="" coords="40,5,177,31"/>
+<area shape="rect" id="Node000002" href="$BigNumWithMinus_8h.html" title="A header file defining the BigNumWithMinus class, which extends BigNum to support negative numbers." alt="" coords="5,79,212,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,44,111,79,106,79,106,44"/>
+</map>

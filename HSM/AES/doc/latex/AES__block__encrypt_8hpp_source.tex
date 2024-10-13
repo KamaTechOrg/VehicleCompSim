@@ -1,0 +1,95 @@
+\doxysection{AES\+\_\+block\+\_\+encrypt.\+hpp}
+\hypertarget{AES__block__encrypt_8hpp_source}{}\label{AES__block__encrypt_8hpp_source}\index{include/AES\_block\_encrypt.hpp@{include/AES\_block\_encrypt.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <sycl/sycl.hpp>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{namespace\ }aes\ \{}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{enum\ class}\ AesVariant\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ NoAesVariant,\ }
+\DoxyCodeLine{00018\ \ \ \ \ Aes128,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00019\ \ \ \ \ Aes192,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00020\ \ \ \ \ Aes256\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00021\ \};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\ =\ 4;\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ac664b2b33c0d9fbd6988a8b0e8b78404}{BlockSize}}\ =\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}*\mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}};\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}}\ =\ std::array<std::array<uint8\_t,\ Nb>,\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}>;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{\string~AES\_block\_encrypt}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00052\ \ \ SYCL\_EXTERNAL\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e}{encrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}}\&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00059\ \ \ SYCL\_EXTERNAL\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b}{decrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}}\&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_ad59c07bfcc97e29f68f07a8ad93b4d0e}{encrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}}\&)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_a73daafadc701e2f5656bbcf0fd112e2b}{decrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt_a5fb0757d54b7ef6175a07585df31fc58}{State}}\&)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{template}\ <AesVariant\ Aes\_var>}
+\DoxyCodeLine{00089\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt}{AES\_block\_encrypt}}\ \{}
+\DoxyCodeLine{00090\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a4ae4524b790a6d00f3a5353f7e3510fc}{Nr}}\ =\ Aes\_var\ ==\ AesVariant::Aes128\ ?\ 10\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :Aes\_var\ ==\ AesVariant::Aes192\ ?\ 12\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \ \ \ \ \ \ \textcolor{comment}{/*\ AesVariant::Aes256\ */}\ 14;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}{Nk}}\ =\ Aes\_var\ ==\ AesVariant::Aes128\ ?\ 4}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :Aes\_var\ ==\ AesVariant::Aes192\ ?\ 6\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \ \ \ \ \ \ \textcolor{comment}{/*\ AesVariant::Aes256\ */}\ 8;\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae70a467d43b8fba1add0f35ef05d93a9}{KeySize}}\ =\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a7fb90646d4da70b838f97bb01c2f58de}{Nk}}*4;\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{KeyType}}\ =\ std::array<uint8\_t,\ KeySize>;\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ =\ std::array<std::array<uint8\_t,\ 4>,\ 4>;\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aa98cb8694eaa413f06f3504a74f023f6}{AES\_block\_encrypt\_impl}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{KeyType}}\ \textcolor{keyword}{const}\&\ key);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{preprocessor}{\#if\ SYCL\_ENABLED}}
+\DoxyCodeLine{00123\ \ \ SYCL\_EXTERNAL\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae52f69c1eccc61f60070de2ad625b136}{encrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\&)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00130\ \ \ SYCL\_EXTERNAL\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aa62016ec70140bdd45bb965b60d49981}{decrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\&)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00131\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_ae52f69c1eccc61f60070de2ad625b136}{encrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\&)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aa62016ec70140bdd45bb965b60d49981}{decrypt}}(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\&)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00145\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{void}\ expand\_key(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a2696d03dc5bc9e326bc1a2d4484814ed}{KeyType}}\ \textcolor{keyword}{const}\ \&key);}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ add\_round\_key(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&,\ uint\ key\_index)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordtype}{void}\ subBytes(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{void}\ shiftRows(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{void}\ mixColumns(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordtype}{void}\ inv\_subBytes(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordtype}{void}\ inv\_shiftRows(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{keywordtype}{void}\ inv\_mixColumns(\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_aba6e5bb0ce87db7f28e661dea8d0dc26}{State}}\ \&)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00206\ \ \ std::array<std::array<uint8\_t,\ 4>,\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt_acba1dedbdea7fe82acddb9cabc256069}{Nb}}\ *\ (\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl_a4ae4524b790a6d00f3a5353f7e3510fc}{Nr}}\ +\ 1)>\ m\_expended\_key;\ }
+\DoxyCodeLine{00207\ \};}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_128}}\ =\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_impl<AesVariant::Aes128>}};\ }
+\DoxyCodeLine{00210\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_192}}\ =\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_impl<AesVariant::Aes192>}};\ }
+\DoxyCodeLine{00211\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_256}}\ =\ \mbox{\hyperlink{classaes_1_1AES__block__encrypt__impl}{AES\_block\_encrypt\_impl<AesVariant::Aes256>}};\ }
+\DoxyCodeLine{00213\ \}\ \textcolor{comment}{//\ namespace\ aes}}
+
+\end{DoxyCode}

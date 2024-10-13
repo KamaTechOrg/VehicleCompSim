@@ -1,0 +1,40 @@
+\doxysection{RSA\+\_\+\+ENC.\+h}
+\hypertarget{RSA__ENC_8h_source}{}\label{RSA__ENC_8h_source}\index{include/RSA\_ENC.h@{include/RSA\_ENC.h}}
+\mbox{\hyperlink{RSA__ENC_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <iomanip>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}../../BigNum/include/BigNum.h"{}}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}../../BigNum/include/BigNumWithMinus.h"{}}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classRSA__ENC}{RSA\_ENC}}}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__ENC_a9437f60f0fda00388c0829c21a3308f4}{encrypt}}(\textcolor{keyword}{const}\ BigNum\ \&message,\ \textcolor{keyword}{const}\ BigNum\ \&publicKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{static}\ BigNum\ \mbox{\hyperlink{classRSA__ENC_ae94070320b7fc8ef1cc0b1ca3c3697b2}{decrypt}}(\textcolor{keyword}{const}\ BigNum\ \&message,\ \textcolor{keyword}{const}\ BigNum\ \&privateKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classRSA__ENC_ab3ad22969e47b990bd932bbae1935482}{encrypt}}(\textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&message,\ \textcolor{keyword}{const}\ BigNum\ \&publicKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classRSA__ENC_afeff8a3bc1b49b413ba78a97f85c63f8}{encrypt}}(\textcolor{keyword}{const}\ std::string\ \&message,\ \textcolor{keyword}{const}\ BigNum\ \&publicKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classRSA__ENC_a0a9fe2416f888b35ee1b7097058e74c4}{encrypt}}(\textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&message,\ \textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&key);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classRSA__ENC_a16dd60a2d41e12637612a4cde74c64af}{decrypt}}(\textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&encrypted\_message,\ \textcolor{keyword}{const}\ BigNum\ \&privateKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classRSA__ENC_a314f637615424f6c18198dcc33903f66}{decrypt}}(\textcolor{keyword}{const}\ std::string\ \&encrypted\_message,\ \textcolor{keyword}{const}\ BigNum\ \&privateKey,\ \textcolor{keyword}{const}\ BigNum\ \&modulus);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<u\_int8\_t>\ \mbox{\hyperlink{classRSA__ENC_a10a1f0bbc22145616ee88cfbc7c1f9b4}{decrypt}}(\textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&encrypted\_message,\ \textcolor{keyword}{const}\ std::vector<u\_int8\_t>\ \&key);}
+\DoxyCodeLine{00107\ \};}
+
+\end{DoxyCode}

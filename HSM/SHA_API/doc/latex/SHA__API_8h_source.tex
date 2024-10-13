@@ -1,0 +1,43 @@
+\doxysection{SHA\+\_\+\+API.\+h}
+\hypertarget{SHA__API_8h_source}{}\label{SHA__API_8h_source}\index{include/SHA\_API.h@{include/SHA\_API.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#ifndef\ SHA\_API\_H}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#define\ SHA\_API\_H}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}HSMEnums.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{enum}\ HASH\_ALGORITHM\_TYPE}
+\DoxyCodeLine{00016\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ NoHash,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00018\ \ \ \ \ SHA1,\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00019\ \ \ \ \ SHA256,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00020\ \ \ \ \ SHA512,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00021\ \ \ \ \ Hash\_Count,\ \ \ }
+\DoxyCodeLine{00022\ \ \ \ \ SHA3\_256,\ \ \ \ \ }
+\DoxyCodeLine{00023\ \ \ \ \ SHA3\_512,\ \ \ \ \ }
+\DoxyCodeLine{00024\ \};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classSHA__API}{SHA\_API}}}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{static}\ HSMns::HSM\_STATUS\ \mbox{\hyperlink{classSHA__API_a37e750966782657188a009239eac873b}{sha}}(}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<u\_char>\ \&message,\ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ HASH\_ALGORITHM\_TYPE\ type\ =\ HASH\_ALGORITHM\_TYPE::SHA256}
+\DoxyCodeLine{00044\ \ \ \ \ );}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{static}\ HSMns::HSM\_STATUS\ \mbox{\hyperlink{classSHA__API_a3e7b80a39bc97b19b6159949d50bd619}{compareHash}}(}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<u\_char>\ \&message,\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<u\_char>\ \&hash,\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ HASH\_ALGORITHM\_TYPE\ type\ =\ HASH\_ALGORITHM\_TYPE::SHA256}
+\DoxyCodeLine{00059\ \ \ \ \ );}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
