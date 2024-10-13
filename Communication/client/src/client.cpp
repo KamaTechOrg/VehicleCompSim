@@ -43,7 +43,8 @@ sendErrorCode ClientSocket::send(void *data, size_t size, int source_id, int des
 {
     // Validate input parameters.
     if (!is_valid_ptr(data) || !is_valid_size(size) || !is_valid_d_id(dest_id))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid input");
     }
 
@@ -67,7 +68,8 @@ std::pair<ListenErrorCode, int> ClientSocket::listen(void *data, size_t size)
 
     // Validate input parameters.
     if (!is_valid_ptr(data) || !is_valid_size(size))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid to receive");
     }
 
@@ -85,7 +87,8 @@ void ClientSocket::listenAsync(void *data, size_t size, std::function<void(Liste
 {
     // Validate input parameters.
     if (!is_valid_ptr(data) || !is_valid_size(size))
-    {
+    {   
+        LOG_ERROR("invalid argument");
         throw std::runtime_error("Invalid to receive");
     }
 
