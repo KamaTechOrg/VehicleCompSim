@@ -95,6 +95,10 @@ void ConditionsManager::run()
                 std::string id = messageContent.first;
                 std::string value = messageContent.second;
                 validateAll(id, value);
+
+               /* std::string targetMessage = "TARGET:beep controller,MESSAGE:Beep";
+                communication.sendTo(constants::SERVER_PORT, targetMessage);
+                qInfo() << "Message sent: " << QString::fromStdString(targetMessage);*/
             }
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();

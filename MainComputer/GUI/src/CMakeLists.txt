@@ -13,3 +13,5 @@ target_sources(MainComputer PRIVATE
     Editor.cpp
     ExplorerBox.cpp
 )
+
+target_compile_definitions(MainComputer PRIVATE RESOURCE_DIR="${CMAKE_CURRENT_LIST_DIR}")

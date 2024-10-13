@@ -1,3 +1,7 @@
+#ifndef RESOURCE_DIR
+#define RESOURCE_DIR ""
+#endif
+
 #include "Editor.h"
 #include "JsonLoader.h"
 
@@ -7,6 +11,8 @@
 Editor::Editor()
 {
 	setWindowTitle("Conditions Editor");
+	setWindowIcon(QIcon(QString(RESOURCE_DIR) + "/cond.png"));
+
 	nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
 	for (nlohmann::json scenario : guiData)
 	{
@@ -142,6 +148,9 @@ void Editor::initializeScenariosExplorer()
 void Editor::initializeSaveButton()
 {
 	_saveButton = new QPushButton("save");
+	QFont font = _saveButton->font();
+	font.setBold(true);
+	_saveButton->setFont(font);
 	connect(_saveButton, &QPushButton::clicked, this, &Editor::save);
 	_VLayout->addWidget(_saveButton);
 }

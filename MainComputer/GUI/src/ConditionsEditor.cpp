@@ -13,6 +13,9 @@ ConditionsEditor::ConditionsEditor()
     _conditionsGroup = new ConditionsGroup;
     _conditionsGroup->unableDelete();
     _conditionsGroup->setBoxTitle("if");
+    QFont font = this->font();
+    font.setBold(true);
+    setFont(font);
     _actionGroupBox = new ThenGroupBox;
     _ConditionsEditorLayout = new QVBoxLayout;
     _ConditionsEditorLayout->addLayout(_conditionsGroup);

@@ -102,8 +102,8 @@ std::shared_ptr<ConditionBase> SingleCondition::logicData()
 	if (input.empty() || conditionType.empty() || validationValue.empty()) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
-		msgBox.setWindowTitle(tr("Validation Error"));
-		msgBox.setText(tr("Please make sure all fields are filled out."));
+		msgBox.setWindowTitle(tr("<b>Validation Error</b>"));
+		msgBox.setText(tr("<b>Please make sure all fields are filled out.</b>"));
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.exec();
 		return nullptr;

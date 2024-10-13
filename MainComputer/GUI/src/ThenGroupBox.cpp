@@ -5,6 +5,9 @@
 ThenGroupBox::ThenGroupBox(QWidget* parent)
     : QGroupBox("then", parent)
 {
+    QFont font = this->font();
+    font.setBold(true);
+    setFont(font);
     _mainLayout = new QVBoxLayout;
     setLayout(_mainLayout);
 

@@ -150,6 +150,10 @@ void ConditionsGroup::createAddConditionButton()
 	QMenu* menu = new QMenu();
 	QAction* addSingleConditionAction = new QAction("Add Single Condition");
 	QAction* addConditionGroupAction = new QAction("Add Condition Group");
+	QFont font = addSingleConditionAction->font();
+	font.setBold(true);
+	addSingleConditionAction->setFont(font);
+	addConditionGroupAction->setFont(font);
 
 	menu->addAction(addSingleConditionAction);
 	menu->addAction(addConditionGroupAction);

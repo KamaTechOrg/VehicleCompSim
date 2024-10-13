@@ -7,6 +7,10 @@
 ExplorerBox::ExplorerBox()
 	: QGroupBox("Explorer")
 {
+
+	QFont font = this->font();
+	font.setBold(true);
+	setFont(font);
 	this->setFixedWidth(250);
 
 	_scenariosList = new QListView;
@@ -61,9 +65,15 @@ void ExplorerBox::showContextMenu(const QPoint& pos)
 {
 	// Create a context menu
 	QMenu contextMenu;
+	QFont font;
+	font.setBold(true);
 	QAction* addAction = new QAction("Add", this);
+	addAction->setFont(font);
 	QAction* renameAction = new QAction("Rename", this);
+	renameAction->setFont(font);
 	QAction* deleteAction = new QAction("Delete", this);
+	deleteAction->setFont(font);
+
 
 	connect(addAction, &QAction::triggered, this, &ExplorerBox::addNewItem);
 	connect(renameAction, &QAction::triggered, this, &ExplorerBox::renameSelectedItem);
