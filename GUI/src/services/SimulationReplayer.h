@@ -20,7 +20,7 @@ public:
     SimulationReplayer(const QString &filePath);
     void pauseSimulation();
     void playSimulation();
-    void jumpToTime(const QTime &targetTime, bool isManualJump);
+    void jumpToTime(const QTime &targetTime);
     void startReplay();
     QDateTime start() const { return m_startTime; }
     void clear_current_events();

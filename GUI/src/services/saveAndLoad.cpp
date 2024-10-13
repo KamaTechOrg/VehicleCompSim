@@ -85,7 +85,7 @@ void saveAndLoad::loadLayout(const QString &dirPath) {
     if(!dirPath.isEmpty()){
         path = dirPath;
     }else{
-        path = QFileDialog::getOpenFileName(this, tr("Select BSON File"), QString(),
+        path = QFileDialog::getOpenFileName(nullptr, tr("Select BSON File"), QString(),
                                                                 tr("BSON Files (*.bson);;All Files (*)"));
     }
     auto models = m_globalState->currentProject()->models();
