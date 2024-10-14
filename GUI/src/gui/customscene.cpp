@@ -260,11 +260,9 @@ void CustomScene::dropEvent(QGraphicsSceneDragDropEvent* event) {
     if (event->mimeData()->hasText()) {
         CustomWidget::WIDGET_TYPES itemType = (CustomWidget::WIDGET_TYPES)(event->mimeData()->text().toInt());
 
-        SerializableItem* item; // = new SerializableItem();
+        SerializableItem* item = CustomWidget::toSerializableItem(itemType); // = new SerializableItem();
 
-        if (itemType == CustomWidget::REGULAR_SENSOR_ITEM || itemType == CustomWidget::QEMU_SENSOR_ITEM) {
-            SensorModel* sensorModel = (itemType == CustomWidget::REGULAR_SENSOR_ITEM ? new SensorModel() : new QemuSensorModel());
-
+        if (auto sensorModel = dynamic_cast<SensorModel*>(item)) {
             sensorModel->setOwnerID(m_globalState.myClientId());
             sensorModel->setX(event->scenePos().x());
             sensorModel->setY(event->scenePos().y());

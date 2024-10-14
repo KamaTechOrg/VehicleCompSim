@@ -4,6 +4,10 @@
 #include <fstream>
 #include "constants.h"
 
+
+std::string JsonLoader::guiData;
+std::string JsonLoader::logicData;
+
 JsonLoader::JsonLoader()
 {
 	_logicDataJsonFileName = constants::CONDITIONS_JSON_FILE_NAME;
@@ -12,6 +16,8 @@ JsonLoader::JsonLoader()
 
 nlohmann::json::array_t JsonLoader::loadConditionsLogic() const
 {
+    qInfo() << logicData;
+
     std::ifstream file(_logicDataJsonFileName);
     if (!file.is_open())
     {
@@ -62,6 +68,8 @@ nlohmann::json::array_t JsonLoader::loadGuiData() const
 
 void JsonLoader::saveConditionsLogic(const nlohmann::json& jsonData) const
 {
+    logicData =  jsonData.dump();
+
     std::ofstream file(_logicDataJsonFileName);
     if (!file.is_open()) {
         qWarning() << "Could not open file for writing: " << QString::fromStdString(_logicDataJsonFileName);

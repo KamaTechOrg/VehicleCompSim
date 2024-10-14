@@ -1,4 +1,7 @@
 #include "customwidget.h"
+#include "maincomputermodel.h"
+#include "qemusensormodel.h"
+#include "sensoritem.h"
 #include <QPainter>
 //#include <QMouseEvent>
 #include <QApplication>
@@ -7,6 +10,20 @@ CustomWidget::CustomWidget(const WIDGET_TYPES type, QWidget* parent)
     : QWidget(parent), m_type(type) {
     setFixedSize(90, 55);
     setAcceptDrops(true);
+}
+
+SerializableItem *CustomWidget::toSerializableItem(WIDGET_TYPES type)
+{
+    switch (type) {
+    case REGULAR_SENSOR_ITEM:
+        return new SensorModel;
+    case QEMU_SENSOR_ITEM:
+            return new QemuSensorModel;
+    case MAIN_COMPUTER_ITEM:
+        return new MainComputerModel;
+    default:
+        return nullptr;
+    }
 }
 
 void CustomWidget::paintEvent(QPaintEvent* event) {
@@ -20,6 +37,10 @@ void CustomWidget::paintEvent(QPaintEvent* event) {
     case QEMU_SENSOR_ITEM:
         painter.drawRoundedRect(QRectF(5, 5, 80, 45), 4, 4);
         painter.drawText(5, 5, 80, 45, Qt::AlignCenter, "QEMU");
+        break;
+    case MAIN_COMPUTER_ITEM:
+        painter.drawRoundedRect(QRectF(5, 5, 80, 45), 4, 4);
+        painter.drawText(5, 5, 80, 45, Qt::AlignCenter, "Main\nComputer");
         break;
     case BUS_ITEM:
         painter.drawEllipse(12.5, 12.5, 25, 25);

@@ -37,7 +37,7 @@
 #include "../models/sensormodel.h"
 #include "saveAndLoad.h"
 #include "widgets/iconbutton.h"
-#include "../../MainComputer/src/maincomputer.h"
+#include "../../MainComputer/include/maincomputer.h"
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
