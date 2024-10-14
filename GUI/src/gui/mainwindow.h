@@ -58,6 +58,9 @@ private:
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
     void buffer_listener(const QString& data);
+    void handleProjectConnections(ProjectModel* newProject);
+    void removeAllTabs();
+
 
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
@@ -66,9 +69,15 @@ private slots:
     void close_previous_replay();
     void updateTimer();
     void handleNewLog(const QString &newLog, const QString &tabName);
-    void createNewTab(const QString &tabName, const QString & oldTabName);
-    void pressONTab(const QString & tabName);
+    void createNewTab(SerializableItem* model);
+    void updateTab(const QString &tabName, const QString & oldTabName);
+
+    void removeTab(SerializableItem* model);
+    void pressOnTab(const QString & tabName);
     void resetTabContent();
+
+    void onModelAdded(SerializableItem* model);
+    void onModelRemoved(SerializableItem* model);
 
 private:
     CustomScene* m_scene;
@@ -103,8 +112,13 @@ private:
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
     MainComputer mainComputer;
+
     QTabWidget* tabWidget;
     std::unordered_map<QString, QTextEdit*> textEditMap;
+    std::unordered_map<QString, QWidget*> tabMap;
     std::unordered_map<QString, int> tabIndexMap;
+
+    ProjectModel* m_currentProject = nullptr;
+
 };
 

@@ -51,6 +51,8 @@ public:
     void newParsedData(QList<QPair<QString, QString>> data);
 //    void addNewTab(const QString &tabName);
     void addNewTab(const QString &tabName, const QString &oldTabName="-1");
+    void removeTab(const QString &tabName);
+    void removeAllTabs();
     void delTabContent();
     void pressOnTab(const QString &tabName);
     void saveData(const QString &dirPath);
@@ -85,6 +87,8 @@ signals:
     void new_test_buffer_arrived(const char data[], size_t bufferSize);
     void newLogArrived(const QString & newLog, const QString &tabName);
     void newTab(const QString &tabName, const QString &oldTabName);
+    void delAllTabs();
+    void delTab(const QString &tabName);
     void tabPressed(const QString &tabName);
     void delAllTabContent();
 
