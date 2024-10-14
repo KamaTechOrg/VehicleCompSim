@@ -11,11 +11,22 @@
 
 namespace HSMns {
 namespace RPC {
-
-class HSM_GRPC_Client {
-
+/**
+ * @class HSM_GRPC_Client
+ * @brief Implementation of the HSM interface over gRPC.
+ */
+class HSM_GRPC_Client : public HSM_Interface {
 public:
+    /**
+     * @brief Constructor
+     * @param channel The gRPC channel to use to connect to the server.
+     */
     explicit HSM_GRPC_Client(std::shared_ptr<grpc::Channel> channel);
+
+    /**
+     * @brief Constructor
+     * @param host The hostname:port of the server to connect to.
+     */
     explicit HSM_GRPC_Client(std::string const& host = "localhost:50051");
 
     HSM_STATUS create_key_and_get_id(
@@ -55,7 +66,6 @@ public:
         const Ident &myId,
         const KeyId &keyId,
         bool needPrivilege = true) const;
-
 
 private:
     std::unique_ptr<HSM_gRpc::HSM_RPC::Stub> stub_;
