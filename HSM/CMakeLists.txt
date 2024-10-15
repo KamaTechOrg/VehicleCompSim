@@ -45,8 +45,13 @@ add_subdirectory(SHA_API)
 # add_subdirectory(Benchmark)
 add_subdirectory(HSM_Enums)
 add_subdirectory(API)
-add_subdirectory(RPC)
 
+if(GRPC_ENABLED)
+    message("GRPC_ENABLED: ${GRPC_ENABLED}")
+    add_subdirectory(RPC)
+else()
+    message(" >> to enable GRPC: cmake -DGRPC_ENABLED=ON, see RPC/README.md")
+endif()
 
 # add_executable(main main.cpp)
 
