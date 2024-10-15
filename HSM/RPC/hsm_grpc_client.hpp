@@ -33,7 +33,7 @@ public:
             const Ident &myId,
             KeyId &keyId,
             ENCRYPTION_ALGORITHM_TYPE type,
-            int bits = 512);
+            int bits = 512) override;
 
     HSM_STATUS encrypt(
         const std::vector<u_int8_t> &message,
@@ -41,14 +41,14 @@ public:
         ENCRYPTION_ALGORITHM_TYPE type,
         const Ident &myId,
         const KeyId &keyId,
-        bool needPrivilege = true) const;
+        bool needPrivilege = true) const override;
 
     HSM_STATUS decrypt(
         const std::vector<u_int8_t> &message,
         std::vector<u_int8_t> &decrypted_message,
         ENCRYPTION_ALGORITHM_TYPE type,
         const Ident &myId,
-        const KeyId &keyId) const;
+        const KeyId &keyId) const override;
 
     HSM_STATUS signMessage(
         const std::vector<u_int8_t> &message,
@@ -56,7 +56,7 @@ public:
         ENCRYPTION_ALGORITHM_TYPE sigAlg,
         HASH_ALGORITHM_TYPE hashAlg,
         const Ident &myId,
-        const KeyId &keyId) const;
+        const KeyId &keyId) const override;
 
     HSM_STATUS verify(
         const std::vector<u_int8_t> &message,
@@ -65,7 +65,7 @@ public:
         HASH_ALGORITHM_TYPE hashAlg,
         const Ident &myId,
         const KeyId &keyId,
-        bool needPrivilege = true) const;
+        bool needPrivilege = true) const override;
 
 private:
     std::unique_ptr<HSM_gRpc::HSM_RPC::Stub> stub_;
