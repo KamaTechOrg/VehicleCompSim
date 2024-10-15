@@ -36,19 +36,6 @@ target_link_options(sycl_flags INTERFACE "-fsycl")
 target_compile_options(sycl_flags INTERFACE "-fsycl")
 
 
-#testing
-# add_executable(APITest test/API_test.cpp)
-# target_link_libraries(APITest API GTest::gtest_main)
-# target_link_libraries(API RSA)
-# target_link_libraries(API AES)
-# target_link_libraries(API)
-
-
-
-# gtest_discover_tests(APITest)
-
-
-
 enable_testing()
 add_subdirectory(AES)
 add_subdirectory(BigNum)
@@ -59,9 +46,12 @@ add_subdirectory(SHA_API)
 add_subdirectory(HSM_Enums)
 add_subdirectory(API)
 
-
-
-
+if(GRPC_ENABLED)
+    message("GRPC_ENABLED: ${GRPC_ENABLED}")
+    add_subdirectory(RPC)
+else()
+    message(" >> to enable GRPC: cmake -DGRPC_ENABLED=ON, see RPC/README.md")
+endif()
 
 # add_executable(main main.cpp)
 
