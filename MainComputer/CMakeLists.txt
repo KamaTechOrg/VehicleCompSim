@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(MainComputer)
 
-
+#set for your version
 set(Qt6_DIR "C:/Qt/6.7.3/msvc20022_64/lib/cmake/Qt6")
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
