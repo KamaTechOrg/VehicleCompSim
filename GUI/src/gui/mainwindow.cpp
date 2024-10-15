@@ -77,145 +77,128 @@ MainWindow::MainWindow(QWidget* parent)
     m_globalState.addProject(startingProject);
     m_globalState.setCurrentProject(startingProject);
 
-    // Create a QTabWidget
     tabWidget = new QTabWidget();
-    // remote tab
-    QWidget* remoteTab = new QWidget();
-    QVBoxLayout* remoteTabLayout = new QVBoxLayout(remoteTab);
-    remoteTab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    remoteTab->setMinimumSize(400, 120);
-    m_remoteInterface = new RemoteInterface(this);
-    remoteTabLayout->addWidget(m_remoteInterface);
-    remoteTab->setLayout(remoteTabLayout);
-    tabWidget->addTab(remoteTab, "Remote");
-    tabIndexMap["Remote"] = tabWidget->indexOf(remoteTab);
-    // terminal tab
-    QWidget* terminalTab = new QWidget();
-    QVBoxLayout* tab2Layout = new QVBoxLayout(terminalTab);
-    QTextEdit *logTextEdit = new QTextEdit();
-    tab2Layout->addWidget(logTextEdit);
-    tabWidget->addTab(terminalTab, "Terminal");
-    textEditMap["Terminal"] = logTextEdit;
-    tabIndexMap["Terminal"] = tabWidget->indexOf(terminalTab);
-
-    m_mainLayout->addWidget(tabWidget);
     tabWidget->setTabPosition(QTabWidget::South);
     tabWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
+    createRemoteTab();
+    createTerminalTab();
+
+    m_mainLayout->addWidget(tabWidget);
+
     connect(&m_globalState, &GlobalState::currentProjectChanged, this, &MainWindow::onCurrentProjectChanged);
     connect(&m_globalState, &GlobalState::newLogArrived, this, &MainWindow::handleNewLog);
-//    connect(&m_globalState, &GlobalState::newTab, this, &MainWindow::createNewTab);
-//    connect(&m_globalState, &GlobalState::delTab, this, &MainWindow::removeTab);
-//    connect(&m_globalState, &GlobalState::delAllTabs, this, &MainWindow::removeAllTabs);
     connect(&m_globalState, &GlobalState::tabPressed, this, &MainWindow::pressOnTab);
 
     setupRunService();
 }
+void MainWindow::createRemoteTab() {
+    QWidget* remoteTab = new QWidget();
+    QVBoxLayout* remoteTabLayout = new QVBoxLayout(remoteTab);
+    remoteTab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    remoteTab->setMinimumSize(400, 120);
+
+    m_remoteInterface = new RemoteInterface(this);
+    remoteTabLayout->addWidget(m_remoteInterface);
+
+    int index = tabWidget->addTab(remoteTab, "Remote");
+
+    TabInfo info{remoteTab, nullptr, index, "Remote"};
+    tabInfoMap["Remote"] = info;
+}
+
+void MainWindow::createTerminalTab() {
+    QWidget* terminalTab = new QWidget();
+    QVBoxLayout* terminalTabLayout = new QVBoxLayout(terminalTab);
+    QTextEdit* logTextEdit = new QTextEdit();
+    terminalTabLayout->addWidget(logTextEdit);
+
+    int index = tabWidget->addTab(terminalTab, "Terminal");
+
+    TabInfo info{terminalTab, logTextEdit, index, "Terminal"};
+    tabInfoMap["Terminal"] = info;
+}
 
 void MainWindow::handleProjectConnections(ProjectModel* newProject) {
     if (m_currentProject) {
-        disconnect(m_currentProject, &ProjectModel::modelAdded, this, &MainWindow::onModelAdded);
-        disconnect(m_currentProject, &ProjectModel::modelRemoved, this, &MainWindow::onModelRemoved);
-//        disconnect(m_currentProject, &ProjectModel::modelUpdated, this, &MainWindow::onModelUpdated);
+        disconnect(m_currentProject, &ProjectModel::modelAdded, this, &MainWindow::createNewTab);
+        disconnect(m_currentProject, &ProjectModel::modelRemoved, this, &MainWindow::removeTab);
+        disconnect(m_currentProject, &ProjectModel::modelUpdated, this, &MainWindow::updateTab);
     }
 
-    connect(newProject, &ProjectModel::modelAdded, this, &MainWindow::onModelAdded);
-    connect(newProject, &ProjectModel::modelRemoved, this, &MainWindow::onModelRemoved);
-//    connect(newProject, &ProjectModel::modelUpdated, this, &MainWindow::onModelUpdated);
-}
-void MainWindow::onModelAdded(SerializableItem* model) {
-    createNewTab(model);
+    connect(newProject, &ProjectModel::modelAdded, this, &MainWindow::createNewTab);
+    connect(newProject, &ProjectModel::modelRemoved, this, &MainWindow::removeTab);
+    connect(newProject, &ProjectModel::modelUpdated, this, &MainWindow::updateTab);
 }
 
-void MainWindow::onModelRemoved(SerializableItem* model) {
-    removeTab(model);
-}
-
-///////////
 void MainWindow::createNewTab(SerializableItem* model) {
-    if(SensorModel* pSensorModel = dynamic_cast<SensorModel*>(model)){
+    if (auto* pSensorModel = dynamic_cast<SensorModel*>(model)) {
         QString tabName = "Sensor " + pSensorModel->priority();
         auto* newTab = new QWidget();
         auto* tabLayout = new QVBoxLayout(newTab);
         auto* textEdit = new QTextEdit();
         tabLayout->addWidget(textEdit);
-        tabWidget->addTab(newTab, tabName);
-        tabMap[tabName] = newTab;
-        tabIndexMap[tabName] = tabWidget->indexOf(newTab);
+        int index = tabWidget->addTab(newTab, tabName);
+
+        TabInfo info{newTab, textEdit, index, pSensorModel->getId()};
+        tabInfoMap[tabName] = info;
     }
 }
-void MainWindow::updateTab(const QString &tabName, const QString & oldTabName){
-    auto it = tabIndexMap.find(oldTabName);
-    if (it != tabIndexMap.end()) {
-        int oldTabIndex = it->second;
-        tabWidget->setTabText(oldTabIndex, tabName);
-        tabMap[tabName] = tabMap[oldTabName];
-        tabIndexMap[tabName] = oldTabIndex;
-        tabMap.erase(oldTabName);
-        tabIndexMap.erase(oldTabName);
+
+void MainWindow::updateTab(SerializableItem* model) {
+    if (auto* pSensorModel = dynamic_cast<SensorModel*>(model)) {
+        QString newTabName = "Sensor " + pSensorModel->priority();
+        auto it = std::find_if(tabInfoMap.begin(), tabInfoMap.end(),
+                               [&](const auto& pair) { return pair.second.modelId == pSensorModel->getId(); });
+
+        if (it != tabInfoMap.end()) {
+            QString oldTabName = it->first;
+            TabInfo info = it->second;
+            tabWidget->setTabText(info.index, newTabName);
+            tabInfoMap.erase(it);
+            tabInfoMap[newTabName] = info;
+        }
     }
 }
 
 void MainWindow::removeTab(SerializableItem* model) {
-    if(SensorModel* pSensorModel = dynamic_cast<SensorModel*>(model)) {
-        QString tabName = "Sensor " + pSensorModel->priority();
-        auto it = tabMap.find(tabName);
-        if (it != tabMap.end()) {
-            QWidget *tab = it->second;
-            int index = tabWidget->indexOf(tab);
-            if (index != -1) {
-                tabWidget->removeTab(index);
-                delete tab;
-                tabMap.erase(tabName);
-                tabIndexMap.erase(tabName);
-            }
+    if (auto* pSensorModel = dynamic_cast<SensorModel*>(model)) {
+        auto it = std::find_if(tabInfoMap.begin(), tabInfoMap.end(),
+                               [&](const auto& pair) { return pair.second.modelId == pSensorModel->getId(); });
+
+        if (it != tabInfoMap.end()) {
+            tabWidget->removeTab(it->second.index);
+            delete it->second.widget;
+            tabInfoMap.erase(it);
         }
     }
 }
+
 void MainWindow::removeAllTabs() {
-    std::vector<QString> tabsToRemove;
-    tabsToRemove.reserve(tabMap.size());
-    // First, collect the names of tabs to be removed
-    for (const auto& pair : tabMap) {
-        const QString& tabName = pair.first;
-        if (tabName != "Terminal" && tabName != "Remote") {
-            tabsToRemove.push_back(tabName);
-        }
-    }
-    // Then, remove the tabs
-    for (const QString& tabName : tabsToRemove) {
-        auto it = tabMap.find(tabName);
-        if (it != tabMap.end()) {
-            QWidget* tab = it->second;
-            int index = tabWidget->indexOf(tab);
-            if (index != -1) {
-                tabWidget->removeTab(index);
-                delete tab;
-                tabMap.erase(it);
-                tabIndexMap.erase(tabName);
-            }
-        }
-    }
-}
-
-void MainWindow::pressOnTab(const QString & tabName) {
-    auto it = tabIndexMap.find(tabName);
-    if (it != tabIndexMap.end()) {
-        tabWidget->setCurrentIndex(it->second);
-    }
-}
-
-void MainWindow::handleNewLog(const QString &newLog, const QString &tabName) {
-    auto it = tabMap.find(tabName);
-    if (it != tabMap.end()) {
-        QTextEdit* textEdit = it->second->findChild<QTextEdit*>();
-        if (textEdit) {
-            textEdit->append(newLog);
+    for (auto it = tabInfoMap.begin(); it != tabInfoMap.end();) {
+        if (it->first != "Terminal" && it->first != "Remote") {
+            tabWidget->removeTab(it->second.index);
+            delete it->second.widget;
+            it = tabInfoMap.erase(it);
         } else {
-            qWarning() << "Error in handleNewLog: QTextEdit not found in tab. Tab name: " << tabName;
+            ++it;
         }
+    }
+}
+
+void MainWindow::pressOnTab(const QString& tabName) {
+    auto it = tabInfoMap.find(tabName);
+    if (it != tabInfoMap.end()) {
+        tabWidget->setCurrentIndex(it->second.index);
+    }
+}
+
+void MainWindow::handleNewLog(const QString& newLog, const QString& tabName) {
+    auto it = tabInfoMap.find(tabName);
+    if (it != tabInfoMap.end() && it->second.textEdit) {
+        it->second.textEdit->append(newLog);
     } else {
-        qWarning() << "Error in handleNewLog: Tab not found. Tab name: " << tabName;
+        qWarning() << "Error in handleNewLog: Tab or QTextEdit not found. Tab name:" << tabName;
     }
 }
 
@@ -382,8 +365,6 @@ void MainWindow::onConnectionStatusChanged(globalConstants::ConnectionState stat
 
 
 void MainWindow::background_Layout() {
-//    QString imagePath1 = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
-//    m_currentFrameBackgroundPath = imagePath1;
     QString imagePath = QFileDialog::getOpenFileName(this, "Select Image", "", "Image Files (*.png *.jpg *.bmp)");
     m_currentMainBackgroundPath = imagePath;
     updateBackground();
@@ -454,10 +435,11 @@ void MainWindow::replayer() {
     m_mainLayout->addWidget(controlPanel);
     m_initializeSensorsData->initialize();
 }
-
-void MainWindow::resetTabContent(){
-    for (auto& item : textEditMap) {
-        item.second->clear(); // Clear the content
+void MainWindow::resetTabContent() {
+    for (auto& pair : tabInfoMap) {
+        if (pair.second.textEdit) {
+            pair.second.textEdit->clear();
+        }
     }
 }
 
