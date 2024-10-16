@@ -4,7 +4,7 @@
 #include <QCoreApplication>
 #include "SimulationRecorder.h"
 #include "globalstate.h"
-#include <QtSql>
+#include <QtSql/QtSql>
 #include <QtSql/QSqlDatabase>
 
 SimulationRecorder::SimulationRecorder(const QString &filePath, const QString &db_file_path)

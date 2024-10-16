@@ -5,7 +5,7 @@
 #ifndef VEHICLECOMPSIM_DB_HANDLER_H
 #define VEHICLECOMPSIM_DB_HANDLER_H
 
-#include <QtSql>
+#include <QtSql/QtSql>
 #include <QtSql/QSqlDatabase>
 #include "globalstate.h"
 #include "../../../Communication/utilities/constants.h"
