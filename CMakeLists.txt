@@ -14,7 +14,11 @@ else()
     message(FATAL_ERROR "No Target Architecture defined")
 endif()
 
+enable_testing()
+set(CTEST_OUTPUT_ON_FAILURE TRUE)
+
 # Add subdirectories
 add_subdirectory(Communication)
 add_subdirectory(MainComputer)
 add_subdirectory(GUI)
+add_subdirectory(GUI/tests)

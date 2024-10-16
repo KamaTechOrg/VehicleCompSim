@@ -22,13 +22,10 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/FetchDependencies.cmake)
 include_directories(${mongo-c-driver_SOURCE_DIR}/src/libbson/src)
 include_directories(${mongo-c-driver_BINARY_DIR}/src/libbson/src)
 
-enable_testing()
-
 # Add subdirectories
 add_subdirectory(resources)
 add_subdirectory(include/VehicleCompSim/utils)
 add_subdirectory(src)
-add_subdirectory(tests)
 
 # Create client executable
 qt_add_executable(ClientApp
@@ -51,7 +48,6 @@ target_link_libraries(ClientApp PRIVATE
     MainComputer
     VehicleCompSimUtils
     VehicleCompSimCore
-    services
     bson_static
 )
 
