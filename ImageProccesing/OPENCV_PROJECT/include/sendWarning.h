@@ -1,4 +1,4 @@
 #include <string>
 #include <iostream>
 
-void sendWarning(const std::string& msg);
+void sendWarningToConsole(const std::string& msg);

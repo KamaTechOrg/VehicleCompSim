@@ -49,14 +49,14 @@ int runLaneDetection(SafeQueue& queue) {
 				if (lane_depatured == 1) {
 					cv::Vec4i lane(lanes[0][0], lanes[0][1], lanes[0][2], lanes[0][3]);
 					display_red_line(frame, lane);
-					sendWarning(DEPARTURE_RIGHT_WARNING);
+					sendWarningToConsole(DEPARTURE_RIGHT_WARNING);
 					queue.enqueue(DEPARTURE_RIGHT_WARNING);
 
 				}
 				if (lane_depatured == 2) {
 					cv::Vec4i lane(lanes[1][0], lanes[1][1], lanes[1][2], lanes[1][3]);
 					display_red_line(frame, lane);
-					sendWarning(DEPARTURE_LEFT_WARNING);
+					sendWarningToConsole(DEPARTURE_LEFT_WARNING);
 					queue.enqueue(DEPARTURE_LEFT_WARNING);
 				}
 			}

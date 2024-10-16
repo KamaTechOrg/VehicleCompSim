@@ -46,8 +46,8 @@ public:
 
 private:
     void background_Layout();
-    void saveLayout();
-    void loadLayout();
+    void saveLayout(const QString &dirPath = QString());
+    void loadLayout(const QString &dirPath = QString());
     void setupToolBar();
     void setupRunService();
     void setupView();
@@ -58,6 +58,19 @@ private:
     void updateBackground();
     void resizeEvent(QResizeEvent* event) override;
     void buffer_listener(const QString& data);
+    void handleProjectConnections(ProjectModel* newProject);
+    void removeAllTabs();
+
+    void createRemoteTab();
+    void createTerminalTab();
+
+struct TabInfo {
+    QWidget* widget;
+    QTextEdit* textEdit;
+    int index;
+    QString modelId;
+};
+
 
 private slots:
     void onConnectionStatusChanged(globalConstants::ConnectionState state);
@@ -66,8 +79,12 @@ private slots:
     void close_previous_replay();
     void updateTimer();
     void handleNewLog(const QString &newLog, const QString &tabName);
-    void createNewTab(const QString &tabName, const QString & oldTabName);
-    void pressONTab(const QString & tabName);
+    void createNewTab(SerializableItem* model);
+    void updateTab(SerializableItem* model);
+    void removeTab(SerializableItem* model);
+    void pressOnTab(const QString & tabName);
+    void resetTabContent();
+
 
 private:
     CustomScene* m_scene;
@@ -89,7 +106,7 @@ private:
     SimulationControlPanel* controlPanel = nullptr;
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_centerLayout;
-    DB_handler *m_DB_handler;
+    DB_handler *m_DB_handler = nullptr;
     QLabel* m_connectionStatusLabel;
     QFrame* mainFrame;
     RemoteInterface* m_remoteInterface;
@@ -102,8 +119,11 @@ private:
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
     MainComputer mainComputer;
+
     QTabWidget* tabWidget;
-    std::unordered_map<QString, QTextEdit*> textEditMap;
-    std::unordered_map<QString, int> tabIndexMap;
+    std::unordered_map<QString, TabInfo> tabInfoMap;
+
+    ProjectModel* m_currentProject = nullptr;
+
 };
 

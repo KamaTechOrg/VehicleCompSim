@@ -17,6 +17,16 @@ struct pair_hash {
 };
 
 
+struct tuple_hash {
+    template <class T1, class T2, class T3>
+    std::size_t operator() (const std::tuple<T1, T2, T3>& tuple) const {
+        std::size_t h1 = std::hash<T1>()(std::get<0>(tuple));
+        std::size_t h2 = std::hash<T2>()(std::get<1>(tuple));
+        std::size_t h3 = std::hash<T3>()(std::get<2>(tuple));
+        return h1 ^ (h2 << 1) ^ (h3 << 2);
+    }
+};
+
 enum class ZONE_TYPES
 {
     CRITICAL_ZONE_1,
@@ -35,9 +45,23 @@ enum class WarningPriority {
 };
 
 struct TrackedObject {
-    TrackedObject() = default;
+    TrackedObject() :
+        distancePrev(-1),
+        distanceCurr(-1),
+        oldRelativSpeed(-1), 
+        zoneTypeIntersect(ZONE_TYPES::GENERAL),
+        warningPriority(WarningPriority::Safe)
+    {}
     TrackedObject(const std::string& _category, const cv::Rect2d& _rect)
-        : category(_category), bboxCurr(_rect), distancePrev(-1), oldRelativSpeed(-1), zoneTypeIntersect(ZONE_TYPES::GENERAL), warningPriority(WarningPriority::Safe), warningDescription("") {}
+        : 
+        category(_category), 
+        bboxCurr(_rect),
+        distancePrev(-1), 
+        distanceCurr(-1),
+        oldRelativSpeed(-1), 
+        zoneTypeIntersect(ZONE_TYPES::GENERAL), 
+        warningPriority(WarningPriority::Safe), 
+        warningDescription("") {}
     std::string category;
     cv::Rect2d bboxPrev;
     cv::Rect2d bboxCurr;

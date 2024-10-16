@@ -98,26 +98,30 @@ void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
 void GlobalState::newParsedData(QList<QPair<QString, QString>> data){
     emit parsedData(data);
 }
-void GlobalState::saveData(){
-    emit saveBtnPressed();
+void GlobalState::saveData(const QString &dirPath){
+    emit saveBtnPressed(dirPath);
 }
-void GlobalState::loadData(){
-    emit loadBtnPressed();
+void GlobalState::loadData(const QString &dirPath){
+    emit loadBtnPressed(dirPath);
 }
 void GlobalState::log(const QString &newLog, const QString &tabName) {
     emit newLogArrived(newLog, tabName);
 }
-//void GlobalState::addNewTab(const QString &tabName){
-//    emit newTab(tabName);
-//}
+void GlobalState::delTabContent() {
+    emit delAllTabContent();
+}
 void GlobalState::addNewTab(const QString &tabName, const QString &oldTabName){
     emit newTab(tabName, oldTabName);
 }
 void GlobalState::pressOnTab(const QString &tabName){
     emit tabPressed(tabName);
 }
-
-
+void GlobalState::removeTab(const QString &tabName){
+    emit delTab(tabName);
+}
+void GlobalState::removeAllTabs(){
+    emit delAllTabs();
+}
 
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");

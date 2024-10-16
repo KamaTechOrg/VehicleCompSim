@@ -18,12 +18,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../data")
 
 set(SOURCES
-    src/ApproachDangerZone.cpp
+    #src/ApproachDangerZone.cpp
     src/Distance.cpp
     src/Manager.cpp
     src/NewPrediction.cpp
     src/Poligon.cpp
-    src/Prediction.cpp
+    #src/Prediction.cpp
     src/tracking.cpp
     src/Visualization.cpp
     src/yolov3.cpp

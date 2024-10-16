@@ -10,4 +10,4 @@
 #include "constants.h"
 
 
-std::vector<std::pair<cv::Rect, std::string>> run_yolov3(cv::Mat& original_img, std::string& image_name);
+std::vector<std::pair<cv::Rect, std::string>> run_yolov3(cv::Mat& original_img);
