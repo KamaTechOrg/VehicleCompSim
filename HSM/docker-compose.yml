@@ -1,0 +1,16 @@
+services:
+  hsm:
+    image: hsm_grpc 
+    environment:
+      - MAKE_JOBS_N=${MAKE_JOBS_N:-5}
+      - HSM_PORT=${HSM_PORT:-50051}
+    build:
+      context: .
+      args:
+          MAKE_JOBS_N: ${MAKE_JOBS_N:-1}
+    volumes:
+      -  hsm_data:/data
+    ports:
+      - ${HSM_PORT:-50051}:${HSM_PORT:-50051}
+volumes:
+  hsm_data:
