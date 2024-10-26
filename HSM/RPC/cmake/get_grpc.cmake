@@ -24,45 +24,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
-if(GRPC_AS_SUBMODULE)
-  # One way to build a projects that uses gRPC is to just include the
-  # entire gRPC project tree via "add_subdirectory".
-  # This approach is very simple to use, but the are some potential
-  # disadvantages:
-  # * it includes gRPC's CMakeLists.txt directly into your build script
-  #   without and that can make gRPC's internal setting interfere with your
-  #   own build.
-  # * depending on what's installed on your system, the contents of submodules
-  #   in gRPC's third_party/* might need to be available (and there might be
-  #   additional prerequisites required to build them). Consider using
-  #   the gRPC_*_PROVIDER options to fine-tune the expected behavior.
-  #
-  # A more robust approach to add dependency on gRPC is using
-  # cmake's ExternalProject_Add (see cmake_externalproject/CMakeLists.txt).
-
-  # Include the gRPC's cmake build (normally grpc source code would live
-  # in a git submodule called "third_party/grpc", but this example lives in
-  # the same repository as gRPC sources, so we just look a few directories up)
-  add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/grpc EXCLUDE_FROM_ALL)
-  message(STATUS "Using gRPC via add_subdirectory.")
-
-  # After using add_subdirectory, we can now use the grpc targets directly from
-  # this build.
-  set(_PROTOBUF_LIBPROTOBUF libprotobuf)
-  set(_REFLECTION grpc++_reflection)
-  set(_ORCA_SERVICE grpcpp_orca_service)
-  if(CMAKE_CROSSCOMPILING)
-    find_program(_PROTOBUF_PROTOC protoc)
-  else()
-    set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
-  endif()
-  set(_GRPC_GRPCPP grpc++)
-  if(CMAKE_CROSSCOMPILING)
-    find_program(_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
-  else()
-    set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
-  endif()
-elseif(GRPC_FETCHCONTENT)
+if(GRPC_FETCHCONTENT)
   # Another way is to use CMake's FetchContent module to clone gRPC at
   # configure time. This makes gRPC's source code available to your project,
   # similar to a git submodule.

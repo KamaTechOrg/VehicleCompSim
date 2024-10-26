@@ -29,7 +29,7 @@ COPY . ./HSM
 
 WORKDIR /hsm-rpc/HSM/build
 
-RUN cmake -DGRPC_ENABLED=ON -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release ..
+RUN cmake -DENABLE_GRPC=ON -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_BUILD_TYPE=Release ..
 
 RUN make -j $MAKE_JOBS_N
 

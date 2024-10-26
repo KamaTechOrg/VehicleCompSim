@@ -50,7 +50,7 @@ if(GRPC_ENABLED)
     message("GRPC_ENABLED: ${GRPC_ENABLED}")
     add_subdirectory(RPC)
 else()
-    message(" >> to enable GRPC: cmake -DGRPC_ENABLED=ON, see RPC/README.md")
+    message("👉 to enable GRPC: cmake -DENABLE_GRPC=ON, see ${CMAKE_SOURCE_DIR}/RPC/README.md")
 endif()
 
 # add_executable(main main.cpp)
