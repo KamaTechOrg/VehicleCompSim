@@ -2,6 +2,7 @@
 
 
 MainComputerModel::MainComputerModel() {
+    m_type = ItemType::MainComputer;
     setPriority(0);
     setName("Main Computer");
     setRunCommand("a private running method");

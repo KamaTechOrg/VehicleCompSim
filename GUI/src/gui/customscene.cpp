@@ -294,8 +294,7 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
             QGraphicsItem* item = buildBaseItemFromModel(model);
             if (item) {
                 addItem(item);
-                if(model->itemType() == ItemType::Sensor){
-                    SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+                if(SensorItem* sensorItem = dynamic_cast<SensorItem*>(item)){
                     m_sensors[sensorItem->getModel().priority()] = sensorItem;
                 }
             }
@@ -393,8 +392,7 @@ void CustomScene::onModelAdded(SerializableItem* model) {
     BaseItem* item = buildBaseItemFromModel(model);
     if (item) {
         addItem(item);
-        if(model->itemType() == ItemType::Sensor){
-            SensorItem* sensorItem = dynamic_cast<SensorItem*>(item);
+        if(SensorItem* sensorItem = dynamic_cast<SensorItem*>(item)){
             m_sensors[sensorItem->getModel().priority()] = sensorItem;
         }
     }
@@ -424,8 +422,7 @@ void CustomScene::onModelUpdated(SerializableItem* model) {
 }
 
 BaseItem* CustomScene::buildBaseItemFromModel(SerializableItem* model) {
-    if (model->itemType() == ItemType::Sensor) {
-        SensorModel* sensorModel = dynamic_cast<SensorModel*>(model);
+    if (SensorModel* sensorModel = dynamic_cast<SensorModel*>(model)) {
         return new SensorItem(sensorModel);
     } else if (model->itemType() == ItemType::Connector) {
         return new ConnectorItem();
