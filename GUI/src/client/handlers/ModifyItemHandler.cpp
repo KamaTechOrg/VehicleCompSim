@@ -25,6 +25,7 @@ void ModifyItemHandler::handle(const QJsonObject& message) {
     }
 
     if (model) {
+        model->deserialize(message);
         ProjectModel* currentProject = GlobalState::getInstance().currentProject();
         if (currentProject) {
             currentProject->updateModel(model);
