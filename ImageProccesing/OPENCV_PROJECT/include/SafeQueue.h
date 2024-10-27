@@ -1,5 +1,3 @@
-#pragma once
-
 #include <queue>
 #include <string>
 #include <mutex>
@@ -13,6 +11,7 @@ private:
 
 public:
     void enqueue(const std::string& str);
+    void clearQueue();
         
     std::string dequeue() ;
 

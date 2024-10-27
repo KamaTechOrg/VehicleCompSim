@@ -1,5 +1,12 @@
 #include "SafeQueue.h"
 
+void SafeQueue::clearQueue() {
+	std::lock_guard<std::mutex> lock(mtx);
+	while (!queue.empty()) {
+		queue.pop();
+	}
+}
+
 void SafeQueue::enqueue(const std::string& str) {
 	std::lock_guard<std::mutex> lock(mtx);
 	queue.push(str);

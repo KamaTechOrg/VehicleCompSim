@@ -5,9 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "constants.h"
 #include "sendWarning.h"
-#include <SafeQueue.h>
 
 const std::string videoPath = DATA_DIR "\\videos\\lane_vid2.mp4";
 std::vector<cv::Point> departure_video_roi_points =
