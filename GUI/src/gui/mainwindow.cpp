@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_saveAndLoad = new saveAndLoad(&m_globalState);
     m_parser = new parser();
     // for test only
-    m_bufferTest = new buffer_test();
+//    m_bufferTest = new buffer_test();
 
     setupToolBar();
 
@@ -495,7 +495,7 @@ void MainWindow::onRunStart(QString com_server_ip)
         m_DB_handler = new DB_handler();
     }
     // for test only
-    m_bufferTest->start_timer();
+//    m_bufferTest->start_timer();
 
     m_globalState.setIsRunning(true);
     // m_startBtn->hide();
@@ -525,7 +525,7 @@ void MainWindow::onRunEnd()
     m_countdownTimer->stop();
 
     // for test only
-    m_bufferTest->stop_timer();
+//    m_bufferTest->stop_timer();
 
 }
 
