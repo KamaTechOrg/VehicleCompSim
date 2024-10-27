@@ -6,6 +6,12 @@
 #include <memory>
 #include <chrono>
 
+// This class represents an And-Condition,
+// it contains two other coditions, and on
+// validate() it checks if both of the are met.
+
+// It also features an elipsed time that can
+// between the two conditions validation.
 class AndCondition : public CompositeCondition {
 public:
     AndCondition(std::shared_ptr<ConditionBase> lhs, std::shared_ptr<ConditionBase> rhs, std::chrono::milliseconds elapsedTime = std::chrono::milliseconds(constants::MAX_ELAPSED_TIME));

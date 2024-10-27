@@ -5,7 +5,6 @@
 #include <QSpinBox>
 
 #include "SimpleCondition.h"
-#include "BinaryTreeBuilder.h"
 #include "CompositeCondition.h"
 #include "AndCondition.h"
 #include "OrCondition.h"

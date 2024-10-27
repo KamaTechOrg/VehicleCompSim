@@ -5,6 +5,8 @@
 
 #include "json.hpp"
 
+// This class represents an Action that will take place
+// if one of the conditions is met
 class Action
 {
 public:

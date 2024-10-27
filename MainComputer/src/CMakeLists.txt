@@ -3,7 +3,6 @@ target_sources(MainComputer PRIVATE
     CompositeCondition.cpp
     OrCondition.cpp
     AndCondition.cpp
-    BinaryTreeBuilder.cpp
     ContainsCondition.cpp
     EndsWithCondition.cpp
     EqualsToCondition.cpp
