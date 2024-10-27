@@ -12,6 +12,7 @@ public:
 
     void addModel(SerializableItem* model);
     void removeModel(SerializableItem* model);
+    void removeModel(QString id);
     void updateModel(SerializableItem* model);
 
     QString id() const { return m_id; }
