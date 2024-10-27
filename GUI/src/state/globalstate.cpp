@@ -110,19 +110,9 @@ void GlobalState::log(const QString &newLog, const QString &tabName) {
 void GlobalState::delTabContent() {
     emit delAllTabContent();
 }
-void GlobalState::addNewTab(const QString &tabName, const QString &oldTabName){
-    emit newTab(tabName, oldTabName);
-}
 void GlobalState::pressOnTab(const QString &tabName){
     emit tabPressed(tabName);
 }
-void GlobalState::removeTab(const QString &tabName){
-    emit delTab(tabName);
-}
-void GlobalState::removeAllTabs(){
-    emit delAllTabs();
-}
-
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");
     m_myClientId = settings.value("clientId").toString();

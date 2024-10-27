@@ -175,7 +175,9 @@ void QemuSensorItem::Editor::onSaveBtnClicked()
     model.setNet(net->text());
     model.setAppend(append->text());
     model.setNographic(nographic->checkState() == Qt::Checked);
-
+    if(GlobalState::getInstance().connectionState() != globalConstants::ConnectionState::Online){
+        GlobalState::getInstance().currentProject()->updateModel(&model);
+    }
     model.notifyItemModified();
     onCancelBtnCliked();
 }
@@ -243,8 +245,8 @@ void QemuSensorItem::Editor::open()
 
 void QemuSensorItem::Editor::close()
 {
-    qInfo() << "closing qemu snesor" ;
-    GlobalState::getInstance().log("closing qemu snesor", "Terminal");
+    qInfo() << "closing qemu sensor" ;
+    GlobalState::getInstance().log("closing qemu sensor", "Terminal");
 
 }
 

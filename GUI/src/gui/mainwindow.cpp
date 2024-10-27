@@ -133,7 +133,12 @@ void MainWindow::handleProjectConnections(ProjectModel* newProject) {
 
 void MainWindow::createNewTab(SerializableItem* model) {
     if (auto* pSensorModel = dynamic_cast<SensorModel*>(model)) {
-        QString tabName = "Sensor " + pSensorModel->priority();
+        QString tabName;
+        if(auto* pQemuModel = dynamic_cast<QemuSensorModel*>(model)){
+            tabName = "Qemu " + pQemuModel->priority();
+        }else{
+            tabName = "Sensor " + pSensorModel->priority();
+        }
         auto* newTab = new QWidget();
         auto* tabLayout = new QVBoxLayout(newTab);
         auto* textEdit = new QTextEdit();
@@ -147,7 +152,12 @@ void MainWindow::createNewTab(SerializableItem* model) {
 
 void MainWindow::updateTab(SerializableItem* model) {
     if (auto* pSensorModel = dynamic_cast<SensorModel*>(model)) {
-        QString newTabName = "Sensor " + pSensorModel->priority();
+        QString newTabName;
+        if(auto* pQemuModel = dynamic_cast<QemuSensorModel*>(model)){
+            newTabName = "Qemu " + pQemuModel->priority();
+        }else{
+            newTabName = "Sensor " + pSensorModel->priority();
+        }
         auto it = std::find_if(tabInfoMap.begin(), tabInfoMap.end(),
                                [&](const auto& pair) { return pair.second.modelId == pSensorModel->getId(); });
 
@@ -185,16 +195,40 @@ void MainWindow::removeAllTabs() {
         }
     }
 }
-
 void MainWindow::pressOnTab(const QString& tabName) {
+    QString qemuName = "Qemu " + tabName;
+    QString sensorName = "Sensor " + tabName;
     auto it = tabInfoMap.find(tabName);
+    if (it == tabInfoMap.end()) {
+        it = tabInfoMap.find(qemuName);
+    }
+    if (it == tabInfoMap.end()) {
+        it = tabInfoMap.find(sensorName);
+    }
     if (it != tabInfoMap.end()) {
         tabWidget->setCurrentIndex(it->second.index);
+    } else {
+        qWarning() << "Error in pressOnTab: Tab not found. Tab name:" << tabName;
     }
 }
 
+//void MainWindow::pressOnTab(const QString& tabName) {
+//    auto it = tabInfoMap.find(tabName);
+//    if (it != tabInfoMap.end()) {
+//        tabWidget->setCurrentIndex(it->second.index);
+//    }
+//}
 void MainWindow::handleNewLog(const QString& newLog, const QString& tabName) {
+    QString qemuName = "Qemu " + tabName;
+    QString sensorName = "Sensor " + tabName;
     auto it = tabInfoMap.find(tabName);
+    if (it == tabInfoMap.end()) {
+        it = tabInfoMap.find(qemuName);
+    }
+    if (it == tabInfoMap.end()) {
+        it = tabInfoMap.find(sensorName);
+    }
+
     if (it != tabInfoMap.end() && it->second.textEdit) {
         it->second.textEdit->append(newLog);
     } else {
