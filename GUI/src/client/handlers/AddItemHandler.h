@@ -9,6 +9,6 @@ public:
     void handle(const QJsonObject& message) override;
 
 private:
-    SerializableItem* createModel(int itemType, const QJsonObject& jsonObj);
+    SerializableItem* createModel(ItemType itemType, const QJsonObject& jsonObj);
 };
 

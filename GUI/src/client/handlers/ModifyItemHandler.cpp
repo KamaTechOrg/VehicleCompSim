@@ -14,7 +14,16 @@ void ModifyItemHandler::handle(const QJsonObject& message) {
     }
 
     int itemType = message[ClientConstants::KEY_TYPE].toInt();
-    SerializableItem* model = createModel(itemType, message);
+    SerializableItem* model = nullptr;
+    for (auto md : GlobalState::getInstance().currentProject()->models())
+    {
+        if (md->getId() == message["id"].toString())
+        {
+            model = md;
+            break;
+        }
+    }
+
     if (model) {
         ProjectModel* currentProject = GlobalState::getInstance().currentProject();
         if (currentProject) {
