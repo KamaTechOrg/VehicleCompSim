@@ -10,6 +10,23 @@ CustomWidget::CustomWidget(const WIDGET_TYPES type, QWidget* parent)
     : QWidget(parent), m_type(type) {
     setFixedSize(90, 55);
     setAcceptDrops(true);
+
+    if (type == MAIN_COMPUTER_ITEM)
+    {
+        QObject::connect(&GlobalState::getInstance(), &GlobalState::currentProjectChanged, [this](){
+            switchMainComputerWidgetVisability();
+            static auto modelAddConnection = QObject::connect(GlobalState::getInstance().currentProject(), &ProjectModel::modelAdded, this, &CustomWidget::switchMainComputerWidgetVisability);
+            static auto modelRemovedConnection = QObject::connect(GlobalState::getInstance().currentProject(), &ProjectModel::modelRemoved, this, &CustomWidget::switchMainComputerWidgetVisability);
+
+            QObject::disconnect(modelAddConnection);
+            QObject::disconnect(modelRemovedConnection);
+
+            modelAddConnection = QObject::connect(GlobalState::getInstance().currentProject(), &ProjectModel::modelAdded, this, &CustomWidget::switchMainComputerWidgetVisability);
+            modelRemovedConnection = QObject::connect(GlobalState::getInstance().currentProject(), &ProjectModel::modelRemoved, this, &CustomWidget::switchMainComputerWidgetVisability);
+        });
+
+
+    }
 }
 
 SerializableItem *CustomWidget::toSerializableItem(WIDGET_TYPES type)
@@ -57,6 +74,8 @@ void CustomWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
+    if (currentProjectHasMainComputer) return;
+
     if (!(event->buttons() & Qt::LeftButton)) {
         return;
     }
@@ -75,4 +94,18 @@ void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
     drag->setPixmap(pixmap);
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+}
+
+void CustomWidget::switchMainComputerWidgetVisability()
+{
+    currentProjectHasMainComputer = false;
+    for (auto model: GlobalState::getInstance().currentProject()->models())
+    {
+        if (dynamic_cast<MainComputerModel*>(model))
+        {
+            currentProjectHasMainComputer = true;
+            break;
+        }
+    }
+    setStyleSheet(QString() + "color: " + (currentProjectHasMainComputer ?  "red" : "green") + ";");
 }

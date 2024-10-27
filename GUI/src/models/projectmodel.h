@@ -19,7 +19,7 @@ public:
     bool isPublished() const { return m_isPuplished; }
     void setPublished(bool value) { m_isPuplished = value; }
     
-    QList<SerializableItem*> models() const { return m_models.values(); }
+    QList<SerializableItem*> models() const { return  m_models.values(); }
 
 signals:
     void modelAdded(SerializableItem* model);

@@ -3,7 +3,7 @@
 #include <thread>
 #include <QPushButton>
 #include <QFileDialog>
-
+#include <QMessageBox>
 
 
 #include "app_utils.h"
@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
-    toolBar->addAction("mainComp", [this] { mainComputer.openEditor(); });
 
     setupView();
 

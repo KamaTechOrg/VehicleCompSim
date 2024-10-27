@@ -1,17 +1,7 @@
 #include "maincomputermodel.h"
 
-int MainComputerModel::objectsCount = 0;
 
 MainComputerModel::MainComputerModel() {
-    if (objectsCount != 0)
-    {
-        throw std::runtime_error("only one main computer object can be made!");
-    }
-    else
-    {
-        ++objectsCount;
-    }
-
     setPriority(0);
     setName("Main Computer");
     setRunCommand("a private running method");
@@ -19,7 +9,6 @@ MainComputerModel::MainComputerModel() {
 
 MainComputerModel::~MainComputerModel()
 {
-    --objectsCount;
 }
 
 void MainComputerModel::setGuiData(QString _guiData)

@@ -37,7 +37,6 @@
 #include "../models/sensormodel.h"
 #include "saveAndLoad.h"
 #include "widgets/iconbutton.h"
-#include "../../MainComputer/include/maincomputer.h"
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -102,7 +101,6 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
-    MainComputer mainComputer;
     QTabWidget* tabWidget;
     std::unordered_map<QString, QTextEdit*> textEditMap;
     std::unordered_map<QString, int> tabIndexMap;

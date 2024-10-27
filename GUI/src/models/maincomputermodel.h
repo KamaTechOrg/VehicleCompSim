@@ -29,14 +29,13 @@ public:
 signals:
     void guiDataChanged();
     void logicDataChanged();
-
+    void modelExistChanged(bool exist);
 private:
 
     MainComputer m_mainComputer;
     std::string& guiDataRef = JsonLoader::guiData;
     std::string& logicDataRef = JsonLoader::logicData;
 
-    static int objectsCount;
 };
 
 #endif // MAINCOMPUTERMODEL_H

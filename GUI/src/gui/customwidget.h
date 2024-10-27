@@ -29,4 +29,7 @@ protected:
 private:
     WIDGET_TYPES m_type;
     QPoint m_dragStartPosition;
+    bool currentProjectHasMainComputer = false;
+
+    void switchMainComputerWidgetVisability();
 };

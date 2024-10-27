@@ -1,7 +1,10 @@
 #include "editpanel.h"
 #include "qemusensormodel.h"
+#include "maincomputermodel.h"
 #include "editors/QemuSensorItem_Editor.h"
-#include"editors/SensorItem_Editor.h"
+#include "editors/SensorItem_Editor.h"
+#include "editors/MainComputer_Editor.h"
+#include "editors/tester3.h"
 
 void EditPanel::loadNewEditor(EditPanel::Editor *editor)
 {
@@ -47,7 +50,12 @@ void EditPanel::onGlobalStateCurrentSensorModelChanged()
 
 EditPanel::Editor *EditPanel::getEditorForModel(SensorModel *model)
 {
+
     if (!model) return nullptr;
+    if (dynamic_cast<MainComputerModel*>(model))
+    {
+        return new MainComputerItem::Editor(dynamic_cast<MainComputerModel*>(model));
+    }
     if (dynamic_cast<QemuSensorModel*>(model))
     {
         return new QemuSensorItem::Editor(dynamic_cast<QemuSensorModel*>(model));

@@ -29,6 +29,7 @@ target_include_directories(services PRIVATE
     ${CMAKE_SOURCE_DIR}/Communication/server/include
     ${CMAKE_SOURCE_DIR}/Communication/client/include
     ${CMAKE_SOURCE_DIR}/Communication/utilities
+    ${CMAKE_SOURCE_DIR}/MainComputer/include
 )
 
-target_link_libraries(services PUBLIC Qt6::Core Qt6::Widgets VehicleCompSimUtils server_lib client_lib)
+target_link_libraries(services PUBLIC Qt6::Core Qt6::Widgets VehicleCompSimUtils server_lib client_lib MainComputer)
