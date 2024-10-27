@@ -67,7 +67,7 @@ void ExplorerBox::showContextMenu(const QPoint& pos)
 	QMenu contextMenu;
 	QFont font;
 	font.setBold(true);
-	QAction* addAction = new QAction("Add", this);
+	QAction* addAction = new QAction("New", this);
 	addAction->setFont(font);
 	QAction* renameAction = new QAction("Rename", this);
 	renameAction->setFont(font);
