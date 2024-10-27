@@ -64,15 +64,23 @@ void SimulationReplayer::clear_current_events(){
         timer->deleteLater();
     }
     m_timers.clear();
+    m_remainingTimes.clear();
 }
+
 void SimulationReplayer::pauseSimulation() {
-    for(auto timer : m_timers){
-        timer->stop();
+    for(auto timer : m_timers) {
+        if (timer->isActive()) {
+            m_remainingTimes[timer] = timer->remainingTime();
+            timer->stop();
+        }
     }
 }
+
 void SimulationReplayer::playSimulation() {
-    for(auto timer : m_timers){
-        timer->start();
+    for(auto timer : m_timers) {
+        if (!timer->isActive() && m_remainingTimes.contains(timer)) {
+            timer->start(m_remainingTimes[timer]);
+        }
     }
 }
 
