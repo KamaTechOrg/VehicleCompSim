@@ -6,6 +6,7 @@
 #include <mutex>
 #include <condition_variable>
 
+// Runs all comuunication activities with sensors and Image Processing
 class Communication {
 public:
     Communication();

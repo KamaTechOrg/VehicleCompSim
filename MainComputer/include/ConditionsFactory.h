@@ -13,7 +13,9 @@
 #include "AndCondition.h"
 #include "OrCondition.h"
 
-
+/// <summary>
+/// Generate appropriate classes for each type of condition
+/// </summary>
 class ConditionsFactory
 {
 public:

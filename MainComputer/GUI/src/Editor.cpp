@@ -50,6 +50,7 @@ void Editor::save()
 
 bool Editor::saveLogicDataToJson()
 {
+	// get the data from the gui fields
 	nlohmann::json::array_t jsonData;
 	for (auto scenario : _scenariosEditors)
 	{
@@ -60,10 +61,14 @@ bool Editor::saveLogicDataToJson()
 			return false;
 		jsonData.push_back(current);
 	}
+	
+	// save to JSON file
 	JsonLoader().saveConditionsLogic(jsonData);
-	return true;
-	// TODO: save and then load the main computer "backend" in running time with the new conditions
+	
+	// load the "backend" engine of the main computer with the new conditions
 	ConditionsManager().loadFromJson();
+
+	return true;
 }
 
 bool Editor::saveGuiDataToJson()
