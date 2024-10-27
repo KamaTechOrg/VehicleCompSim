@@ -212,12 +212,6 @@ void MainWindow::pressOnTab(const QString& tabName) {
     }
 }
 
-//void MainWindow::pressOnTab(const QString& tabName) {
-//    auto it = tabInfoMap.find(tabName);
-//    if (it != tabInfoMap.end()) {
-//        tabWidget->setCurrentIndex(it->second.index);
-//    }
-//}
 void MainWindow::handleNewLog(const QString& newLog, const QString& tabName) {
     QString qemuName = "Qemu " + tabName;
     QString sensorName = "Sensor " + tabName;

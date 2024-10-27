@@ -16,7 +16,7 @@ public:
     parser();
     QList<QPair<QString, QString>> extractBufferData(const QByteArray& buffer, size_t bufferSize, const QList<QList<QString>>& columnInfo);
 public slots:
-    void parseBuffer(const QString& buffer, size_t bufferSize);
+    void parseBuffer(const QString& buffer);
     void setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap);
 private:
     QMap<int, QList<QList<QString>>> sensorInfoMap = {};

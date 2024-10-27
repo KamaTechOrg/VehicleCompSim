@@ -22,7 +22,7 @@ DB_handler::DB_handler() {
     connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &DB_handler::write_data_to_DB);
 }
 
-void DB_handler::write_data_to_DB(const QString& data, size_t bufferSize) const {
+void DB_handler::write_data_to_DB(const QString& data) const {
     const QStringList columnInfo = {"time", "src_id", "dest_id", "len", "buffer"};
     QStringList pieces = data.split(',', Qt::SkipEmptyParts);
     if (!sqlitedb->isOpen() && !sqlitedb->open()) {

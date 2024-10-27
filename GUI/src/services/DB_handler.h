@@ -25,7 +25,7 @@ public:
 
 
 public slots:
-    void write_data_to_DB(const QString& data, size_t bufferSize) const;
+    void write_data_to_DB(const QString& data) const;
     void update_sensor_data(const wint_t& sensorId, QList<QList<QString>> data);
 };
 

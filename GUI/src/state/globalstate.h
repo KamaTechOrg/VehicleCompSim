@@ -48,6 +48,7 @@ public:
 
     void ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap);
     void newData(const QString& newData);
+    void newRecordData(const QString& newData);
     void newParsedData(QList<QPair<QString, QString>> data);
     void delTabContent();
     void pressOnTab(const QString &tabName);
@@ -74,7 +75,8 @@ signals:
 
     void maxMessageCountChanged(int maxMessageCount);
     void ParserInfoArrived(QMap<int, QList<QList<QString>>> parseInfoMap);
-    void newDataArrived(const QString buffer, size_t bufferSize);
+    void newDataArrived(const QString buffer);
+    void newRecordDataArrived(const QString buffer);
     void parsedData(QList<QPair<QString, QString>> data);
     void saveBtnPressed(const QString &dirPath);
     void loadBtnPressed(const QString &dirPath);
