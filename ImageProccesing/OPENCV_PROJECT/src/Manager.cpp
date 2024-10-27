@@ -1,11 +1,12 @@
 #include "Manager.h"
 #include "Visualization.h"
 #include "sendWarning.h"
+#include "InputData.h"
 
 
 //=============================================================================
-Manager::Manager(SafeQueue& queue, const std::string& videoPath, const std::string& videoDir)
-    : m_queue(queue), m_videoPath(videoPath), m_videoDir(videoDir) {}
+Manager::Manager(SafeQueue& queue)
+    : m_queue(queue), m_videoDir(InputData::getInstance().getVideosDirPath()) {}
 //=============================================================================
 /**
 * @brief Open Video:
@@ -126,21 +127,54 @@ void Manager::drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetectio
     }
 }
 //=============================================================================
+void Manager::resetMembers(const std::string& videoName)
+{
+    m_videoPath = m_videoDir + "\\" + videoName;
+    m_trackerManager = TrackerManager();
+    m_predictedObjects.clear();
+    m_queue.clearQueue();
+}
+//=============================================================================
+//void Manager::runTracking() {
+//    cv::VideoCapture cap = openVideo();
+//    if (!cap.isOpened()) return;
+//    cap.set(cv::CAP_PROP_POS_FRAMES, FRAME_BEGIN - 1);
+//
+//    int frameCount = FRAME_BEGIN;
+//    cv::Mat frame;
+//
+//    while (cap.read(frame)) {
+//        processFrame(frame, frameCount);
+//        ++frameCount;
+//    }
+//
+//    cap.release();
+//    cv::destroyAllWindows();
+//}
+//=============================================================================
 void Manager::runTracking() {
-    cv::VideoCapture cap = openVideo();
-    if (!cap.isOpened()) return;
-    cap.set(cv::CAP_PROP_POS_FRAMES, FRAME_BEGIN - 1);
+    const auto& videoZonesPoligons = InputData::getInstance().getAllVideosPoligons();
 
-    int frameCount = FRAME_BEGIN;
-    cv::Mat frame;
+    for (const auto& [videoName, _] : videoZonesPoligons)
+    {
+        NewPrediction::setCurrentVideoPoligons(videoName);
+        resetMembers(videoName);
 
-    while (cap.read(frame)) {
-        processFrame(frame, frameCount);
-        ++frameCount;
+        cv::VideoCapture cap = openVideo();
+        if (!cap.isOpened()) return;
+        cap.set(cv::CAP_PROP_POS_FRAMES, FRAME_BEGIN - 1);
+
+        int frameCount = FRAME_BEGIN;
+        cv::Mat frame;
+
+        while (cap.read(frame)) {
+            processFrame(frame, frameCount);
+            ++frameCount;
+        }
+
+        cap.release();
+        cv::destroyAllWindows();
     }
-
-    cap.release();
-    cv::destroyAllWindows();
 }
 //=============================================================================
 //void Manager::matchOverlapBoxes(std::unordered_map<int, TrackedObject>& OldPredictedObjects, std::unordered_map<int, TrackedObject>& NewPredictedObjects) {

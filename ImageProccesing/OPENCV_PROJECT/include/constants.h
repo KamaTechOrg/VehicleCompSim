@@ -12,10 +12,11 @@
 #include <functional>
 #include "SafeQueue.h"
 
-
 const std::string CFG_FILE = DATA_DIR "\\weights\\yolov3.cfg";
 const std::string WEIGHTS_FILE = DATA_DIR "\\weights\\yolov3.weights";
 const std::string CATEGORIES_FILE = DATA_DIR "\\weights\\coco.names";
+
+const std::string VIDEO_DATA = DATA_DIR "\\data.json";
 
 
 const std::string DEPARTURE_RIGHT_WARNING = "Lane Departure Right Detected!";
@@ -46,9 +47,11 @@ namespace OBJECT_CATEGORY
 }
 
 const std::string VIDEO_DIR = DATA_DIR "\\videos";
-const std::string VIDEO_PATH = VIDEO_DIR + "\\01c71072-718028b8.mov";
+//const std::string VIDEO_PATH = VIDEO_DIR + "\\01c71072-718028b8.mov";
+//const std::string VIDEO_NAME = "01c71072-718028b8.mov";
 //const std::string VIDEO_PATH = VIDEO_DIR + "\\01f2bc5a-5a845805.mov";
 //const std::string VIDEO_PATH = VIDEO_DIR+"\\0000f77c-6257be58.mov";PROVING DAVID'S HYPOTESYS
+
 constexpr int FRAME_BEGIN = 0;// 580;
 
 
@@ -66,16 +69,16 @@ constexpr float CENTER_DISTANCE_THRESHOLD = 50.f;
 constexpr float MIN_INTERSECTION_AREA = 0.5f;
 const std::pair<int, int> IMAGE_BORDERS = std::pair<int, int>(1280, 720);//cols, rows
 
-const std::unordered_map<std::string, float> WARNING_PERCENTAGE_MAP = {
-    {"car", 0.15},
-    {"person", 0.03},
-    {"traffic light", 100.0},
-    {"truck", 0.3},
-    {"bicycle", 0.1},
-    {"motorbike", 0.1},
-    {"bus", 0.3},
-    {"train", 0.2}
-};
+//const std::unordered_map<std::string, float> WARNING_PERCENTAGE_MAP = {
+//    {"car", 0.15},
+//    {"person", 0.03},
+//    {"traffic light", 100.0},
+//    {"truck", 0.3},
+//    {"bicycle", 0.1},
+//    {"motorbike", 0.1},
+//    {"bus", 0.3},
+//    {"train", 0.2}
+//};
 
 const std::unordered_map<std::string, std::pair<float, float>> OBJECTS_HEIGHT_WIDTH = {
     {"car", {1.55f, 1.2f}},
@@ -116,15 +119,6 @@ namespace TRAPEZOID
         inline const cv::Point DR(CRITICAL_ZONE_1::DR.x + base, CRITICAL_ZONE_1::DR.y);
         inline const cv::Point UR(CRITICAL_ZONE_2::UR.x + int(percent * float(base)), CRITICAL_ZONE_2::UL.y);
         inline const cv::Point UL(CRITICAL_ZONE_2::UL.x - int(percent * float(base)), CRITICAL_ZONE_2::UL.y);
-    }
-    namespace CRITICAL_ZONE
-    {
-        //ZONE PRIORITY 1:
-        inline const cv::Point DL = CRITICAL_ZONE_1::DL;
-        inline const cv::Point DR = CRITICAL_ZONE_1::DR;
-        //ZONE PRIORITY 2:
-        inline const cv::Point UR = CRITICAL_ZONE_2::UR;
-        inline const cv::Point UL = CRITICAL_ZONE_2::UL;
     }
 }
 
@@ -170,7 +164,7 @@ const std::unordered_map<std::pair<ZONE_TYPES, std::string>, std::pair<WarningPr
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BICYCLE}, {WarningPriority::Low, "bicycle in TRACKED_ZONE"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::MOTORBIKE}, {WarningPriority::Low, "motorbike in TRACKED_ZONE"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BUS}, {WarningPriority::Low, "bus in TRACKED_ZONE"} },
-    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::Critical, "train in TRACKED_ZONE"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::Low, "train in TRACKED_ZONE"} },
 
     { { ZONE_TYPES::GENERAL, OBJECT_CATEGORY::CAR}, {WarningPriority::Safe, ""} },
     { { ZONE_TYPES::GENERAL, OBJECT_CATEGORY::PERSON}, {WarningPriority::Safe, ""} },
@@ -188,12 +182,28 @@ const std::unordered_map<std::tuple<ZONE_TYPES, std::string, bool>, std::pair<Wa
     { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::CAR, false}, {WarningPriority::High, "Car slowing down in CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::TRUCK, true}, {WarningPriority::Safe, "Truck moving safely in CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::TRUCK, false}, {WarningPriority::High, "Truck slowing down in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::BICYCLE, true}, {WarningPriority::Safe, "Bicycle moving safely in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::BICYCLE, false}, {WarningPriority::High, "Bicycle slowing down in CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::MOTORBIKE, true}, {WarningPriority::Safe, "Motorbike moving safely in CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::MOTORBIKE, false}, {WarningPriority::High, "Motorbike slowing down in CRITICAL_ZONE_2"} },
-    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::CAR, true}, {WarningPriority::Low, "Car moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::BUS, true}, {WarningPriority::Safe, "Bus moving safely in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::BUS, false}, {WarningPriority::High, "Bus slowing down in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::TRAIN, true}, {WarningPriority::Safe, "Train moving safely in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::CRITICAL_ZONE_2, OBJECT_CATEGORY::TRAIN, false}, {WarningPriority::High, "Train slowing down in CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::CAR, true}, {WarningPriority::Medium, "Car moving to CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::CAR, false}, {WarningPriority::Medium, "Car slowing down moving to CRITICAL_ZONE_2"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::PERSON, true}, {WarningPriority::High, "Person moving to CRITICAL_ZONE_2"} },
-    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::PERSON, false}, {WarningPriority::Critical, "Person slowing down moving to CRITICAL_ZONE_2"} }
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::PERSON, false}, {WarningPriority::Critical, "Person slowing down moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRUCK, true}, {WarningPriority::Medium, "Truck moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRUCK, false}, {WarningPriority::Medium, "Truck slowing down moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BICYCLE, true}, {WarningPriority::Medium, "Bicycle moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BICYCLE, false}, {WarningPriority::Medium, "Bicycle slowing down moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::MOTORBIKE, true}, {WarningPriority::Medium, "Motorbike moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::MOTORBIKE, false}, {WarningPriority::Medium, "Motorbike slowing down moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BUS, true}, {WarningPriority::Medium, "Bus moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BUS, false}, {WarningPriority::Medium, "Bus slowing down moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN, true}, {WarningPriority::Medium, "Train moving to CRITICAL_ZONE_2"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN, false}, {WarningPriority::Medium, "Train slowing down moving to CRITICAL_ZONE_2"} }
 };
 
 const std::unordered_map< std::pair<ZONE_TYPES, std::string>, std::pair<WarningPriority, std::string>, pair_hash> GENERAL_MAP = {
@@ -221,7 +231,7 @@ const std::unordered_map< std::pair<ZONE_TYPES, std::string>, std::pair<WarningP
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BICYCLE}, {WarningPriority::Low, "Bicycle in TRACKED_ZONE"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::MOTORBIKE}, {WarningPriority::Low, "Motorbike in TRACKED_ZONE"} },
     { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BUS}, {WarningPriority::Low, "Bus in TRACKED_ZONE"} },
-    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::Critical, "Train in TRACKED_ZONE"} },
+    { {ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::Low, "Train in TRACKED_ZONE"} },
 
     { { ZONE_TYPES::GENERAL, OBJECT_CATEGORY::CAR}, {WarningPriority::Safe, ""} },
     { { ZONE_TYPES::GENERAL, OBJECT_CATEGORY::PERSON}, {WarningPriority::Safe, ""} },
@@ -249,7 +259,7 @@ const std::unordered_map< std::pair<ZONE_TYPES, std::string>, std::pair<WarningP
     { { ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BICYCLE}, {WarningPriority::High, "Bicycle moving to CRITICAL_ZONE_1"} },
     { { ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::MOTORBIKE}, {WarningPriority::High, "Motorbike moving to CRITICAL_ZONE_1"} },
     { { ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::BUS}, {WarningPriority::High, "Bus moving to CRITICAL_ZONE_1"} },
-    { { ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::High, "Train moving to CRITICAL_ZONE_1"} }
+    { { ZONE_TYPES::TRACKED_ZONE, OBJECT_CATEGORY::TRAIN}, {WarningPriority::Critical, "Train moving to CRITICAL_ZONE_1"} }
 };
 
 const std::unordered_map< std::pair<ZONE_TYPES, std::string>, std::pair<WarningPriority, std::string>, pair_hash> MOVING_TO_CRITICAL_ZONE_2_NEGATIVE_SPEED_MAP = {
@@ -320,25 +330,3 @@ const std::unordered_map<WarningPriority, cv::Scalar> warningPriorityToColor = {
     {WarningPriority::Safe, COLORS::GREEN},
     {WarningPriority::Unknown, COLORS::WHITE}
 };
-
-
-
-
-   
-
-
-
-
-
-  //     // CRITICAL_ZONE - High priority
-        ////{{{TRAPEZOID::CRITICAL_ZONE::DL, TRAPEZOID::CRITICAL_ZONE::DR, TRAPEZOID::CRITICAL_ZONE::UR, TRAPEZOID::CRITICAL_ZONE::UL}}, WarningPriority::High},
-
-        
-//const std::array<Warning, 6> warningsTypes = std::array<Warning, 6>({
-//    {WarningPriority::Critical, cv::Scalar(0, 0, 255), "Critical"},
-//    {WarningPriority::High, cv::Scalar(0, 255, 255), "High"},
-//    {WarningPriority::Medium, cv::Scalar(0, 255, 0), "Medium"},
-//    {WarningPriority::Low, cv::Scalar(255, 255, 0), "Low"},
-//    {WarningPriority::Safe, cv::Scalar(255, 0, 0), "Safe"},
-//    {WarningPriority::Unknown, cv::Scalar(255, 255, 255), "Unknown"}
-//    });

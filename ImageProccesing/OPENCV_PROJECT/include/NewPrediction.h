@@ -13,11 +13,14 @@
 class NewPrediction
 {
 public:
-	static bool isApproachingDangerZone(const Poligon& tarpezoid, TrackedObject& trackedObject);
 	static void updateWarnings(std::unordered_map<int, TrackedObject>& predictedObjects);
     static void matchOverlapBoxes(std::unordered_map<int, TrackedObject>& OldPredictedObjects, std::unordered_map<int, TrackedObject>& NewPredictedObjects);
+    static void setCurrentVideoPoligons(const std::string& videoName);
 
 private:
+    static std::vector<std::pair<Poligon, ZONE_TYPES>>* m_zonesPoligons;
+
+    static bool isApproachingDangerZone(const Poligon& tarpezoid, TrackedObject& trackedObject);
     static std::optional<cv::Point> findIntersection(const cv::Point& p1, const cv::Point& p2,
         const cv::Point& q1, const cv::Point& q2);
     static std::pair<int, int> calculateDeltas(const cv::Rect& prevRect, const cv::Rect& currRect);
