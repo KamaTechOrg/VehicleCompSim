@@ -17,6 +17,15 @@ The GUI provides an interface that allows users to define, set, and configure a 
 **Additional Features:**
 
 - Users can define individual or complex conditions.
-- Support for **AND** and **OR** rule logic.
-- The interface also supports defining conditions within a specific time frame.
-- The interface supports both multiple scenarios and multiple actions.
+- Support for **AND** and **OR** rule logic, allowing flexibility in creating conditional logic for different scenarios.
+- The interface also supports defining conditions within a specific time frame, allowing rules to be set for specific durations or intervals.
+- The interface supports both multiple scenarios and multiple actions, enabling users to set complex rules with various outcomes.
+- **Scenario Management:** Users can add new scenarios, rename existing ones, or delete scenarios as needed.
+- **Condition and Action Management:** Users can add, modify, or delete individual conditions and actions within each scenario, providing full control over rule customization.
+
+## Getting Started
+
+### Prerequisites
+
+1. **Visual Studio**: Download and install [Visual Studio](https://visualstudio.microsoft.com/).
+2. **Qt**: Download and set up the Qt framework to develop and run the GUI[Qt Creator](https://www.qt.io/download-dev).
