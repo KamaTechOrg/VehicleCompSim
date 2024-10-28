@@ -49,6 +49,7 @@ struct TrackedObject {
         distancePrev(-1),
         distanceCurr(-1),
         oldRelativSpeed(-1), 
+        blinkInterval(0),
         zoneTypeIntersect(ZONE_TYPES::GENERAL),
         warningPriority(WarningPriority::Safe)
     {}
@@ -59,6 +60,7 @@ struct TrackedObject {
         distancePrev(-1), 
         distanceCurr(-1),
         oldRelativSpeed(-1), 
+        blinkInterval(0),
         zoneTypeIntersect(ZONE_TYPES::GENERAL), 
         warningPriority(WarningPriority::Safe), 
         warningDescription("") {}
@@ -68,6 +70,7 @@ struct TrackedObject {
     float distancePrev;
     float distanceCurr;
     float oldRelativSpeed;
+    int blinkInterval;
     ZONE_TYPES zoneTypeIntersect;
     WarningPriority warningPriority;
     std::string warningDescription;

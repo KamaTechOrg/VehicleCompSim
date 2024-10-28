@@ -22,11 +22,11 @@ const std::string VIDEO_DATA = DATA_DIR "\\data.json";
 const std::string DEPARTURE_RIGHT_WARNING = "Lane Departure Right Detected!";
 const std::string DEPARTURE_LEFT_WARNING = "Lane Departure Left Detected!";
 
-constexpr bool SAVE_FIRST_IMG = false;
+constexpr bool SAVE_FIRST_IMG = true;
 constexpr int WAIT_KEY_SEC_DETECTION = 1;
 constexpr int WAIT_KEY_SEC_TRACKERS = 1;
 
-constexpr bool RUN_VERSION_1_OF_MAPS = true;
+constexpr bool RUN_VERSION_1_OF_MAPS = false;
 //FOR VISUALIZATION:
 constexpr bool ENABLE_DRAWING = true;
 constexpr bool DRAW_RELATIVE_SPEED = false;
@@ -91,17 +91,17 @@ namespace TRAPEZOID
 {
     namespace CRITICAL_ZONE_2
     {
-        inline const cv::Point DL(390, 450);
+        inline const cv::Point DL(410, 450);
         inline const cv::Point DR(735, 450);
-        inline const cv::Point UR(650, 370);
-        inline const cv::Point UL(540, 370);
+        inline const cv::Point UR(610, 370);
+        inline const cv::Point UL(520, 370);
     }
     namespace CRITICAL_ZONE_1
     {
-        inline const cv::Point DL(111, 590);
-        inline const cv::Point DR(880, 590);
+        inline const cv::Point DL(211, 590);
+        inline const cv::Point DR(980, 590);
         inline const cv::Point UR(735, 450);
-        inline const cv::Point UL(390, 450);
+        inline const cv::Point UL(410, 450);
     }
     namespace CAR_HOOD
     {
@@ -300,6 +300,8 @@ const std::array<const std::unordered_map<std::pair<ZONE_TYPES, std::string>, st
 namespace COLORS
 {
     inline const cv::Scalar RED = cv::Scalar(0, 0, 255);
+    inline const cv::Scalar RED2 = cv::Scalar(0, 90, 255);
+    inline const cv::Scalar RED3 = cv::Scalar(0, 180, 255);
     inline const cv::Scalar YELLOW = cv::Scalar(0, 255, 255);
     inline const cv::Scalar GREEN = cv::Scalar(0, 255, 0);
     inline const cv::Scalar BLUE = cv::Scalar(255, 0, 0);
@@ -310,6 +312,7 @@ namespace COLORS
     inline const cv::Scalar ORANGE = cv::Scalar(0, 165, 255);
     inline const cv::Scalar PINK = cv::Scalar(147, 20, 255);
 }
+
 
 
 //zones color map
@@ -324,9 +327,9 @@ const std::unordered_map<ZONE_TYPES, cv::Scalar> zoneTypeToColor = {
 //warnings color map
 const std::unordered_map<WarningPriority, cv::Scalar> warningPriorityToColor = {
 	{WarningPriority::Critical, COLORS::RED},
-    {WarningPriority::High, COLORS::ORANGE},
-    {WarningPriority::Medium, COLORS::PINK},
-    {WarningPriority::Low, COLORS::GRAY},
+    {WarningPriority::High, COLORS::RED2},
+    {WarningPriority::Medium, COLORS::RED3},
+    {WarningPriority::Low, COLORS::YELLOW},
     {WarningPriority::Safe, COLORS::GREEN},
     {WarningPriority::Unknown, COLORS::WHITE}
 };

@@ -13,10 +13,11 @@ public:
 	static void drawRelativeSpeedWithDistances(cv::Mat& frame, const TrackedObject& predictedObjects);
 	static void drawRelativeSpeed(cv::Mat& frame, const TrackedObject& predictedObject, float relativeSpeed);
 	static void drawCategory(cv::Mat& frame, std::unordered_map<int, TrackedObject>& predictedObjects);
-	static void drawCarsHoodTarpezoid(cv::Mat& frame, std::unordered_map<int, TrackedObject>& predictedObjects);
 	static void drawZones(cv::Mat& frame);
 	static void drawWarningDescription(cv::Mat& frame, const TrackedObject& trackedObject);
 
-	
+	static void setCurrentVideoPoligons(const std::string& videoName);
+private:
+	static std::vector<std::pair<Poligon, ZONE_TYPES>>* m_zonesPoligons;
 };
 
