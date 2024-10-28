@@ -33,6 +33,7 @@ private:
     void addItemToScene(BaseItem* item);
     void removeItemFromScene(BaseItem* item);
     void clearScene();
+    void adjustSceneRect();
     BaseItem* buildBaseItemFromModel(SerializableItem* model);
 
     //drag and drop handlers

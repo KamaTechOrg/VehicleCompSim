@@ -1,10 +1,6 @@
 #include "mainwindow.h"
-#include <QThread>
-#include <thread>
 #include <QPushButton>
 #include <QFileDialog>
-
-
 
 #include "app_utils.h"
 
@@ -303,7 +299,8 @@ void MainWindow::setupView() {
     m_view = new QGraphicsView(m_scene);
     m_view->setRenderHint(QPainter::Antialiasing);
     m_sceneBox = new QGroupBox(this);
-
+    m_minimap = new SceneMinimap(m_view, m_view->viewport());
+    
     // Initialize the title and conditional button
     m_publishButton = new IconButton(globalConstants::Icons::Publish, "Publish the project", m_sceneBox);
     m_publishButton->setDisabled(m_globalState.connectionState() != globalConstants::ConnectionState::Online);
@@ -338,7 +335,7 @@ void MainWindow::onCurrentProjectChanged(ProjectModel* project) {
             createNewTab(model);
         }
     }
-
+    // m_minimap->updateMinimap();
 }
 
 void MainWindow::onCurrentProjectPublished(ProjectModel* project) {
