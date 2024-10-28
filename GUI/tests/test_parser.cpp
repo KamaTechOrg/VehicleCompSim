@@ -21,7 +21,7 @@ TEST_F(ParserTest, ParseBuffer) {
     // We can't directly verify the result of parseBuffer as it doesn't return anything
     // and we don't have access to GlobalState in this test.
     // Instead, we'll just verify that it doesn't crash.
-    EXPECT_NO_THROW(p->parseBuffer(buffer, bufferSize));
+    EXPECT_NO_THROW(p->parseBuffer(buffer));
 }
 
 TEST_F(ParserTest, SetSensorInfoMap) {

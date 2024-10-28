@@ -333,8 +333,8 @@ void CustomScene::onParsedData(QList<QPair<QString, QString>> data) {
     SensorItem* src = m_sensors[data[BufferInfo::SourceId].second];
     SensorItem* dest = m_sensors[data[BufferInfo::DestinationId].second];
     QString newData = dataToHtml(data);
-    QString srcName = "Sensor " + data[SourceId].second;
-    QString destName = "Sensor " + data[DestinationId].second;
+    QString srcName = data[SourceId].second;
+    QString destName = data[DestinationId].second;
     GlobalState::getInstance().log(newData,  srcName);
     GlobalState::getInstance().log(newData,  destName);
     if(src){

@@ -51,7 +51,7 @@ void SimulationReplayer::processMessage() {
         QTimer * timer = m_timers.dequeue();
         timer->deleteLater();
         QString message = m_messagesQueue.dequeue();
-        GlobalState::getInstance().newData(message);
+        GlobalState::getInstance().newRecordData(message);
     } else {
         qWarning() << "processMessage: Event queue is empty";
     }
@@ -64,16 +64,26 @@ void SimulationReplayer::clear_current_events(){
         timer->deleteLater();
     }
     m_timers.clear();
+    m_remainingTimes.clear();
 }
+
 void SimulationReplayer::pauseSimulation() {
-    for(auto timer : m_timers){
-        timer->stop();
+    for(auto timer : m_timers) {
+        if (timer->isActive()) {
+            m_remainingTimes[timer] = timer->remainingTime();
+            timer->stop();
+        }
     }
+    GlobalState::getInstance().setIsRunning(false);
 }
+
 void SimulationReplayer::playSimulation() {
-    for(auto timer : m_timers){
-        timer->start();
+    for(auto timer : m_timers) {
+        if (!timer->isActive() && m_remainingTimes.contains(timer)) {
+            timer->start(m_remainingTimes[timer]);
+        }
     }
+    GlobalState::getInstance().setIsRunning(true);
 }
 
 void SimulationReplayer::scheduleEvent(const QString &line, int delay) {
@@ -92,7 +102,7 @@ void SimulationReplayer::jumpToTime(const QTime &targetTime) {
     for (const auto &event : events) {
         int remainingTime = event.second - msecsToAdd;
         if (remainingTime <= 0) {
-            GlobalState::getInstance().newData(event.first);
+            GlobalState::getInstance().newRecordData(event.first);
         } else {
             scheduleEvent(event.first, remainingTime);
         }
