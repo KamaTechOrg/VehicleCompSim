@@ -3,6 +3,7 @@
 
 #include "ConditionsManager.h"
 #include "Editor.h"
+#include "json.hpp"
 
 class MainComputer
 {
@@ -14,6 +15,8 @@ public:
     void openEditor();
     void run();
     void stop();
+
+    nlohmann::json guiData, logicData;
 };
 
 #endif // MAINCOMPUTER_H

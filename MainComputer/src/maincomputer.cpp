@@ -1,14 +1,17 @@
 #include "MainComputer.h"
 
-MainComputer::MainComputer() {}
+MainComputer::MainComputer() : editor(guiData, logicData) {}
 
 void MainComputer::openEditor()
 {
     editor.show();
+    guiData = editor.guiData;
+    logicData = editor.logicData;
 }
 
 void MainComputer::run()
 {
+    manager.jsonData = logicData;
     manager.run();
 }
 

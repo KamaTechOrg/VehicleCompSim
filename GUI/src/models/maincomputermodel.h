@@ -16,10 +16,10 @@ public:
     ~MainComputerModel();
 
     void setGuiData(QString _guiData);
-    QString guiData();
+    QString guiData() const;
 
     void setLogicData(QString _logicData);
-    QString logicData();
+    QString logicData() const;
 
     // Override SerializableItem methods
     QJsonObject serialize() const override;
@@ -33,8 +33,6 @@ signals:
 private:
 
     MainComputer m_mainComputer;
-    std::string& guiDataRef = JsonLoader::guiData;
-    std::string& logicDataRef = JsonLoader::logicData;
 
 };
 

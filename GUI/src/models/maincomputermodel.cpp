@@ -14,45 +14,51 @@ MainComputerModel::~MainComputerModel()
 
 void MainComputerModel::setGuiData(QString _guiData)
 {
-    if (_guiData != guiData())
-   {
-        JsonLoader::guiData = _guiData.toStdString();
+    auto newJson = nlohmann::json::parse(_guiData.toStdString());
+
+    if (newJson != m_mainComputer.guiData)
+    {
+        m_mainComputer.guiData = newJson;
         emit guiDataChanged();
     }
 }
 
-QString MainComputerModel::guiData()
+QString MainComputerModel::guiData() const
 {
-    return QString::fromStdString(guiDataRef);
+    return QString::fromStdString(m_mainComputer.guiData.dump());
 }
 
 void MainComputerModel::setLogicData(QString _logicData)
 {
-    if (_logicData != logicData())
+    auto newJson = nlohmann::json::parse(_logicData.toStdString());
+
+    if (newJson != m_mainComputer.logicData)
     {
-        JsonLoader::logicData = _logicData.toStdString();
+        m_mainComputer.logicData = newJson;
         emit logicDataChanged();
     }
 }
 
-QString MainComputerModel::logicData()
+QString MainComputerModel::logicData() const
 {
-    return QString::fromStdString(logicDataRef);
+    return QString::fromStdString(m_mainComputer.logicData.dump());
 }
 
 
 // Override SerializableItem methods
 QJsonObject MainComputerModel::serialize() const {
     QJsonObject itemData = SensorModel::serialize();
-    itemData["guiData"] = guiDataRef.c_str();
-    itemData["logicData"] = logicDataRef.c_str();
+    itemData["guiData"] = guiData();
+    itemData["logicData"] = logicData();
     return itemData;
 }
 
 void MainComputerModel::deserialize(const QJsonObject &itemData) {
     SensorModel::deserialize(itemData);
-    guiDataRef = itemData["guiData"].toString().toStdString();
-    logicDataRef = itemData["logicData"].toString().toStdString();
+    m_mainComputer.guiData = nlohmann::json::parse(
+        itemData["guiData"].toString().toStdString());
+    m_mainComputer.logicData = nlohmann::json::parse(
+        itemData["logicData"].toString().toStdString());
 
 
     emit anyPropertyChanged();
