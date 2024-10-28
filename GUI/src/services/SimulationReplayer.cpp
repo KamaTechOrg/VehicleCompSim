@@ -74,6 +74,7 @@ void SimulationReplayer::pauseSimulation() {
             timer->stop();
         }
     }
+    GlobalState::getInstance().setIsRunning(false);
 }
 
 void SimulationReplayer::playSimulation() {
@@ -82,6 +83,7 @@ void SimulationReplayer::playSimulation() {
             timer->start(m_remainingTimes[timer]);
         }
     }
+    GlobalState::getInstance().setIsRunning(true);
 }
 
 void SimulationReplayer::scheduleEvent(const QString &line, int delay) {
