@@ -2,8 +2,8 @@
 #define MAINCOMPUTERMODEL_H
 
 #include "sensormodel.h"
-#include "../../MainComputer/include/MainComputer.h"
-#include "../../MainComputer/include/JsonLoader.h"
+#include "../../../MainComputer/include/MainComputer.h"
+//#include "../../MainComputer/include/JsonLoader.h"
 
 class MainComputerModel : public SensorModel
 {
@@ -29,6 +29,7 @@ public:
 signals:
     void guiDataChanged();
     void logicDataChanged();
+    void anyPropertyChanged();
     void modelExistChanged(bool exist);
 private:
 

@@ -7,15 +7,15 @@
 
 class MainComputer
 {
-    Editor editor;
+    std::shared_ptr<Editor> editor;
     ConditionsManager manager;
 public:
-    MainComputer();
+    MainComputer(std::function<void(void)> _onDataChanged = [](){});
 
     void openEditor();
     void run();
     void stop();
-
+    std::function<void(void)> onDataChanged;
     nlohmann::json guiData, logicData;
 };
 

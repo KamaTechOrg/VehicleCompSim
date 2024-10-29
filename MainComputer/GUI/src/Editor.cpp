@@ -37,9 +37,14 @@ void Editor::save()
 	success = saveLogicDataToJson();
 	success &= saveGuiDataToJson();
 	if (success)
-		showSaveSuccessFeedback();
-	else
-		showSaveFailedFeedback();
+    {
+        showSaveSuccessFeedback();
+        emit dataChanged();
+    }
+    else
+    {
+        showSaveFailedFeedback();
+    }
 }
 
 bool Editor::saveLogicDataToJson()

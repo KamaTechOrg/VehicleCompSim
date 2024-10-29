@@ -1,7 +1,9 @@
 #include "maincomputermodel.h"
 
 
-MainComputerModel::MainComputerModel() {
+MainComputerModel::MainComputerModel()
+    : m_mainComputer([this](){ notifyItemModified(); emit logicDataChanged(); emit guiDataChanged(); })
+{
     m_type = ItemType::MainComputer;
     setPriority(0);
     setName("Main Computer");

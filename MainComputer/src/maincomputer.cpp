@@ -1,12 +1,15 @@
 #include "MainComputer.h"
 
-MainComputer::MainComputer() : editor(guiData, logicData) {}
+MainComputer::MainComputer(std::function<void(void)> _onDataChanged)
+    : editor(nullptr), onDataChanged(_onDataChanged)
+{}
 
 void MainComputer::openEditor()
 {
-    editor.show();
-    guiData = editor.guiData;
-    logicData = editor.logicData;
+    editor.reset(new Editor(guiData, logicData));
+    editor->show();
+    //guiData = editor.guiData;
+    //logicData = editor.logicData;
 }
 
 void MainComputer::run()

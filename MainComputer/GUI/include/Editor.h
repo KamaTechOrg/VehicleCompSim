@@ -15,6 +15,9 @@ public:
 	~Editor();
 
     nlohmann::json &guiData, &logicData;
+signals:
+    void dataChanged();
+
 private:
 	QVBoxLayout* _VLayout;
 	QHBoxLayout* _HLayout;
