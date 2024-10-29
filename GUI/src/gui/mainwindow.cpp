@@ -137,7 +137,12 @@ void MainWindow::createNewTab(SerializableItem* model) {
         if(auto* pQemuModel = dynamic_cast<QemuSensorModel*>(model)){
             tabName = "Qemu " + pQemuModel->priority();
         }else{
-            tabName = "Sensor " + pSensorModel->priority();
+            if(pSensorModel->name() == "Main Computer"){
+                tabName = "Main Computer";
+            }
+            else{
+                tabName = "Sensor " + pSensorModel->priority();
+            }
         }
         auto* newTab = new QWidget();
         auto* tabLayout = new QVBoxLayout(newTab);
