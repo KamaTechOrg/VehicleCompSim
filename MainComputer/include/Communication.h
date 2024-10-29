@@ -21,7 +21,6 @@ public:
 
 private:
     std::queue<std::string> _messagesQueue;
-
     std::mutex queueMutex; // Mutex to synchronize access to the queue
     std::condition_variable messageAvailable; // Condition variable to signal new message arrival
 

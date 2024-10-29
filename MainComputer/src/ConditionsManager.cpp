@@ -74,8 +74,12 @@ void ConditionsManager::run()
 
     // processing thread
     std::thread([this]() {
+        int iterationCount = 0;
+        auto startTime = std::chrono::steady_clock::now();
         Communication communication;
         communication.listenTo(8100);
+        communication.listenTo(8101);
+
         /* This code is relevant if we work with an outside server */
         //communication.sendAndReceiveLoop("10.13.37.1", 8081);
         //communication.sendTo(8080, "Hello, Server!");
@@ -83,13 +87,12 @@ void ConditionsManager::run()
 
         while (_isRunning)
         {
-            qInfo() << "Running main thread";
             std::string message = communication.getMessageFromQueue();
             if (message.empty()) {
                 qWarning() << "Received empty message from server"; // Log empty message
                 continue; // Skip processing if message is empty
             }
-            qInfo() << "main thread received message" << QString::fromStdString(message);  // Print to GUI
+            //qInfo() << "Received message" << QString::fromStdString(message);  // Print to GUI
 
             try {
                 auto messageContent = parseMessage(message);
@@ -100,7 +103,23 @@ void ConditionsManager::run()
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();
             }
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            //std::this_thread::sleep_for(std::chrono::seconds(1));
+
+
+            // ######## TEMP : to measure How many messages can it handle per second ###### //
+            iterationCount++;
+
+            auto currentTime = std::chrono::steady_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
+            if (duration.count() >= 1) {
+                qInfo() << "Iterations in the last second:" << iterationCount;
+
+                // Reset counter and start time for the next second
+                iterationCount = 0;
+                startTime = currentTime;
+            }
+
+            // ######## END TEMP ###### //
         }
 
         qInfo() << "Conditions Manager thread stopping";
@@ -139,13 +158,13 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
 
         if (conditions.at(i)->validate(senderId, value))
         {
-            qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
+            //qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
             //executeActions(i);
             //sendTargetMessage("beep controller", "MESSAGE:Beep");
         }
         else
         {
-            qInfo() << "Validation failed for ID:" << senderId.c_str() << " with value:" << value.c_str();
+            //qInfo() << "Validation failed for ID:" << senderId.c_str() << " with value:" << value.c_str();
         }
     }
 }

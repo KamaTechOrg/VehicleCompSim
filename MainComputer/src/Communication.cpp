@@ -98,7 +98,7 @@ std::string Communication::sendAndReceiveLoop(const std::string& serverIP, int p
     }
     closesocket(sock);
     return "Listening stopped";
-    }
+}
 
 
 void Communication::processServerResponse(const std::string& response) {
@@ -134,7 +134,7 @@ void Communication::listenTo(int portNumber) {
             return;
         }
 
-        qDebug() << "Server is listening on port " << portNumber;
+        qDebug() << "Listening on port " << portNumber;
 
         while (true) {
             struct sockaddr_in clientAddr;
@@ -152,7 +152,6 @@ void Communication::listenTo(int portNumber) {
                 int valread = recv(clientSock, buffer, sizeof(buffer), 0);
 
                 if (valread > 0) {
-                    qDebug() << "listen thread recived message: " << buffer;
                     std::string message(buffer, valread);
                     std::lock_guard<std::mutex> lock(queueMutex);
                     _messagesQueue.push(message);
