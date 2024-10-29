@@ -22,7 +22,7 @@ nlohmann::json::array_t JsonLoader::loadConditionsLogic() const
     nlohmann::json jsonData;
     file >> jsonData;
     file.close();
-
+    qDebug() << "loaded json: " << jsonData.dump(4);
     return jsonData;
 }
 

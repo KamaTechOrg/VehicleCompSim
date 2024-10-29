@@ -12,7 +12,7 @@ public:
     Communication();
     ~Communication();
 
-    std::string listenTo(int portNumber);
+    void listenTo(int portNumber);
     void sendTo(int portNumber, const std::string& message);
     std::string getMessageFromQueue();
 

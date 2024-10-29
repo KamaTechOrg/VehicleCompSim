@@ -81,13 +81,11 @@ std::string Communication::sendAndReceiveLoop(const std::string& serverIP, int p
         if (valread > 0) {
             std::string message(buffer, valread);
             qInfo() << "Message received from server: " << message.c_str();
-  
-           
-                {
-                    std::lock_guard<std::mutex> lock(queueMutex);
-                    _messagesQueue.push(message);
-                }
-                messageAvailable.notify_one();
+            {
+                std::lock_guard<std::mutex> lock(queueMutex);
+                _messagesQueue.push(message);
+            }
+            messageAvailable.notify_one();
         }
         else if (valread == 0) {
             qWarning() << "Connection closed by peer.";
@@ -107,65 +105,74 @@ void Communication::processServerResponse(const std::string& response) {
     qInfo() << "Processing server response: " << response;
 }
 
-std::string Communication::listenTo(int portNumber) {
-    int serverSock = createSocket();
-    struct sockaddr_in serverAddr;
-    char buffer[1024] = { 0 };
-
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(constants::SERVER_IP.c_str());
-    serverAddr.sin_port = htons(portNumber);
-
-    // Bind
-    if (bind(serverSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        qWarning() << "Bind failed: " << WSAGetLastError();
-        closesocket(serverSock);
-        return "ERROR";
-    }
-
-    // Listen
-    if (listen(serverSock, 3) == SOCKET_ERROR) {
-        qWarning() << "Listen failed: " << WSAGetLastError();
-        closesocket(serverSock);
-        return "ERROR";
-    }
-
-    qInfo() << "Server is listening on port" << portNumber;
-
-    // Accept an incoming connection
-   
-    while (true) {
-        struct sockaddr_in clientAddr;
-        int clientAddrLen = sizeof(clientAddr);
-        int clientSock = accept(serverSock, (struct sockaddr*)&clientAddr, &clientAddrLen);
-
-        if (clientSock == INVALID_SOCKET) {
-            qWarning() << "Accept failed: " << WSAGetLastError();
-            closesocket(serverSock);
-            return "ERROR";
+void Communication::listenTo(int portNumber) {
+    std::thread([this, portNumber](){
+        int serverSock = socket(AF_INET, SOCK_STREAM, 0);
+        if (serverSock < 0) {
+            qWarning() << "Socket creation failed";
+            return;
         }
+
+        struct sockaddr_in serverAddr;
+        char buffer[1024] = { 0 };
+
+        serverAddr.sin_family = AF_INET;
+        serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        serverAddr.sin_port = htons(portNumber);
+
+        // Bind
+        if (bind(serverSock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+            qWarning() << "Bind failed";
+            closesocket(serverSock);
+            return;
+        }
+
+        // Listen
+        if (listen(serverSock, 3) < 0) {
+            qWarning() << "Listen failed";
+            closesocket(serverSock);
+            return;
+        }
+
+        qDebug() << "Server is listening on port " << portNumber;
 
         while (true) {
-            memset(buffer, 0, sizeof(buffer));
-        int valread = recv(clientSock, buffer, sizeof(buffer), 0);
-        if (valread > 0) {
-            std::string message(buffer, valread);
-            qInfo() << "Message received from client:" << message.c_str();
-        }
-        else if (valread == 0) {
-            qWarning() << "Connection closed by client.";
-        }
-        else {
-            qWarning() << "Receive failed: " << WSAGetLastError();
-            break;
-        }
-        }
-        closesocket(clientSock);  
-    }
+            struct sockaddr_in clientAddr;
+            socklen_t clientAddrLen = sizeof(clientAddr);
+            int clientSock = accept(serverSock, (struct sockaddr*)&clientAddr, &clientAddrLen);
 
-    closesocket(serverSock);
-    return "Listening stopped";
+            if (clientSock < 0) {
+                qWarning() << "Accept failed";
+                continue;
+            }
 
+            char buffer[1024];
+            while (true) {
+                memset(buffer, 0, sizeof(buffer));
+                int valread = recv(clientSock, buffer, sizeof(buffer), 0);
+
+                if (valread > 0) {
+                    qDebug() << "listen thread recived message: " << buffer;
+                    std::string message(buffer, valread);
+                    std::lock_guard<std::mutex> lock(queueMutex);
+                    _messagesQueue.push(message);
+                    messageAvailable.notify_one();
+                }
+                else if (valread == 0) {
+                    qWarning() << "Client disconnected.";
+                    break;
+                }
+                else {
+                    qWarning() << "Receive failed";
+                    break;
+                }
+            }
+            closesocket(clientSock);
+        }
+
+        closesocket(serverSock);
+
+    }).detach();
 }
 
 void Communication::sendTo(int portNumber, const std::string& message) {

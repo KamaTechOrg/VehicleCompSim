@@ -71,38 +71,36 @@ void ConditionsManager::sendTargetMessage(const std::string& targetController, c
 void ConditionsManager::run()
 {
     _isRunning = true;
+
+    // processing thread
     std::thread([this]() {
         Communication communication;
-        communication.sendAndReceiveLoop("10.13.37.1", 8081);
-        communication.sendTo(8080, "Hello, Server!");
-        communication.sendTo(8080, "TARGET:server,MESSAGE:Main computer connected");
+        communication.listenTo(8100);
+        /* This code is relevant if we work with an outside server */
+        //communication.sendAndReceiveLoop("10.13.37.1", 8081);
+        //communication.sendTo(8080, "Hello, Server!");
+        //communication.sendTo(8080, "TARGET:server,MESSAGE:Main computer connected");
 
         while (_isRunning)
         {
-            qInfo() << "Running main computer";
+            qInfo() << "Running main thread";
             std::string message = communication.getMessageFromQueue();
             if (message.empty()) {
                 qWarning() << "Received empty message from server"; // Log empty message
                 continue; // Skip processing if message is empty
             }
-            qInfo() << "Message received from sensor: " << QString::fromStdString(message);  // Print to GUI
+            qInfo() << "main thread received message" << QString::fromStdString(message);  // Print to GUI
 
             try {
                 auto messageContent = parseMessage(message);
                 std::string id = messageContent.first;
                 std::string value = messageContent.second;
                 validateAll(id, value);
-
-               /* std::string targetMessage = "TARGET:beep controller,MESSAGE:Beep";
-                communication.sendTo(constants::SERVER_PORT, targetMessage);
-                qInfo() << "Message sent: " << QString::fromStdString(targetMessage);*/
             }
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();
-
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
-
         }
 
         qInfo() << "Conditions Manager thread stopping";
@@ -142,8 +140,8 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
         if (conditions.at(i)->validate(senderId, value))
         {
             qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
-            executeActions(i);
-            sendTargetMessage("beep controller", "MESSAGE:Beep");
+            //executeActions(i);
+            //sendTargetMessage("beep controller", "MESSAGE:Beep");
         }
         else
         {
@@ -158,8 +156,10 @@ void ConditionsManager::loadFromJson()
     nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
     conditions.clear();
     actions.clear();
-    if (!jsonData.is_array() || !jsonData.empty())
-        return;
+
+    /* Need to investigate, one of them returns false, but they both should be true */
+    //if (!jsonData.is_array() || !jsonData.empty())
+    //    return;
     
     for (int i = 0; i < jsonData.size(); i++)
     {
