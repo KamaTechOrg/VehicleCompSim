@@ -29,6 +29,10 @@ void ProjectModel::removeModel(SerializableItem* model) {
     }
 }
 
+void ProjectModel::removeModel(QString id) {
+    removeModel(m_models[id]);
+}
+
 void ProjectModel::updateModel(SerializableItem* model) {
     if (!model) return;
 

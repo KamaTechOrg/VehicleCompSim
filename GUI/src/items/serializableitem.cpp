@@ -18,6 +18,7 @@ QJsonObject SerializableItem::serialize() const {
 }
 
 void SerializableItem::deserialize(const QJsonObject &itemData) {
+    qInfo() << itemData;
     id = itemData["id"].toString();
     version = itemData["version"].toInt();
     m_type = static_cast<ItemType>(itemData["type"].toInt());

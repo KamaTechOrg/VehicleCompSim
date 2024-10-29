@@ -13,16 +13,12 @@ void DeleteItemHandler::handle(const QJsonObject& message) {
         return;
     }
 
-    int itemType = message[ClientConstants::KEY_TYPE].toInt();
-    SerializableItem* model = createModel(itemType, message);
-    if (model) {
+
         ProjectModel* currentProject = GlobalState::getInstance().currentProject();
         if (currentProject) {
-            currentProject->removeModel(model);
+            currentProject->removeModel(message["id"].toString());
             qDebug() << "Model removed from project";
         }
-        delete model; // Clean up the temporary model
-    }
 }
 
 SerializableItem* DeleteItemHandler::createModel(int itemType, const QJsonObject& jsonObj) {

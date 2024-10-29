@@ -138,7 +138,6 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
 
 void ConditionsManager::loadFromJson()
 {
-    nlohmann::json jsonData = JsonLoader().loadConditionsLogic();
     conditions.clear();
     actions.clear();
     if (!jsonData.is_array() || !jsonData.empty())

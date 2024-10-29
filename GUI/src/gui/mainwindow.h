@@ -120,8 +120,6 @@ private:
     QWidget* m_layoutWidget;
     saveAndLoad *m_saveAndLoad;
     parser * m_parser;
-    MainComputer mainComputer;
-
     QTabWidget* tabWidget;
     std::unordered_map<QString, TabInfo> tabInfoMap;
 

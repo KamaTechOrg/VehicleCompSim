@@ -19,6 +19,8 @@ public:
 	Gui();
 	~Gui();
 
+    nlohmann::json guiData, logicData;
+
 private slots:
 	void onOpenEditor();
 	void onStartStopComputer();

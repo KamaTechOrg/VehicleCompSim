@@ -7,8 +7,8 @@
 #include "ConditionsManager.h"
 #include "JsonLoader.h"
 
-ConditionsEditor::ConditionsEditor()
-    : QGroupBox("Editor")
+ConditionsEditor::ConditionsEditor(nlohmann::json &_guiData, nlohmann::json &_logicData)
+    : guiData(_guiData), logicData(_logicData), QGroupBox("Editor")
 {
     _conditionsGroup = new ConditionsGroup;
     _conditionsGroup->unableDelete();
@@ -32,9 +32,9 @@ void ConditionsEditor::setView(nlohmann::json jsonData)
 
 void ConditionsEditor::loadGuiDataFromJson()
 {
-    nlohmann::json jsonData = JsonLoader().loadGuiData();
-    _conditionsGroup->addConditionsGroup(jsonData["conditions"]);
-    _actionGroupBox->setView(jsonData["actions"]);
+    //nlohmann::json jsonData = JsonLoader().loadGuiData();
+    _conditionsGroup->addConditionsGroup(guiData["conditions"]);
+    _actionGroupBox->setView(guiData["actions"]);
 }
 
 nlohmann::json ConditionsEditor::getLogicDataAsJson() {

@@ -1,4 +1,5 @@
 #include "runservice.h"
+#include "runservice/runvalidator.h"
 #include "state/globalstate.h"
 #include "sensorrunner.h"
 #include "IpFileHanler.h"
@@ -30,8 +31,6 @@ RunService::RunService() :server (new MangServer)
     }));
 }
 
-
-
 void RunService::start(int timer, QString& com_server_ip)
 {
     // write the coms server's ip
@@ -47,8 +46,12 @@ void RunService::start(int timer, QString& com_server_ip)
     for (auto item: GlobalState::getInstance().currentProject()->models())
     {
         if (auto model = dynamic_cast<SensorModel*>(item))
-            runManager->addRunner(std::make_shared<SensorRunner>(model));
-    }
+        {
+            if (RunValidator::doAddSensor(model))
+            {
+                runManager->addRunner(std::make_shared<SensorRunner>(model));
+            }
+        }    }
     runManager->start();
 }
 

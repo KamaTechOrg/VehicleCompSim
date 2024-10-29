@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include <QPushButton>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "app_utils.h"
+#include "runservice/runvalidator.h"
 
 MainWindow::MainWindow(QWidget* parent)
         : QMainWindow(parent), 
@@ -54,7 +56,6 @@ MainWindow::MainWindow(QWidget* parent)
     toolBar->addAction("Load", [this] { loadLayout(); });
     toolBar->addAction("Record", [this] { record(); });
     toolBar->addAction("Replay", [this] { replayer(); });
-    toolBar->addAction("mainComp", [this] { mainComputer.openEditor(); });
 
     setupView();
 
@@ -236,6 +237,9 @@ void MainWindow::setupToolBar() {
     auto qemuItemWidget = new CustomWidget(CustomWidget::QEMU_SENSOR_ITEM, this);
     m_toolBar->addWidget(qemuItemWidget);
 
+    auto mainComputeItemWidget = new CustomWidget(CustomWidget::MAIN_COMPUTER_ITEM, this);
+    m_toolBar->addWidget(mainComputeItemWidget);
+
     // auto busWidget = new CustomWidget(CustomWidget::BUS_ITEM, this);
     // m_toolBar->addWidget(busWidget);
 
@@ -292,9 +296,16 @@ void MainWindow::setupRunService()
 
     });
     QObject::connect(m_startBtn, &QPushButton::clicked, [this] {
+        if (!RunValidator::doRunAllowd())
+        {
+            QMessageBox::critical(nullptr, "Start Error", "Project cannot start run yet!");
+            return;
+        }
+
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
             {"command", "start"},
+            {"project", GlobalState::getInstance().currentProject()->id()},
             {"timer", m_timer->time().toString("hh:mm:ss")},
             {"com_server_ip", QString::fromStdString(App_Utils::getPublicIp()) }
         });
@@ -306,6 +317,7 @@ void MainWindow::setupRunService()
         //m_runService->stop();
         WebSocketClient::getInstance().sendMessage(QJsonObject{
             {"action", "run"},
+            {"project", GlobalState::getInstance().currentProject()->id()},
             {"command", "stop"}
         });
         m_runService->stop();
