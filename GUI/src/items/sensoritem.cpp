@@ -225,7 +225,7 @@ void SensorItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         m_globalState.setCurrentSensorModel(this->m_model);
         if(programRunning){
-            QString tabName = "Sensor " + this->getModel().priority();
+            QString tabName = this->getModel().priority();
             GlobalState::getInstance().pressOnTab(tabName);
         }
     }

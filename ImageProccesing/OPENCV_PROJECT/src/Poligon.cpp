@@ -71,4 +71,9 @@ bool Poligon::doLinesIntersect(const cv::Point& p1, const cv::Point& p2, const c
     return false;
 }
 
+const std::vector<cv::Point>& Poligon::getPoligon() const
+{
+    return m_poligon;
+}
+
 

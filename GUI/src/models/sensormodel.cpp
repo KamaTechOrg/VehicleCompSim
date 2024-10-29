@@ -15,8 +15,6 @@ void SensorModel::setPriority(const QString& priority) {
         m_priority = priority;
         emit priorityChanged();
     }
-    QString tabName = "Sensor " + priority;
-    GlobalState::getInstance().addNewTab(tabName);
 }
 
 QString SensorModel::name() const { return m_name; }

@@ -17,6 +17,7 @@ using namespace globalConstants;
 
 parser::parser(){
     connect(&GlobalState::getInstance(), &GlobalState::newDataArrived, this, &parser::parseBuffer);
+    connect(&GlobalState::getInstance(), &GlobalState::newRecordDataArrived, this, &parser::parseBuffer);
     connect(&GlobalState::getInstance(), &GlobalState::ParserInfoArrived, this, &parser::setSensorInfoMap);
 }
 
@@ -24,7 +25,7 @@ void parser::setSensorInfoMap(QMap<int, QList<QList<QString>>> parseInfoMap) {
     sensorInfoMap = std::move(parseInfoMap);
 }
 
-void parser::parseBuffer(const QString& buffer, size_t bufferSize) {
+void parser::parseBuffer(const QString& buffer) {
     QList<QPair<QString, QString>> result;
     QStringList defaultInfo = {"Time", "Src_id", "Dest_id", "Len"};
     QStringList split_pieces = buffer.split(',', Qt::SkipEmptyParts);

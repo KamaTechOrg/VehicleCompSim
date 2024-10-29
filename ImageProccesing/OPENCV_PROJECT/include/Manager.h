@@ -13,7 +13,7 @@
 class Manager
 {
 public:
-	Manager(SafeQueue& queue, const std::string& videoPath = VIDEO_PATH, const std::string& videoDir = VIDEO_DIR);
+	Manager(SafeQueue& queue);
 	void runTracking();
 private:
 	std::string m_videoPath;
@@ -30,5 +30,6 @@ private:
 	void detectAndInitializeTrackers(cv::Mat& frame);
 	void updateTrackersAndPredict(cv::Mat& frame);
 	void drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetection);
+	void resetMembers(const std::string& videoName);
 };
 

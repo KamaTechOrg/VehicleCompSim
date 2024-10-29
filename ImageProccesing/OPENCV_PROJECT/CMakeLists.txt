@@ -32,6 +32,7 @@ set(SOURCES
     src/runLaneDetection.cpp
     src/sendWarning.cpp
     src/SafeQueue.cpp
+    src/InputData.cpp
 )
 
 

@@ -38,6 +38,8 @@ private:
     QQueue<QTimer *> m_timers;
     QDateTime m_currentTime;
     QList<QPair<QString, int>> events;
+    QMap<QTimer*, int> m_remainingTimes;
+
 
 public:
     QDateTime m_startTime;

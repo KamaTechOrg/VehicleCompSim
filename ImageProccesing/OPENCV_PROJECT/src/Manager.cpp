@@ -1,11 +1,12 @@
 #include "Manager.h"
 #include "Visualization.h"
 #include "sendWarning.h"
+#include "InputData.h"
 
 
 //=============================================================================
-Manager::Manager(SafeQueue& queue, const std::string& videoPath, const std::string& videoDir)
-    : m_queue(queue), m_videoPath(videoPath), m_videoDir(videoDir) {}
+Manager::Manager(SafeQueue& queue)
+    : m_queue(queue), m_videoDir(InputData::getInstance().getVideosDirPath()) {}
 //=============================================================================
 /**
 * @brief Open Video:
@@ -95,6 +96,8 @@ void Manager::updateTrackersAndPredict(cv::Mat& frame) {
 * Draws predicted objects and their associated warnings.
 */
 void Manager::drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetection) {
+    Visualization::drawPredictedObjects(frame, m_predictedObjects);
+
     if constexpr(DRAW_RELATIVE_SPEED)
     {
         for (auto& [id, predictedObject] : m_predictedObjects) {
@@ -110,11 +113,12 @@ void Manager::drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetectio
     else if constexpr (DRAW_WARNINGS_MSG)
     {
         for (auto& [id, predictedObject] : m_predictedObjects) {
-            Visualization::drawWarningDescription(frame, predictedObject);
+            if(predictedObject.warningPriority != WarningPriority::Safe)
+                Visualization::drawWarningDescription(frame, predictedObject);
         }
     }
 
-    Visualization::drawPredictedObjects(frame, m_predictedObjects);
+
     Visualization::drawZones(frame);
 
     cv::imshow("Tracking", frame);
@@ -126,170 +130,38 @@ void Manager::drawPredictedObjectsAndWarnings(cv::Mat& frame, bool toRunDetectio
     }
 }
 //=============================================================================
-void Manager::runTracking() {
-    cv::VideoCapture cap = openVideo();
-    if (!cap.isOpened()) return;
-    cap.set(cv::CAP_PROP_POS_FRAMES, FRAME_BEGIN - 1);
-
-    int frameCount = FRAME_BEGIN;
-    cv::Mat frame;
-
-    while (cap.read(frame)) {
-        processFrame(frame, frameCount);
-        ++frameCount;
-    }
-
-    cap.release();
-    cv::destroyAllWindows();
+void Manager::resetMembers(const std::string& videoName)
+{
+    m_videoPath = m_videoDir + "\\" + videoName;
+    m_trackerManager = TrackerManager();
+    m_predictedObjects.clear();
+    m_queue.clearQueue();
 }
-//=============================================================================
-//void Manager::matchOverlapBoxes(std::unordered_map<int, TrackedObject>& OldPredictedObjects, std::unordered_map<int, TrackedObject>& NewPredictedObjects) {
-//    for (auto& [id, newPredictedObject] : NewPredictedObjects) {
-//        int maxAreaId = -1;
-//        int maxArea = 0;
-//        for (auto& [id, oldPredictedObject] : OldPredictedObjects) {
-//            if(newPredictedObject.category != oldPredictedObject.category)continue;
-//            double areaIntersection = calculateIoU(newPredictedObject.bboxCurr, oldPredictedObject.bboxCurr);
-//            if(areaIntersection > MIN_INTERSECTION_AREA && areaIntersection > maxArea)
-//			{
-//				maxArea = int(areaIntersection);
-//				maxAreaId = id;
-//			}			
-//        }
-//        if (maxAreaId != -1) {
-//            newPredictedObject.distancePrev = OldPredictedObjects[maxAreaId].distanceCurr;
-//            OldPredictedObjects.erase(maxAreaId);
-//        }
-//        else {
-//            int minDistance = 1000000;
-//            int minDistanceId = -1;
-//            for (auto& [id, oldPredictedObject] : OldPredictedObjects) {
-//                if (newPredictedObject.category != oldPredictedObject.category)continue;
-//                double distance = calculateCentroidDistance(newPredictedObject.bboxCurr, oldPredictedObject.bboxCurr);
-//                if(distance < CENTER_DISTANCE_THRESHOLD && distance < minDistance){
-//                    minDistance = int(distance);
-//					minDistanceId = id;
-//				}
-//            }
-//            if (minDistanceId != -1) {
-//                newPredictedObject.distancePrev = OldPredictedObjects[minDistanceId].distanceCurr;
-//                OldPredictedObjects.erase(minDistanceId);
-//            }
-//        }
-//        
-//    }
-//}
-//=============================================================================
-//void Manager::runTracking()
-//{
-//    cv::VideoCapture cap(m_videoPath);
-//    if (!cap.isOpened()) {
-//        std::cerr << "Error: Could not open video." << std::endl;
-//        return;
-//    }
-//
-//    cv::Mat frame;
-//    int frameCount = 0;
-//
-//    while (cap.read(frame)) {
-//        if (frameCount < FRAME_BEGIN) {
-//            ++frameCount;
-//            continue;
-//        }
-//
-//        if (frameCount == FRAME_BEGIN) {
-//            std::string outputImagePath = "first_frame.png";
-//            cv::imwrite(outputImagePath, frame);
-//            std::cout << "First frame saved to: " << outputImagePath << std::endl;
-//        }
-//
-//
-//        std::unordered_map<int, TrackedObject>& predictedObjects = m_prediction.getPredictedObjects();
-//        if (frameCount % FRAMES_NUM_UNTIL_INIT_TRACKERS == 0)
-//        {
-//            auto detectedObjects = run_yolov3(frame);
-//            std::unordered_map<int, TrackedObject> predictedObjectsCopy = predictedObjects;
-//            m_trackerManager.initializeTrackers(frame, detectedObjects, predictedObjects);
-//            m_prediction.setCanPredict(false);
-//            matchOverlapBoxes(predictedObjectsCopy, predictedObjects);
-//        }
-//        else
-//        {
-//            m_trackerManager.updateTrackers(frame, predictedObjects);
-//            m_prediction.setCanPredict(true);
-//        }
-//        std::unordered_set<int> toColor;
-//        if (m_prediction.getCanPredict()) {
-//            //toColor = m_prediction.analyzeSituation(frame.rows * frame.cols);
-//            /*std::unordered_set<int> approachingObjectsID = ApproachDangerZone::getApproachingDangerZoneIDs(predictedObjects);
-//            toColor.insert(approachingObjectsID.begin(), approachingObjectsID.end());*/
-//            NewPrediction::updateWarnings(predictedObjects);
-//        }
-//        Distance::calcDist(predictedObjects, frame);
-//
-//
-//        if (frameCount % FRAMES_NUM_UNTIL_INIT_TRACKERS == 0) {
-//            Distance::calcRelativSpeed(predictedObjects, frame, true);
-//            for (auto& [id, predictedObject] : predictedObjects) {
-//                if (ENABLE_DRAWING)
-//                {
-//                    //Visualization::drawRelativeSpeedWithDistances(frame, predictedObject);
-//                }
-//            }
-//
-//        }
-//        else {
-//            Distance::calcRelativSpeed(predictedObjects, frame, false);
-//            for (auto& [id, predictedObject] : predictedObjects) {
-//                if (ENABLE_DRAWING)
-//                {
-//                    //Visualization::drawRelativeSpeed(frame, predictedObject, predictedObject.oldRelativSpeed);
-//                }
-//            }
-//        }
-//
-//        if (ENABLE_DRAWING)
-//        {
-//            Visualization::drawPredictedObjects(frame, predictedObjects);
-//            //Visualization::drawCarsHoodTarpezoid(frame, predictedObjects);        
-//        }
-//
-//        for (auto& [id, predictedObject] : predictedObjects) {
-//            if (ENABLE_DRAWING)
-//            {
-//                Visualization::drawWarningDescription(frame, predictedObject);
-//            }
-//
-//            if (int(predictedObject.warningPriority) <= 2)
-//            {
-//                sendWarningToConsole(predictedObject.warningDescription);
-//                //m_queue.enqueue(predictedObject.warningDescription);
-//            }
-//        }
-//
-//        if (ENABLE_DRAWING)
-//        {
-//            Visualization::drawZones(frame);
-//            cv::imshow("Tracking", frame);
-//
-//            if (frameCount % FRAMES_NUM_UNTIL_INIT_TRACKERS == 0) {
-//                cv::waitKey(1);
-//            }
-//            else {
-//                cv::waitKey(1);
-//            }
-//        }
-//
-//        for (auto& [id, predictedObject] : predictedObjects)
-//        {
-//            predictedObject.bboxPrev = predictedObject.bboxCurr;
-//        }
-//        ++frameCount;
-//    }
-//
-//    cap.release();
-//    cv::destroyAllWindows();
-//}
-//=============================================================================
 
+//=============================================================================
+void Manager::runTracking() {
+    const auto& videoZonesPoligons = InputData::getInstance().getAllVideosPoligons();
+
+    for (const auto& [videoName, _] : videoZonesPoligons)
+    {
+        NewPrediction::setCurrentVideoPoligons(videoName);
+		Visualization::setCurrentVideoPoligons(videoName);
+        resetMembers(videoName);
+
+        cv::VideoCapture cap = openVideo();
+        if (!cap.isOpened()) return;
+        cap.set(cv::CAP_PROP_POS_FRAMES, FRAME_BEGIN - 1);
+
+        int frameCount = FRAME_BEGIN;
+        cv::Mat frame;
+
+        while (cap.read(frame)) {
+            processFrame(frame, frameCount);
+            ++frameCount;
+        }
+
+        cap.release();
+        cv::destroyAllWindows();
+    }
+}
 

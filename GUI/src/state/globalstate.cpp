@@ -90,8 +90,12 @@ void GlobalState::setMaxMessageCount(int value)
 }
 
 void GlobalState::newData(const QString& newData){
-    emit newDataArrived(newData, 1024);
+    emit newDataArrived(newData);
 }
+void GlobalState::newRecordData(const QString& newData){
+    emit newRecordDataArrived(newData);
+}
+
 void GlobalState::ParserInfo(QMap<int, QList<QList<QString>>> parseInfoMap){
     emit ParserInfoArrived(parseInfoMap);
 }
@@ -110,18 +114,9 @@ void GlobalState::log(const QString &newLog, const QString &tabName) {
 void GlobalState::delTabContent() {
     emit delAllTabContent();
 }
-//void GlobalState::addNewTab(const QString &tabName){
-//    emit newTab(tabName);
-//}
-void GlobalState::addNewTab(const QString &tabName, const QString &oldTabName){
-    emit newTab(tabName, oldTabName);
-}
 void GlobalState::pressOnTab(const QString &tabName){
     emit tabPressed(tabName);
 }
-
-
-
 GlobalState::GlobalState(QObject* parent) : QObject(parent) {
     QSettings settings("VehicleCompSim", "GUI");
     m_myClientId = settings.value("clientId").toString();

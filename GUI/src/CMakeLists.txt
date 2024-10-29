@@ -26,6 +26,14 @@ target_include_directories(VehicleCompSimCore PUBLIC
     ${CMAKE_SOURCE_DIR}/Communication/utilities
 )
 
+# Add subdirectories
+# add_subdirectory(client)
+# add_subdirectory(gui)
+# add_subdirectory(items)
+add_subdirectory(services)
+# add_subdirectory(models)
+# add_subdirectory(state)
+
 # Link Qt libraries
 target_link_libraries(VehicleCompSimCore PUBLIC
     Qt::Widgets
@@ -36,12 +44,3 @@ target_link_libraries(VehicleCompSimCore PUBLIC
     client_lib
     services
 )
-
-# Add subdirectories
-add_subdirectory(client)
-add_subdirectory(gui)
-add_subdirectory(items)
-add_subdirectory(items/editors)
-add_subdirectory(services)
-add_subdirectory(models)
-add_subdirectory(state)

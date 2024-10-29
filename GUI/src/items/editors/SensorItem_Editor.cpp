@@ -101,10 +101,6 @@ void SensorItem::Editor::onSaveBtnClicked()
     }
     auto itemData = model.serialize();
 
-    QString oldTabName = "Sensor " + itemData["priority"].toString();
-    QString newTabName = "Sensor " + priority->text();
-    GlobalState::getInstance().addNewTab(newTabName, oldTabName);
-
     itemData["priority"] = priority->text();
     itemData["name"] = name->text();
     itemData["buildCommand"] = buildCommand->text();
@@ -121,6 +117,9 @@ void SensorItem::Editor::onSaveBtnClicked()
 
 
     model.deserialize(itemData);
+    if(GlobalState::getInstance().connectionState() != globalConstants::ConnectionState::Online){
+        GlobalState::getInstance().currentProject()->updateModel(&model);
+    }
     model.notifyItemModified();
     onCancelBtnCliked();
 }
