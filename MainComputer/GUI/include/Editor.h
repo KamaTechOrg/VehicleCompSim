@@ -11,8 +11,12 @@ class Editor : public QWidget
 	Q_OBJECT
 
 public:
-	Editor();
+    Editor(nlohmann::json &_guiData, nlohmann::json &_logicData);
 	~Editor();
+
+    nlohmann::json &guiData, &logicData;
+signals:
+    void dataChanged();
 
 private:
 	QVBoxLayout* _VLayout;

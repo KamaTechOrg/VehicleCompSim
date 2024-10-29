@@ -12,6 +12,7 @@ public:
 
     void addModel(SerializableItem* model);
     void removeModel(SerializableItem* model);
+    void removeModel(QString id);
     void updateModel(SerializableItem* model);
 
     QString id() const { return m_id; }
@@ -19,7 +20,7 @@ public:
     bool isPublished() const { return m_isPuplished; }
     void setPublished(bool value) { m_isPuplished = value; }
     
-    QList<SerializableItem*> models() const { return m_models.values(); }
+    QList<SerializableItem*> models() const { return  m_models.values(); }
 
 signals:
     void modelAdded(SerializableItem* model);

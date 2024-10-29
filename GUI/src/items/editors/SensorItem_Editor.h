@@ -8,7 +8,7 @@
 #include "qfileselector.h"
 #include "qlineedit.h"
 #include "qpushbutton.h"
-
+class CCV{};
 class SensorItem::Editor : public EditPanel::Editor{
     SensorModel& model;
     QVBoxLayout* mainLayout;

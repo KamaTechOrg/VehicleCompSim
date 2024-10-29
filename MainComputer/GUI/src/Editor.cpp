@@ -3,13 +3,14 @@
 
 #include <QDebug>
 
-Editor::Editor()
+Editor::Editor(nlohmann::json &_guiData, nlohmann::json &_logicData)
+    : guiData(_guiData), logicData(_logicData)
 {
 	setWindowTitle("Conditions Editor");
-	nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
+    //nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
 	for (nlohmann::json scenario : guiData)
 	{
-		ConditionsEditor* scenarioEditor = new ConditionsEditor;
+        ConditionsEditor* scenarioEditor = new ConditionsEditor(guiData, logicData);
 		scenarioEditor->setView(scenario);
 		scenarioEditor->hide();
 		_scenariosEditors.push_back(scenarioEditor);
@@ -36,14 +37,19 @@ void Editor::save()
 	success = saveLogicDataToJson();
 	success &= saveGuiDataToJson();
 	if (success)
-		showSaveSuccessFeedback();
-	else
-		showSaveFailedFeedback();
+    {
+        showSaveSuccessFeedback();
+        emit dataChanged();
+    }
+    else
+    {
+        showSaveFailedFeedback();
+    }
 }
 
 bool Editor::saveLogicDataToJson()
 {
-	nlohmann::json::array_t jsonData;
+    nlohmann::json::array_t jsonData;
 	for (auto scenario : _scenariosEditors)
 	{
 		nlohmann::json current = scenario->getLogicDataAsJson();
@@ -53,8 +59,9 @@ bool Editor::saveLogicDataToJson()
 			return false;
 		jsonData.push_back(current);
 	}
-	JsonLoader().saveConditionsLogic(jsonData);
-	return true;
+    //JsonLoader().saveConditionsLogic(jsonData);
+    logicData = jsonData;
+    return true;
 	// TODO: save and then load the main computer "backend" in running time with the new conditions
 	//ConditionsManager().loadFromJson();
 }
@@ -77,7 +84,8 @@ bool Editor::saveGuiDataToJson()
 		jsonData.push_back(current);
 	}
 
-	JsonLoader().saveGuiData(jsonData);
+    //JsonLoader().saveGuiData(jsonData);
+    guiData = jsonData;
 	return true;
 }
 
@@ -121,7 +129,7 @@ void Editor::initializeScenariosExplorer()
 	_explorer = new ExplorerBox;
 
 	std::vector<std::string> names;
-	nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
+    //nlohmann::json::array_t guiData = JsonLoader().loadGuiData();
 	for (nlohmann::json scenario : guiData)
 	{
 		if (scenario.contains("scenarioName"))
@@ -164,7 +172,7 @@ void Editor::handleScenarioClicked(int index)
 
 void Editor::handleAddScenario()
 {
-	ConditionsEditor* newScenarioEditor = new ConditionsEditor;
+    ConditionsEditor* newScenarioEditor = new ConditionsEditor(guiData, logicData);
 	_conditionsEditorLayout->addWidget(newScenarioEditor);
 	newScenarioEditor->hide();
 	_scenariosEditors.push_back(newScenarioEditor);

@@ -6,7 +6,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 qt_standard_project_setup()
 
 add_library(MainComputer
-    src/maincomputer.h
+    include/MainComputer.h
     src/maincomputer.cpp
 )
 

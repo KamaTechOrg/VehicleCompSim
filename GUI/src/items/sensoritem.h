@@ -7,7 +7,7 @@
 #include <QTextEdit>
 
 #include "baseitem.h"
-#include "sensormodel.h"
+#include "../models/sensorModel.h"
 #include "PersistentTootip.h"
 #include "widgets/verticalindicator.h"
 

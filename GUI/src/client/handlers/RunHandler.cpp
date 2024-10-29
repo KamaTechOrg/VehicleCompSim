@@ -1,6 +1,7 @@
 #include "RunHandler.h"
 #include <QDebug>
 #include "ClientConstants.h"
+#include "state/globalstate.h"
 
 RunHandler::RunHandler(const std::function<void(const QString&, const QString&)> startFunction, const std::function<void()> stopFunction)
   : m_startFunction(startFunction), m_stopFunction(stopFunction)
@@ -9,6 +10,8 @@ RunHandler::RunHandler(const std::function<void(const QString&, const QString&)>
 
 void RunHandler::handle(const QJsonObject &message)
 {
+    if (message["project"] != GlobalState::getInstance().currentProject()->id()) return;
+
   // Extract the run command from the message
   QString command = message[ClientConstants::KEY_COMMAND].toString();
   if (command == ClientConstants::COMMAND_START) {

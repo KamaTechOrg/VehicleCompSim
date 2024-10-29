@@ -1,6 +1,6 @@
 #include "Gui.h"
 
-Gui::Gui() : _editorRunning(false)
+Gui::Gui() : editor(guiData, logicData), _editorRunning(false)
 {
 	setWindowTitle("Menu");
 
@@ -52,6 +52,7 @@ void Gui::onStartStopComputer()
 	}
 	else
 	{
+        manager.jsonData = logicData;
      	manager.run();
 		_statusButton->setText("Running");
 		_statusButton->setStyleSheet("background-color: green; color: white;");

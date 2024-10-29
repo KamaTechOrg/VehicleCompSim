@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <unordered_map> 
+#include <unordered_map>
 #include "json.hpp"
 
 
@@ -31,6 +31,8 @@ public:
     bool isRunning();
     void loadFromJson();
     std::pair<std::string, std::string> parseMessage(const std::string &message);  // Parse the message to extract ID and value
+    nlohmann::json jsonData;
+
 };
 
 #endif

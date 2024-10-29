@@ -6,7 +6,7 @@
 
 class Observer;
 
-enum class ItemType { Sensor, Connector, Edge };
+enum class ItemType { Sensor, Qemu, MainComputer, Connector, Edge };
 
 class SerializableItem : public QObject {
 	Q_OBJECT

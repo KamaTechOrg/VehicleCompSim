@@ -12,7 +12,7 @@
 class ConditionsEditor : public QGroupBox
 {
 public:
-	ConditionsEditor();
+    ConditionsEditor(nlohmann::json &_guiData, nlohmann::json &_logicData);
 	
 	nlohmann::json getLogicDataAsJson();
 	nlohmann::json getGuiDataAsJson();
@@ -25,4 +25,5 @@ private:
 	ConditionsGroup* _conditionsGroup;
 	ThenGroupBox* _actionGroupBox;
 
+    nlohmann::json &guiData, &logicData;
 };

@@ -4,6 +4,7 @@
 QemuSensorModel::QemuSensorModel()
     : m_platform(getPlatformOptions()[0].value)
 {
+    m_type = ItemType::Qemu;
 }
 
 QString QemuSensorModel::platform() const
