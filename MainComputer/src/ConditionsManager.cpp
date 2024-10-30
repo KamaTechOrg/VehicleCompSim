@@ -39,9 +39,8 @@ void ConditionsManager::executeActions(const int index) const
 
     Communication communication;
     for (const auto& action : actions.at(index)) {
-        std::string message = "TARGET:beep controller," + action.getMessageToSend();
-        communication.sendTo(constants::SERVER_PORT, message);
-        qInfo() << "Action executed: Sent message to BEEP controller: " << QString::fromStdString(message);
+        qInfo() << "Sent a message to: " << action.getTargetUnit()
+            << ", With content: " << action.getMessageToSend();
     }
 }
 
@@ -79,6 +78,7 @@ void ConditionsManager::run()
         Communication communication;
         communication.listenTo(8100);
         communication.listenTo(8101);
+        communication.listenTo(8102);
 
         /* This code is relevant if we work with an outside server */
         //communication.sendAndReceiveLoop("10.13.37.1", 8081);
@@ -92,7 +92,7 @@ void ConditionsManager::run()
                 qWarning() << "Received empty message from server"; // Log empty message
                 continue; // Skip processing if message is empty
             }
-            //qInfo() << "Received message" << QString::fromStdString(message);  // Print to GUI
+            qInfo() << "Received message" << QString::fromStdString(message);  // Print to GUI
 
             try {
                 auto messageContent = parseMessage(message);
@@ -103,9 +103,9 @@ void ConditionsManager::run()
             catch (const std::exception& e) {
                 qWarning() << "Failed to parse message:" << e.what();
             }
-            //std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 
-
+            /*
             // ######## TEMP : to measure How many messages can it handle per second ###### //
             iterationCount++;
 
@@ -120,6 +120,7 @@ void ConditionsManager::run()
             }
 
             // ######## END TEMP ###### //
+            */
         }
 
         qInfo() << "Conditions Manager thread stopping";
@@ -158,13 +159,13 @@ void ConditionsManager::validateAll(const std::string& senderId, const std::stri
 
         if (conditions.at(i)->validate(senderId, value))
         {
-            //qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
-            //executeActions(i);
+            qInfo() << "Validation succeeded for ID:" << senderId.c_str() << " with value:" << value.c_str();
+            executeActions(i);
             //sendTargetMessage("beep controller", "MESSAGE:Beep");
         }
         else
         {
-            //qInfo() << "Validation failed for ID:" << senderId.c_str() << " with value:" << value.c_str();
+            qInfo() << "Validation failed for ID:" << senderId.c_str() << " with value:" << value.c_str();
         }
     }
 }
