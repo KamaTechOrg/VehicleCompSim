@@ -37,6 +37,8 @@
 #include "../models/sensormodel.h"
 #include "saveAndLoad.h"
 #include "widgets/iconbutton.h"
+#include "widgets/sceneminimap.h"
+#include "../../MainComputer/src/maincomputer.h"
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -87,6 +89,7 @@ private slots:
 
 private:
     CustomScene* m_scene;
+    SceneMinimap* m_minimap;
     QGraphicsView* m_view;
     GlobalState &m_globalState;
     QString m_mainWindowTitle;

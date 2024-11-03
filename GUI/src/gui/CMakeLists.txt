@@ -27,6 +27,8 @@ set(CLIENT_SOURCES
     widgets/flowanimation.cpp
     widgets/iconbutton.h
     widgets/iconbutton.cpp
+    widgets/sceneminimap.h
+    widgets/sceneminimap.cpp
 )
 
 set(SOURCES ${SOURCES} ${CLIENT_SOURCES} PARENT_SCOPE)

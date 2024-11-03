@@ -46,6 +46,7 @@ void RemoteInterface::setupUI()
     connect(testModeCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
         bool isTestMode = state == Qt::Checked;
         m_globalState.setIsTest(isTestMode);
+        m_globalState.setIsRunning(isTestMode);
     });
 
 
@@ -60,7 +61,7 @@ void RemoteInterface::setupUI()
     // m_projectListView->setViewMode(QListView::IconMode);
     m_projectListView->setFlow(QListView::LeftToRight);
     m_projectListView->setWrapping(false);
-    m_projectListView->setFixedHeight(50); 
+    m_projectListView->setFixedHeight(60);
     connect(m_projectListView, &QListView::clicked, this, &RemoteInterface::onProjectItemClicked);
 
     // Scroll area to contain the list view

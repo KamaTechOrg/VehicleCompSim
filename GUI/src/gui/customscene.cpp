@@ -57,6 +57,14 @@ void CustomScene::clearScene() {
     m_sensors.clear();
 }
 
+void CustomScene::adjustSceneRect() {
+    if (items().isEmpty()) {
+        setSceneRect(0, 0, 0, 0);
+    } else {
+        setSceneRect(itemsBoundingRect());
+    }
+}
+
 void CustomScene::modifyItem(QGraphicsItem *item)
 {
     if(item){
@@ -300,6 +308,7 @@ void CustomScene::onCurrentProjectChanged(ProjectModel* project) {
             }
         }
     }
+    adjustSceneRect();
 }
 QString CustomScene::dataToHtml(const QList<QPair<QString, QString>>& data){
     QString tableHtml = "<table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse;'>";
@@ -396,6 +405,7 @@ void CustomScene::onModelAdded(SerializableItem* model) {
             m_sensors[sensorItem->getModel().priority()] = sensorItem;
         }
     }
+    adjustSceneRect();
 }
 
 void CustomScene::onModelRemoved(SerializableItem* model) {
@@ -408,6 +418,7 @@ void CustomScene::onModelRemoved(SerializableItem* model) {
             break;
         }
     }
+    adjustSceneRect();
 }
 
 void CustomScene::onModelUpdated(SerializableItem* model) {
@@ -419,6 +430,7 @@ void CustomScene::onModelUpdated(SerializableItem* model) {
     //     }
     // }
     // TODO
+    adjustSceneRect();
 }
 
 BaseItem* CustomScene::buildBaseItemFromModel(SerializableItem* model) {
