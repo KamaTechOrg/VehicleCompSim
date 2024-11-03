@@ -46,6 +46,7 @@ void RemoteInterface::setupUI()
     connect(testModeCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
         bool isTestMode = state == Qt::Checked;
         m_globalState.setIsTest(isTestMode);
+        m_globalState.setIsRunning(isTestMode);
     });
 
 
