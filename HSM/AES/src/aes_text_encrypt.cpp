@@ -1,7 +1,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <algorithm>
-// #include <execution> 
+#include <execution> 
 
 // for htonl
 #ifdef _WIN32
@@ -34,11 +34,30 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ecb(Aes<Aes_var> const& aes, std::s
   encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
   using State = typename Aes<Aes_var>::State;
   auto* states_buf = reinterpret_cast<State*>(encrypted_message.data());
-  std::for_each_n(/* std::execution::par,  */states_buf, encrypted_message.size()/16, [&](auto& state){
+  std::for_each_n(/* std::execution::par, */ states_buf, encrypted_message.size()/16, [&](auto& state){
     aes.encrypt(state);
   });
   return encrypted_message;
 }
+
+
+
+template <AesVariant Aes_var>
+std::string AesTextEncrypt<Aes_var>::encrypt_ecb_par(Aes<Aes_var> const& aes, std::string const& message){
+    std::string encrypted_message;
+  uint8_t paddingN = (message.size()%16) ? (16-message.size()%16) : 16;
+  encrypted_message.reserve(message.size() + paddingN); // encrypted_message.size() == N*sizeof(State)
+  
+  encrypted_message += message; // fill message
+  encrypted_message.resize(message.size()+paddingN, paddingN); // fill padding
+  using State = typename Aes<Aes_var>::State;
+  auto* states_buf = reinterpret_cast<State*>(encrypted_message.data());
+  std::for_each_n(std::execution::par, states_buf, encrypted_message.size()/16, [&](auto& state){
+    aes.encrypt(state);
+  });
+  return encrypted_message;
+}
+
 
 
 template <AesVariant Aes_var>
@@ -94,7 +113,7 @@ std::string AesTextEncrypt<Aes_var>::encrypt_ecb(sycl::queue& q, Aes<Aes_var> co
        aes_accessor[0].encrypt(states_accessor[i]);
     });
   });
-  q.wait();
+  // q.wait();
   return encrypted_message;
 }
 

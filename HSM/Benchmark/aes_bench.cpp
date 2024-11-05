@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 #include <cstddef>
+#include <cstdlib>
 #include <numeric>
 #include <array>
 
@@ -42,24 +43,13 @@ std::array<uint8_t, 16> iv = {0x3d, 0xaf, 0xba, 0x42, 0x9d, 0x9e, 0xb4, 0x30, 0x
 
 
 static const std::string msg4k = []() -> std::string {
-    std::string message(1<<12, '\0');
+    std::string message(1UL<<12, '\0');
     std::iota(message.begin(), message.end(), 1);
     return message;
 }();
-
-template<AesVariant Aes_var, size_t N>
-static void msg4k_encrypt_aes_ecb(benchmark::State& state) {
-    std::string message(N, '\0');
-    std::iota(message.begin(), message.end(), 1);
-    Aes<Aes_var> aes(aes_key<Aes_var>);
-    for (auto _ : state){
-        AesTextEncrypt<Aes_var>::encrypt_ecb(aes, message);
-    }
-}
-
+    
 const auto Aes_Var = AesVariant::Aes128;
 
-    
 static void init_function(benchmark::State& state){
   std::cout << "--Running on--\n"
         << q.get_device().get_info<sycl::info::device::name>()
@@ -76,26 +66,35 @@ static void init_function(benchmark::State& state){
 
 BENCHMARK(init_function);
 
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<8>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<10>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<12>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<14>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<16>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<18>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<20>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<22>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<23>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<24>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<25>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<26>);
-BENCHMARK(msg4k_encrypt_aes_ecb<Aes_Var, 1<<28>);
+template<AesVariant Aes_var>
+static void encrypt_aes_ecb(benchmark::State& state) {
+    std::string message(state.range(0), '\0');
+    for(char& c : message) c = rand();
+    Aes<Aes_var> aes(aes_key<Aes_var>); 
+    for (auto _ : state){
+        AesTextEncrypt<Aes_var>::encrypt_ecb(aes, message);
+    }
+}
 
+BENCHMARK(encrypt_aes_ecb<Aes_Var>)->RangeMultiplier(2)->Range(16, 1<<20);;
+
+template<AesVariant Aes_var, size_t N>
+static void encrypt_aes_ecb_par(benchmark::State& state) {
+    std::string message(state.range(0), '\0');
+    for(char& c : message) c = rand();
+    Aes<Aes_var> aes(aes_key<Aes_var>); 
+    for (auto _ : state){
+        AesTextEncrypt<Aes_var>::encrypt_ecb_par(aes, message);
+    }
+}
+
+BENCHMARK(encrypt_aes_ecb_par<Aes_Var, 1UL<<4>)->RangeMultiplier(2)->Range(16, 1<<20);
 
 #if 1 //SYCL_ENABLED
-template<AesVariant Aes_var, size_t N>
-static void msg4k_encrypt_aes_ecb_sycl(benchmark::State& state) {
-    std::string message(N, '\0');
-    std::iota(message.begin(), message.end(), 1);
+template<AesVariant Aes_var>
+static void encrypt_aes_ecb_sycl(benchmark::State& state) {
+    std::string message(state.range(0), '\0');
+    for(char& c : message) c = rand();
     Aes<Aes_var> aes(aes_key<Aes_var>); 
     AesTextEncrypt<Aes_var>::encrypt_ecb(q, aes, message); // The first time takes an inordinate amount of time
     for (auto _ : state){
@@ -103,18 +102,8 @@ static void msg4k_encrypt_aes_ecb_sycl(benchmark::State& state) {
     }
 }
 
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<8>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<10>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<12>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<14>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<16>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<18>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<20>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<22>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<23>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<24>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<26>);
-BENCHMARK(msg4k_encrypt_aes_ecb_sycl<Aes_Var, 1<<28>);
+
+BENCHMARK(encrypt_aes_ecb_sycl<Aes_Var>)->RangeMultiplier(2)->Range(16, 1<<20);
 
 #endif
 

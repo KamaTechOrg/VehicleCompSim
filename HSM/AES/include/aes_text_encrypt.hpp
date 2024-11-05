@@ -19,7 +19,10 @@ public:
     std::string static decrypt_ecb(KeyType const& key, std::string const& encrypted_message);
 
     std::string static encrypt_ecb(Aes<Aes_var> const& aes, std::string const& message);
+    std::string static encrypt_ecb_par(Aes<Aes_var> const& aes, std::string const& message);
     std::string static decrypt_ecb(Aes<Aes_var> const& aes, std::string const& encrypted_message);
+
+
 
 
 // cbc mode
